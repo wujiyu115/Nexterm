@@ -12,6 +12,7 @@ import 'package:nexterm/features/forwarding/ui/forward_form_screen.dart';
 import 'package:nexterm/features/terminal/ui/terminal_screen.dart';
 import 'package:nexterm/features/sftp/ui/sftp_screen.dart';
 import 'package:nexterm/features/sftp/ui/file_editor_screen.dart';
+import 'package:nexterm/features/settings/ui/settings_screen.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -67,7 +68,7 @@ final appRouter = GoRouter(
           ),
         ]),
         StatefulShellBranch(routes: [
-          GoRoute(path: '/settings', builder: (context, state) => const Scaffold(body: Center(child: Text('设置 — Phase 5')))),
+          GoRoute(path: '/settings', builder: (context, state) => const SettingsScreen()),
         ]),
       ],
     ),
