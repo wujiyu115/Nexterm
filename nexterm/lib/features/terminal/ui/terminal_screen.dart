@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nexterm/features/terminal/providers/terminal_provider.dart';
+import 'package:nexterm/features/terminal/ui/widgets/keyboard_toolbar.dart';
 import 'package:nexterm/features/terminal/ui/widgets/terminal_tab_bar.dart';
 import 'package:nexterm/features/terminal/ui/widgets/terminal_view.dart';
 
@@ -64,6 +65,17 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
                   )
                 : TerminalViewWidget(tab: activeTab),
           ),
+
+          // Keyboard toolbar — only shown when a terminal tab is active.
+          if (activeTab != null)
+            KeyboardToolbar(
+              onKeyInput: (data) {
+                final sshService = ref.read(sshServiceProvider);
+                if (activeTab.sessionId != null) {
+                  sshService.writeBytes(activeTab.sessionId!, data);
+                }
+              },
+            ),
         ],
       ),
     );

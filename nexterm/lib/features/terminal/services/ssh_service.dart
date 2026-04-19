@@ -156,6 +156,16 @@ class SSHService {
     active.session.write(Uint8List.fromList(data.codeUnits));
   }
 
+  /// Send a raw [Uint8List] directly to the shell stdin.
+  ///
+  /// Use this for control characters, ANSI escape sequences, and other data
+  /// that must not go through String encoding (e.g. from the keyboard toolbar).
+  void writeBytes(String sessionId, Uint8List data) {
+    final active = _sessions[sessionId];
+    if (active == null) return;
+    active.session.write(data);
+  }
+
   /// Returns the stdout stream for a session, or null if unknown.
   Stream<Uint8List>? stdout(String sessionId) => _sessions[sessionId]?.stdout;
 
