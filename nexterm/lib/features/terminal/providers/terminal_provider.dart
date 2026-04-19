@@ -102,6 +102,20 @@ class TerminalActions {
       // --- Gap 1: update lastConnected timestamp ---
       _ref.read(hostsNotifierProvider.notifier).updateLastConnected(hostId);
 
+      // Wire terminal output and resize BEFORE listening to stdout, so that
+      // any autoResize triggered by TerminalView is forwarded to the remote
+      // PTY immediately.
+      terminal.onOutput = (data) => _sshService.write(sessionId, data);
+      terminal.onResize = (w, h, pw, ph) =>
+          _sshService.resizePty(sessionId, w, h);
+
+      // If TerminalView has already resized the Terminal (via autoResize)
+      // before we set onResize, the remote PTY still thinks it's 80x24.
+      // Sync the actual terminal dimensions to the remote PTY now.
+      if (terminal.viewWidth != 80 || terminal.viewHeight != 24) {
+        _sshService.resizePty(sessionId, terminal.viewWidth, terminal.viewHeight);
+      }
+
       // Wire stdout to terminal input.
       active.stdout.listen(
         (data) => terminal.write(utf8.decode(data, allowMalformed: true)),
@@ -122,6 +136,14 @@ class TerminalActions {
                 _tabManager.updateTabSessionId(tab.id, newSessionId);
                 _tabManager.updateTabStatus(
                     tab.id, ConnectionStatus.connected);
+                // Wire resize and output before stdout to avoid PTY size mismatch.
+                terminal.onOutput =
+                    (data) => _sshService.write(newSessionId, data);
+                terminal.onResize = (w, h, pw, ph) =>
+                    _sshService.resizePty(newSessionId, w, h);
+                // Sync current terminal size to the new PTY.
+                _sshService.resizePty(
+                    newSessionId, terminal.viewWidth, terminal.viewHeight);
                 // Re-wire stdout.
                 newActive.stdout.listen(
                   (data) =>
@@ -131,10 +153,6 @@ class TerminalActions {
                   onError: (_) => _tabManager.updateTabStatus(
                       tab.id, ConnectionStatus.error),
                 );
-                terminal.onOutput =
-                    (data) => _sshService.write(newSessionId, data);
-                terminal.onResize = (w, h, pw, ph) =>
-                    _sshService.resizePty(newSessionId, w, h);
                 return true;
               } catch (_) {
                 return false;
@@ -157,13 +175,6 @@ class TerminalActions {
           _tabManager.updateTabStatus(tab.id, ConnectionStatus.error);
         },
       );
-
-      // Terminal output goes to SSH stdin.
-      terminal.onOutput = (data) => _sshService.write(sessionId, data);
-
-      // PTY resize.
-      terminal.onResize = (w, h, pw, ph) =>
-          _sshService.resizePty(sessionId, w, h);
 
       // --- Gap 2: execute startup snippet ---
       final snippetId = host.startupSnippetId;

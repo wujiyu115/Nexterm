@@ -1,3 +1,5 @@
+import 'dart:io' show Platform;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nexterm/core/theme/terminal_themes.dart' as app_themes;
@@ -24,11 +26,19 @@ class TerminalViewWidget extends ConsumerWidget {
       return const Center(child: CircularProgressIndicator());
     }
 
+    final isMobile = Platform.isIOS || Platform.isAndroid;
+
     return TerminalView(
       terminal,
       theme: app_themes.TerminalThemes.catppuccin,
+      textStyle: const TerminalStyle(
+        fontFamily: 'monospace',
+        fontSize: 13,
+      ),
+      textScaler: TextScaler.noScaling,
       autofocus: true,
       deleteDetection: true,
+      hardwareKeyboardOnly: isMobile ? false : true,
     );
   }
 }
