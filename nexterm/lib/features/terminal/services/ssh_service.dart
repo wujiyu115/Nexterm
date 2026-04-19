@@ -127,7 +127,7 @@ class SSHService {
       final socket = await SSHSocket.connect(
         config.host,
         config.port,
-        timeout: const Duration(seconds: 30),
+        timeout: const Duration(seconds: 6),
       );
       targetClient = _createClient(socket, config);
     } else {
@@ -140,7 +140,7 @@ class SSHService {
       var currentSocket = await SSHSocket.connect(
         currentConfig.host,
         currentConfig.port,
-        timeout: const Duration(seconds: 30),
+        timeout: const Duration(seconds: 6),
       );
       var currentClient = _createClient(currentSocket, currentConfig);
       jumpClients.add(currentClient);

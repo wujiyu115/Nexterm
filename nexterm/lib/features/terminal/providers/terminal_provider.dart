@@ -223,7 +223,40 @@ class TerminalActions {
     } catch (e, st) {
       debugPrint('TerminalActions.connectHost error: $e\n$st');
       _tabManager.updateTabStatus(tab.id, ConnectionStatus.error);
+
+      // Write a user-friendly error message into the terminal.
+      final friendlyMessage = _friendlyErrorMessage(e);
+      terminal.write('\r\n\x1B[1;31m连接失败\x1B[0m: $friendlyMessage\r\n');
+      terminal.write('\r\n\x1B[90m按关闭按钮关闭此标签页，或从主机列表重新连接。\x1B[0m\r\n');
     }
+  }
+
+  /// Converts a raw exception into a user-friendly Chinese error message.
+  String _friendlyErrorMessage(Object error) {
+    final message = error.toString();
+    if (error is TimeoutException || message.contains('TimeoutException')) {
+      return '连接超时，请检查主机地址和端口是否正确，以及网络是否可达。';
+    }
+    if (message.contains('SocketException') ||
+        message.contains('Connection refused')) {
+      return '无法连接到主机，请确认主机地址、端口是否正确，以及目标主机是否已开启 SSH 服务。';
+    }
+    if (message.contains('Authentication') ||
+        message.contains('auth') ||
+        message.contains('password') ||
+        message.contains('publickey')) {
+      return '认证失败，请检查用户名、密码或 SSH 密钥是否正确。';
+    }
+    if (message.contains('Host key') || message.contains('host key')) {
+      return '主机密钥验证失败，目标主机的密钥可能已变更。';
+    }
+    if (message.contains('No route') || message.contains('Network is unreachable')) {
+      return '网络不可达，请检查设备的网络连接。';
+    }
+    if (message.contains('DNS') || message.contains('resolve') || message.contains('getaddrinfo')) {
+      return '域名解析失败，请检查主机地址是否正确。';
+    }
+    return '${error.runtimeType}: $message';
   }
 
   /// Disconnects the SSH session for [tabId] and removes the tab.

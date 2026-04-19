@@ -67,6 +67,9 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
       backgroundColor: Colors.black,
       body: Column(
         children: [
+          // Reserve space for the system status bar.
+          SizedBox(height: MediaQuery.of(context).padding.top),
+
           // Tab bar at top.
           TerminalTabBar(
             onAddTab: () {
