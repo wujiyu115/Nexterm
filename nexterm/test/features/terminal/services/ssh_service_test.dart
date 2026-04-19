@@ -138,5 +138,75 @@ void main() {
       expect(service.stdout('ghost'), isNull);
       expect(service.stderr('ghost'), isNull);
     });
+
+    test('buildConnectionConfig with jump chain attaches configs correctly', () {
+      final jumpHost = HostEntity(
+        id: 'jump1',
+        name: 'Jump',
+        hostname: 'jump.example.com',
+        port: 22,
+        username: 'jumpuser',
+        authMethod: AuthMethod.password,
+        password: 'jumppass',
+      );
+      final target = HostEntity(
+        id: 'target',
+        name: 'Target',
+        hostname: '10.0.0.50',
+        port: 22,
+        username: 'admin',
+        authMethod: AuthMethod.password,
+        password: 'pass',
+        jumpHosts: ['jump1'],
+      );
+
+      // Build the jump host config independently, then pass it as jumpChain.
+      final jumpConfig = service.buildConnectionConfig(jumpHost);
+      final targetConfig = service.buildConnectionConfig(
+        target,
+        jumpChain: [jumpConfig],
+      );
+
+      expect(targetConfig.host, equals('10.0.0.50'));
+      expect(targetConfig.jumpChain, hasLength(1));
+      expect(targetConfig.jumpChain.first.host, equals('jump.example.com'));
+      expect(targetConfig.jumpChain.first.username, equals('jumpuser'));
+      expect(targetConfig.jumpChain.first.password, equals('jumppass'));
+    });
+
+    test('buildConnectionConfig copyWith replaces jumpChain', () {
+      final jumpConfig = SSHConnectionConfig(
+        host: 'jump.example.com',
+        port: 22,
+        username: 'jumpuser',
+        authMethod: AuthMethod.password,
+        password: 'jumppass',
+      );
+      final base = SSHConnectionConfig(
+        host: '10.0.0.50',
+        port: 22,
+        username: 'admin',
+        authMethod: AuthMethod.password,
+        password: 'pass',
+      );
+
+      final withJump = base.copyWith(jumpChain: [jumpConfig]);
+
+      expect(withJump.jumpChain, hasLength(1));
+      expect(withJump.jumpChain.first.host, equals('jump.example.com'));
+      // All other fields preserved.
+      expect(withJump.host, equals(base.host));
+      expect(withJump.username, equals(base.username));
+    });
+
+    test('SSHConnectionConfig defaults to empty jumpChain', () {
+      final config = SSHConnectionConfig(
+        host: 'myhost',
+        port: 22,
+        username: 'user',
+        authMethod: AuthMethod.password,
+      );
+      expect(config.jumpChain, isEmpty);
+    });
   });
 }

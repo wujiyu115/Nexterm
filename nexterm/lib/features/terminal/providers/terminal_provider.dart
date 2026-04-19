@@ -126,6 +126,26 @@ class TerminalActions {
   Future<SSHConnectionConfig> _buildConfig(
     dynamic host, // HostEntity
   ) async {
+    // Build configs for each jump host in the chain (preserving order).
+    final jumpChain = <SSHConnectionConfig>[];
+    for (final jumpId in (host.jumpHosts as List<String>)) {
+      final jumpHost = await _ref.read(hostByIdProvider(jumpId).future);
+      if (jumpHost == null) {
+        debugPrint('_buildConfig: jump host $jumpId not found, skipping');
+        continue;
+      }
+      jumpChain.add(await _buildConfigForHost(jumpHost));
+    }
+
+    return _buildConfigForHost(host, jumpChain: jumpChain);
+  }
+
+  /// Looks up any required SSH key and returns a [SSHConnectionConfig] for
+  /// [host].  Does NOT resolve jump-host chains — call [_buildConfig] for that.
+  Future<SSHConnectionConfig> _buildConfigForHost(
+    dynamic host, {
+    List<SSHConnectionConfig> jumpChain = const [],
+  }) async {
     final sshService = _sshService;
     dynamic sshKey;
 
@@ -138,7 +158,11 @@ class TerminalActions {
       }
     }
 
-    return sshService.buildConnectionConfig(host, sshKey: sshKey);
+    return sshService.buildConnectionConfig(
+      host,
+      sshKey: sshKey,
+      jumpChain: jumpChain,
+    );
   }
 }
 
