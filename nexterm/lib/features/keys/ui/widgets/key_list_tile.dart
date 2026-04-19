@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nexterm/domain/entities/ssh_key_entity.dart';
+import 'package:nexterm/features/keys/providers/keys_provider.dart';
 
-class KeyListTile extends StatelessWidget {
+class KeyListTile extends ConsumerWidget {
   final SSHKeyEntity sshKey;
   final VoidCallback onDelete;
 
@@ -13,7 +15,7 @@ class KeyListTile extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -72,7 +74,7 @@ class KeyListTile extends StatelessWidget {
             ),
             PopupMenuButton<_KeyAction>(
               icon: Icon(Icons.more_vert, color: colorScheme.onSurfaceVariant),
-              onSelected: (action) => _handleAction(context, action),
+              onSelected: (action) => _handleAction(context, ref, action),
               itemBuilder: (context) => [
                 const PopupMenuItem(
                   value: _KeyAction.copyPublicKey,
@@ -81,6 +83,26 @@ class KeyListTile extends StatelessWidget {
                       Icon(Icons.copy, size: 18),
                       SizedBox(width: 10),
                       Text('复制公钥'),
+                    ],
+                  ),
+                ),
+                const PopupMenuItem(
+                  value: _KeyAction.exportPrivateKey,
+                  child: Row(
+                    children: [
+                      Icon(Icons.file_download_outlined, size: 18),
+                      SizedBox(width: 10),
+                      Text('导出私钥'),
+                    ],
+                  ),
+                ),
+                const PopupMenuItem(
+                  value: _KeyAction.exportPublicKey,
+                  child: Row(
+                    children: [
+                      Icon(Icons.file_upload_outlined, size: 18),
+                      SizedBox(width: 10),
+                      Text('导出公钥'),
                     ],
                   ),
                 ),
@@ -102,7 +124,7 @@ class KeyListTile extends StatelessWidget {
     );
   }
 
-  Future<void> _handleAction(BuildContext context, _KeyAction action) async {
+  Future<void> _handleAction(BuildContext context, WidgetRef ref, _KeyAction action) async {
     switch (action) {
       case _KeyAction.copyPublicKey:
         await Clipboard.setData(ClipboardData(text: sshKey.publicKey));
@@ -110,6 +132,28 @@ class KeyListTile extends StatelessWidget {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('公钥已复制到剪贴板'), duration: Duration(seconds: 2)),
           );
+        }
+      case _KeyAction.exportPrivateKey:
+        try {
+          final notifier = ref.read(keysNotifierProvider.notifier);
+          await notifier.exportKey(sshKey, publicOnly: false);
+        } catch (e) {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('导出失败: $e')),
+            );
+          }
+        }
+      case _KeyAction.exportPublicKey:
+        try {
+          final notifier = ref.read(keysNotifierProvider.notifier);
+          await notifier.exportKey(sshKey, publicOnly: true);
+        } catch (e) {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('导出失败: $e')),
+            );
+          }
         }
       case _KeyAction.delete:
         final confirmed = await showDialog<bool>(
@@ -134,4 +178,4 @@ class KeyListTile extends StatelessWidget {
   }
 }
 
-enum _KeyAction { copyPublicKey, delete }
+enum _KeyAction { copyPublicKey, exportPrivateKey, exportPublicKey, delete }

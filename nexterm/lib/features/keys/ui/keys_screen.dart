@@ -18,6 +18,11 @@ class KeysScreen extends ConsumerWidget {
         title: const Text('密钥'),
         actions: [
           IconButton(
+            icon: const Icon(Icons.file_upload_outlined),
+            tooltip: '导入密钥',
+            onPressed: () => context.push('/keys/import'),
+          ),
+          IconButton(
             icon: const Icon(Icons.add),
             tooltip: '生成密钥',
             onPressed: () => context.push('/keys/generate'),
@@ -75,6 +80,12 @@ class KeysScreen extends ConsumerWidget {
             onPressed: () => context.push('/keys/generate'),
             icon: const Icon(Icons.add),
             label: const Text('生成密钥'),
+          ),
+          const SizedBox(height: 12),
+          OutlinedButton.icon(
+            onPressed: () => context.push('/keys/import'),
+            icon: const Icon(Icons.file_upload_outlined),
+            label: const Text('导入密钥'),
           ),
         ],
       ),

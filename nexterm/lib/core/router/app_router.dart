@@ -5,6 +5,7 @@ import 'package:nexterm/features/hosts/ui/hosts_screen.dart';
 import 'package:nexterm/features/hosts/ui/host_form_screen.dart';
 import 'package:nexterm/features/keys/ui/keys_screen.dart';
 import 'package:nexterm/features/keys/ui/key_generate_screen.dart';
+import 'package:nexterm/features/keys/ui/key_import_screen.dart';
 import 'package:nexterm/features/snippets/ui/snippets_screen.dart';
 import 'package:nexterm/features/snippets/ui/snippet_form_screen.dart';
 import 'package:nexterm/features/forwarding/ui/forwarding_screen.dart';
@@ -44,6 +45,7 @@ final appRouter = GoRouter(
             builder: (context, state) => const KeysScreen(),
             routes: [
               GoRoute(path: 'generate', parentNavigatorKey: _rootNavigatorKey, builder: (context, state) => const KeyGenerateScreen()),
+              GoRoute(path: 'import', parentNavigatorKey: _rootNavigatorKey, builder: (context, state) => const KeyImportScreen()),
             ],
           ),
         ]),
