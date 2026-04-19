@@ -209,6 +209,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.2"
+  cross_file:
+    dependency: transitive
+    description:
+      name: cross_file
+      sha256: "28bb3ae56f117b5aec029d702a90f57d285cd975c3c5c281eaca38dbc47c5937"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.5+2"
   crypto:
     dependency: transitive
     description:
@@ -321,6 +329,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "7.0.1"
+  file_picker:
+    dependency: "direct main"
+    description:
+      name: file_picker
+      sha256: f13a03000d942e476bc1ff0a736d2e9de711d2f89a95cd4c1d88f861c3348387
+      url: "https://pub.dev"
+    source: hosted
+    version: "11.0.2"
   fixnum:
     dependency: transitive
     description:
@@ -334,6 +350,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_highlight:
+    dependency: "direct main"
+    description:
+      name: flutter_highlight
+      sha256: "7b96333867aa07e122e245c033b8ad622e4e3a42a1a2372cbb098a2541d8782c"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.7.0"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -342,6 +366,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.0.0"
+  flutter_plugin_android_lifecycle:
+    dependency: transitive
+    description:
+      name: flutter_plugin_android_lifecycle
+      sha256: "38d1c268de9097ff59cf0e844ac38759fc78f76836d37edad06fa21e182055a0"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.34"
   flutter_riverpod:
     dependency: "direct main"
     description:
@@ -448,6 +480,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.2"
+  highlight:
+    dependency: "direct main"
+    description:
+      name: highlight
+      sha256: "5353a83ffe3e3eca7df0abfb72dcf3fa66cc56b953728e7113ad4ad88497cf21"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.7.0"
   hooks:
     dependency: transitive
     description:
@@ -585,7 +625,7 @@ packages:
     source: hosted
     version: "1.17.0"
   mime:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: mime
       sha256: "41a20518f0cb1256669420fdba0cd90d21561e560ac240f26ef8322e45bb7ed6"
@@ -624,6 +664,70 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "9.3.0"
+  open_file:
+    dependency: "direct main"
+    description:
+      name: open_file
+      sha256: b22decdae85b459eac24aeece48f33845c6f16d278a9c63d75c5355345ca236b
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.5.11"
+  open_file_android:
+    dependency: transitive
+    description:
+      name: open_file_android
+      sha256: "58141fcaece2f453a9684509a7275f231ac0e3d6ceb9a5e6de310a7dff9084aa"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.6"
+  open_file_ios:
+    dependency: transitive
+    description:
+      name: open_file_ios
+      sha256: a5acd07ba1f304f807a97acbcc489457e1ad0aadff43c467987dd9eef814098f
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.4"
+  open_file_linux:
+    dependency: transitive
+    description:
+      name: open_file_linux
+      sha256: d189f799eecbb139c97f8bc7d303f9e720954fa4e0fa1b0b7294767e5f2d7550
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.5"
+  open_file_mac:
+    dependency: transitive
+    description:
+      name: open_file_mac
+      sha256: cd293f6750de6438ab2390513c99128ade8c974825d4d8128886d1cda8c64d01
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.4"
+  open_file_platform_interface:
+    dependency: transitive
+    description:
+      name: open_file_platform_interface
+      sha256: "101b424ca359632699a7e1213e83d025722ab668b9fd1412338221bf9b0e5757"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.3"
+  open_file_web:
+    dependency: transitive
+    description:
+      name: open_file_web
+      sha256: e3dbc9584856283dcb30aef5720558b90f88036360bd078e494ab80a80130c4f
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.4"
+  open_file_windows:
+    dependency: transitive
+    description:
+      name: open_file_windows
+      sha256: d26c31ddf935a94a1a3aa43a23f4fff8a5ff4eea395fe7a8cb819cf55431c875
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.3"
   package_config:
     dependency: transitive
     description:
