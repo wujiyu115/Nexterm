@@ -5,28 +5,25 @@ import 'package:nexterm/data/database/app_database.dart';
 import 'package:nexterm/features/settings/providers/settings_provider.dart';
 import 'package:nexterm/main.dart';
 
-/// Creates a [ProviderContainer] backed by an in-memory database.
-ProviderContainer _makeContainer() {
-  final db = AppDatabase.forTesting(NativeDatabase.memory());
-  return ProviderContainer(
-    overrides: [
-      databaseProvider.overrideWithValue(db),
-    ],
-  );
-}
-
 void main() {
   group('SettingsNotifier', () {
+    late AppDatabase db;
     late ProviderContainer container;
     late SettingsNotifier notifier;
 
-    setUp(() {
-      container = _makeContainer();
+    setUp(() async {
+      db = AppDatabase.forTesting(NativeDatabase.memory());
+      container = ProviderContainer(
+        overrides: [databaseProvider.overrideWithValue(db)],
+      );
       notifier = container.read(settingsNotifierProvider.notifier);
+      // Wait for the auto-load() kicked off in the provider constructor to settle.
+      await notifier.load();
     });
 
-    tearDown(() {
+    tearDown(() async {
       container.dispose();
+      await db.close();
     });
 
     test('set writes value and get retrieves it', () async {
@@ -91,23 +88,14 @@ void main() {
     });
 
     test('load populates state from DB', () async {
-      // Write directly to the DB bypassing the notifier's state.
-      final db = container.read(databaseProvider);
+      // Write directly to the DB via the DAO to simulate a persisted value
+      // that a new notifier should pick up.
       await db.settingsDao.setValue('persisted_key', 'hello');
 
-      // A freshly-created notifier should pick it up via load().
-      final container2 = ProviderContainer(overrides: [
-        databaseProvider.overrideWithValue(db),
-      ]);
-      addTearDown(container2.dispose);
+      // Calling load() again on the existing notifier refreshes from DB.
+      await notifier.load();
 
-      final freshNotifier =
-          container2.read(settingsNotifierProvider.notifier);
-      // The provider calls load() during construction; allow microtasks to settle.
-      await Future.microtask(() {});
-      await freshNotifier.load();
-
-      expect(freshNotifier.get('persisted_key'), equals('hello'));
+      expect(notifier.get('persisted_key'), equals('hello'));
     });
 
     test('set multiple keys accumulates state', () async {

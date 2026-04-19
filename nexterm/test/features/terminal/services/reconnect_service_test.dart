@@ -1,3 +1,4 @@
+import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nexterm/features/terminal/services/reconnect_service.dart';
 
@@ -122,7 +123,8 @@ Future<void> _withFakeDelays(Future<void> Function() fn) async {
   Object? error;
 
   fakeAsync((async) {
-    fn().then((_) => done = true).catchError((e) {
+    // ignore: unawaited_futures
+    fn().then<void>((_) => done = true).catchError((Object e) {
       error = e;
       done = true;
     });
