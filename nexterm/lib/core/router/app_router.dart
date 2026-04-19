@@ -7,6 +7,8 @@ import 'package:nexterm/features/keys/ui/keys_screen.dart';
 import 'package:nexterm/features/keys/ui/key_generate_screen.dart';
 import 'package:nexterm/features/snippets/ui/snippets_screen.dart';
 import 'package:nexterm/features/snippets/ui/snippet_form_screen.dart';
+import 'package:nexterm/features/forwarding/ui/forwarding_screen.dart';
+import 'package:nexterm/features/forwarding/ui/forward_form_screen.dart';
 import 'package:nexterm/features/terminal/ui/terminal_screen.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -49,6 +51,16 @@ final appRouter = GoRouter(
             routes: [
               GoRoute(path: 'add', parentNavigatorKey: _rootNavigatorKey, builder: (context, state) => const SnippetFormScreen()),
               GoRoute(path: 'edit/:id', parentNavigatorKey: _rootNavigatorKey, builder: (context, state) => SnippetFormScreen(snippetId: state.pathParameters['id'])),
+            ],
+          ),
+        ]),
+        StatefulShellBranch(routes: [
+          GoRoute(
+            path: '/forwarding',
+            builder: (context, state) => const ForwardingScreen(),
+            routes: [
+              GoRoute(path: 'add', parentNavigatorKey: _rootNavigatorKey, builder: (context, state) => const ForwardFormScreen()),
+              GoRoute(path: 'edit/:id', parentNavigatorKey: _rootNavigatorKey, builder: (context, state) => ForwardFormScreen(forwardId: state.pathParameters['id'])),
             ],
           ),
         ]),
