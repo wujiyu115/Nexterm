@@ -40,3 +40,27 @@ enum CursorStyle {
   underline,
   bar;
 }
+
+enum ForwardType {
+  local,
+  remote,
+  dynamic;
+
+  String get displayName => switch (this) {
+    local => '本地转发',
+    remote => '远程转发',
+    dynamic => '动态转发 (SOCKS5)',
+  };
+
+  String get shortLabel => switch (this) {
+    local => 'L',
+    remote => 'R',
+    dynamic => 'D',
+  };
+}
+
+enum ForwardStatus {
+  active,
+  inactive,
+  error;
+}
