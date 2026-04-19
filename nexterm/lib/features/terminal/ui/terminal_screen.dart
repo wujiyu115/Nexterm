@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nexterm/features/snippets/ui/snippet_execute_sheet.dart';
 import 'package:nexterm/features/terminal/providers/terminal_provider.dart';
 import 'package:nexterm/features/terminal/ui/widgets/keyboard_toolbar.dart';
 import 'package:nexterm/features/terminal/ui/widgets/terminal_tab_bar.dart';
@@ -40,6 +41,23 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
         .connectHost(widget.hostId!);
   }
 
+  void _showSnippetSheet(String sessionId) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (_) => SnippetExecuteSheet(
+        onExecute: (command) {
+          final sshService = ref.read(sshServiceProvider);
+          sshService.write(sessionId, command);
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final tabManager = ref.watch(tabManagerProvider);
@@ -75,6 +93,9 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
                   sshService.writeBytes(activeTab.sessionId!, data);
                 }
               },
+              onSnippetsTap: activeTab.sessionId != null
+                  ? () => _showSnippetSheet(activeTab.sessionId!)
+                  : null,
             ),
         ],
       ),
