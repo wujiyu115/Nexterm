@@ -177,4 +177,7 @@ class SSHService {
 
   /// The set of currently active session IDs.
   Set<String> get activeSessionIds => Set.unmodifiable(_sessions.keys);
+
+  /// Returns the [SSHClient] for [sessionId], or null if not found.
+  SSHClient? getClient(String sessionId) => _sessions[sessionId]?.client;
 }
