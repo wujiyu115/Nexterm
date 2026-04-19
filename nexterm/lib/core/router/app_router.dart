@@ -10,6 +10,8 @@ import 'package:nexterm/features/snippets/ui/snippet_form_screen.dart';
 import 'package:nexterm/features/forwarding/ui/forwarding_screen.dart';
 import 'package:nexterm/features/forwarding/ui/forward_form_screen.dart';
 import 'package:nexterm/features/terminal/ui/terminal_screen.dart';
+import 'package:nexterm/features/sftp/ui/sftp_screen.dart';
+import 'package:nexterm/features/sftp/ui/file_editor_screen.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -73,6 +75,19 @@ final appRouter = GoRouter(
       path: '/terminal/connect/:hostId',
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) => TerminalScreen(hostId: state.pathParameters['hostId']),
+    ),
+    GoRoute(
+      path: '/sftp/:sessionId',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => SftpScreen(sessionId: state.pathParameters['sessionId']!),
+    ),
+    GoRoute(
+      path: '/sftp/edit',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) {
+        final extra = state.extra as Map<String, String>;
+        return FileEditorScreen(sessionId: extra['sessionId']!, filePath: extra['path']!);
+      },
     ),
   ],
 );
