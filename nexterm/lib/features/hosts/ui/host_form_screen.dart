@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nexterm/domain/entities/enums.dart';
 import 'package:nexterm/domain/entities/host_entity.dart';
+import 'package:nexterm/domain/entities/ssh_key_entity.dart';
 import 'package:nexterm/features/hosts/providers/hosts_provider.dart';
+import 'package:nexterm/features/keys/providers/keys_provider.dart';
 
 class HostFormScreen extends ConsumerStatefulWidget {
   final String? hostId;
@@ -25,6 +27,9 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
   final _tagsController = TextEditingController();
 
   AuthMethod _authMethod = AuthMethod.password;
+  String? _selectedKeyId;
+  List<String> _jumpHosts = [];
+
   bool _isLoading = false;
   bool _isInitialized = false;
   HostEntity? _existingHost;
@@ -61,6 +66,8 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
         _groupController.text = host.group ?? '';
         _tagsController.text = host.tags.join(', ');
         _authMethod = host.authMethod;
+        _selectedKeyId = host.keyId;
+        _jumpHosts = List<String>.from(host.jumpHosts);
       });
     }
   }
@@ -75,6 +82,7 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
         : _tagsController.text.split(',').map((t) => t.trim()).where((t) => t.isNotEmpty).toList();
     final group = _groupController.text.trim().isEmpty ? null : _groupController.text.trim();
     final password = _authMethod == AuthMethod.password ? _passwordController.text : null;
+    final keyId = _authMethod == AuthMethod.key ? _selectedKeyId : null;
 
     if (_isEditMode && _existingHost != null) {
       final updated = _existingHost!.copyWith(
@@ -84,8 +92,10 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
         port: int.tryParse(_portController.text) ?? 22,
         authMethod: _authMethod,
         password: () => password,
+        keyId: () => keyId,
         group: () => group,
         tags: tags,
+        jumpHosts: _jumpHosts,
       );
       await notifier.updateHost(updated);
     } else {
@@ -97,8 +107,10 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
         port: int.tryParse(_portController.text) ?? 22,
         authMethod: _authMethod,
         password: password,
+        keyId: keyId,
         group: group,
         tags: tags,
+        jumpHosts: _jumpHosts,
       );
       await notifier.addHost(newHost);
     }
@@ -131,8 +143,56 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
     }
   }
 
+  Future<void> _addJumpHost(List<HostEntity> availableHosts) async {
+    // Exclude the current host (if editing) and already selected jump hosts
+    final selectable = availableHosts.where((h) {
+      if (h.id == widget.hostId) return false;
+      if (_jumpHosts.contains(h.id)) return false;
+      return true;
+    }).toList();
+
+    if (selectable.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('没有可用的跳板机')),
+      );
+      return;
+    }
+
+    final chosen = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('选择跳板机'),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: selectable.length,
+            itemBuilder: (ctx, i) {
+              final h = selectable[i];
+              return ListTile(
+                title: Text(h.name),
+                subtitle: Text('${h.username}@${h.hostname}:${h.port}'),
+                onTap: () => Navigator.of(ctx).pop(h.id),
+              );
+            },
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(ctx).pop(), child: const Text('取消')),
+        ],
+      ),
+    );
+
+    if (chosen != null && mounted) {
+      setState(() => _jumpHosts.add(chosen));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final hostsAsync = ref.watch(hostsStreamProvider);
+    final allHosts = hostsAsync.valueOrNull ?? [];
+
     return FutureBuilder(
       future: _loadHost(),
       builder: (context, _) {
@@ -208,7 +268,13 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
                     const SizedBox(height: 12),
                     _buildPasswordField(),
                   ],
+                  if (_authMethod == AuthMethod.key) ...[
+                    const SizedBox(height: 12),
+                    _buildKeySelector(),
+                  ],
                 ]),
+                const SizedBox(height: 20),
+                _buildJumpHostsSection(allHosts),
                 const SizedBox(height: 20),
                 _FormSection(title: '分组与标签', children: [
                   _buildField(
@@ -237,6 +303,86 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
         );
       },
     );
+  }
+
+  Widget _buildKeySelector() {
+    final keysAsync = ref.watch(keysStreamProvider);
+    return keysAsync.when(
+      loading: () => const LinearProgressIndicator(),
+      error: (e, _) => Text('加载密钥失败: $e', style: TextStyle(color: Theme.of(context).colorScheme.error)),
+      data: (keys) {
+        if (keys.isEmpty) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Text(
+              '尚未添加任何 SSH 密钥，请先在"密钥"页面创建或导入密钥。',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
+          );
+        }
+        // Ensure selected key still exists; clear if not.
+        if (_selectedKeyId != null && !keys.any((k) => k.id == _selectedKeyId)) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) setState(() => _selectedKeyId = null);
+          });
+        }
+        return DropdownButtonFormField<String>(
+          initialValue: _selectedKeyId,
+          decoration: const InputDecoration(labelText: '选择密钥'),
+          hint: const Text('请选择 SSH 密钥'),
+          items: keys.map((SSHKeyEntity key) {
+            return DropdownMenuItem<String>(
+              value: key.id,
+              child: Text('${key.name} (${key.type.displayName})'),
+            );
+          }).toList(),
+          onChanged: (value) => setState(() => _selectedKeyId = value),
+          validator: (v) => (_authMethod == AuthMethod.key && (v == null || v.isEmpty))
+              ? '请选择一个 SSH 密钥'
+              : null,
+        );
+      },
+    );
+  }
+
+  Widget _buildJumpHostsSection(List<HostEntity> allHosts) {
+    return _FormSection(title: '跳板机', children: [
+      if (_jumpHosts.isEmpty)
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Text(
+            '未配置跳板机',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
+        )
+      else
+        Wrap(
+          spacing: 8,
+          runSpacing: 4,
+          children: _jumpHosts.map((hostId) {
+            final host = allHosts.where((h) => h.id == hostId).firstOrNull;
+            final label = host != null
+                ? '${host.name} (${host.hostname})'
+                : hostId;
+            return Chip(
+              label: Text(label, overflow: TextOverflow.ellipsis),
+              onDeleted: () => setState(() => _jumpHosts.remove(hostId)),
+              deleteIcon: const Icon(Icons.close, size: 16),
+              visualDensity: VisualDensity.compact,
+            );
+          }).toList(),
+        ),
+      const SizedBox(height: 8),
+      OutlinedButton.icon(
+        onPressed: () => _addJumpHost(allHosts),
+        icon: const Icon(Icons.add, size: 18),
+        label: const Text('添加跳板机'),
+      ),
+    ]);
   }
 
   Widget _buildField({

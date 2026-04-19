@@ -4,8 +4,13 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nexterm/domain/entities/enums.dart';
+import 'package:nexterm/features/forwarding/providers/forwarding_provider.dart';
+import 'package:nexterm/features/forwarding/services/port_forward_service.dart';
 import 'package:nexterm/features/hosts/providers/hosts_provider.dart';
 import 'package:nexterm/features/keys/providers/keys_provider.dart';
+import 'package:nexterm/features/snippets/providers/snippets_provider.dart';
+import 'package:nexterm/features/snippets/utils/variable_parser.dart';
+import 'package:nexterm/features/terminal/services/reconnect_service.dart';
 import 'package:nexterm/features/terminal/services/ssh_service.dart';
 import 'package:nexterm/features/terminal/ui/tab_manager.dart';
 import 'package:uuid/uuid.dart';
@@ -19,6 +24,20 @@ import 'package:xterm/xterm.dart';
 final sshServiceProvider = Provider<SSHService>((ref) {
   final service = SSHService();
   ref.onDispose(() => service.disconnectAll());
+  return service;
+});
+
+/// Singleton PortForwardService shared across the app lifetime.
+final portForwardServiceProvider = Provider<PortForwardService>((ref) {
+  final service = PortForwardService();
+  ref.onDispose(() => service.stopAll());
+  return service;
+});
+
+/// Singleton ReconnectService shared across the app lifetime.
+final reconnectServiceProvider = Provider<ReconnectService>((ref) {
+  final service = ReconnectService();
+  ref.onDispose(() => service.cancelAll());
   return service;
 });
 
@@ -44,6 +63,8 @@ class TerminalActions {
 
   SSHService get _sshService => _ref.read(sshServiceProvider);
   TabManager get _tabManager => _ref.read(tabManagerProvider);
+  PortForwardService get _portForwardService => _ref.read(portForwardServiceProvider);
+  ReconnectService get _reconnectService => _ref.read(reconnectServiceProvider);
 
   /// Opens a new tab for [hostId] and starts the SSH connection.
   ///
@@ -78,11 +99,59 @@ class TerminalActions {
       _tabManager.updateTabStatus(tab.id, ConnectionStatus.connected);
       _tabManager.updateTabSessionId(tab.id, sessionId);
 
+      // --- Gap 1: update lastConnected timestamp ---
+      _ref.read(hostsNotifierProvider.notifier).updateLastConnected(hostId);
+
       // Wire stdout to terminal input.
       active.stdout.listen(
         (data) => terminal.write(utf8.decode(data, allowMalformed: true)),
         onDone: () {
           _tabManager.updateTabStatus(tab.id, ConnectionStatus.disconnected);
+          // --- Gap 4: schedule reconnect on disconnect ---
+          _reconnectService.scheduleReconnect(
+            sessionId: sessionId,
+            reconnectFn: () async {
+              try {
+                final newSessionId = _uuid.v4();
+                final freshHost =
+                    await _ref.read(hostByIdProvider(hostId).future);
+                if (freshHost == null) return false;
+                final freshConfig = await _buildConfig(freshHost);
+                final newActive =
+                    await _sshService.connect(newSessionId, freshConfig);
+                _tabManager.updateTabSessionId(tab.id, newSessionId);
+                _tabManager.updateTabStatus(
+                    tab.id, ConnectionStatus.connected);
+                // Re-wire stdout.
+                newActive.stdout.listen(
+                  (data) =>
+                      terminal.write(utf8.decode(data, allowMalformed: true)),
+                  onDone: () => _tabManager.updateTabStatus(
+                      tab.id, ConnectionStatus.disconnected),
+                  onError: (_) => _tabManager.updateTabStatus(
+                      tab.id, ConnectionStatus.error),
+                );
+                terminal.onOutput =
+                    (data) => _sshService.write(newSessionId, data);
+                terminal.onResize = (w, h, pw, ph) =>
+                    _sshService.resizePty(newSessionId, w, h);
+                return true;
+              } catch (_) {
+                return false;
+              }
+            },
+            onRetrying: (attempt, delay) {
+              terminal.write(
+                  '\r\n[reconnecting, attempt ${attempt + 1} in ${delay.inSeconds}s…]\r\n');
+            },
+            onReconnected: () {
+              terminal.write('\r\n[reconnected]\r\n');
+            },
+            onGaveUp: () {
+              _tabManager.updateTabStatus(tab.id, ConnectionStatus.error);
+              terminal.write('\r\n[connection lost — gave up reconnecting]\r\n');
+            },
+          );
         },
         onError: (_) {
           _tabManager.updateTabStatus(tab.id, ConnectionStatus.error);
@@ -95,6 +164,51 @@ class TerminalActions {
       // PTY resize.
       terminal.onResize = (w, h, pw, ph) =>
           _sshService.resizePty(sessionId, w, h);
+
+      // --- Gap 2: execute startup snippet ---
+      final snippetId = host.startupSnippetId;
+      if (snippetId != null) {
+        final snippet =
+            await _ref.read(snippetByIdProvider(snippetId).future);
+        if (snippet != null) {
+          // Build defaults map from the snippet's variable definitions.
+          final defaults = {
+            for (final v in snippet.variables)
+              if (v.defaultValue != null) v.name: v.defaultValue!,
+          };
+          final substituted =
+              VariableParser.substitute(snippet.command, defaults);
+          final lines = VariableParser.splitLines(substituted);
+          for (final line in lines) {
+            _sshService.write(sessionId, '$line\n');
+          }
+        }
+      }
+
+      // --- Gap 3: start autoStart port forwards ---
+      final portForwardRepo =
+          _ref.read(portForwardRepositoryProvider);
+      final autoForwards =
+          await portForwardRepo.getAutoStartByHostId(hostId);
+      for (final forward in autoForwards) {
+        final client = _sshService.getClient(sessionId);
+        if (client == null) break;
+        try {
+          switch (forward.type) {
+            case ForwardType.local:
+              await _portForwardService.startLocalForward(
+                  client: client, entity: forward);
+            case ForwardType.remote:
+              await _portForwardService.startRemoteForward(
+                  client: client, entity: forward);
+            case ForwardType.dynamic:
+              await _portForwardService.startDynamicForward(
+                  client: client, entity: forward);
+          }
+        } catch (e) {
+          debugPrint('autoStart forward ${forward.id} failed: $e');
+        }
+      }
     } catch (e, st) {
       debugPrint('TerminalActions.connectHost error: $e\n$st');
       _tabManager.updateTabStatus(tab.id, ConnectionStatus.error);

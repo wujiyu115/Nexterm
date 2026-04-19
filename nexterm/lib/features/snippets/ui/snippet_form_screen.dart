@@ -24,6 +24,7 @@ class _SnippetFormScreenState extends ConsumerState<SnippetFormScreen> {
 
   List<String> _detectedVariables = [];
   final Map<String, TextEditingController> _variableControllers = {};
+  final Map<String, TextEditingController> _variableDescControllers = {};
 
   bool _isLoading = false;
   bool _isInitialized = false;
@@ -38,6 +39,9 @@ class _SnippetFormScreenState extends ConsumerState<SnippetFormScreen> {
     _groupController.dispose();
     _tagsController.dispose();
     for (final c in _variableControllers.values) {
+      c.dispose();
+    }
+    for (final c in _variableDescControllers.values) {
       c.dispose();
     }
     super.dispose();
@@ -65,6 +69,7 @@ class _SnippetFormScreenState extends ConsumerState<SnippetFormScreen> {
   void _updateVariables(String command, {List<SnippetVariable>? existingVariables}) {
     final names = VariableParser.extractVariables(command);
     final newControllers = <String, TextEditingController>{};
+    final newDescControllers = <String, TextEditingController>{};
     for (final name in names) {
       if (_variableControllers.containsKey(name)) {
         newControllers[name] = _variableControllers[name]!;
@@ -76,6 +81,16 @@ class _SnippetFormScreenState extends ConsumerState<SnippetFormScreen> {
         final defaultVal = match?.defaultValue ?? '';
         newControllers[name] = TextEditingController(text: defaultVal);
       }
+      if (_variableDescControllers.containsKey(name)) {
+        newDescControllers[name] = _variableDescControllers[name]!;
+      } else {
+        final match = existingVariables?.firstWhere(
+          (v) => v.name == name,
+          orElse: () => SnippetVariable(name: name),
+        );
+        final desc = match?.description ?? '';
+        newDescControllers[name] = TextEditingController(text: desc);
+      }
     }
     // Dispose controllers for removed variables
     for (final entry in _variableControllers.entries) {
@@ -83,9 +98,17 @@ class _SnippetFormScreenState extends ConsumerState<SnippetFormScreen> {
         entry.value.dispose();
       }
     }
+    for (final entry in _variableDescControllers.entries) {
+      if (!newDescControllers.containsKey(entry.key)) {
+        entry.value.dispose();
+      }
+    }
     _variableControllers
       ..clear()
       ..addAll(newControllers);
+    _variableDescControllers
+      ..clear()
+      ..addAll(newDescControllers);
     _detectedVariables = names;
   }
 
@@ -100,7 +123,12 @@ class _SnippetFormScreenState extends ConsumerState<SnippetFormScreen> {
     final group = _groupController.text.trim().isEmpty ? null : _groupController.text.trim();
     final variables = _detectedVariables.map((name) {
       final def = _variableControllers[name]?.text.trim();
-      return SnippetVariable(name: name, defaultValue: def?.isEmpty == true ? null : def);
+      final desc = _variableDescControllers[name]?.text.trim();
+      return SnippetVariable(
+        name: name,
+        defaultValue: def?.isEmpty == true ? null : def,
+        description: desc?.isEmpty == true ? null : desc,
+      );
     }).toList();
 
     if (_isEditMode && _existingSnippet != null) {
@@ -206,15 +234,30 @@ class _SnippetFormScreenState extends ConsumerState<SnippetFormScreen> {
                     ),
                     const SizedBox(height: 8),
                     ..._detectedVariables.map((name) => Padding(
-                      padding: const EdgeInsets.only(bottom: 10),
-                      child: TextFormField(
-                        controller: _variableControllers[name],
-                        decoration: InputDecoration(
-                          labelText: name,
-                          hintText: '默认值（可选）',
-                          prefixText: '\${$name} = ',
-                          prefixStyle: const TextStyle(fontFamily: 'monospace', fontSize: 12),
-                        ),
+                      padding: const EdgeInsets.only(bottom: 14),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          TextFormField(
+                            controller: _variableControllers[name],
+                            decoration: InputDecoration(
+                              labelText: name,
+                              hintText: '默认值（可选）',
+                              prefixText: '\${$name} = ',
+                              prefixStyle: const TextStyle(fontFamily: 'monospace', fontSize: 12),
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          TextFormField(
+                            controller: _variableDescControllers[name],
+                            decoration: InputDecoration(
+                              labelText: '$name 的描述',
+                              hintText: '描述此变量的用途（可选）',
+                              isDense: true,
+                            ),
+                            style: const TextStyle(fontSize: 13),
+                          ),
+                        ],
                       ),
                     )),
                   ]),

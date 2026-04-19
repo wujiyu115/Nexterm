@@ -2,8 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nexterm/core/theme/terminal_themes.dart';
 import 'package:nexterm/core/theme/theme_provider.dart';
+import 'package:nexterm/domain/entities/enums.dart';
+import 'package:nexterm/domain/entities/host_entity.dart';
+import 'package:nexterm/features/hosts/providers/hosts_provider.dart';
 import 'package:nexterm/features/settings/providers/settings_provider.dart';
+import 'package:nexterm/features/settings/utils/ssh_config_parser.dart';
 import 'package:nexterm/features/sync/providers/auth_provider.dart';
+import 'package:file_picker/file_picker.dart';
+import 'dart:io';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -125,7 +131,7 @@ class SettingsScreen extends ConsumerWidget {
             leading: const Icon(Icons.upload_file_outlined),
             title: const Text('导入 SSH 配置'),
             subtitle: const Text('从 ~/.ssh/config 文件导入'),
-            onTap: () => _showImportDialog(context),
+            onTap: () => _showImportDialog(context, ref),
           ),
           ListTile(
             leading: const Icon(Icons.download_outlined),
@@ -255,18 +261,43 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  void _showImportDialog(BuildContext context) {
-    showDialog<void>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('导入 SSH 配置'),
-        content: const Text('请选择 SSH 配置文件（~/.ssh/config）进行导入。'),
-        actions: [
-          TextButton(onPressed: () => Navigator.of(ctx).pop(), child: const Text('取消')),
-          FilledButton(onPressed: () => Navigator.of(ctx).pop(), child: const Text('选择文件')),
-        ],
-      ),
+  void _showImportDialog(BuildContext context, WidgetRef ref) async {
+    final result = await FilePicker.pickFiles(
+      type: FileType.any,
+      allowMultiple: false,
     );
+    if (result == null || result.files.isEmpty) return;
+
+    final path = result.files.single.path;
+    if (path == null) return;
+
+    try {
+      final content = await File(path).readAsString();
+      final entries = SshConfigParser.parse(content);
+      final hostsNotifier = ref.read(hostsNotifierProvider.notifier);
+      for (final entry in entries) {
+        final host = HostEntity(
+          id: '',
+          name: entry.name,
+          hostname: entry.hostname,
+          port: entry.port,
+          username: entry.username,
+          authMethod: AuthMethod.password,
+        );
+        await hostsNotifier.addHost(host);
+      }
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('已导入 ${entries.length} 个主机')),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('导入失败: $e')),
+        );
+      }
+    }
   }
 
   void _showExportDialog(BuildContext context) {

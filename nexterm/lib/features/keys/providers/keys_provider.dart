@@ -222,6 +222,7 @@ class KeysNotifier extends StateNotifier<AsyncValue<void>> {
   Future<SSHKeyEntity?> generateKey({
     required String name,
     required KeyType type,
+    String? passphrase,
   }) async {
     state = const AsyncValue.loading();
     SSHKeyEntity? result;
@@ -245,6 +246,7 @@ class KeysNotifier extends StateNotifier<AsyncValue<void>> {
         privateKey: parts[0],
         publicKey: parts[1],
         fingerprint: parts[2],
+        passphrase: passphrase,
         createdAt: now,
       );
       await _repo.insert(entity);

@@ -16,9 +16,11 @@ class KeyGenerateScreen extends ConsumerStatefulWidget {
 class _KeyGenerateScreenState extends ConsumerState<KeyGenerateScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
+  final _passphraseController = TextEditingController();
 
   KeyType _selectedType = KeyType.ed25519;
   bool _isGenerating = false;
+  bool _obscurePassphrase = true;
 
   // Supported types for generation (Ed25519 and RSA)
   static const _supportedTypes = [
@@ -30,6 +32,7 @@ class _KeyGenerateScreenState extends ConsumerState<KeyGenerateScreen> {
   @override
   void dispose() {
     _nameController.dispose();
+    _passphraseController.dispose();
     super.dispose();
   }
 
@@ -38,9 +41,11 @@ class _KeyGenerateScreenState extends ConsumerState<KeyGenerateScreen> {
     setState(() => _isGenerating = true);
 
     final notifier = ref.read(keysNotifierProvider.notifier);
+    final passphrase = _passphraseController.text.trim();
     final entity = await notifier.generateKey(
       name: _nameController.text.trim(),
       type: _selectedType,
+      passphrase: passphrase.isEmpty ? null : passphrase,
     );
 
     if (!mounted) return;
@@ -135,6 +140,24 @@ class _KeyGenerateScreenState extends ConsumerState<KeyGenerateScreen> {
                     hintText: '我的 SSH 密钥',
                   ),
                   validator: (v) => v == null || v.trim().isEmpty ? '请输入密钥名称' : null,
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            _FormSection(
+              title: '密码短语（可选）',
+              children: [
+                TextFormField(
+                  controller: _passphraseController,
+                  obscureText: _obscurePassphrase,
+                  decoration: InputDecoration(
+                    labelText: '密码短语',
+                    hintText: '留空则不加密私钥',
+                    suffixIcon: IconButton(
+                      icon: Icon(_obscurePassphrase ? Icons.visibility_off : Icons.visibility),
+                      onPressed: () => setState(() => _obscurePassphrase = !_obscurePassphrase),
+                    ),
+                  ),
                 ),
               ],
             ),
