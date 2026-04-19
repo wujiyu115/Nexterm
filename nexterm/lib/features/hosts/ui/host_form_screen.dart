@@ -323,13 +323,17 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
           );
         }
         // Ensure selected key still exists; clear if not.
-        if (_selectedKeyId != null && !keys.any((k) => k.id == _selectedKeyId)) {
+        final effectiveKeyId =
+            (_selectedKeyId != null && keys.any((k) => k.id == _selectedKeyId))
+                ? _selectedKeyId
+                : null;
+        if (effectiveKeyId != _selectedKeyId) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted) setState(() => _selectedKeyId = null);
           });
         }
         return DropdownButtonFormField<String>(
-          initialValue: _selectedKeyId,
+          value: effectiveKeyId,
           decoration: const InputDecoration(labelText: '选择密钥'),
           hint: const Text('请选择 SSH 密钥'),
           items: keys.map((SSHKeyEntity key) {

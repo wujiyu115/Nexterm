@@ -143,75 +143,93 @@ class _KeyboardToolbarState extends State<KeyboardToolbar> {
       child: Row(
         children: [
           // Tab
-          _ToolbarButton(
-            label: 'Tab',
-            color: buttonColor,
-            textColor: textColor,
-            onTap: _onTab,
+          Expanded(
+            child: _ToolbarButton(
+              label: 'Tab',
+              color: buttonColor,
+              textColor: textColor,
+              onTap: _onTab,
+            ),
           ),
 
           // Ctrl (toggle)
-          _ToolbarButton(
-            label: 'Ctrl',
-            color: _ctrlActive ? activeColor : buttonColor,
-            textColor: _ctrlActive ? activeTextColor : textColor,
-            onTap: _toggleCtrl,
+          Expanded(
+            child: _ToolbarButton(
+              label: 'Ctrl',
+              color: _ctrlActive ? activeColor : buttonColor,
+              textColor: _ctrlActive ? activeTextColor : textColor,
+              onTap: _toggleCtrl,
+            ),
           ),
 
           // Alt (toggle)
-          _ToolbarButton(
-            label: 'Alt',
-            color: _altActive ? activeColor : buttonColor,
-            textColor: _altActive ? activeTextColor : textColor,
-            onTap: _toggleAlt,
+          Expanded(
+            child: _ToolbarButton(
+              label: 'Alt',
+              color: _altActive ? activeColor : buttonColor,
+              textColor: _altActive ? activeTextColor : textColor,
+              onTap: _toggleAlt,
+            ),
           ),
 
           // Esc
-          _ToolbarButton(
-            label: 'Esc',
-            color: buttonColor,
-            textColor: textColor,
-            onTap: _onEsc,
+          Expanded(
+            child: _ToolbarButton(
+              label: 'Esc',
+              color: buttonColor,
+              textColor: textColor,
+              onTap: _onEsc,
+            ),
           ),
 
           // Divider
           _Divider(color: isDark ? Colors.white12 : Colors.black12),
 
           // Arrow keys
-          _ToolbarButton(
-            label: '↑',
-            color: buttonColor,
-            textColor: textColor,
-            onTap: () => _onArrow(_arrowUp),
+          Expanded(
+            child: _ToolbarButton(
+              label: '↑',
+              color: buttonColor,
+              textColor: textColor,
+              onTap: () => _onArrow(_arrowUp),
+            ),
           ),
-          _ToolbarButton(
-            label: '↓',
-            color: buttonColor,
-            textColor: textColor,
-            onTap: () => _onArrow(_arrowDown),
+          Expanded(
+            child: _ToolbarButton(
+              label: '↓',
+              color: buttonColor,
+              textColor: textColor,
+              onTap: () => _onArrow(_arrowDown),
+            ),
           ),
-          _ToolbarButton(
-            label: '←',
-            color: buttonColor,
-            textColor: textColor,
-            onTap: () => _onArrow(_arrowLeft),
+          Expanded(
+            child: _ToolbarButton(
+              label: '←',
+              color: buttonColor,
+              textColor: textColor,
+              onTap: () => _onArrow(_arrowLeft),
+            ),
           ),
-          _ToolbarButton(
-            label: '→',
-            color: buttonColor,
-            textColor: textColor,
-            onTap: () => _onArrow(_arrowRight),
+          Expanded(
+            child: _ToolbarButton(
+              label: '→',
+              color: buttonColor,
+              textColor: textColor,
+              onTap: () => _onArrow(_arrowRight),
+            ),
           ),
 
           // Divider
           _Divider(color: isDark ? Colors.white12 : Colors.black12),
 
           // Snippets placeholder (⚡)
-          _ToolbarButton(
-            label: '⚡',
-            color: accentColor.withValues(alpha: 0.2),
-            textColor: accentColor,
-            onTap: _onSnippets,
+          Expanded(
+            child: _ToolbarButton(
+              label: '⚡',
+              color: accentColor.withValues(alpha: 0.2),
+              textColor: accentColor,
+              onTap: _onSnippets,
+            ),
           ),
         ],
       ),
@@ -241,8 +259,7 @@ class _ToolbarButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        constraints: const BoxConstraints(minWidth: 40),
-        padding: const EdgeInsets.symmetric(horizontal: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 4),
         height: double.infinity,
         margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 6),
         decoration: BoxDecoration(

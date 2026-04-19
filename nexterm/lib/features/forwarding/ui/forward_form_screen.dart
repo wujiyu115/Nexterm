@@ -298,9 +298,18 @@ class _ForwardFormScreenState extends ConsumerState<ForwardFormScreen> {
         if (hosts.isEmpty) {
           return const Text('暂无可用主机，请先添加主机');
         }
+        // Ensure selected host still exists; clear if not.
+        final effectiveHostId =
+            (_selectedHostId != null && hosts.any((h) => h.id == _selectedHostId))
+                ? _selectedHostId
+                : null;
+        if (effectiveHostId != _selectedHostId) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) setState(() => _selectedHostId = null);
+          });
+        }
         return DropdownButtonFormField<String>(
-          // ignore: deprecated_member_use
-          value: _selectedHostId,
+          value: effectiveHostId,
           decoration: const InputDecoration(labelText: '主机'),
           items: hosts
               .map((h) => DropdownMenuItem<String>(
