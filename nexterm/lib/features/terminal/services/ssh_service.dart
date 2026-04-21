@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:dartssh2/dartssh2.dart';
@@ -240,11 +241,26 @@ class SSHService {
     active.session.resizeTerminal(width, height);
   }
 
-  /// Send raw bytes to the shell stdin.
+  /// Send a string to the shell stdin, properly encoded as UTF-8.
+  ///
+  /// Two critical fixes applied here:
+  ///
+  /// 1. Uses [utf8.encode] instead of [String.codeUnits] (which returns UTF-16
+  ///    code units and corrupts multi-byte characters such as Chinese).
+  ///
+  /// 2. Replaces bare `\n` (0x0A) with `\r` (0x0D).  On iOS the soft keyboard
+  ///    Return key may produce `\n` via the IME text-input path instead of the
+  ///    hardware-key path that emits `\r`.  Interactive TUI programs (fzf,
+  ///    claude, vim prompts, etc.) expect `\r` as the "Enter" signal; sending
+  ///    `\n` is silently ignored by many of them.
   void write(String sessionId, String data) {
     final active = _sessions[sessionId];
     if (active == null) return;
-    active.session.write(Uint8List.fromList(data.codeUnits));
+    // Normalise line endings: bare \n → \r, but leave \r\n untouched.
+    final normalised = data.replaceAll('\r\n', '\x00LF\x00')
+        .replaceAll('\n', '\r')
+        .replaceAll('\x00LF\x00', '\r\n');
+    active.session.write(Uint8List.fromList(utf8.encode(normalised)));
   }
 
   /// Send a raw [Uint8List] directly to the shell stdin.
