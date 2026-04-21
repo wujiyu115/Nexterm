@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nexterm/domain/entities/ssh_key_entity.dart';
@@ -10,21 +11,22 @@ class KeysScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
     final keysAsync = ref.watch(keysStreamProvider);
     final notifier = ref.read(keysNotifierProvider.notifier);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('密钥'),
+        title: Text(l.keys_title),
         actions: [
           IconButton(
             icon: const Icon(Icons.file_upload_outlined),
-            tooltip: '导入密钥',
+            tooltip: l.keys_importTooltip,
             onPressed: () => context.push('/keys/import'),
           ),
           IconButton(
             icon: const Icon(Icons.add),
-            tooltip: '生成密钥',
+            tooltip: l.keys_generateTooltip,
             onPressed: () => context.push('/keys/generate'),
           ),
         ],
@@ -32,7 +34,7 @@ class KeysScreen extends ConsumerWidget {
       body: keysAsync.when(
         data: (keys) => _buildContent(context, keys, notifier),
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('错误: $e')),
+        error: (e, _) => Center(child: Text(l.common_error(e.toString()))),
       ),
     );
   }
@@ -57,6 +59,7 @@ class KeysScreen extends ConsumerWidget {
   }
 
   Widget _buildEmptyState(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -67,10 +70,10 @@ class KeysScreen extends ConsumerWidget {
             color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
           const SizedBox(height: 16),
-          Text('暂无 SSH 密钥', style: Theme.of(context).textTheme.titleMedium),
+          Text(l.keys_noKeys, style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 8),
           Text(
-            '生成一个密钥对用于免密码登录',
+            l.keys_noKeysHint,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
@@ -79,13 +82,13 @@ class KeysScreen extends ConsumerWidget {
           FilledButton.icon(
             onPressed: () => context.push('/keys/generate'),
             icon: const Icon(Icons.add),
-            label: const Text('生成密钥'),
+            label: Text(l.keys_generate),
           ),
           const SizedBox(height: 12),
           OutlinedButton.icon(
             onPressed: () => context.push('/keys/import'),
             icon: const Icon(Icons.file_upload_outlined),
-            label: const Text('导入密钥'),
+            label: Text(l.keys_import),
           ),
         ],
       ),

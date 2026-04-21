@@ -1,5 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nexterm/features/keys/providers/keys_provider.dart';
@@ -22,7 +23,6 @@ class _KeyImportScreenState extends ConsumerState<KeyImportScreen>
   bool _isImporting = false;
   bool _obscurePassphrase = true;
 
-  // File import state
   String? _selectedFileName;
   String? _selectedFileContent;
 
@@ -71,6 +71,7 @@ class _KeyImportScreenState extends ConsumerState<KeyImportScreen>
   }
 
   Future<void> _import() async {
+    final l = AppLocalizations.of(context)!;
     if (!_formKey.currentState!.validate()) return;
 
     final pemContent = _getPemContent();
@@ -78,7 +79,7 @@ class _KeyImportScreenState extends ConsumerState<KeyImportScreen>
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            _tabController.index == 0 ? '请先选择密钥文件' : '请粘贴密钥内容',
+            _tabController.index == 0 ? l.keyImport_noFileSelected : l.keyImport_noContent,
           ),
         ),
       );
@@ -103,57 +104,55 @@ class _KeyImportScreenState extends ConsumerState<KeyImportScreen>
       if (entity != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('密钥「${entity.name}」导入成功'),
+            content: Text(l.keyImport_success(entity.name)),
             duration: const Duration(seconds: 2),
           ),
         );
         context.pop();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('密钥导入失败，请检查格式是否正确')),
+          SnackBar(content: Text(l.keyImport_formatError)),
         );
       }
     } catch (e) {
       if (!mounted) return;
       setState(() => _isImporting = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('导入失败: $e')),
+        SnackBar(content: Text(l.keyImport_failed(e.toString()))),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('导入密钥')),
+      appBar: AppBar(title: Text(l.keyImport_title)),
       body: Form(
         key: _formKey,
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            // Key name
             _FormSection(
-              title: '密钥名称',
+              title: l.keyImport_sectionName,
               children: [
                 TextFormField(
                   controller: _nameController,
-                  decoration: const InputDecoration(
-                    labelText: '名称',
-                    hintText: '我的 SSH 密钥',
+                  decoration: InputDecoration(
+                    labelText: l.keyImport_nameLabel,
+                    hintText: l.keyImport_nameHint,
                   ),
                   validator: (v) =>
-                      v == null || v.trim().isEmpty ? '请输入密钥名称' : null,
+                      v == null || v.trim().isEmpty ? l.keyImport_nameRequired : null,
                 ),
               ],
             ),
             const SizedBox(height: 20),
-
-            // Tab bar for import method
             _FormSection(
-              title: '导入方式',
+              title: l.keyImport_sectionMethod,
               children: [
                 Container(
                   decoration: BoxDecoration(
@@ -170,14 +169,14 @@ class _KeyImportScreenState extends ConsumerState<KeyImportScreen>
                     labelColor: colorScheme.onPrimaryContainer,
                     unselectedLabelColor: colorScheme.onSurfaceVariant,
                     dividerColor: Colors.transparent,
-                    tabs: const [
+                    tabs: [
                       Tab(
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.file_open_outlined, size: 18),
-                            SizedBox(width: 6),
-                            Text('从文件导入'),
+                            const Icon(Icons.file_open_outlined, size: 18),
+                            const SizedBox(width: 6),
+                            Text(l.keyImport_fromFile),
                           ],
                         ),
                       ),
@@ -185,9 +184,9 @@ class _KeyImportScreenState extends ConsumerState<KeyImportScreen>
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.paste_outlined, size: 18),
-                            SizedBox(width: 6),
-                            Text('粘贴密钥'),
+                            const Icon(Icons.paste_outlined, size: 18),
+                            const SizedBox(width: 6),
+                            Text(l.keyImport_pasteKey),
                           ],
                         ),
                       ),
@@ -195,7 +194,6 @@ class _KeyImportScreenState extends ConsumerState<KeyImportScreen>
                   ),
                 ),
                 const SizedBox(height: 16),
-                // Tab content
                 AnimatedSize(
                   duration: const Duration(milliseconds: 200),
                   child: _tabController.index == 0
@@ -205,17 +203,15 @@ class _KeyImportScreenState extends ConsumerState<KeyImportScreen>
               ],
             ),
             const SizedBox(height: 20),
-
-            // Passphrase
             _FormSection(
-              title: '密码短语（可选）',
+              title: l.keyImport_sectionPassphrase,
               children: [
                 TextFormField(
                   controller: _passphraseController,
                   obscureText: _obscurePassphrase,
                   decoration: InputDecoration(
-                    labelText: '密码短语',
-                    hintText: '如果私钥有密码保护，请输入',
+                    labelText: l.keyImport_passphraseLabel,
+                    hintText: l.keyImport_passphraseHint,
                     suffixIcon: IconButton(
                       icon: Icon(_obscurePassphrase
                           ? Icons.visibility_off
@@ -228,8 +224,6 @@ class _KeyImportScreenState extends ConsumerState<KeyImportScreen>
               ],
             ),
             const SizedBox(height: 12),
-
-            // Info box
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -244,7 +238,7 @@ class _KeyImportScreenState extends ConsumerState<KeyImportScreen>
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      '支持 OpenSSH 格式的私钥文件（如 id_ed25519、id_rsa）。',
+                      l.keyImport_formatHint,
                       style: theme.textTheme.bodySmall?.copyWith(
                           color: colorScheme.onTertiaryContainer),
                     ),
@@ -253,8 +247,6 @@ class _KeyImportScreenState extends ConsumerState<KeyImportScreen>
               ),
             ),
             const SizedBox(height: 32),
-
-            // Import button
             FilledButton.icon(
               onPressed: _isImporting ? null : _import,
               icon: _isImporting
@@ -264,7 +256,7 @@ class _KeyImportScreenState extends ConsumerState<KeyImportScreen>
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
                   : const Icon(Icons.file_download),
-              label: Text(_isImporting ? '导入中…' : '导入密钥'),
+              label: Text(_isImporting ? l.keyImport_importing : l.keyImport_button),
             ),
             const SizedBox(height: 80),
           ],
@@ -274,6 +266,7 @@ class _KeyImportScreenState extends ConsumerState<KeyImportScreen>
   }
 
   Widget _buildFileImportTab(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -283,7 +276,7 @@ class _KeyImportScreenState extends ConsumerState<KeyImportScreen>
         OutlinedButton.icon(
           onPressed: _pickFile,
           icon: const Icon(Icons.folder_open),
-          label: const Text('选择密钥文件'),
+          label: Text(l.keyImport_selectFile),
         ),
         if (_selectedFileName != null) ...[
           const SizedBox(height: 12),

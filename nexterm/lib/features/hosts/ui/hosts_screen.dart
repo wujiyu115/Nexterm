@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nexterm/domain/entities/host_entity.dart';
@@ -27,10 +28,6 @@ class _HostsScreenState extends ConsumerState<HostsScreen> {
     _searchController.dispose();
     super.dispose();
   }
-
-  // ---------------------------------------------------------------------------
-  // Selection mode helpers
-  // ---------------------------------------------------------------------------
 
   void _enterSelectionMode(String hostId) {
     setState(() {
@@ -63,10 +60,6 @@ class _HostsScreenState extends ConsumerState<HostsScreen> {
     });
   }
 
-  // ---------------------------------------------------------------------------
-  // Context menu handler
-  // ---------------------------------------------------------------------------
-
   Future<void> _showContextMenu(HostEntity host) async {
     final action = await showHostContextMenu(context: context, host: host);
     if (action == null || !mounted) return;
@@ -92,28 +85,25 @@ class _HostsScreenState extends ConsumerState<HostsScreen> {
   }
 
   Future<void> _connectSftp(HostEntity host) async {
+    final l = AppLocalizations.of(context)!;
     final sessionId = await ref
         .read(terminalActionsProvider)
         .connectHost(host.id);
     if (!mounted) return;
     if (sessionId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('SSH 连接失败，无法打开 SFTP')),
+        SnackBar(content: Text(l.hosts_sftpConnectFailed)),
       );
       return;
     }
     context.push('/sftp/$sessionId');
   }
 
-  // ---------------------------------------------------------------------------
-  // Dialogs
-  // ---------------------------------------------------------------------------
-
   Future<void> _showMoveToGroupDialog(List<String> hostIds) async {
+    final l = AppLocalizations.of(context)!;
     final hostsAsync = ref.read(hostsStreamProvider);
     final allHosts = hostsAsync.valueOrNull ?? [];
 
-    // Collect existing group names.
     final existingGroups = allHosts
         .map((h) => h.group)
         .where((g) => g != null && g.isNotEmpty)
@@ -126,7 +116,7 @@ class _HostsScreenState extends ConsumerState<HostsScreen> {
     final selected = await showDialog<String?>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('移动到组'),
+        title: Text(l.hosts_moveToGroup),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -139,15 +129,15 @@ class _HostsScreenState extends ConsumerState<HostsScreen> {
             ],
             ListTile(
               leading: const Icon(Icons.clear),
-              title: const Text('未分组'),
+              title: Text(l.hosts_ungrouped),
               onTap: () => Navigator.pop(ctx, ''),
             ),
             const Divider(),
             TextField(
               controller: newGroupController,
-              decoration: const InputDecoration(
-                labelText: '新建分组',
-                hintText: '输入分组名称',
+              decoration: InputDecoration(
+                labelText: l.hosts_newGroup,
+                hintText: l.hosts_newGroupHint,
               ),
               onSubmitted: (value) => Navigator.pop(ctx, value),
             ),
@@ -156,11 +146,11 @@ class _HostsScreenState extends ConsumerState<HostsScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('取消'),
+            child: Text(l.common_cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, newGroupController.text),
-            child: const Text('确定'),
+            child: Text(l.common_confirm),
           ),
         ],
       ),
@@ -181,20 +171,21 @@ class _HostsScreenState extends ConsumerState<HostsScreen> {
   }
 
   Future<void> _confirmDelete(List<String> ids) async {
+    final l = AppLocalizations.of(context)!;
     final confirmed = await showCupertinoDialog<bool>(
       context: context,
       builder: (ctx) => CupertinoAlertDialog(
-        title: const Text('确认删除'),
-        content: Text(ids.length == 1 ? '确定要删除此主机吗？' : '确定要删除选中的 ${ids.length} 台主机吗？'),
+        title: Text(l.hosts_deleteConfirm),
+        content: Text(ids.length == 1 ? l.hosts_deleteConfirmSingle : l.hosts_deleteConfirmMultiple(ids.length)),
         actions: [
           CupertinoDialogAction(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('取消'),
+            child: Text(l.common_cancel),
           ),
           CupertinoDialogAction(
             isDestructiveAction: true,
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('删除'),
+            child: Text(l.common_delete),
           ),
         ],
       ),
@@ -212,12 +203,9 @@ class _HostsScreenState extends ConsumerState<HostsScreen> {
     if (_isSelectionMode) _exitSelectionMode();
   }
 
-  // ---------------------------------------------------------------------------
-  // Build
-  // ---------------------------------------------------------------------------
-
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final notifier = ref.read(hostsNotifierProvider.notifier);
 
     Widget buildContent() {
@@ -226,7 +214,7 @@ class _HostsScreenState extends ConsumerState<HostsScreen> {
         return searchAsync.when(
           data: (hosts) => _buildHostList(hosts, notifier),
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) => Center(child: Text('错误: $e')),
+          error: (e, _) => Center(child: Text(l.common_error(e.toString()))),
         );
       }
 
@@ -234,7 +222,7 @@ class _HostsScreenState extends ConsumerState<HostsScreen> {
       return hostsAsync.when(
         data: (hosts) => _buildHostList(hosts, notifier),
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('错误: $e')),
+        error: (e, _) => Center(child: Text(l.common_error(e.toString()))),
       );
     }
 
@@ -245,11 +233,11 @@ class _HostsScreenState extends ConsumerState<HostsScreen> {
                 icon: const Icon(Icons.close),
                 onPressed: _exitSelectionMode,
               ),
-              title: Text('已选择 ${_selectedIds.length} 项'),
+              title: Text(l.hosts_selectedCount(_selectedIds.length)),
               actions: [
                 IconButton(
                   icon: const Icon(Icons.select_all),
-                  tooltip: '全选',
+                  tooltip: l.hosts_selectAll,
                   onPressed: () {
                     final hostsAsync = ref.read(hostsStreamProvider);
                     final allHosts = hostsAsync.valueOrNull ?? [];
@@ -258,14 +246,14 @@ class _HostsScreenState extends ConsumerState<HostsScreen> {
                 ),
                 IconButton(
                   icon: const Icon(Icons.drive_file_move_outline),
-                  tooltip: '移动到组',
+                  tooltip: l.hosts_moveToGroup,
                   onPressed: _selectedIds.isEmpty
                       ? null
                       : () => _showMoveToGroupDialog(_selectedIds.toList()),
                 ),
                 IconButton(
                   icon: const Icon(Icons.delete_outline),
-                  tooltip: '删除',
+                  tooltip: l.hosts_deleteTooltip,
                   onPressed: _selectedIds.isEmpty
                       ? null
                       : () => _confirmDelete(_selectedIds.toList()),
@@ -273,11 +261,11 @@ class _HostsScreenState extends ConsumerState<HostsScreen> {
               ],
             )
           : AppBar(
-              title: const Text('主机'),
+              title: Text(l.hosts_title),
               actions: [
                 IconButton(
                   icon: const Icon(Icons.add),
-                  tooltip: '添加主机',
+                  tooltip: l.hosts_addTooltip,
                   onPressed: () => context.push('/hosts/add'),
                 ),
               ],
@@ -299,10 +287,10 @@ class _HostsScreenState extends ConsumerState<HostsScreen> {
       return _buildEmptyState();
     }
 
+    final l = AppLocalizations.of(context)!;
     final favorites = hosts.where((h) => h.isFavorite).toList();
     final others = hosts.where((h) => !h.isFavorite).toList();
 
-    // Group non-favorites by group name
     final groups = <String?, List<HostEntity>>{};
     for (final host in others) {
       groups.putIfAbsent(host.group, () => []).add(host);
@@ -311,11 +299,11 @@ class _HostsScreenState extends ConsumerState<HostsScreen> {
     return ListView(
       children: [
         if (favorites.isNotEmpty) ...[
-          _SectionHeader(title: '收藏'),
+          _SectionHeader(title: l.hosts_favorites),
           ...favorites.map((host) => _buildTile(host, notifier)),
         ],
         ...groups.entries.expand((entry) => [
-          _SectionHeader(title: entry.key ?? '未分组'),
+          _SectionHeader(title: entry.key ?? l.hosts_ungrouped),
           ...entry.value.map((host) => _buildTile(host, notifier)),
         ]),
         const SizedBox(height: 80),
@@ -337,18 +325,19 @@ class _HostsScreenState extends ConsumerState<HostsScreen> {
   }
 
   Widget _buildEmptyState() {
+    final l = AppLocalizations.of(context)!;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Icons.dns_outlined, size: 64, color: Theme.of(context).colorScheme.onSurfaceVariant),
           const SizedBox(height: 16),
-          Text('暂无主机', style: Theme.of(context).textTheme.titleMedium),
+          Text(l.hosts_noHosts, style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 8),
           FilledButton.icon(
             onPressed: () => context.push('/hosts/add'),
             icon: const Icon(Icons.add),
-            label: const Text('添加主机'),
+            label: Text(l.hosts_add),
           ),
         ],
       ),

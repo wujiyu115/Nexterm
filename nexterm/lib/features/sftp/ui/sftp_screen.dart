@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nexterm/features/sftp/providers/sftp_provider.dart';
 import 'package:nexterm/features/sftp/providers/transfer_provider.dart';
@@ -100,6 +101,7 @@ class _SftpScreenState extends ConsumerState<SftpScreen> {
   // ---------------------------------------------------------------------------
 
   void _showFileContextMenu(RemoteFileInfo file) {
+    final l = AppLocalizations.of(context)!;
     showCupertinoModalPopup<void>(
       context: context,
       builder: (ctx) => CupertinoActionSheet(
@@ -110,18 +112,18 @@ class _SftpScreenState extends ConsumerState<SftpScreen> {
               Navigator.pop(ctx);
               _notifier?.copyPaths([file.path]);
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('已复制，前往目标文件夹粘贴'),
-                  duration: Duration(seconds: 2),
+                SnackBar(
+                  content: Text(l.sftp_copied),
+                  duration: const Duration(seconds: 2),
                 ),
               );
             },
-            child: const Row(
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(CupertinoIcons.doc_on_doc, size: 20),
-                SizedBox(width: 8),
-                Text('复制'),
+                const Icon(CupertinoIcons.doc_on_doc, size: 20),
+                const SizedBox(width: 8),
+                Text(l.sftp_copy),
               ],
             ),
           ),
@@ -130,12 +132,12 @@ class _SftpScreenState extends ConsumerState<SftpScreen> {
               Navigator.pop(ctx);
               _showRenameDialog(file);
             },
-            child: const Row(
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(CupertinoIcons.pencil, size: 20),
-                SizedBox(width: 8),
-                Text('重命名'),
+                const Icon(CupertinoIcons.pencil, size: 20),
+                const SizedBox(width: 8),
+                Text(l.sftp_rename),
               ],
             ),
           ),
@@ -145,12 +147,12 @@ class _SftpScreenState extends ConsumerState<SftpScreen> {
                 Navigator.pop(ctx);
                 _notifier?.downloadFile(file);
               },
-              child: const Row(
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(CupertinoIcons.cloud_download, size: 20),
-                  SizedBox(width: 8),
-                  Text('下载'),
+                  const Icon(CupertinoIcons.cloud_download, size: 20),
+                  const SizedBox(width: 8),
+                  Text(l.sftp_download),
                 ],
               ),
             ),
@@ -160,17 +162,17 @@ class _SftpScreenState extends ConsumerState<SftpScreen> {
               Clipboard.setData(ClipboardData(text: file.path));
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('已复制路径: ${file.path}'),
+                  content: Text(l.sftp_pathCopied(file.path)),
                   duration: const Duration(seconds: 2),
                 ),
               );
             },
-            child: const Row(
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(CupertinoIcons.link, size: 20),
-                SizedBox(width: 8),
-                Text('复制路径'),
+                const Icon(CupertinoIcons.link, size: 20),
+                const SizedBox(width: 8),
+                Text(l.sftp_copyPath),
               ],
             ),
           ),
@@ -180,19 +182,19 @@ class _SftpScreenState extends ConsumerState<SftpScreen> {
               Navigator.pop(ctx);
               _confirmDelete(file);
             },
-            child: const Row(
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(CupertinoIcons.trash, size: 20, color: CupertinoColors.destructiveRed),
-                SizedBox(width: 8),
-                Text('删除'),
+                const Icon(CupertinoIcons.trash, size: 20, color: CupertinoColors.destructiveRed),
+                const SizedBox(width: 8),
+                Text(l.common_delete),
               ],
             ),
           ),
         ],
         cancelButton: CupertinoActionSheetAction(
           onPressed: () => Navigator.pop(ctx),
-          child: const Text('取消'),
+          child: Text(l.common_cancel),
         ),
       ),
     );
@@ -205,21 +207,22 @@ class _SftpScreenState extends ConsumerState<SftpScreen> {
   void _showSortMenu() {
     final notifier = _notifier;
     if (notifier == null) return;
+    final l = AppLocalizations.of(context)!;
     final state = _sftpState;
 
     showCupertinoModalPopup<void>(
       context: context,
       builder: (ctx) => CupertinoActionSheet(
-        title: const Text('排序方式'),
+        title: Text(l.sftp_sortTitle),
         actions: [
-          _sortAction(ctx, '按名称', SortField.name, state),
-          _sortAction(ctx, '按大小', SortField.size, state),
-          _sortAction(ctx, '按日期', SortField.date, state),
-          _sortAction(ctx, '按类型', SortField.type, state),
+          _sortAction(ctx, l.sftp_sortByName, SortField.name, state),
+          _sortAction(ctx, l.sftp_sortBySize, SortField.size, state),
+          _sortAction(ctx, l.sftp_sortByDate, SortField.date, state),
+          _sortAction(ctx, l.sftp_sortByType, SortField.type, state),
         ],
         cancelButton: CupertinoActionSheetAction(
           onPressed: () => Navigator.pop(ctx),
-          child: const Text('取消'),
+          child: Text(l.common_cancel),
         ),
       ),
     );
@@ -252,20 +255,21 @@ class _SftpScreenState extends ConsumerState<SftpScreen> {
   // ---------------------------------------------------------------------------
 
   void _showRenameDialog(RemoteFileInfo file) {
+    final l = AppLocalizations.of(context)!;
     final controller = TextEditingController(text: file.name);
     showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('重命名'),
+        title: Text(l.sftp_renameTitle),
         content: TextField(
           controller: controller,
           autofocus: true,
-          decoration: const InputDecoration(labelText: '新名称'),
+          decoration: InputDecoration(labelText: l.sftp_renameLabel),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('取消'),
+            child: Text(l.common_cancel),
           ),
           FilledButton(
             onPressed: () {
@@ -275,7 +279,7 @@ class _SftpScreenState extends ConsumerState<SftpScreen> {
                 _notifier?.rename(file.path, newName);
               }
             },
-            child: const Text('确定'),
+            child: Text(l.common_confirm),
           ),
         ],
       ),
@@ -283,15 +287,16 @@ class _SftpScreenState extends ConsumerState<SftpScreen> {
   }
 
   void _confirmDelete(RemoteFileInfo file) {
+    final l = AppLocalizations.of(context)!;
     showCupertinoDialog<void>(
       context: context,
       builder: (ctx) => CupertinoAlertDialog(
-        title: const Text('确认删除'),
-        content: Text('确定要删除 "${file.name}" 吗？'),
+        title: Text(l.sftp_deleteConfirmTitle),
+        content: Text(l.sftp_deleteConfirmContent(file.name)),
         actions: [
           CupertinoDialogAction(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('取消'),
+            child: Text(l.common_cancel),
           ),
           CupertinoDialogAction(
             isDestructiveAction: true,
@@ -299,7 +304,7 @@ class _SftpScreenState extends ConsumerState<SftpScreen> {
               Navigator.of(ctx).pop();
               _notifier?.delete(file.path, isDirectory: file.isDirectory);
             },
-            child: const Text('删除'),
+            child: Text(l.common_delete),
           ),
         ],
       ),
@@ -307,20 +312,21 @@ class _SftpScreenState extends ConsumerState<SftpScreen> {
   }
 
   void _showCreateFolderDialog() {
+    final l = AppLocalizations.of(context)!;
     final controller = TextEditingController();
     showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('新建文件夹'),
+        title: Text(l.sftp_newFolderTitle),
         content: TextField(
           controller: controller,
           autofocus: true,
-          decoration: const InputDecoration(labelText: '文件夹名称'),
+          decoration: InputDecoration(labelText: l.sftp_newFolderLabel),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('取消'),
+            child: Text(l.common_cancel),
           ),
           FilledButton(
             onPressed: () {
@@ -330,7 +336,7 @@ class _SftpScreenState extends ConsumerState<SftpScreen> {
                 _notifier?.createDirectory(name);
               }
             },
-            child: const Text('确定'),
+            child: Text(l.common_confirm),
           ),
         ],
       ),
@@ -350,6 +356,7 @@ class _SftpScreenState extends ConsumerState<SftpScreen> {
     }
 
     if (_initError != null) {
+      final l = AppLocalizations.of(context)!;
       return Scaffold(
         appBar: AppBar(title: const Text('SFTP')),
         body: Center(
@@ -358,7 +365,7 @@ class _SftpScreenState extends ConsumerState<SftpScreen> {
             children: [
               const Icon(Icons.error_outline, size: 48, color: Colors.red),
               const SizedBox(height: 16),
-              Text('连接失败: $_initError'),
+              Text(l.sftp_connectionFailed(_initError!)),
               const SizedBox(height: 16),
               FilledButton(
                 onPressed: () {
@@ -368,7 +375,7 @@ class _SftpScreenState extends ConsumerState<SftpScreen> {
                   });
                   _initialize();
                 },
-                child: const Text('重试'),
+                child: Text(l.common_retry),
               ),
             ],
           ),
@@ -382,6 +389,7 @@ class _SftpScreenState extends ConsumerState<SftpScreen> {
   Widget _buildMain(BuildContext context) {
     final notifier = _notifier!;
     final state = _sftpState;
+    final l = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
@@ -390,7 +398,7 @@ class _SftpScreenState extends ConsumerState<SftpScreen> {
           if (state.hasCopiedFiles)
             IconButton(
               icon: const Icon(Icons.paste),
-              tooltip: '粘贴',
+              tooltip: l.sftp_paste,
               onPressed: notifier.pasteFiles,
             ),
           IconButton(
@@ -399,7 +407,7 @@ class _SftpScreenState extends ConsumerState<SftpScreen> {
                   ? Icons.visibility_off_outlined
                   : Icons.visibility_outlined,
             ),
-            tooltip: state.showHidden ? '隐藏隐藏文件' : '显示隐藏文件',
+            tooltip: state.showHidden ? l.sftp_hideHidden : l.sftp_showHidden,
             onPressed: notifier.toggleHidden,
           ),
           PopupMenuButton<String>(
@@ -417,38 +425,38 @@ class _SftpScreenState extends ConsumerState<SftpScreen> {
               }
             },
             itemBuilder: (ctx) => [
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'upload',
                 child: ListTile(
-                  leading: Icon(Icons.upload_outlined),
-                  title: Text('上传'),
+                  leading: const Icon(Icons.upload_outlined),
+                  title: Text(l.sftp_upload),
                   contentPadding: EdgeInsets.zero,
                   visualDensity: VisualDensity.compact,
                 ),
               ),
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'newFolder',
                 child: ListTile(
-                  leading: Icon(Icons.create_new_folder_outlined),
-                  title: Text('新建文件夹'),
+                  leading: const Icon(Icons.create_new_folder_outlined),
+                  title: Text(l.sftp_newFolder),
                   contentPadding: EdgeInsets.zero,
                   visualDensity: VisualDensity.compact,
                 ),
               ),
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'sort',
                 child: ListTile(
-                  leading: Icon(Icons.sort),
-                  title: Text('排序'),
+                  leading: const Icon(Icons.sort),
+                  title: Text(l.sftp_sort),
                   contentPadding: EdgeInsets.zero,
                   visualDensity: VisualDensity.compact,
                 ),
               ),
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'refresh',
                 child: ListTile(
-                  leading: Icon(Icons.refresh),
-                  title: Text('刷新'),
+                  leading: const Icon(Icons.refresh),
+                  title: Text(l.sftp_refresh),
                   contentPadding: EdgeInsets.zero,
                   visualDensity: VisualDensity.compact,
                 ),
@@ -481,7 +489,7 @@ class _SftpScreenState extends ConsumerState<SftpScreen> {
                             Text(state.error!),
                             TextButton(
                               onPressed: notifier.refresh,
-                              child: const Text('重试'),
+                              child: Text(l.common_retry),
                             ),
                           ],
                         ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nexterm/l10n/app_localizations.dart';
 
 class HostSearchBar extends StatelessWidget {
   final TextEditingController controller;
@@ -18,7 +19,7 @@ class HostSearchBar extends StatelessWidget {
         controller: controller,
         onChanged: onChanged,
         decoration: InputDecoration(
-          hintText: '搜索主机、IP、标签...',
+          hintText: AppLocalizations.of(context)!.hosts_search,
           prefixIcon: const Icon(Icons.search),
           suffixIcon: controller.text.isNotEmpty
               ? IconButton(

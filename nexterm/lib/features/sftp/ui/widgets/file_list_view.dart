@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:nexterm/features/sftp/services/sftp_service.dart';
 import 'package:nexterm/features/sftp/ui/utils/file_icon.dart';
 import 'package:nexterm/features/sftp/ui/utils/file_size_format.dart';
@@ -34,8 +35,11 @@ class FileListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (files.isEmpty) {
-      return const Center(
-        child: Text('No files', style: TextStyle(color: Colors.grey)),
+      return Center(
+        child: Text(
+          AppLocalizations.of(context)!.sftp_noFiles,
+          style: const TextStyle(color: Colors.grey),
+        ),
       );
     }
 

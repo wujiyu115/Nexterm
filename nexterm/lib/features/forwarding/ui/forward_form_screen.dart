@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nexterm/domain/entities/enums.dart';
@@ -114,21 +115,22 @@ class _ForwardFormScreenState extends ConsumerState<ForwardFormScreen> {
   }
 
   Future<void> _delete() async {
+    final l = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('删除转发'),
-        content: Text('确定要删除「${_nameController.text}」吗？'),
+        title: Text(l.forwardForm_deleteTitle),
+        content: Text(l.forwardForm_deleteConfirm(_nameController.text)),
         actions: [
           TextButton(
             onPressed: () => ctx.pop(false),
-            child: const Text('取消'),
+            child: Text(l.common_cancel),
           ),
           FilledButton(
             style: FilledButton.styleFrom(
                 backgroundColor: Theme.of(ctx).colorScheme.error),
             onPressed: () => ctx.pop(true),
-            child: const Text('删除'),
+            child: Text(l.common_delete),
           ),
         ],
       ),
@@ -146,15 +148,16 @@ class _ForwardFormScreenState extends ConsumerState<ForwardFormScreen> {
     return FutureBuilder(
       future: _loadForward(),
       builder: (context, _) {
+        final l = AppLocalizations.of(context)!;
         return Scaffold(
           appBar: AppBar(
-            title: Text(_isEditMode ? '编辑转发' : '添加转发'),
+            title: Text(_isEditMode ? l.forwardForm_editTitle : l.forwardForm_addTitle),
             actions: [
               if (_isEditMode)
                 IconButton(
                   icon: Icon(Icons.delete_outline,
                       color: Theme.of(context).colorScheme.error),
-                  tooltip: '删除转发',
+                  tooltip: l.forwardForm_deleteTooltip,
                   onPressed: _delete,
                 ),
             ],
@@ -164,25 +167,25 @@ class _ForwardFormScreenState extends ConsumerState<ForwardFormScreen> {
             child: ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                _FormSection(title: '基本信息', children: [
+                _FormSection(title: l.forwardForm_sectionBasic, children: [
                   _buildTextField(
                     controller: _nameController,
-                    label: '名称',
-                    hint: '数据库隧道',
+                    label: l.forwardForm_nameLabel,
+                    hint: l.forwardForm_nameHint,
                     validator: (v) =>
-                        v == null || v.trim().isEmpty ? '请输入名称' : null,
+                        v == null || v.trim().isEmpty ? l.forwardForm_nameRequired : null,
                   ),
                   const SizedBox(height: 12),
                   _buildHostDropdown(),
                 ]),
                 const SizedBox(height: 20),
-                _FormSection(title: '转发类型', children: [
+                _FormSection(title: l.forwardForm_sectionType, children: [
                   SegmentedButton<ForwardType>(
                     segments: ForwardType.values
                         .map((t) => ButtonSegment<ForwardType>(
                               value: t,
                               label: Text(t.shortLabel),
-                              tooltip: t.displayName,
+                              tooltip: t.localizedName(l),
                             ))
                         .toList(),
                     selected: {_forwardType},
@@ -193,22 +196,22 @@ class _ForwardFormScreenState extends ConsumerState<ForwardFormScreen> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    _forwardType.displayName,
+                    _forwardType.localizedName(l),
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                   ),
                 ]),
                 const SizedBox(height: 20),
-                _FormSection(title: '端口配置', children: [
+                _FormSection(title: l.forwardForm_sectionPorts, children: [
                   _buildTextField(
                     controller: _localPortController,
-                    label: '本地端口',
+                    label: l.forwardForm_localPort,
                     hint: '8080',
                     keyboardType: TextInputType.number,
                     validator: (v) {
                       final p = int.tryParse(v ?? '');
-                      if (p == null || p < 1 || p > 65535) return '请输入有效端口 (1-65535)';
+                      if (p == null || p < 1 || p > 65535) return l.forwardForm_portInvalid;
                       return null;
                     },
                   ),
@@ -216,24 +219,24 @@ class _ForwardFormScreenState extends ConsumerState<ForwardFormScreen> {
                     const SizedBox(height: 12),
                     _buildTextField(
                       controller: _remoteHostController,
-                      label: '远程主机',
+                      label: l.forwardForm_remoteHost,
                       hint: 'db.internal',
                       validator: (v) {
                         if (_forwardType == ForwardType.dynamic) return null;
-                        if (v == null || v.trim().isEmpty) return '请输入远程主机';
+                        if (v == null || v.trim().isEmpty) return l.forwardForm_remoteHostRequired;
                         return null;
                       },
                     ),
                     const SizedBox(height: 12),
                     _buildTextField(
                       controller: _remotePortController,
-                      label: '远程端口',
+                      label: l.forwardForm_remotePort,
                       hint: '5432',
                       keyboardType: TextInputType.number,
                       validator: (v) {
                         if (_forwardType == ForwardType.dynamic) return null;
                         final p = int.tryParse(v ?? '');
-                        if (p == null || p < 1 || p > 65535) return '请输入有效端口 (1-65535)';
+                        if (p == null || p < 1 || p > 65535) return l.forwardForm_portInvalid;
                         return null;
                       },
                     ),
@@ -241,17 +244,17 @@ class _ForwardFormScreenState extends ConsumerState<ForwardFormScreen> {
                   const SizedBox(height: 12),
                   _buildTextField(
                     controller: _bindAddressController,
-                    label: '绑定地址',
+                    label: l.forwardForm_bindAddress,
                     hint: '127.0.0.1',
                     validator: (v) =>
-                        v == null || v.trim().isEmpty ? '请输入绑定地址' : null,
+                        v == null || v.trim().isEmpty ? l.forwardForm_bindAddressRequired : null,
                   ),
                 ]),
                 const SizedBox(height: 20),
-                _FormSection(title: '选项', children: [
+                _FormSection(title: l.forwardForm_sectionOptions, children: [
                   SwitchListTile(
-                    title: const Text('自动启动'),
-                    subtitle: const Text('连接到主机时自动开启此转发'),
+                    title: Text(l.forwardForm_autoStart),
+                    subtitle: Text(l.forwardForm_autoStartHint),
                     value: _autoStart,
                     onChanged: (v) => setState(() => _autoStart = v),
                     contentPadding: EdgeInsets.zero,
@@ -265,7 +268,7 @@ class _ForwardFormScreenState extends ConsumerState<ForwardFormScreen> {
                           height: 20,
                           width: 20,
                           child: CircularProgressIndicator(strokeWidth: 2))
-                      : const Text('保存'),
+                      : Text(l.common_save),
                 ),
                 const SizedBox(height: 80),
               ],
@@ -292,13 +295,13 @@ class _ForwardFormScreenState extends ConsumerState<ForwardFormScreen> {
   }
 
   Widget _buildHostDropdown() {
+    final l = AppLocalizations.of(context)!;
     final hostsAsync = ref.watch(hostsStreamProvider);
     return hostsAsync.when(
       data: (hosts) {
         if (hosts.isEmpty) {
-          return const Text('暂无可用主机，请先添加主机');
+          return Text(l.forwardForm_noHosts);
         }
-        // Ensure selected host still exists; clear if not.
         final effectiveHostId =
             (_selectedHostId != null && hosts.any((h) => h.id == _selectedHostId))
                 ? _selectedHostId
@@ -310,7 +313,7 @@ class _ForwardFormScreenState extends ConsumerState<ForwardFormScreen> {
         }
         return DropdownButtonFormField<String>(
           value: effectiveHostId,
-          decoration: const InputDecoration(labelText: '主机'),
+          decoration: InputDecoration(labelText: l.forwardForm_hostLabel),
           items: hosts
               .map((h) => DropdownMenuItem<String>(
                     value: h.id,
@@ -318,11 +321,11 @@ class _ForwardFormScreenState extends ConsumerState<ForwardFormScreen> {
                   ))
               .toList(),
           onChanged: (v) => setState(() => _selectedHostId = v),
-          validator: (v) => v == null || v.isEmpty ? '请选择主机' : null,
+          validator: (v) => v == null || v.isEmpty ? l.forwardForm_hostRequired : null,
         );
       },
       loading: () => const LinearProgressIndicator(),
-      error: (e, _) => Text('加载主机失败: $e'),
+      error: (e, _) => Text(l.forwardForm_hostLoadError(e.toString())),
     );
   }
 }

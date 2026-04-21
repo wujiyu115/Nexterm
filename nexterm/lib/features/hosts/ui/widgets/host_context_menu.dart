@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:nexterm/domain/entities/host_entity.dart';
 
-/// Actions available in the host context menu.
 enum HostContextAction {
   connect,
   sftpConnect,
@@ -13,11 +13,11 @@ enum HostContextAction {
   delete,
 }
 
-/// Shows an iOS-style bottom sheet context menu for a host.
 Future<HostContextAction?> showHostContextMenu({
   required BuildContext context,
   required HostEntity host,
 }) {
+  final l = AppLocalizations.of(context)!;
   return showCupertinoModalPopup<HostContextAction>(
     context: context,
     builder: (ctx) => CupertinoActionSheet(
@@ -26,86 +26,86 @@ Future<HostContextAction?> showHostContextMenu({
       actions: [
         CupertinoActionSheetAction(
           onPressed: () => Navigator.pop(ctx, HostContextAction.connect),
-          child: const Row(
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(CupertinoIcons.bolt, size: 20),
-              SizedBox(width: 8),
-              Text('连接'),
+              const Icon(CupertinoIcons.bolt, size: 20),
+              const SizedBox(width: 8),
+              Text(l.hosts_contextConnect),
             ],
           ),
         ),
         CupertinoActionSheetAction(
           onPressed: () => Navigator.pop(ctx, HostContextAction.sftpConnect),
-          child: const Row(
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(CupertinoIcons.folder, size: 20),
-              SizedBox(width: 8),
-              Text('SFTP 连接'),
+              const Icon(CupertinoIcons.folder, size: 20),
+              const SizedBox(width: 8),
+              Text(l.hosts_contextSftp),
             ],
           ),
         ),
         CupertinoActionSheetAction(
           onPressed: () => Navigator.pop(ctx, HostContextAction.duplicate),
-          child: const Row(
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(CupertinoIcons.doc_on_doc, size: 20),
-              SizedBox(width: 8),
-              Text('复制'),
+              const Icon(CupertinoIcons.doc_on_doc, size: 20),
+              const SizedBox(width: 8),
+              Text(l.hosts_contextCopy),
             ],
           ),
         ),
         CupertinoActionSheetAction(
           onPressed: () => Navigator.pop(ctx, HostContextAction.moveToGroup),
-          child: const Row(
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(CupertinoIcons.folder_badge_plus, size: 20),
-              SizedBox(width: 8),
-              Text('移动到组'),
+              const Icon(CupertinoIcons.folder_badge_plus, size: 20),
+              const SizedBox(width: 8),
+              Text(l.hosts_contextMoveToGroup),
             ],
           ),
         ),
         CupertinoActionSheetAction(
           onPressed: () => Navigator.pop(ctx, HostContextAction.edit),
-          child: const Row(
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(CupertinoIcons.pencil, size: 20),
-              SizedBox(width: 8),
-              Text('编辑'),
+              const Icon(CupertinoIcons.pencil, size: 20),
+              const SizedBox(width: 8),
+              Text(l.hosts_contextEdit),
             ],
           ),
         ),
         CupertinoActionSheetAction(
           onPressed: () => Navigator.pop(ctx, HostContextAction.select),
-          child: const Row(
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(CupertinoIcons.checkmark_circle, size: 20),
-              SizedBox(width: 8),
-              Text('选中'),
+              const Icon(CupertinoIcons.checkmark_circle, size: 20),
+              const SizedBox(width: 8),
+              Text(l.hosts_contextSelect),
             ],
           ),
         ),
         CupertinoActionSheetAction(
           isDestructiveAction: true,
           onPressed: () => Navigator.pop(ctx, HostContextAction.delete),
-          child: const Row(
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(CupertinoIcons.trash, size: 20, color: CupertinoColors.destructiveRed),
-              SizedBox(width: 8),
-              Text('删除'),
+              const Icon(CupertinoIcons.trash, size: 20, color: CupertinoColors.destructiveRed),
+              const SizedBox(width: 8),
+              Text(l.hosts_contextDelete),
             ],
           ),
         ),
       ],
       cancelButton: CupertinoActionSheetAction(
         onPressed: () => Navigator.pop(ctx),
-        child: const Text('取消'),
+        child: Text(l.common_cancel),
       ),
     ),
   );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 
 class AppScaffold extends StatelessWidget {
@@ -7,6 +8,7 @@ class AppScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return Scaffold(
       body: navigationShell,
       bottomNavigationBar: NavigationBar(
@@ -14,13 +16,13 @@ class AppScaffold extends StatelessWidget {
         onDestinationSelected: (index) {
           navigationShell.goBranch(index, initialLocation: index == navigationShell.currentIndex);
         },
-        destinations: const [
-          NavigationDestination(icon: Icon(Icons.dns_outlined), selectedIcon: Icon(Icons.dns), label: '主机'),
-          NavigationDestination(icon: Icon(Icons.terminal_outlined), selectedIcon: Icon(Icons.terminal), label: '终端'),
-          NavigationDestination(icon: Icon(Icons.vpn_key_outlined), selectedIcon: Icon(Icons.vpn_key), label: '密钥'),
-          NavigationDestination(icon: Icon(Icons.bolt_outlined), selectedIcon: Icon(Icons.bolt), label: '片段'),
-          NavigationDestination(icon: Icon(Icons.swap_horiz_outlined), selectedIcon: Icon(Icons.swap_horiz), label: '转发'),
-          NavigationDestination(icon: Icon(Icons.settings_outlined), selectedIcon: Icon(Icons.settings), label: '设置'),
+        destinations: [
+          NavigationDestination(icon: const Icon(Icons.dns_outlined), selectedIcon: const Icon(Icons.dns), label: l.nav_hosts),
+          NavigationDestination(icon: const Icon(Icons.terminal_outlined), selectedIcon: const Icon(Icons.terminal), label: l.nav_terminal),
+          NavigationDestination(icon: const Icon(Icons.vpn_key_outlined), selectedIcon: const Icon(Icons.vpn_key), label: l.nav_keys),
+          NavigationDestination(icon: const Icon(Icons.bolt_outlined), selectedIcon: const Icon(Icons.bolt), label: l.nav_snippets),
+          NavigationDestination(icon: const Icon(Icons.swap_horiz_outlined), selectedIcon: const Icon(Icons.swap_horiz), label: l.nav_forwarding),
+          NavigationDestination(icon: const Icon(Icons.settings_outlined), selectedIcon: const Icon(Icons.settings), label: l.nav_settings),
         ],
       ),
     );

@@ -69,7 +69,7 @@ class HostsNotifier extends StateNotifier<AsyncValue<void>> {
       if (host == null) return;
       await _repo.insert(host.copyWith(
         id: const Uuid().v4(),
-        name: '${host.name} (副本)',
+        name: '${host.name} (copy)',
         lastConnected: () => null,
       ));
     });

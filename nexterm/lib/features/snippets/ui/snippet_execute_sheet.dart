@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nexterm/domain/entities/snippet_entity.dart';
 import 'package:nexterm/features/snippets/providers/snippets_provider.dart';
@@ -78,7 +79,7 @@ class _SnippetExecuteSheetState extends ConsumerState<SnippetExecuteSheet> {
               child: Row(
                 children: [
                   Text(
-                    '选择片段',
+                    AppLocalizations.of(context)!.snippetExecute_selectTitle,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
                   ),
                   const Spacer(),
@@ -95,7 +96,7 @@ class _SnippetExecuteSheetState extends ConsumerState<SnippetExecuteSheet> {
               child: TextField(
                 controller: _searchController,
                 decoration: InputDecoration(
-                  hintText: '搜索片段...',
+                  hintText: AppLocalizations.of(context)!.snippetExecute_searchHint,
                   prefixIcon: const Icon(Icons.search, size: 20),
                   isDense: true,
                   contentPadding: const EdgeInsets.symmetric(vertical: 10),
@@ -124,7 +125,9 @@ class _SnippetExecuteSheetState extends ConsumerState<SnippetExecuteSheet> {
                           Icon(Icons.bolt_outlined, size: 48, color: Theme.of(context).colorScheme.onSurfaceVariant),
                           const SizedBox(height: 12),
                           Text(
-                            _searchQuery.isEmpty ? '暂无代码片段' : '未找到匹配片段',
+                            _searchQuery.isEmpty
+                                ? AppLocalizations.of(context)!.snippetExecute_noSnippets
+                                : AppLocalizations.of(context)!.snippetExecute_noMatch,
                             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               color: Theme.of(context).colorScheme.onSurfaceVariant,
                             ),
@@ -146,7 +149,7 @@ class _SnippetExecuteSheetState extends ConsumerState<SnippetExecuteSheet> {
                   );
                 },
                 loading: () => const Center(child: CircularProgressIndicator()),
-                error: (e, _) => Center(child: Text('错误: $e')),
+                error: (e, _) => Center(child: Text(AppLocalizations.of(context)!.common_error(e.toString()))),
               ),
             ),
           ],
@@ -223,7 +226,7 @@ class _VariableDialogState extends State<_VariableDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('填写变量 — ${widget.snippet.name}'),
+      title: Text(AppLocalizations.of(context)!.snippetExecute_fillVariables(widget.snippet.name)),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -245,7 +248,7 @@ class _VariableDialogState extends State<_VariableDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('取消'),
+          child: Text(AppLocalizations.of(context)!.common_cancel),
         ),
         FilledButton(
           onPressed: () {
@@ -254,7 +257,7 @@ class _VariableDialogState extends State<_VariableDialog> {
             };
             Navigator.of(context).pop(values);
           },
-          child: const Text('执行'),
+          child: Text(AppLocalizations.of(context)!.snippetExecute_execute),
         ),
       ],
     );

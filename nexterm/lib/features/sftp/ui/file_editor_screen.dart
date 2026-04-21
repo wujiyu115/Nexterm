@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_highlight/flutter_highlight.dart';
 import 'package:flutter_highlight/themes/monokai-sublime.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -115,14 +116,14 @@ class _FileEditorScreenState extends ConsumerState<FileEditorScreen> {
           _isModified = false;
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('File saved')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.fileEditor_fileSaved)),
         );
       }
     } catch (e) {
       if (mounted) {
         setState(() => _isSaving = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Save failed: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.fileEditor_saveFailed(e.toString()))),
         );
       }
     }
@@ -158,19 +159,18 @@ class _FileEditorScreenState extends ConsumerState<FileEditorScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final title = _isModified ? '$_fileName •' : _fileName;
 
     return Scaffold(
       appBar: AppBar(
         title: Text(title, style: const TextStyle(fontFamily: 'monospace')),
         actions: [
-          // Toggle preview / edit mode.
           IconButton(
             icon: Icon(_isPreviewMode ? Icons.edit_outlined : Icons.preview),
-            tooltip: _isPreviewMode ? 'Edit mode' : 'Preview mode',
+            tooltip: _isPreviewMode ? l.fileEditor_editMode : l.fileEditor_previewMode,
             onPressed: () => setState(() => _isPreviewMode = !_isPreviewMode),
           ),
-          // Save button.
           if (!_isPreviewMode)
             IconButton(
               icon: _isSaving
@@ -180,7 +180,7 @@ class _FileEditorScreenState extends ConsumerState<FileEditorScreen> {
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
                   : const Icon(Icons.save_outlined),
-              tooltip: 'Save',
+              tooltip: l.fileEditor_save,
               onPressed: _isSaving ? null : _saveFile,
             ),
         ],
@@ -205,11 +205,11 @@ class _FileEditorScreenState extends ConsumerState<FileEditorScreen> {
         children: [
           const Icon(Icons.error_outline, size: 48, color: Colors.red),
           const SizedBox(height: 16),
-          Text('Failed to load file: $_loadError'),
+          Text(AppLocalizations.of(context)!.fileEditor_loadFailed(_loadError!)),
           const SizedBox(height: 16),
           FilledButton(
             onPressed: _loadFile,
-            child: const Text('Retry'),
+            child: Text(AppLocalizations.of(context)!.common_retry),
           ),
         ],
       ),
@@ -282,9 +282,9 @@ class _FileEditorScreenState extends ConsumerState<FileEditorScreen> {
           ),
           const Spacer(),
           if (_isModified)
-            const Text(
-              'Modified',
-              style: TextStyle(fontSize: 11, color: Colors.orange),
+            Text(
+              AppLocalizations.of(context)!.fileEditor_modified,
+              style: const TextStyle(fontSize: 11, color: Colors.orange),
             ),
         ],
       ),

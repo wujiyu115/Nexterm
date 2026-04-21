@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nexterm/domain/entities/enums.dart';
 import 'package:nexterm/features/terminal/providers/terminal_provider.dart';
@@ -50,7 +51,7 @@ class TerminalTabBar extends ConsumerWidget {
           // "+" add tab button.
           IconButton(
             icon: const Icon(Icons.add, size: 18),
-            tooltip: '新建终端',
+            tooltip: AppLocalizations.of(context)!.terminal_newTab,
             onPressed: onAddTab,
           ),
         ],

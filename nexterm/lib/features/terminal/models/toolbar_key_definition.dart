@@ -1,5 +1,7 @@
 import 'dart:typed_data';
 
+import 'package:nexterm/l10n/app_localizations.dart';
+
 /// Represents a single key button on the toolbar.
 class ToolbarKeyDef {
   final String id;
@@ -197,3 +199,21 @@ List<ToolbarKeyGroup> get defaultToolbarGroups => [
         ToolbarKeyDef(id: 'arrow_right', label: '→', groupId: 'arrows', bytes: _arrowRight),
       ]),
     ];
+
+String toolbarGroupName(String groupId, AppLocalizations l) {
+  return switch (groupId) {
+    'terminal_ctrl' => l.toolbar_groupTerminalCtrl,
+    'signals' => l.toolbar_groupSignals,
+    'symbols1' => l.toolbar_groupSymbols1,
+    'navigation' => l.toolbar_groupNavigation,
+    'punctuation' => l.toolbar_groupPunctuation,
+    'symbols2' => l.toolbar_groupSymbols2,
+    'brackets1' => l.toolbar_groupBrackets1,
+    'brackets2' => l.toolbar_groupBrackets2,
+    'editing' => l.toolbar_groupEditing,
+    'advanced' => l.toolbar_groupAdvanced,
+    'search' => l.toolbar_groupSearch,
+    'arrows' => l.toolbar_groupArrows,
+    _ => groupId,
+  };
+}

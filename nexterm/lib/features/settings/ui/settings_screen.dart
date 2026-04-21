@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nexterm/core/locale/locale_provider.dart';
 import 'package:nexterm/core/theme/terminal_themes.dart';
 import 'package:nexterm/core/theme/theme_provider.dart';
 import 'package:nexterm/domain/entities/enums.dart';
@@ -16,6 +18,7 @@ class SettingsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
     final settings = ref.watch(settingsNotifierProvider);
     final settingsNotifier = ref.read(settingsNotifierProvider.notifier);
     final themeState = ref.watch(themeProvider);
@@ -23,26 +26,24 @@ class SettingsScreen extends ConsumerWidget {
     final authState = ref.watch(authProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('设置')),
+      appBar: AppBar(title: Text(l.settings_title)),
       body: ListView(
         children: [
-          // 通用
-          _SectionHeader(title: '通用'),
+          _SectionHeader(title: l.settings_sectionGeneral),
           ListTile(
             leading: const Icon(Icons.palette_outlined),
-            title: const Text('外观主题'),
-            subtitle: Text(_themePreferenceLabel(themeState.preference)),
+            title: Text(l.settings_theme),
+            subtitle: Text(_themePreferenceLabel(themeState.preference, l)),
             onTap: () => _showThemePicker(context, themeState.preference, themeNotifier),
           ),
           ListTile(
             leading: const Icon(Icons.language_outlined),
-            title: const Text('语言'),
-            subtitle: const Text('中文'),
-            onTap: () {},
+            title: Text(l.settings_language),
+            subtitle: Text(_languageLabel(ref, l)),
+            onTap: () => _showLanguagePicker(context, ref),
           ),
 
-          // 终端
-          _SectionHeader(title: '终端'),
+          _SectionHeader(title: l.settings_sectionTerminal),
           _FontSizeTile(
             fontSize: double.tryParse(
                   settings[SettingsKeys.terminalFontSize] ?? '',
@@ -52,66 +53,64 @@ class SettingsScreen extends ConsumerWidget {
           ),
           ListTile(
             leading: const Icon(Icons.color_lens_outlined),
-            title: const Text('终端配色方案'),
+            title: Text(l.settings_terminalTheme),
             subtitle: Text(_terminalThemeLabel(themeState.terminalThemeName)),
             onTap: () => _showTerminalThemePicker(context, themeState.terminalThemeName, themeNotifier),
           ),
           ListTile(
             leading: const Icon(Icons.text_fields_outlined),
-            title: const Text('光标样式'),
-            subtitle: Text(_cursorStyleLabel(settings[SettingsKeys.cursorStyle] ?? 'block')),
+            title: Text(l.settings_cursorStyle),
+            subtitle: Text(_cursorStyleLabel(settings[SettingsKeys.cursorStyle] ?? 'block', l)),
             onTap: () => _showCursorStylePicker(context, settings[SettingsKeys.cursorStyle] ?? 'block', settingsNotifier),
           ),
           SwitchListTile(
             secondary: const Icon(Icons.vibration_outlined),
-            title: const Text('触觉反馈'),
+            title: Text(l.settings_hapticFeedback),
             value: settings[SettingsKeys.hapticFeedback] == 'true',
             onChanged: (v) => settingsNotifier.set(SettingsKeys.hapticFeedback, v.toString()),
           ),
 
-          // 安全
-          _SectionHeader(title: '安全'),
+          _SectionHeader(title: l.settings_sectionSecurity),
           SwitchListTile(
             secondary: const Icon(Icons.fingerprint_outlined),
-            title: const Text('生物识别解锁'),
+            title: Text(l.settings_biometric),
             value: settings[SettingsKeys.biometricEnabled] == 'true',
             onChanged: (v) => settingsNotifier.set(SettingsKeys.biometricEnabled, v.toString()),
           ),
           ListTile(
             leading: const Icon(Icons.lock_clock_outlined),
-            title: const Text('自动锁定时间'),
-            subtitle: Text(_autoLockLabel(settings[SettingsKeys.autoLockMinutes] ?? '5')),
+            title: Text(l.settings_autoLock),
+            subtitle: Text(_autoLockLabel(settings[SettingsKeys.autoLockMinutes] ?? '5', l)),
             onTap: () => _showAutoLockPicker(context, settings[SettingsKeys.autoLockMinutes] ?? '5', settingsNotifier),
           ),
           SwitchListTile(
             secondary: const Icon(Icons.content_paste_off_outlined),
-            title: const Text('剪贴板自动清除'),
-            subtitle: const Text('退出应用后自动清除剪贴板'),
+            title: Text(l.settings_clipboardAutoClear),
+            subtitle: Text(l.settings_clipboardAutoClearHint),
             value: settings[SettingsKeys.clipboardAutoClear] == 'true',
             onChanged: (v) => settingsNotifier.set(SettingsKeys.clipboardAutoClear, v.toString()),
           ),
 
-          // 同步
-          _SectionHeader(title: '同步'),
+          _SectionHeader(title: l.settings_sectionSync),
           if (authState.isLoggedIn) ...[
             ListTile(
               leading: const Icon(Icons.account_circle_outlined),
-              title: const Text('账户'),
-              subtitle: Text(authState.email ?? '已登录'),
+              title: Text(l.settings_account),
+              subtitle: Text(authState.email ?? l.settings_loggedIn),
             ),
             ListTile(
               leading: const Icon(Icons.devices_outlined),
-              title: const Text('设备管理'),
+              title: Text(l.settings_deviceManagement),
               onTap: () => _showDeviceManagementDialog(context),
             ),
             ListTile(
               leading: const Icon(Icons.sync_outlined),
-              title: const Text('立即同步'),
+              title: Text(l.settings_syncNow),
               onTap: () => _triggerManualSync(context),
             ),
             ListTile(
               leading: const Icon(Icons.logout_outlined),
-              title: const Text('退出登录'),
+              title: Text(l.settings_logout),
               textColor: Theme.of(context).colorScheme.error,
               iconColor: Theme.of(context).colorScheme.error,
               onTap: () => _confirmLogout(context, ref),
@@ -119,33 +118,31 @@ class SettingsScreen extends ConsumerWidget {
           ] else ...[
             ListTile(
               leading: const Icon(Icons.login_outlined),
-              title: const Text('登录 / 注册'),
-              subtitle: const Text('登录以同步您的数据'),
+              title: Text(l.settings_loginRegister),
+              subtitle: Text(l.settings_loginHint),
               onTap: () => _showLoginDialog(context, ref),
             ),
           ],
 
-          // 数据
-          _SectionHeader(title: '数据'),
+          _SectionHeader(title: l.settings_sectionData),
           ListTile(
             leading: const Icon(Icons.upload_file_outlined),
-            title: const Text('导入 SSH 配置'),
-            subtitle: const Text('从 ~/.ssh/config 文件导入'),
+            title: Text(l.settings_importSshConfig),
+            subtitle: Text(l.settings_importSshConfigHint),
             onTap: () => _showImportDialog(context, ref),
           ),
           ListTile(
             leading: const Icon(Icons.download_outlined),
-            title: const Text('导出数据'),
-            subtitle: const Text('将所有数据导出为 JSON 文件'),
+            title: Text(l.settings_exportData),
+            subtitle: Text(l.settings_exportDataHint),
             onTap: () => _showExportDialog(context),
           ),
 
-          // 关于
-          _SectionHeader(title: '关于'),
-          const ListTile(
-            leading: Icon(Icons.info_outline),
-            title: Text('版本'),
-            subtitle: Text('v0.1.0'),
+          _SectionHeader(title: l.settings_sectionAbout),
+          ListTile(
+            leading: const Icon(Icons.info_outline),
+            title: Text(l.settings_version),
+            subtitle: const Text('v0.1.0'),
           ),
 
           const SizedBox(height: 32),
@@ -156,10 +153,10 @@ class SettingsScreen extends ConsumerWidget {
 
   // ---------- label helpers ----------
 
-  static String _themePreferenceLabel(ThemePreference pref) => switch (pref) {
-        ThemePreference.light => '浅色',
-        ThemePreference.dark => '深色',
-        ThemePreference.system => '跟随系统',
+  static String _themePreferenceLabel(ThemePreference pref, AppLocalizations l) => switch (pref) {
+        ThemePreference.light => l.settings_themeLight,
+        ThemePreference.dark => l.settings_themeDark,
+        ThemePreference.system => l.settings_themeSystem,
       };
 
   static String _terminalThemeLabel(String name) => switch (name) {
@@ -171,18 +168,26 @@ class SettingsScreen extends ConsumerWidget {
         _ => name,
       };
 
-  static String _cursorStyleLabel(String style) => switch (style) {
-        'block' => '块状',
-        'underline' => '下划线',
-        'bar' => '竖线',
+  static String _cursorStyleLabel(String style, AppLocalizations l) => switch (style) {
+        'block' => l.settings_cursorBlock,
+        'underline' => l.settings_cursorUnderline,
+        'bar' => l.settings_cursorBar,
         _ => style,
       };
 
-  static String _autoLockLabel(String minutes) {
+  static String _autoLockLabel(String minutes, AppLocalizations l) {
     final m = int.tryParse(minutes);
-    if (m == null || m <= 0) return '从不';
-    if (m == 1) return '1 分钟';
-    return '$m 分钟';
+    if (m == null || m <= 0) return l.settings_autoLockNever;
+    if (m == 1) return l.settings_autoLockOneMinute;
+    return l.settings_autoLockMinutes(m);
+  }
+
+  static String _languageLabel(WidgetRef ref, AppLocalizations l) {
+    final locale = ref.watch(localeProvider);
+    if (locale == null) return l.settings_languageSystem;
+    if (locale.languageCode == 'zh') return l.settings_languageChinese;
+    if (locale.languageCode == 'en') return l.settings_languageEnglish;
+    return l.settings_languageSystem;
   }
 
   // ---------- pickers / dialogs ----------
@@ -216,38 +221,41 @@ class SettingsScreen extends ConsumerWidget {
   }
 
   void _showDeviceManagementDialog(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('设备管理'),
-        content: const Text('设备管理功能即将推出。'),
+        title: Text(l.settings_deviceManagementTitle),
+        content: Text(l.settings_deviceManagementContent),
         actions: [
-          TextButton(onPressed: () => Navigator.of(ctx).pop(), child: const Text('确定')),
+          TextButton(onPressed: () => Navigator.of(ctx).pop(), child: Text(l.common_confirm)),
         ],
       ),
     );
   }
 
   void _triggerManualSync(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('正在同步...')),
+      SnackBar(content: Text(l.settings_syncing)),
     );
   }
 
   void _confirmLogout(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
     showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('退出登录'),
-        content: const Text('确定要退出登录吗？'),
+        title: Text(l.settings_logoutTitle),
+        content: Text(l.settings_logoutConfirm),
         actions: [
-          TextButton(onPressed: () => Navigator.of(ctx).pop(), child: const Text('取消')),
+          TextButton(onPressed: () => Navigator.of(ctx).pop(), child: Text(l.common_cancel)),
           FilledButton(
             onPressed: () {
               Navigator.of(ctx).pop();
               ref.read(authProvider.notifier).logout();
             },
-            child: const Text('退出'),
+            child: Text(l.settings_logoutButton),
           ),
         ],
       ),
@@ -262,6 +270,7 @@ class SettingsScreen extends ConsumerWidget {
   }
 
   void _showImportDialog(BuildContext context, WidgetRef ref) async {
+    final l = AppLocalizations.of(context)!;
     final result = await FilePicker.pickFiles(
       type: FileType.any,
       allowMultiple: false,
@@ -288,34 +297,84 @@ class SettingsScreen extends ConsumerWidget {
       }
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('已导入 ${entries.length} 个主机')),
+          SnackBar(content: Text(l.settings_importedCount(entries.length))),
         );
       }
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('导入失败: $e')),
+          SnackBar(content: Text(l.settings_importFailed(e.toString()))),
         );
       }
     }
   }
 
   void _showExportDialog(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('导出数据'),
-        content: const Text('将所有主机、密钥和片段数据导出为 JSON 文件。'),
+        title: Text(l.settings_exportTitle),
+        content: Text(l.settings_exportContent),
         actions: [
-          TextButton(onPressed: () => Navigator.of(ctx).pop(), child: const Text('取消')),
+          TextButton(onPressed: () => Navigator.of(ctx).pop(), child: Text(l.common_cancel)),
           FilledButton(
             onPressed: () {
               Navigator.of(ctx).pop();
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('数据已导出')),
+                SnackBar(content: Text(l.settings_exported)),
               );
             },
-            child: const Text('导出'),
+            child: Text(l.settings_exportButton),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showLanguagePicker(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
+    final localeNotifier = ref.read(localeProvider.notifier);
+    final currentLocale = ref.read(localeProvider);
+
+    String currentValue;
+    if (currentLocale == null) {
+      currentValue = 'system';
+    } else if (currentLocale.languageCode == 'zh') {
+      currentValue = 'zh';
+    } else {
+      currentValue = 'en';
+    }
+
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => SimpleDialog(
+        title: Text(l.settings_language),
+        children: [
+          RadioGroup<String>(
+            groupValue: currentValue,
+            onChanged: (v) {
+              if (v != null) {
+                localeNotifier.setLocale(v);
+                Navigator.of(ctx).pop();
+              }
+            },
+            child: Column(
+              children: [
+                RadioListTile<String>(
+                  title: Text(l.settings_languageSystem),
+                  value: 'system',
+                ),
+                RadioListTile<String>(
+                  title: Text(l.settings_languageChinese),
+                  value: 'zh',
+                ),
+                RadioListTile<String>(
+                  title: Text(l.settings_languageEnglish),
+                  value: 'en',
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -354,9 +413,10 @@ class _FontSizeTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return ListTile(
       leading: const Icon(Icons.format_size_outlined),
-      title: const Text('字体大小'),
+      title: Text(l.settings_fontSize),
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -395,16 +455,16 @@ class _ThemePickerDialogState extends State<_ThemePickerDialog> {
     _selected = widget.current;
   }
 
-  static String _label(ThemePreference pref) => switch (pref) {
-        ThemePreference.light => '浅色',
-        ThemePreference.dark => '深色',
-        ThemePreference.system => '跟随系统',
-      };
-
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    String labelFor(ThemePreference pref) => switch (pref) {
+      ThemePreference.light => l.settings_themeLight,
+      ThemePreference.dark => l.settings_themeDark,
+      ThemePreference.system => l.settings_themeSystem,
+    };
     return SimpleDialog(
-      title: const Text('选择主题'),
+      title: Text(l.settings_selectTheme),
       children: [
         RadioGroup<ThemePreference>(
           groupValue: _selected,
@@ -417,7 +477,7 @@ class _ThemePickerDialogState extends State<_ThemePickerDialog> {
           child: Column(
             children: ThemePreference.values.map((pref) {
               return RadioListTile<ThemePreference>(
-                title: Text(_label(pref)),
+                title: Text(labelFor(pref)),
                 value: pref,
               );
             }).toList(),
@@ -459,8 +519,9 @@ class _TerminalThemePickerDialogState extends State<_TerminalThemePickerDialog> 
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return SimpleDialog(
-      title: const Text('选择终端配色'),
+      title: Text(l.settings_selectTerminalTheme),
       children: [
         RadioGroup<String>(
           groupValue: _selected,
@@ -505,17 +566,17 @@ class _CursorStylePickerDialogState extends State<_CursorStylePickerDialog> {
     _selected = widget.current;
   }
 
-  static String _label(String style) => switch (style) {
-        'block' => '块状',
-        'underline' => '下划线',
-        'bar' => '竖线',
-        _ => style,
-      };
-
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    String labelFor(String style) => switch (style) {
+      'block' => l.settings_cursorBlock,
+      'underline' => l.settings_cursorUnderline,
+      'bar' => l.settings_cursorBar,
+      _ => style,
+    };
     return SimpleDialog(
-      title: const Text('选择光标样式'),
+      title: Text(l.settings_selectCursorStyle),
       children: [
         RadioGroup<String>(
           groupValue: _selected,
@@ -528,7 +589,7 @@ class _CursorStylePickerDialogState extends State<_CursorStylePickerDialog> {
           child: Column(
             children: _styles.map((style) {
               return RadioListTile<String>(
-                title: Text(_label(style)),
+                title: Text(labelFor(style)),
                 value: style,
               );
             }).toList(),
@@ -560,17 +621,17 @@ class _AutoLockPickerDialogState extends State<_AutoLockPickerDialog> {
     _selected = widget.current;
   }
 
-  static String _label(String minutes) {
-    final m = int.tryParse(minutes);
-    if (m == null || m <= 0) return '从不';
-    if (m == 1) return '1 分钟';
-    return '$m 分钟';
-  }
-
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    String labelFor(String minutes) {
+      final m = int.tryParse(minutes);
+      if (m == null || m <= 0) return l.settings_autoLockNever;
+      if (m == 1) return l.settings_autoLockOneMinute;
+      return l.settings_autoLockMinutes(m);
+    }
     return SimpleDialog(
-      title: const Text('自动锁定时间'),
+      title: Text(l.settings_selectAutoLock),
       children: [
         RadioGroup<String>(
           groupValue: _selected,
@@ -583,7 +644,7 @@ class _AutoLockPickerDialogState extends State<_AutoLockPickerDialog> {
           child: Column(
             children: _options.map((minutes) {
               return RadioListTile<String>(
-                title: Text(_label(minutes)),
+                title: Text(labelFor(minutes)),
                 value: minutes,
               );
             }).toList(),
@@ -640,20 +701,21 @@ class _LoginDialogState extends State<_LoginDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return AlertDialog(
-      title: Text(_isRegister ? '注册账户' : '登录'),
+      title: Text(_isRegister ? l.settings_registerTitle : l.settings_loginTitle),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           TextField(
             controller: _emailCtrl,
-            decoration: const InputDecoration(labelText: '邮箱'),
+            decoration: InputDecoration(labelText: l.settings_emailLabel),
             keyboardType: TextInputType.emailAddress,
           ),
           const SizedBox(height: 8),
           TextField(
             controller: _passwordCtrl,
-            decoration: const InputDecoration(labelText: '密码'),
+            decoration: InputDecoration(labelText: l.settings_passwordLabel),
             obscureText: true,
           ),
           if (_error != null) ...[
@@ -665,14 +727,14 @@ class _LoginDialogState extends State<_LoginDialog> {
       actions: [
         TextButton(
           onPressed: () => setState(() => _isRegister = !_isRegister),
-          child: Text(_isRegister ? '已有账户？登录' : '没有账户？注册'),
+          child: Text(_isRegister ? l.settings_switchToLogin : l.settings_switchToRegister),
         ),
-        TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('取消')),
+        TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(l.common_cancel)),
         FilledButton(
           onPressed: _loading ? null : _submit,
           child: _loading
               ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
-              : Text(_isRegister ? '注册' : '登录'),
+              : Text(_isRegister ? l.settings_registerButton : l.settings_loginButton),
         ),
       ],
     );

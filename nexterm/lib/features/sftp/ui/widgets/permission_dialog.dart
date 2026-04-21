@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nexterm/l10n/app_localizations.dart';
 
 /// Shows a dialog that allows the user to set Unix file permissions.
 ///
@@ -123,21 +124,21 @@ class _PermissionDialogState extends State<_PermissionDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return AlertDialog(
-      title: const Text('Change Permissions'),
+      title: Text(l.permission_title),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Octal input
             TextField(
               controller: _octalController,
               keyboardType: TextInputType.number,
               maxLength: 3,
-              decoration: const InputDecoration(
-                labelText: 'Octal (e.g. 644)',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l.permission_octalLabel,
+                border: const OutlineInputBorder(),
                 counterText: '',
               ),
             ),
@@ -192,11 +193,11 @@ class _PermissionDialogState extends State<_PermissionDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(null),
-          child: const Text('Cancel'),
+          child: Text(l.common_cancel),
         ),
         FilledButton(
           onPressed: () => Navigator.of(context).pop(_currentValue()),
-          child: const Text('Apply'),
+          child: Text(l.permission_apply),
         ),
       ],
     );

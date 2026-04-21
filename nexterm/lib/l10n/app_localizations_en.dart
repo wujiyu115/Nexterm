@@ -1,0 +1,1206 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+import 'app_localizations.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for English (`en`).
+class AppLocalizationsEn extends AppLocalizations {
+  AppLocalizationsEn([String locale = 'en']) : super(locale);
+
+  @override
+  String get nav_hosts => 'Hosts';
+
+  @override
+  String get nav_terminal => 'Terminal';
+
+  @override
+  String get nav_keys => 'Keys';
+
+  @override
+  String get nav_snippets => 'Snippets';
+
+  @override
+  String get nav_forwarding => 'Forward';
+
+  @override
+  String get nav_settings => 'Settings';
+
+  @override
+  String get common_cancel => 'Cancel';
+
+  @override
+  String get common_confirm => 'OK';
+
+  @override
+  String get common_delete => 'Delete';
+
+  @override
+  String get common_save => 'Save';
+
+  @override
+  String get common_retry => 'Retry';
+
+  @override
+  String common_error(String message) {
+    return 'Error: $message';
+  }
+
+  @override
+  String get auth_password => 'Password';
+
+  @override
+  String get auth_key => 'Key';
+
+  @override
+  String get auth_keyboardInteractive => 'Keyboard Interactive';
+
+  @override
+  String get forwarding_local => 'Local Forwarding';
+
+  @override
+  String get forwarding_remote => 'Remote Forwarding';
+
+  @override
+  String get forwarding_dynamic => 'Dynamic Forwarding (SOCKS5)';
+
+  @override
+  String get hosts_title => 'Hosts';
+
+  @override
+  String get hosts_add => 'Add Host';
+
+  @override
+  String get hosts_addTooltip => 'Add Host';
+
+  @override
+  String get hosts_search => 'Search hosts, IP, tags...';
+
+  @override
+  String get hosts_noHosts => 'No hosts yet';
+
+  @override
+  String hosts_selectedCount(int count) {
+    return '$count selected';
+  }
+
+  @override
+  String get hosts_selectAll => 'Select All';
+
+  @override
+  String get hosts_moveToGroup => 'Move to Group';
+
+  @override
+  String get hosts_deleteTooltip => 'Delete';
+
+  @override
+  String get hosts_deleteConfirm => 'Confirm Delete';
+
+  @override
+  String get hosts_deleteConfirmSingle =>
+      'Are you sure you want to delete this host?';
+
+  @override
+  String hosts_deleteConfirmMultiple(int count) {
+    return 'Are you sure you want to delete $count selected hosts?';
+  }
+
+  @override
+  String get hosts_favorites => 'Favorites';
+
+  @override
+  String get hosts_ungrouped => 'Ungrouped';
+
+  @override
+  String get hosts_sftpConnectFailed =>
+      'SSH connection failed, cannot open SFTP';
+
+  @override
+  String get hosts_newGroup => 'New Group';
+
+  @override
+  String get hosts_newGroupHint => 'Enter group name';
+
+  @override
+  String get hosts_copy => 'Copy';
+
+  @override
+  String get hosts_contextConnect => 'Connect';
+
+  @override
+  String get hosts_contextSftp => 'SFTP Connect';
+
+  @override
+  String get hosts_contextCopy => 'Duplicate';
+
+  @override
+  String get hosts_contextMoveToGroup => 'Move to Group';
+
+  @override
+  String get hosts_contextEdit => 'Edit';
+
+  @override
+  String get hosts_contextSelect => 'Select';
+
+  @override
+  String get hosts_contextDelete => 'Delete';
+
+  @override
+  String get hostForm_editTitle => 'Edit Host';
+
+  @override
+  String get hostForm_addTitle => 'Add Host';
+
+  @override
+  String get hostForm_deleteTitle => 'Delete Host';
+
+  @override
+  String hostForm_deleteConfirm(String name) {
+    return 'Are you sure you want to delete \"$name\"?';
+  }
+
+  @override
+  String get hostForm_deleteTooltip => 'Delete Host';
+
+  @override
+  String get hostForm_noJumpHosts => 'No jump hosts available';
+
+  @override
+  String get hostForm_selectJumpHost => 'Select Jump Host';
+
+  @override
+  String get hostForm_sectionBasic => 'Basic Info';
+
+  @override
+  String get hostForm_name => 'Name';
+
+  @override
+  String get hostForm_nameHint => 'My Server';
+
+  @override
+  String get hostForm_nameRequired => 'Please enter a name';
+
+  @override
+  String get hostForm_host => 'Hostname / IP';
+
+  @override
+  String get hostForm_hostHint => '192.168.1.1 or example.com';
+
+  @override
+  String get hostForm_hostRequired => 'Please enter a host address';
+
+  @override
+  String get hostForm_username => 'Username';
+
+  @override
+  String get hostForm_usernameRequired => 'Please enter a username';
+
+  @override
+  String get hostForm_port => 'Port';
+
+  @override
+  String get hostForm_portInvalid => 'Invalid port';
+
+  @override
+  String get hostForm_sectionAuth => 'Authentication';
+
+  @override
+  String get hostForm_sectionGroup => 'Group & Tags';
+
+  @override
+  String get hostForm_group => 'Group';
+
+  @override
+  String get hostForm_groupHint => 'Production (optional)';
+
+  @override
+  String get hostForm_tags => 'Tags';
+
+  @override
+  String get hostForm_tagsHint => 'web, prod, nginx (comma separated)';
+
+  @override
+  String get hostForm_password => 'Password';
+
+  @override
+  String get hostForm_sectionKey => 'Key';
+
+  @override
+  String hostForm_keyLoadError(String error) {
+    return 'Failed to load keys: $error';
+  }
+
+  @override
+  String get hostForm_noKeys =>
+      'No SSH keys added yet. Please create or import keys in the \"Keys\" page first.';
+
+  @override
+  String get hostForm_selectKey => 'Select Key';
+
+  @override
+  String get hostForm_selectKeyHint => 'Select an SSH key';
+
+  @override
+  String get hostForm_selectKeyRequired => 'Please select an SSH key';
+
+  @override
+  String get hostForm_sectionJumpHost => 'Jump Host';
+
+  @override
+  String get hostForm_noJumpHostConfigured => 'No jump host configured';
+
+  @override
+  String get hostForm_addJumpHost => 'Add Jump Host';
+
+  @override
+  String get terminal_connecting => 'Connecting...';
+
+  @override
+  String get terminal_noTabs => 'No open terminals';
+
+  @override
+  String get terminal_noTabsHint =>
+      'Select a host from the host list to start a connection';
+
+  @override
+  String get terminal_switchToAbc => 'Switch to ABC Keyboard';
+
+  @override
+  String get terminal_switchToFunction => 'Switch to Function Panel';
+
+  @override
+  String get terminal_newTab => 'New Terminal';
+
+  @override
+  String get terminal_connectionFailed => 'Connection Failed';
+
+  @override
+  String get terminal_connectionFailedHint =>
+      'Press the close button to close this tab, or reconnect from the host list.';
+
+  @override
+  String get terminal_errorTimeout =>
+      'Connection timed out. Please check the host address and port, and ensure the network is reachable.';
+
+  @override
+  String get terminal_errorRefused =>
+      'Unable to connect to host. Please verify the host address, port, and that the SSH service is running.';
+
+  @override
+  String get terminal_errorAuth =>
+      'Authentication failed. Please check the username, password, or SSH key.';
+
+  @override
+  String get terminal_errorHostKey =>
+      'Host key verification failed. The host key may have changed.';
+
+  @override
+  String get terminal_errorNetwork =>
+      'Network unreachable. Please check your network connection.';
+
+  @override
+  String get terminal_errorDns =>
+      'DNS resolution failed. Please check the host address.';
+
+  @override
+  String get toolbar_customize => 'Customize Keyboard';
+
+  @override
+  String get toolbar_addGroupTooltip => 'Add Key Group';
+
+  @override
+  String get toolbar_addGroupTitle => 'Add Key Group';
+
+  @override
+  String get toolbar_restoreDefaults => 'Restore Defaults';
+
+  @override
+  String get toolbar_restoreConfirmTitle => 'Restore Defaults';
+
+  @override
+  String get toolbar_restoreConfirmContent =>
+      'Are you sure you want to restore the default keyboard layout? Custom ordering and visible group count will be reset.';
+
+  @override
+  String get toolbar_restoreButton => 'Restore';
+
+  @override
+  String get toolbar_visibleGroups => 'Visible Groups';
+
+  @override
+  String toolbar_visibleGroupsHint(int count) {
+    return 'Toolbar shows at most $count key groups';
+  }
+
+  @override
+  String get toolbar_hidden => '(Hidden)';
+
+  @override
+  String get toolbar_groupTerminalCtrl => 'Terminal Control';
+
+  @override
+  String get toolbar_groupSignals => 'Signals';
+
+  @override
+  String get toolbar_groupSymbols1 => 'Symbols 1';
+
+  @override
+  String get toolbar_groupNavigation => 'Navigation';
+
+  @override
+  String get toolbar_groupPunctuation => 'Punctuation';
+
+  @override
+  String get toolbar_groupSymbols2 => 'Symbols 2';
+
+  @override
+  String get toolbar_groupBrackets1 => 'Brackets 1';
+
+  @override
+  String get toolbar_groupBrackets2 => 'Brackets 2';
+
+  @override
+  String get toolbar_groupEditing => 'Editing';
+
+  @override
+  String get toolbar_groupAdvanced => 'Advanced';
+
+  @override
+  String get toolbar_groupSearch => 'Search';
+
+  @override
+  String get toolbar_groupArrows => 'Arrow Keys';
+
+  @override
+  String get function_tabCode => 'Code';
+
+  @override
+  String get function_tabHistory => 'History';
+
+  @override
+  String get function_tabHelp => 'Help';
+
+  @override
+  String get function_tabKeyboard => 'Keyboard';
+
+  @override
+  String get function_noActiveSession => 'No active session';
+
+  @override
+  String get function_switchToKeyboard => 'Switching to keyboard...';
+
+  @override
+  String get function_comingSoon => 'Snippets (coming soon)';
+
+  @override
+  String get function_helpCtrlC => 'Interrupt current process';
+
+  @override
+  String get function_helpCtrlD => 'Send EOF / Exit';
+
+  @override
+  String get function_helpCtrlZ => 'Suspend current process';
+
+  @override
+  String get function_helpCtrlL => 'Clear screen';
+
+  @override
+  String get function_helpCtrlR => 'Reverse search history';
+
+  @override
+  String get function_helpCtrlA => 'Move cursor to beginning';
+
+  @override
+  String get function_helpCtrlE => 'Move cursor to end';
+
+  @override
+  String get function_helpTab => 'Auto-complete';
+
+  @override
+  String get commandHistory_searchHint => 'Search commands...';
+
+  @override
+  String get commandHistory_empty => 'No command history';
+
+  @override
+  String get commandHistory_noMatch => 'No matches found';
+
+  @override
+  String get keys_title => 'Keys';
+
+  @override
+  String get keys_importTooltip => 'Import Key';
+
+  @override
+  String get keys_generateTooltip => 'Generate Key';
+
+  @override
+  String get keys_noKeys => 'No SSH keys yet';
+
+  @override
+  String get keys_noKeysHint => 'Generate a key pair for passwordless login';
+
+  @override
+  String get keys_generate => 'Generate Key';
+
+  @override
+  String get keys_import => 'Import Key';
+
+  @override
+  String get keyTile_copyPublicKey => 'Copy Public Key';
+
+  @override
+  String get keyTile_exportPrivateKey => 'Export Private Key';
+
+  @override
+  String get keyTile_exportPublicKey => 'Export Public Key';
+
+  @override
+  String get keyTile_delete => 'Delete';
+
+  @override
+  String get keyTile_publicKeyCopied => 'Public key copied to clipboard';
+
+  @override
+  String keyTile_exportFailed(String error) {
+    return 'Export failed: $error';
+  }
+
+  @override
+  String get keyTile_deleteTitle => 'Delete Key';
+
+  @override
+  String keyTile_deleteConfirm(String name) {
+    return 'Are you sure you want to delete \"$name\"?';
+  }
+
+  @override
+  String get keyGenerate_title => 'Generate Key';
+
+  @override
+  String get keyGenerate_failed => 'Key generation failed, please try again';
+
+  @override
+  String get keyGenerate_doneTitle => 'Key Generated';
+
+  @override
+  String keyGenerate_doneMessage(String name) {
+    return '\"$name\" has been generated. Add the following public key to the server\'s ~/.ssh/authorized_keys file:';
+  }
+
+  @override
+  String keyGenerate_fingerprint(String fingerprint) {
+    return 'Fingerprint: $fingerprint';
+  }
+
+  @override
+  String get keyGenerate_publicKeyCopied => 'Public key copied';
+
+  @override
+  String get keyGenerate_copyPublicKey => 'Copy Public Key';
+
+  @override
+  String get keyGenerate_done => 'Done';
+
+  @override
+  String get keyGenerate_sectionName => 'Key Name';
+
+  @override
+  String get keyGenerate_nameLabel => 'Name';
+
+  @override
+  String get keyGenerate_nameHint => 'My SSH Key';
+
+  @override
+  String get keyGenerate_nameRequired => 'Please enter a key name';
+
+  @override
+  String get keyGenerate_sectionPassphrase => 'Passphrase (optional)';
+
+  @override
+  String get keyGenerate_passphraseLabel => 'Passphrase';
+
+  @override
+  String get keyGenerate_passphraseHint => 'Leave empty for no encryption';
+
+  @override
+  String get keyGenerate_sectionType => 'Key Type';
+
+  @override
+  String get keyGenerate_recommended => 'Recommended';
+
+  @override
+  String get keyGenerate_ed25519Desc => 'Faster, more secure modern algorithm';
+
+  @override
+  String get keyGenerate_rsa2048Desc => 'Good compatibility for legacy systems';
+
+  @override
+  String get keyGenerate_rsa4096Desc => 'Higher security, slower generation';
+
+  @override
+  String get keyGenerate_rsaWarning =>
+      'RSA key generation takes longer. Please be patient.';
+
+  @override
+  String get keyGenerate_generating => 'Generating...';
+
+  @override
+  String get keyGenerate_button => 'Generate Key';
+
+  @override
+  String get keyImport_title => 'Import Key';
+
+  @override
+  String get keyImport_noFileSelected => 'Please select a key file first';
+
+  @override
+  String get keyImport_noContent => 'Please paste the key content';
+
+  @override
+  String keyImport_success(String name) {
+    return 'Key \"$name\" imported successfully';
+  }
+
+  @override
+  String get keyImport_formatError =>
+      'Key import failed. Please check the format.';
+
+  @override
+  String keyImport_failed(String error) {
+    return 'Import failed: $error';
+  }
+
+  @override
+  String get keyImport_sectionName => 'Key Name';
+
+  @override
+  String get keyImport_nameLabel => 'Name';
+
+  @override
+  String get keyImport_nameHint => 'My SSH Key';
+
+  @override
+  String get keyImport_nameRequired => 'Please enter a key name';
+
+  @override
+  String get keyImport_sectionMethod => 'Import Method';
+
+  @override
+  String get keyImport_fromFile => 'Import from File';
+
+  @override
+  String get keyImport_pasteKey => 'Paste Key';
+
+  @override
+  String get keyImport_sectionPassphrase => 'Passphrase (optional)';
+
+  @override
+  String get keyImport_passphraseLabel => 'Passphrase';
+
+  @override
+  String get keyImport_passphraseHint =>
+      'Enter if the private key is password protected';
+
+  @override
+  String get keyImport_formatHint =>
+      'Supports OpenSSH format private key files (e.g., id_ed25519, id_rsa).';
+
+  @override
+  String get keyImport_importing => 'Importing...';
+
+  @override
+  String get keyImport_button => 'Import Key';
+
+  @override
+  String get keyImport_selectFile => 'Select Key File';
+
+  @override
+  String get snippets_title => 'Snippets';
+
+  @override
+  String get snippets_addTooltip => 'Add Snippet';
+
+  @override
+  String get snippets_noSnippets => 'No snippets yet';
+
+  @override
+  String get snippets_add => 'Add Snippet';
+
+  @override
+  String get snippets_favorites => 'Favorites';
+
+  @override
+  String get snippets_ungrouped => 'Ungrouped';
+
+  @override
+  String get snippetForm_editTitle => 'Edit Snippet';
+
+  @override
+  String get snippetForm_addTitle => 'Add Snippet';
+
+  @override
+  String get snippetForm_deleteTitle => 'Delete Snippet';
+
+  @override
+  String snippetForm_deleteConfirm(String name) {
+    return 'Are you sure you want to delete \"$name\"?';
+  }
+
+  @override
+  String get snippetForm_deleteTooltip => 'Delete Snippet';
+
+  @override
+  String get snippetForm_sectionBasic => 'Basic Info';
+
+  @override
+  String get snippetForm_nameLabel => 'Name';
+
+  @override
+  String get snippetForm_nameHint => 'My Deploy Script';
+
+  @override
+  String get snippetForm_nameRequired => 'Please enter a name';
+
+  @override
+  String get snippetForm_commandLabel => 'Command';
+
+  @override
+  String get snippetForm_commandRequired => 'Please enter a command';
+
+  @override
+  String get snippetForm_sectionVariables => 'Variables';
+
+  @override
+  String get snippetForm_variablesHint =>
+      'Define variables in the command and set default values here';
+
+  @override
+  String get snippetForm_defaultValueHint => 'Default value (optional)';
+
+  @override
+  String snippetForm_variableDescLabel(String name) {
+    return 'Description for $name';
+  }
+
+  @override
+  String get snippetForm_variableDescHint =>
+      'Describe the purpose of this variable (optional)';
+
+  @override
+  String get snippetForm_sectionGroup => 'Group & Tags';
+
+  @override
+  String get snippetForm_groupLabel => 'Group';
+
+  @override
+  String get snippetForm_groupHint => 'DevOps (optional)';
+
+  @override
+  String get snippetForm_tagsLabel => 'Tags';
+
+  @override
+  String get snippetForm_tagsHint => 'deploy, k8s (comma separated)';
+
+  @override
+  String get snippetExecute_selectTitle => 'Select Snippet';
+
+  @override
+  String get snippetExecute_searchHint => 'Search snippets...';
+
+  @override
+  String get snippetExecute_noSnippets => 'No snippets yet';
+
+  @override
+  String get snippetExecute_noMatch => 'No matching snippets found';
+
+  @override
+  String snippetExecute_fillVariables(String name) {
+    return 'Fill Variables — $name';
+  }
+
+  @override
+  String get snippetExecute_execute => 'Execute';
+
+  @override
+  String get forwarding_title => 'Port Forwarding';
+
+  @override
+  String get forwarding_addTooltip => 'Add Forward';
+
+  @override
+  String get forwarding_noForwards => 'No port forwarding rules';
+
+  @override
+  String get forwarding_add => 'Add Forward';
+
+  @override
+  String get forwarding_startFromTerminal =>
+      'Please start forwarding from a terminal session';
+
+  @override
+  String get forwarding_stop => 'Stop';
+
+  @override
+  String get forwarding_start => 'Start';
+
+  @override
+  String get forwarding_autoStart => 'Auto Start';
+
+  @override
+  String get forwardForm_editTitle => 'Edit Forward';
+
+  @override
+  String get forwardForm_addTitle => 'Add Forward';
+
+  @override
+  String get forwardForm_deleteTitle => 'Delete Forward';
+
+  @override
+  String forwardForm_deleteConfirm(String name) {
+    return 'Are you sure you want to delete \"$name\"?';
+  }
+
+  @override
+  String get forwardForm_deleteTooltip => 'Delete Forward';
+
+  @override
+  String get forwardForm_sectionBasic => 'Basic Info';
+
+  @override
+  String get forwardForm_nameLabel => 'Name';
+
+  @override
+  String get forwardForm_nameHint => 'Database Tunnel';
+
+  @override
+  String get forwardForm_nameRequired => 'Please enter a name';
+
+  @override
+  String get forwardForm_sectionType => 'Forward Type';
+
+  @override
+  String get forwardForm_sectionPorts => 'Port Configuration';
+
+  @override
+  String get forwardForm_localPort => 'Local Port';
+
+  @override
+  String get forwardForm_portInvalid => 'Please enter a valid port (1-65535)';
+
+  @override
+  String get forwardForm_remoteHost => 'Remote Host';
+
+  @override
+  String get forwardForm_remoteHostRequired => 'Please enter a remote host';
+
+  @override
+  String get forwardForm_remotePort => 'Remote Port';
+
+  @override
+  String get forwardForm_bindAddress => 'Bind Address';
+
+  @override
+  String get forwardForm_bindAddressRequired => 'Please enter a bind address';
+
+  @override
+  String get forwardForm_sectionOptions => 'Options';
+
+  @override
+  String get forwardForm_autoStart => 'Auto Start';
+
+  @override
+  String get forwardForm_autoStartHint =>
+      'Automatically start this forward when connected to host';
+
+  @override
+  String get forwardForm_noHosts =>
+      'No hosts available. Please add a host first.';
+
+  @override
+  String get forwardForm_hostLabel => 'Host';
+
+  @override
+  String get forwardForm_hostRequired => 'Please select a host';
+
+  @override
+  String forwardForm_hostLoadError(String error) {
+    return 'Failed to load hosts: $error';
+  }
+
+  @override
+  String get sftp_copy => 'Copy';
+
+  @override
+  String get sftp_rename => 'Rename';
+
+  @override
+  String get sftp_download => 'Download';
+
+  @override
+  String get sftp_copyPath => 'Copy Path';
+
+  @override
+  String sftp_pathCopied(String path) {
+    return 'Path copied: $path';
+  }
+
+  @override
+  String get sftp_copied => 'Copied. Navigate to target folder to paste.';
+
+  @override
+  String get sftp_deleteConfirmTitle => 'Confirm Delete';
+
+  @override
+  String sftp_deleteConfirmContent(String name) {
+    return 'Are you sure you want to delete \"$name\"?';
+  }
+
+  @override
+  String get sftp_renameTitle => 'Rename';
+
+  @override
+  String get sftp_renameLabel => 'New Name';
+
+  @override
+  String get sftp_newFolderTitle => 'New Folder';
+
+  @override
+  String get sftp_newFolderLabel => 'Folder Name';
+
+  @override
+  String get sftp_sortTitle => 'Sort By';
+
+  @override
+  String get sftp_sortByName => 'By Name';
+
+  @override
+  String get sftp_sortBySize => 'By Size';
+
+  @override
+  String get sftp_sortByDate => 'By Date';
+
+  @override
+  String get sftp_sortByType => 'By Type';
+
+  @override
+  String sftp_connectionFailed(String error) {
+    return 'Connection failed: $error';
+  }
+
+  @override
+  String get sftp_paste => 'Paste';
+
+  @override
+  String get sftp_showHidden => 'Show Hidden Files';
+
+  @override
+  String get sftp_hideHidden => 'Hide Hidden Files';
+
+  @override
+  String get sftp_upload => 'Upload';
+
+  @override
+  String get sftp_newFolder => 'New Folder';
+
+  @override
+  String get sftp_sort => 'Sort';
+
+  @override
+  String get sftp_refresh => 'Refresh';
+
+  @override
+  String get sftp_noFiles => 'No files';
+
+  @override
+  String get fileEditor_fileSaved => 'File saved';
+
+  @override
+  String fileEditor_saveFailed(String error) {
+    return 'Save failed: $error';
+  }
+
+  @override
+  String get fileEditor_editMode => 'Edit mode';
+
+  @override
+  String get fileEditor_previewMode => 'Preview mode';
+
+  @override
+  String get fileEditor_save => 'Save';
+
+  @override
+  String fileEditor_loadFailed(String error) {
+    return 'Failed to load file: $error';
+  }
+
+  @override
+  String get fileEditor_modified => 'Modified';
+
+  @override
+  String transfer_title(int count) {
+    return 'Transfers ($count)';
+  }
+
+  @override
+  String get transfer_clearDone => 'Clear done';
+
+  @override
+  String transfer_more(int count) {
+    return '+$count more';
+  }
+
+  @override
+  String get transfer_queued => 'Queued';
+
+  @override
+  String get permission_title => 'Change Permissions';
+
+  @override
+  String get permission_octalLabel => 'Octal (e.g. 644)';
+
+  @override
+  String get permission_apply => 'Apply';
+
+  @override
+  String get settings_title => 'Settings';
+
+  @override
+  String get settings_sectionGeneral => 'General';
+
+  @override
+  String get settings_theme => 'Theme';
+
+  @override
+  String get settings_language => 'Language';
+
+  @override
+  String get settings_languageChinese => '中文';
+
+  @override
+  String get settings_languageEnglish => 'English';
+
+  @override
+  String get settings_languageSystem => 'Follow System';
+
+  @override
+  String get settings_sectionTerminal => 'Terminal';
+
+  @override
+  String get settings_terminalTheme => 'Terminal Color Scheme';
+
+  @override
+  String get settings_cursorStyle => 'Cursor Style';
+
+  @override
+  String get settings_hapticFeedback => 'Haptic Feedback';
+
+  @override
+  String get settings_sectionSecurity => 'Security';
+
+  @override
+  String get settings_biometric => 'Biometric Unlock';
+
+  @override
+  String get settings_autoLock => 'Auto Lock';
+
+  @override
+  String get settings_clipboardAutoClear => 'Auto Clear Clipboard';
+
+  @override
+  String get settings_clipboardAutoClearHint =>
+      'Auto clear clipboard when leaving the app';
+
+  @override
+  String get settings_sectionSync => 'Sync';
+
+  @override
+  String get settings_account => 'Account';
+
+  @override
+  String get settings_loggedIn => 'Logged in';
+
+  @override
+  String get settings_deviceManagement => 'Device Management';
+
+  @override
+  String get settings_syncNow => 'Sync Now';
+
+  @override
+  String get settings_logout => 'Log Out';
+
+  @override
+  String get settings_loginRegister => 'Login / Register';
+
+  @override
+  String get settings_loginHint => 'Login to sync your data';
+
+  @override
+  String get settings_sectionData => 'Data';
+
+  @override
+  String get settings_importSshConfig => 'Import SSH Config';
+
+  @override
+  String get settings_importSshConfigHint => 'Import from ~/.ssh/config file';
+
+  @override
+  String get settings_exportData => 'Export Data';
+
+  @override
+  String get settings_exportDataHint => 'Export all data as a JSON file';
+
+  @override
+  String get settings_sectionAbout => 'About';
+
+  @override
+  String get settings_version => 'Version';
+
+  @override
+  String get settings_themeLight => 'Light';
+
+  @override
+  String get settings_themeDark => 'Dark';
+
+  @override
+  String get settings_themeSystem => 'Follow System';
+
+  @override
+  String get settings_cursorBlock => 'Block';
+
+  @override
+  String get settings_cursorUnderline => 'Underline';
+
+  @override
+  String get settings_cursorBar => 'Bar';
+
+  @override
+  String get settings_autoLockNever => 'Never';
+
+  @override
+  String get settings_autoLockOneMinute => '1 minute';
+
+  @override
+  String settings_autoLockMinutes(int minutes) {
+    return '$minutes minutes';
+  }
+
+  @override
+  String get settings_fontSize => 'Font Size';
+
+  @override
+  String get settings_selectTheme => 'Select Theme';
+
+  @override
+  String get settings_selectTerminalTheme => 'Select Terminal Theme';
+
+  @override
+  String get settings_selectCursorStyle => 'Select Cursor Style';
+
+  @override
+  String get settings_selectAutoLock => 'Auto Lock';
+
+  @override
+  String get settings_deviceManagementTitle => 'Device Management';
+
+  @override
+  String get settings_deviceManagementContent =>
+      'Device management is coming soon.';
+
+  @override
+  String get settings_syncing => 'Syncing...';
+
+  @override
+  String get settings_logoutTitle => 'Log Out';
+
+  @override
+  String get settings_logoutConfirm => 'Are you sure you want to log out?';
+
+  @override
+  String get settings_logoutButton => 'Log Out';
+
+  @override
+  String settings_importedCount(int count) {
+    return 'Imported $count hosts';
+  }
+
+  @override
+  String settings_importFailed(String error) {
+    return 'Import failed: $error';
+  }
+
+  @override
+  String get settings_exportTitle => 'Export Data';
+
+  @override
+  String get settings_exportContent =>
+      'Export all hosts, keys, and snippet data as a JSON file.';
+
+  @override
+  String get settings_exported => 'Data exported';
+
+  @override
+  String get settings_exportButton => 'Export';
+
+  @override
+  String get settings_loginTitle => 'Login';
+
+  @override
+  String get settings_registerTitle => 'Register';
+
+  @override
+  String get settings_emailLabel => 'Email';
+
+  @override
+  String get settings_passwordLabel => 'Password';
+
+  @override
+  String get settings_switchToLogin => 'Already have an account? Login';
+
+  @override
+  String get settings_switchToRegister => 'Don\'t have an account? Register';
+
+  @override
+  String get settings_registerButton => 'Register';
+
+  @override
+  String get settings_loginButton => 'Login';
+
+  @override
+  String get lock_locked => 'Locked';
+
+  @override
+  String get lock_unlock => 'Unlock';
+
+  @override
+  String get lock_biometricReason =>
+      'Please verify your identity to unlock Nexterm';
+
+  @override
+  String get dataExport_shareText => 'Nexterm Encrypted Backup';
+
+  @override
+  String keysProvider_unsupportedKeyType(String type) {
+    return 'Unsupported key type: $type';
+  }
+
+  @override
+  String get keysProvider_invalidPkcs1 =>
+      'Invalid PKCS#1 RSA private key format';
+
+  @override
+  String get keysProvider_invalidMagic => 'Invalid OpenSSH private key magic';
+
+  @override
+  String get keysProvider_encryptedNotSupported =>
+      'Encrypted private keys are not yet supported. Please decrypt before importing.';
+
+  @override
+  String get keysProvider_singleKeyOnly =>
+      'Only files containing a single key are supported';
+
+  @override
+  String keysProvider_unsupportedFormat(String format) {
+    return 'Unsupported private key format: $format';
+  }
+}

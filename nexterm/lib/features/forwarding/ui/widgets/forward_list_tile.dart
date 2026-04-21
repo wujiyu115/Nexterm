@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:nexterm/core/theme/app_theme.dart';
 import 'package:nexterm/domain/entities/enums.dart';
 import 'package:nexterm/domain/entities/port_forward_entity.dart';
@@ -106,7 +107,9 @@ class ForwardListTile extends StatelessWidget {
                   isActive ? Icons.stop_circle_outlined : Icons.play_circle_outlined,
                   color: isActive ? colorScheme.error : colorScheme.primary,
                 ),
-                tooltip: isActive ? '停止' : '启动',
+                tooltip: isActive
+                    ? AppLocalizations.of(context)!.forwarding_stop
+                    : AppLocalizations.of(context)!.forwarding_start,
                 onPressed: onStartStop,
                 visualDensity: VisualDensity.compact,
               ),
@@ -129,7 +132,7 @@ class _AutoStartChip extends StatelessWidget {
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
-        '自动启动',
+        AppLocalizations.of(context)!.forwarding_autoStart,
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
               color: colorScheme.onSecondaryContainer,
             ),

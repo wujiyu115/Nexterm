@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:nexterm/domain/entities/enums.dart';
 import 'package:nexterm/domain/entities/host_entity.dart';
 import 'package:nexterm/shared/widgets/status_indicator.dart';
@@ -27,7 +28,7 @@ class HostListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final authLabel = host.authMethod.displayName;
+    final authLabel = host.authMethod.localizedName(AppLocalizations.of(context)!);
     final subtitle = '${host.username}@${host.hostname}:${host.port}  ·  $authLabel';
 
     return Card(

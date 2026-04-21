@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nexterm/domain/entities/ssh_key_entity.dart';
 import 'package:nexterm/features/keys/providers/keys_provider.dart';
@@ -16,6 +17,7 @@ class KeyListTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -76,33 +78,33 @@ class KeyListTile extends ConsumerWidget {
               icon: Icon(Icons.more_vert, color: colorScheme.onSurfaceVariant),
               onSelected: (action) => _handleAction(context, ref, action),
               itemBuilder: (context) => [
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: _KeyAction.copyPublicKey,
                   child: Row(
                     children: [
-                      Icon(Icons.copy, size: 18),
-                      SizedBox(width: 10),
-                      Text('复制公钥'),
+                      const Icon(Icons.copy, size: 18),
+                      const SizedBox(width: 10),
+                      Text(l.keyTile_copyPublicKey),
                     ],
                   ),
                 ),
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: _KeyAction.exportPrivateKey,
                   child: Row(
                     children: [
-                      Icon(Icons.file_download_outlined, size: 18),
-                      SizedBox(width: 10),
-                      Text('导出私钥'),
+                      const Icon(Icons.file_download_outlined, size: 18),
+                      const SizedBox(width: 10),
+                      Text(l.keyTile_exportPrivateKey),
                     ],
                   ),
                 ),
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: _KeyAction.exportPublicKey,
                   child: Row(
                     children: [
-                      Icon(Icons.file_upload_outlined, size: 18),
-                      SizedBox(width: 10),
-                      Text('导出公钥'),
+                      const Icon(Icons.file_upload_outlined, size: 18),
+                      const SizedBox(width: 10),
+                      Text(l.keyTile_exportPublicKey),
                     ],
                   ),
                 ),
@@ -112,7 +114,7 @@ class KeyListTile extends ConsumerWidget {
                     children: [
                       Icon(Icons.delete_outline, size: 18, color: Theme.of(context).colorScheme.error),
                       const SizedBox(width: 10),
-                      Text('删除', style: TextStyle(color: Theme.of(context).colorScheme.error)),
+                      Text(l.keyTile_delete, style: TextStyle(color: Theme.of(context).colorScheme.error)),
                     ],
                   ),
                 ),
@@ -125,12 +127,13 @@ class KeyListTile extends ConsumerWidget {
   }
 
   Future<void> _handleAction(BuildContext context, WidgetRef ref, _KeyAction action) async {
+    final l = AppLocalizations.of(context)!;
     switch (action) {
       case _KeyAction.copyPublicKey:
         await Clipboard.setData(ClipboardData(text: sshKey.publicKey));
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('公钥已复制到剪贴板'), duration: Duration(seconds: 2)),
+            SnackBar(content: Text(l.keyTile_publicKeyCopied), duration: const Duration(seconds: 2)),
           );
         }
       case _KeyAction.exportPrivateKey:
@@ -140,7 +143,7 @@ class KeyListTile extends ConsumerWidget {
         } catch (e) {
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('导出失败: $e')),
+              SnackBar(content: Text(l.keyTile_exportFailed(e.toString()))),
             );
           }
         }
@@ -151,7 +154,7 @@ class KeyListTile extends ConsumerWidget {
         } catch (e) {
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('导出失败: $e')),
+              SnackBar(content: Text(l.keyTile_exportFailed(e.toString()))),
             );
           }
         }
@@ -159,14 +162,14 @@ class KeyListTile extends ConsumerWidget {
         final confirmed = await showDialog<bool>(
           context: context,
           builder: (ctx) => AlertDialog(
-            title: const Text('删除密钥'),
-            content: Text('确定要删除「${sshKey.name}」吗？'),
+            title: Text(l.keyTile_deleteTitle),
+            content: Text(l.keyTile_deleteConfirm(sshKey.name)),
             actions: [
-              TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: const Text('取消')),
+              TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: Text(l.common_cancel)),
               FilledButton(
                 style: FilledButton.styleFrom(backgroundColor: Theme.of(ctx).colorScheme.error),
                 onPressed: () => Navigator.of(ctx).pop(true),
-                child: const Text('删除'),
+                child: Text(l.common_delete),
               ),
             ],
           ),

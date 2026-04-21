@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nexterm/domain/entities/enums.dart';
@@ -122,17 +123,18 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
   }
 
   Future<void> _delete() async {
+    final l = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('删除主机'),
-        content: Text('确定要删除「${_nameController.text}」吗？'),
+        title: Text(l.hostForm_deleteTitle),
+        content: Text(l.hostForm_deleteConfirm(_nameController.text)),
         actions: [
-          TextButton(onPressed: () => ctx.pop(false), child: const Text('取消')),
+          TextButton(onPressed: () => ctx.pop(false), child: Text(l.common_cancel)),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: Theme.of(ctx).colorScheme.error),
             onPressed: () => ctx.pop(true),
-            child: const Text('删除'),
+            child: Text(l.common_delete),
           ),
         ],
       ),
@@ -144,7 +146,7 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
   }
 
   Future<void> _addJumpHost(List<HostEntity> availableHosts) async {
-    // Exclude the current host (if editing) and already selected jump hosts
+    final l = AppLocalizations.of(context)!;
     final selectable = availableHosts.where((h) {
       if (h.id == widget.hostId) return false;
       if (_jumpHosts.contains(h.id)) return false;
@@ -153,7 +155,7 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
 
     if (selectable.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('没有可用的跳板机')),
+        SnackBar(content: Text(l.hostForm_noJumpHosts)),
       );
       return;
     }
@@ -161,7 +163,7 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
     final chosen = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('选择跳板机'),
+        title: Text(l.hostForm_selectJumpHost),
         content: SizedBox(
           width: double.maxFinite,
           child: ListView.builder(
@@ -178,7 +180,7 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.of(ctx).pop(), child: const Text('取消')),
+          TextButton(onPressed: () => Navigator.of(ctx).pop(), child: Text(l.common_cancel)),
         ],
       ),
     );
@@ -190,6 +192,7 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final hostsAsync = ref.watch(hostsStreamProvider);
     final allHosts = hostsAsync.valueOrNull ?? [];
 
@@ -198,12 +201,12 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
       builder: (context, _) {
         return Scaffold(
           appBar: AppBar(
-            title: Text(_isEditMode ? '编辑主机' : '添加主机'),
+            title: Text(_isEditMode ? l.hostForm_editTitle : l.hostForm_addTitle),
             actions: [
               if (_isEditMode)
                 IconButton(
                   icon: Icon(Icons.delete_outline, color: Theme.of(context).colorScheme.error),
-                  tooltip: '删除主机',
+                  tooltip: l.hostForm_deleteTooltip,
                   onPressed: _delete,
                 ),
             ],
@@ -213,19 +216,19 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
             child: ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                _FormSection(title: '基本信息', children: [
+                _FormSection(title: l.hostForm_sectionBasic, children: [
                   _buildField(
                     controller: _nameController,
-                    label: '名称',
-                    hint: '我的服务器',
-                    validator: (v) => v == null || v.trim().isEmpty ? '请输入名称' : null,
+                    label: l.hostForm_name,
+                    hint: l.hostForm_nameHint,
+                    validator: (v) => v == null || v.trim().isEmpty ? l.hostForm_nameRequired : null,
                   ),
                   const SizedBox(height: 12),
                   _buildField(
                     controller: _hostnameController,
-                    label: '主机名 / IP',
-                    hint: '192.168.1.1 或 example.com',
-                    validator: (v) => v == null || v.trim().isEmpty ? '请输入主机地址' : null,
+                    label: l.hostForm_host,
+                    hint: l.hostForm_hostHint,
+                    validator: (v) => v == null || v.trim().isEmpty ? l.hostForm_hostRequired : null,
                   ),
                   const SizedBox(height: 12),
                   Row(children: [
@@ -233,21 +236,21 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
                       flex: 3,
                       child: _buildField(
                         controller: _usernameController,
-                        label: '用户名',
+                        label: l.hostForm_username,
                         hint: 'root',
-                        validator: (v) => v == null || v.trim().isEmpty ? '请输入用户名' : null,
+                        validator: (v) => v == null || v.trim().isEmpty ? l.hostForm_usernameRequired : null,
                       ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: _buildField(
                         controller: _portController,
-                        label: '端口',
+                        label: l.hostForm_port,
                         hint: '22',
                         keyboardType: TextInputType.number,
                         validator: (v) {
                           final port = int.tryParse(v ?? '');
-                          if (port == null || port < 1 || port > 65535) return '无效端口';
+                          if (port == null || port < 1 || port > 65535) return l.hostForm_portInvalid;
                           return null;
                         },
                       ),
@@ -255,10 +258,10 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
                   ]),
                 ]),
                 const SizedBox(height: 20),
-                _FormSection(title: '认证方式', children: [
+                _FormSection(title: l.hostForm_sectionAuth, children: [
                   SegmentedButton<AuthMethod>(
                     segments: AuthMethod.values
-                        .map((m) => ButtonSegment<AuthMethod>(value: m, label: Text(m.displayName)))
+                        .map((m) => ButtonSegment<AuthMethod>(value: m, label: Text(m.localizedName(l))))
                         .toList(),
                     selected: {_authMethod},
                     onSelectionChanged: (s) => setState(() => _authMethod = s.first),
@@ -276,17 +279,17 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
                 const SizedBox(height: 20),
                 _buildJumpHostsSection(allHosts),
                 const SizedBox(height: 20),
-                _FormSection(title: '分组与标签', children: [
+                _FormSection(title: l.hostForm_sectionGroup, children: [
                   _buildField(
                     controller: _groupController,
-                    label: '分组',
-                    hint: '生产环境（可选）',
+                    label: l.hostForm_group,
+                    hint: l.hostForm_groupHint,
                   ),
                   const SizedBox(height: 12),
                   _buildField(
                     controller: _tagsController,
-                    label: '标签',
-                    hint: 'web, prod, nginx（逗号分隔）',
+                    label: l.hostForm_tags,
+                    hint: l.hostForm_tagsHint,
                   ),
                 ]),
                 const SizedBox(height: 32),
@@ -294,7 +297,7 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
                   onPressed: _isLoading ? null : _save,
                   child: _isLoading
                       ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                      : const Text('保存'),
+                      : Text(l.common_save),
                 ),
                 const SizedBox(height: 80),
               ],
@@ -306,23 +309,23 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
   }
 
   Widget _buildKeySelector() {
+    final l = AppLocalizations.of(context)!;
     final keysAsync = ref.watch(keysStreamProvider);
     return keysAsync.when(
       loading: () => const LinearProgressIndicator(),
-      error: (e, _) => Text('加载密钥失败: $e', style: TextStyle(color: Theme.of(context).colorScheme.error)),
+      error: (e, _) => Text(l.hostForm_keyLoadError(e.toString()), style: TextStyle(color: Theme.of(context).colorScheme.error)),
       data: (keys) {
         if (keys.isEmpty) {
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
             child: Text(
-              '尚未添加任何 SSH 密钥，请先在"密钥"页面创建或导入密钥。',
+              l.hostForm_noKeys,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ),
           );
         }
-        // Ensure selected key still exists; clear if not.
         final effectiveKeyId =
             (_selectedKeyId != null && keys.any((k) => k.id == _selectedKeyId))
                 ? _selectedKeyId
@@ -334,8 +337,8 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
         }
         return DropdownButtonFormField<String>(
           value: effectiveKeyId,
-          decoration: const InputDecoration(labelText: '选择密钥'),
-          hint: const Text('请选择 SSH 密钥'),
+          decoration: InputDecoration(labelText: l.hostForm_selectKey),
+          hint: Text(l.hostForm_selectKeyHint),
           items: keys.map((SSHKeyEntity key) {
             return DropdownMenuItem<String>(
               value: key.id,
@@ -344,7 +347,7 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
           }).toList(),
           onChanged: (value) => setState(() => _selectedKeyId = value),
           validator: (v) => (_authMethod == AuthMethod.key && (v == null || v.isEmpty))
-              ? '请选择一个 SSH 密钥'
+              ? l.hostForm_selectKeyRequired
               : null,
         );
       },
@@ -352,12 +355,13 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
   }
 
   Widget _buildJumpHostsSection(List<HostEntity> allHosts) {
-    return _FormSection(title: '跳板机', children: [
+    final l = AppLocalizations.of(context)!;
+    return _FormSection(title: l.hostForm_sectionJumpHost, children: [
       if (_jumpHosts.isEmpty)
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 4),
           child: Text(
-            '未配置跳板机',
+            l.hostForm_noJumpHostConfigured,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
               color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
@@ -384,7 +388,7 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
       OutlinedButton.icon(
         onPressed: () => _addJumpHost(allHosts),
         icon: const Icon(Icons.add, size: 18),
-        label: const Text('添加跳板机'),
+        label: Text(l.hostForm_addJumpHost),
       ),
     ]);
   }
@@ -405,6 +409,7 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
   }
 
   Widget _buildPasswordField() {
+    final l = AppLocalizations.of(context)!;
     return StatefulBuilder(
       builder: (context, localSetState) {
         var obscure = true;
@@ -413,7 +418,7 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
             controller: _passwordController,
             obscureText: obscure,
             decoration: InputDecoration(
-              labelText: '密码',
+              labelText: l.hostForm_password,
               suffixIcon: IconButton(
                 icon: Icon(obscure ? Icons.visibility_off : Icons.visibility),
                 onPressed: () => innerSetState(() => obscure = !obscure),

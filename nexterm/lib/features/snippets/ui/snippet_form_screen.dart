@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nexterm/domain/entities/snippet_entity.dart';
@@ -159,17 +160,18 @@ class _SnippetFormScreenState extends ConsumerState<SnippetFormScreen> {
   }
 
   Future<void> _delete() async {
+    final l = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('删除片段'),
-        content: Text('确定要删除「${_nameController.text}」吗？'),
+        title: Text(l.snippetForm_deleteTitle),
+        content: Text(l.snippetForm_deleteConfirm(_nameController.text)),
         actions: [
-          TextButton(onPressed: () => ctx.pop(false), child: const Text('取消')),
+          TextButton(onPressed: () => ctx.pop(false), child: Text(l.common_cancel)),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: Theme.of(ctx).colorScheme.error),
             onPressed: () => ctx.pop(true),
-            child: const Text('删除'),
+            child: Text(l.common_delete),
           ),
         ],
       ),
@@ -185,14 +187,15 @@ class _SnippetFormScreenState extends ConsumerState<SnippetFormScreen> {
     return FutureBuilder(
       future: _loadSnippet(),
       builder: (context, _) {
+        final l = AppLocalizations.of(context)!;
         return Scaffold(
           appBar: AppBar(
-            title: Text(_isEditMode ? '编辑片段' : '添加片段'),
+            title: Text(_isEditMode ? l.snippetForm_editTitle : l.snippetForm_addTitle),
             actions: [
               if (_isEditMode)
                 IconButton(
                   icon: Icon(Icons.delete_outline, color: Theme.of(context).colorScheme.error),
-                  tooltip: '删除片段',
+                  tooltip: l.snippetForm_deleteTooltip,
                   onPressed: _delete,
                 ),
             ],
@@ -202,24 +205,24 @@ class _SnippetFormScreenState extends ConsumerState<SnippetFormScreen> {
             child: ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                _FormSection(title: '基本信息', children: [
+                _FormSection(title: l.snippetForm_sectionBasic, children: [
                   TextFormField(
                     controller: _nameController,
-                    decoration: const InputDecoration(labelText: '名称', hintText: '我的部署脚本'),
-                    validator: (v) => v == null || v.trim().isEmpty ? '请输入名称' : null,
+                    decoration: InputDecoration(labelText: l.snippetForm_nameLabel, hintText: l.snippetForm_nameHint),
+                    validator: (v) => v == null || v.trim().isEmpty ? l.snippetForm_nameRequired : null,
                   ),
                   const SizedBox(height: 12),
                   TextFormField(
                     controller: _commandController,
-                    decoration: const InputDecoration(
-                      labelText: '命令',
+                    decoration: InputDecoration(
+                      labelText: l.snippetForm_commandLabel,
                       hintText: 'kubectl apply -f \${FILE}',
                       alignLabelWithHint: true,
                     ),
                     style: const TextStyle(fontFamily: 'monospace', fontSize: 13),
                     maxLines: 5,
                     minLines: 3,
-                    validator: (v) => v == null || v.trim().isEmpty ? '请输入命令' : null,
+                    validator: (v) => v == null || v.trim().isEmpty ? l.snippetForm_commandRequired : null,
                     onChanged: (value) {
                       setState(() => _updateVariables(value));
                     },
@@ -227,10 +230,10 @@ class _SnippetFormScreenState extends ConsumerState<SnippetFormScreen> {
                 ]),
                 if (_detectedVariables.isNotEmpty) ...[
                   const SizedBox(height: 20),
-                  _FormSection(title: '变量', children: [
-                    const Text(
-                      '使用 \${变量名} 语法定义变量，并在此设置默认值',
-                      style: TextStyle(fontSize: 12, color: Colors.grey),
+                  _FormSection(title: l.snippetForm_sectionVariables, children: [
+                    Text(
+                      l.snippetForm_variablesHint,
+                      style: const TextStyle(fontSize: 12, color: Colors.grey),
                     ),
                     const SizedBox(height: 8),
                     ..._detectedVariables.map((name) => Padding(
@@ -242,7 +245,7 @@ class _SnippetFormScreenState extends ConsumerState<SnippetFormScreen> {
                             controller: _variableControllers[name],
                             decoration: InputDecoration(
                               labelText: name,
-                              hintText: '默认值（可选）',
+                              hintText: l.snippetForm_defaultValueHint,
                               prefixText: '\${$name} = ',
                               prefixStyle: const TextStyle(fontFamily: 'monospace', fontSize: 12),
                             ),
@@ -251,8 +254,8 @@ class _SnippetFormScreenState extends ConsumerState<SnippetFormScreen> {
                           TextFormField(
                             controller: _variableDescControllers[name],
                             decoration: InputDecoration(
-                              labelText: '$name 的描述',
-                              hintText: '描述此变量的用途（可选）',
+                              labelText: l.snippetForm_variableDescLabel(name),
+                              hintText: l.snippetForm_variableDescHint,
                               isDense: true,
                             ),
                             style: const TextStyle(fontSize: 13),
@@ -263,15 +266,15 @@ class _SnippetFormScreenState extends ConsumerState<SnippetFormScreen> {
                   ]),
                 ],
                 const SizedBox(height: 20),
-                _FormSection(title: '分组与标签', children: [
+                _FormSection(title: l.snippetForm_sectionGroup, children: [
                   TextFormField(
                     controller: _groupController,
-                    decoration: const InputDecoration(labelText: '分组', hintText: 'DevOps（可选）'),
+                    decoration: InputDecoration(labelText: l.snippetForm_groupLabel, hintText: l.snippetForm_groupHint),
                   ),
                   const SizedBox(height: 12),
                   TextFormField(
                     controller: _tagsController,
-                    decoration: const InputDecoration(labelText: '标签', hintText: 'deploy, k8s（逗号分隔）'),
+                    decoration: InputDecoration(labelText: l.snippetForm_tagsLabel, hintText: l.snippetForm_tagsHint),
                   ),
                 ]),
                 const SizedBox(height: 32),
@@ -279,7 +282,7 @@ class _SnippetFormScreenState extends ConsumerState<SnippetFormScreen> {
                   onPressed: _isLoading ? null : _save,
                   child: _isLoading
                       ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                      : const Text('保存'),
+                      : Text(l.common_save),
                 ),
                 const SizedBox(height: 80),
               ],

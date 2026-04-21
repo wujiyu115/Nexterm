@@ -1,12 +1,14 @@
+import 'package:nexterm/l10n/app_localizations.dart';
+
 enum AuthMethod {
   password,
   key,
   keyboardInteractive;
 
-  String get displayName => switch (this) {
-    password => '密码认证',
-    key => '密钥认证',
-    keyboardInteractive => '键盘交互',
+  String localizedName(AppLocalizations l) => switch (this) {
+    password => l.auth_password,
+    key => l.auth_key,
+    keyboardInteractive => l.auth_keyboardInteractive,
   };
 }
 
@@ -46,10 +48,10 @@ enum ForwardType {
   remote,
   dynamic;
 
-  String get displayName => switch (this) {
-    local => '本地转发',
-    remote => '远程转发',
-    dynamic => '动态转发 (SOCKS5)',
+  String localizedName(AppLocalizations l) => switch (this) {
+    local => l.forwarding_local,
+    remote => l.forwarding_remote,
+    dynamic => l.forwarding_dynamic,
   };
 
   String get shortLabel => switch (this) {

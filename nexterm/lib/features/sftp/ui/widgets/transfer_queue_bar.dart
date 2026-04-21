@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nexterm/features/sftp/providers/transfer_provider.dart';
 
@@ -40,7 +41,7 @@ class TransferQueueBar extends ConsumerWidget {
                 const Icon(Icons.swap_vert, size: 16),
                 const SizedBox(width: 6),
                 Text(
-                  'Transfers (${active.length})',
+                  AppLocalizations.of(context)!.transfer_title(active.length),
                   style: theme.textTheme.labelMedium,
                 ),
                 const Spacer(),
@@ -52,7 +53,7 @@ class TransferQueueBar extends ConsumerWidget {
                   ),
                   onPressed: () =>
                       ref.read(transferQueueProvider.notifier).removeCompleted(),
-                  child: const Text('Clear done'),
+                  child: Text(AppLocalizations.of(context)!.transfer_clearDone),
                 ),
               ],
             ),
@@ -65,7 +66,7 @@ class TransferQueueBar extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.only(left: 16, bottom: 6),
               child: Text(
-                '+$overflow more',
+                AppLocalizations.of(context)!.transfer_more(overflow),
                 style: theme.textTheme.labelSmall?.copyWith(
                   color: colorScheme.onSurface.withAlpha(150),
                 ),
@@ -121,7 +122,7 @@ class _TransferRow extends StatelessWidget {
           const SizedBox(width: 8),
           Text(
             isQueued
-                ? 'Queued'
+                ? AppLocalizations.of(context)!.transfer_queued
                 : '${(progress * 100).toStringAsFixed(0)}%',
             style: theme.textTheme.labelSmall,
           ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nexterm/features/terminal/providers/command_history_provider.dart';
 
@@ -56,7 +57,7 @@ class _CommandHistoryPanelState extends ConsumerState<CommandHistoryPanel> {
               fontSize: 14,
             ),
             decoration: InputDecoration(
-              hintText: '搜索命令…',
+              hintText: AppLocalizations.of(context)!.commandHistory_searchHint,
               hintStyle: TextStyle(
                 color: isDark ? Colors.white38 : Colors.black38,
               ),
@@ -82,7 +83,7 @@ class _CommandHistoryPanelState extends ConsumerState<CommandHistoryPanel> {
           child: reversed.isEmpty
               ? Center(
                   child: Text(
-                    _query.isEmpty ? '暂无命令历史' : '无匹配结果',
+                    _query.isEmpty ? AppLocalizations.of(context)!.commandHistory_empty : AppLocalizations.of(context)!.commandHistory_noMatch,
                     style: TextStyle(
                       color: isDark ? Colors.white38 : Colors.black38,
                       fontSize: 14,

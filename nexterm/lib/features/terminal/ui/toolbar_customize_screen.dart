@@ -1,20 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nexterm/features/terminal/models/toolbar_key_definition.dart';
 import 'package:nexterm/features/terminal/providers/toolbar_config_provider.dart';
 
-/// Screen for customising the keyboard toolbar layout.
-///
-/// Shows a live preview of the toolbar at the top, followed by a reorderable
-/// list of key groups. Each group can be removed, and removed groups can be
-/// re-added via the "+" button. A "Restore Defaults" option is available in
-/// the overflow menu.
 class ToolbarCustomizeScreen extends ConsumerWidget {
   const ToolbarCustomizeScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
     final groups = ref.watch(toolbarConfigProvider);
     final notifier = ref.read(toolbarConfigProvider.notifier);
     final removedGroups = notifier.removedGroups;
@@ -23,24 +19,24 @@ class ToolbarCustomizeScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('自定义键盘'),
+        title: Text(l.toolbar_customize),
         actions: [
           if (removedGroups.isNotEmpty)
             IconButton(
               icon: const Icon(Icons.add),
-              tooltip: '添加按键组',
-              onPressed: () => _showAddGroupSheet(context, notifier, removedGroups),
+              tooltip: l.toolbar_addGroupTooltip,
+              onPressed: () => _showAddGroupSheet(context, l, notifier, removedGroups),
             ),
           PopupMenuButton<String>(
             onSelected: (value) {
               if (value == 'restore') {
-                _confirmRestore(context, notifier, visibleCountNotifier);
+                _confirmRestore(context, l, notifier, visibleCountNotifier);
               }
             },
             itemBuilder: (_) => [
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'restore',
-                child: Text('恢复默认'),
+                child: Text(l.toolbar_restoreDefaults),
               ),
             ],
           ),
@@ -48,17 +44,14 @@ class ToolbarCustomizeScreen extends ConsumerWidget {
       ),
       body: Column(
         children: [
-          // Live preview bar.
           _ToolbarPreview(groups: groups, visibleCount: visibleCount),
           const Divider(height: 1),
-          // Visible group count setting.
           _VisibleCountSetting(
             value: visibleCount,
             max: groups.length,
             onChanged: (v) => visibleCountNotifier.setCount(v),
           ),
           const Divider(height: 1),
-          // Reorderable group list.
           Expanded(
             child: ReorderableListView.builder(
               buildDefaultDragHandles: false,
@@ -86,25 +79,26 @@ class ToolbarCustomizeScreen extends ConsumerWidget {
 
   void _showAddGroupSheet(
     BuildContext context,
+    AppLocalizations l,
     ToolbarConfigNotifier notifier,
     List<ToolbarKeyGroup> removedGroups,
   ) {
     showCupertinoModalPopup(
       context: context,
       builder: (ctx) => CupertinoActionSheet(
-        title: const Text('添加按键组'),
+        title: Text(l.toolbar_addGroupTitle),
         actions: removedGroups
             .map((g) => CupertinoActionSheetAction(
                   onPressed: () {
                     notifier.addGroup(g.id);
                     Navigator.pop(ctx);
                   },
-                  child: Text('${g.name}  (${g.keys.map((k) => k.label).join(", ")})'),
+                  child: Text('${toolbarGroupName(g.id, l)}  (${g.keys.map((k) => k.label).join(", ")})'),
                 ))
             .toList(),
         cancelButton: CupertinoActionSheetAction(
           onPressed: () => Navigator.pop(ctx),
-          child: const Text('取消'),
+          child: Text(l.common_cancel),
         ),
       ),
     );
@@ -112,18 +106,19 @@ class ToolbarCustomizeScreen extends ConsumerWidget {
 
   void _confirmRestore(
     BuildContext context,
+    AppLocalizations l,
     ToolbarConfigNotifier notifier,
     VisibleGroupCountNotifier visibleCountNotifier,
   ) {
     showCupertinoDialog(
       context: context,
       builder: (ctx) => CupertinoAlertDialog(
-        title: const Text('恢复默认'),
-        content: const Text('确定要恢复默认的键盘布局吗？自定义的排序和显示组数将被重置。'),
+        title: Text(l.toolbar_restoreConfirmTitle),
+        content: Text(l.toolbar_restoreConfirmContent),
         actions: [
           CupertinoDialogAction(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('取消'),
+            child: Text(l.common_cancel),
           ),
           CupertinoDialogAction(
             isDestructiveAction: true,
@@ -132,17 +127,13 @@ class ToolbarCustomizeScreen extends ConsumerWidget {
               visibleCountNotifier.setCount(defaultVisibleGroupCount);
               Navigator.pop(ctx);
             },
-            child: const Text('恢复'),
+            child: Text(l.toolbar_restoreButton),
           ),
         ],
       ),
     );
   }
 }
-
-// ---------------------------------------------------------------------------
-// Visible group count setting
-// ---------------------------------------------------------------------------
 
 class _VisibleCountSetting extends StatelessWidget {
   final int value;
@@ -157,6 +148,7 @@ class _VisibleCountSetting extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -167,14 +159,14 @@ class _VisibleCountSetting extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '显示组数',
+                  l.toolbar_visibleGroups,
                   style: theme.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.w600,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  '工具栏最多显示 $value 组快捷键',
+                  l.toolbar_visibleGroupsHint(value),
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
@@ -207,10 +199,6 @@ class _VisibleCountSetting extends StatelessWidget {
     );
   }
 }
-
-// ---------------------------------------------------------------------------
-// Live preview
-// ---------------------------------------------------------------------------
 
 class _ToolbarPreview extends StatelessWidget {
   final List<ToolbarKeyGroup> groups;
@@ -267,10 +255,6 @@ class _ToolbarPreview extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Group tile
-// ---------------------------------------------------------------------------
-
 class _GroupTile extends StatelessWidget {
   final ToolbarKeyGroup group;
   final int index;
@@ -287,8 +271,10 @@ class _GroupTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final keysPreview = group.keys.map((k) => k.label).join('  ');
+    final groupName = toolbarGroupName(group.id, l);
 
     return Opacity(
       opacity: isVisible ? 1.0 : 0.45,
@@ -298,13 +284,11 @@ class _GroupTile extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
           child: Row(
             children: [
-              // Remove button.
               IconButton(
                 icon: const Icon(Icons.remove_circle, color: Colors.red, size: 22),
                 onPressed: onRemove,
                 visualDensity: VisualDensity.compact,
               ),
-              // Group info.
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -312,13 +296,13 @@ class _GroupTile extends StatelessWidget {
                     Row(
                       children: [
                         Text(
-                          group.name,
+                          groupName,
                           style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
                         ),
                         if (!isVisible) ...[
                           const SizedBox(width: 6),
                           Text(
-                            '(隐藏)',
+                            l.toolbar_hidden,
                             style: theme.textTheme.labelSmall?.copyWith(
                               color: theme.colorScheme.onSurfaceVariant,
                             ),
@@ -339,7 +323,6 @@ class _GroupTile extends StatelessWidget {
                   ],
                 ),
               ),
-              // Drag handle.
               ReorderableDragStartListener(
                 index: index,
                 child: const Padding(

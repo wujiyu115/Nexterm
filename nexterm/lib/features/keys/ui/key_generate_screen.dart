@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nexterm/domain/entities/enums.dart';
@@ -22,7 +23,6 @@ class _KeyGenerateScreenState extends ConsumerState<KeyGenerateScreen> {
   bool _isGenerating = false;
   bool _obscurePassphrase = true;
 
-  // Supported types for generation (Ed25519 and RSA)
   static const _supportedTypes = [
     KeyType.ed25519,
     KeyType.rsa2048,
@@ -55,23 +55,25 @@ class _KeyGenerateScreenState extends ConsumerState<KeyGenerateScreen> {
       await _showPublicKeyDialog(entity);
       if (mounted) context.pop();
     } else {
+      final l = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('密钥生成失败，请重试')),
+        SnackBar(content: Text(l.keyGenerate_failed)),
       );
     }
   }
 
   Future<void> _showPublicKeyDialog(SSHKeyEntity entity) async {
+    final l = AppLocalizations.of(context)!;
     await showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('密钥已生成'),
+        title: Text(l.keyGenerate_doneTitle),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '「${entity.name}」已成功生成。将以下公钥添加到服务器的 ~/.ssh/authorized_keys 文件中：',
+              l.keyGenerate_doneMessage(entity.name),
               style: Theme.of(ctx).textTheme.bodyMedium,
             ),
             const SizedBox(height: 12),
@@ -90,7 +92,7 @@ class _KeyGenerateScreenState extends ConsumerState<KeyGenerateScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              '指纹: ${entity.fingerprint}',
+              l.keyGenerate_fingerprint(entity.fingerprint),
               style: Theme.of(ctx).textTheme.labelSmall?.copyWith(
                 color: Theme.of(ctx).colorScheme.onSurfaceVariant,
               ),
@@ -103,15 +105,15 @@ class _KeyGenerateScreenState extends ConsumerState<KeyGenerateScreen> {
               await Clipboard.setData(ClipboardData(text: entity.publicKey));
               if (ctx.mounted) {
                 ScaffoldMessenger.of(ctx).showSnackBar(
-                  const SnackBar(content: Text('公钥已复制'), duration: Duration(seconds: 2)),
+                  SnackBar(content: Text(l.keyGenerate_publicKeyCopied), duration: const Duration(seconds: 2)),
                 );
               }
             },
-            child: const Text('复制公钥'),
+            child: Text(l.keyGenerate_copyPublicKey),
           ),
           FilledButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('完成'),
+            child: Text(l.keyGenerate_done),
           ),
         ],
       ),
@@ -120,39 +122,40 @@ class _KeyGenerateScreenState extends ConsumerState<KeyGenerateScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('生成密钥')),
+      appBar: AppBar(title: Text(l.keyGenerate_title)),
       body: Form(
         key: _formKey,
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
             _FormSection(
-              title: '密钥名称',
+              title: l.keyGenerate_sectionName,
               children: [
                 TextFormField(
                   controller: _nameController,
-                  decoration: const InputDecoration(
-                    labelText: '名称',
-                    hintText: '我的 SSH 密钥',
+                  decoration: InputDecoration(
+                    labelText: l.keyGenerate_nameLabel,
+                    hintText: l.keyGenerate_nameHint,
                   ),
-                  validator: (v) => v == null || v.trim().isEmpty ? '请输入密钥名称' : null,
+                  validator: (v) => v == null || v.trim().isEmpty ? l.keyGenerate_nameRequired : null,
                 ),
               ],
             ),
             const SizedBox(height: 20),
             _FormSection(
-              title: '密码短语（可选）',
+              title: l.keyGenerate_sectionPassphrase,
               children: [
                 TextFormField(
                   controller: _passphraseController,
                   obscureText: _obscurePassphrase,
                   decoration: InputDecoration(
-                    labelText: '密码短语',
-                    hintText: '留空则不加密私钥',
+                    labelText: l.keyGenerate_passphraseLabel,
+                    hintText: l.keyGenerate_passphraseHint,
                     suffixIcon: IconButton(
                       icon: Icon(_obscurePassphrase ? Icons.visibility_off : Icons.visibility),
                       onPressed: () => setState(() => _obscurePassphrase = !_obscurePassphrase),
@@ -163,7 +166,7 @@ class _KeyGenerateScreenState extends ConsumerState<KeyGenerateScreen> {
             ),
             const SizedBox(height: 20),
             _FormSection(
-              title: '密钥类型',
+              title: l.keyGenerate_sectionType,
               children: [
                 RadioGroup<KeyType>(
                   groupValue: _selectedType,
@@ -187,7 +190,7 @@ class _KeyGenerateScreenState extends ConsumerState<KeyGenerateScreen> {
                                   borderRadius: BorderRadius.circular(4),
                                 ),
                                 child: Text(
-                                  '推荐',
+                                  l.keyGenerate_recommended,
                                   style: theme.textTheme.labelSmall?.copyWith(
                                     color: colorScheme.onPrimaryContainer,
                                     fontWeight: FontWeight.w600,
@@ -199,9 +202,9 @@ class _KeyGenerateScreenState extends ConsumerState<KeyGenerateScreen> {
                         ),
                         subtitle: Text(
                           switch (type) {
-                            KeyType.ed25519 => '更快、更安全的现代算法',
-                            KeyType.rsa2048 => '兼容性好，适合旧系统',
-                            KeyType.rsa4096 => '更高安全级别，生成较慢',
+                            KeyType.ed25519 => l.keyGenerate_ed25519Desc,
+                            KeyType.rsa2048 => l.keyGenerate_rsa2048Desc,
+                            KeyType.rsa4096 => l.keyGenerate_rsa4096Desc,
                             _ => '',
                           },
                           style: theme.textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
@@ -227,7 +230,7 @@ class _KeyGenerateScreenState extends ConsumerState<KeyGenerateScreen> {
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      'RSA 密钥生成需要较长时间，请耐心等待。',
+                      l.keyGenerate_rsaWarning,
                       style: theme.textTheme.bodySmall?.copyWith(color: colorScheme.onTertiaryContainer),
                     ),
                   ),
@@ -244,7 +247,7 @@ class _KeyGenerateScreenState extends ConsumerState<KeyGenerateScreen> {
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
                   : const Icon(Icons.generating_tokens),
-              label: Text(_isGenerating ? '生成中…' : '生成密钥'),
+              label: Text(_isGenerating ? l.keyGenerate_generating : l.keyGenerate_button),
             ),
             const SizedBox(height: 80),
           ],

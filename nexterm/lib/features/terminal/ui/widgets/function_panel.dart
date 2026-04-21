@@ -1,20 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:nexterm/features/terminal/ui/widgets/command_history_panel.dart';
 
-/// The function-key mode panel displayed when the system keyboard is hidden.
-///
-/// Contains a bottom [TabBar] with four tabs:
-///   1. **代码** `{}` — Code snippets (placeholder)
-///   2. **历史** `⏱` — Command history
-///   3. **帮助** `?` — Quick-reference help
-///   4. **键盘** `⌨` — Switch back to ABC (system keyboard) mode
 class FunctionPanel extends StatefulWidget {
   final String? sessionId;
-
-  /// Called when the user taps a command from the history panel.
   final void Function(String command) onCommandSelected;
-
-  /// Called when the user taps the "键盘" tab to switch back to ABC mode.
   final VoidCallback onSwitchToAbc;
 
   const FunctionPanel({
@@ -37,7 +27,6 @@ class _FunctionPanelState extends State<FunctionPanel>
     super.initState();
     _tabController = TabController(length: 4, vsync: this);
     _tabController.addListener(() {
-      // If the user taps the "键盘" tab (index 3), switch to ABC mode.
       if (_tabController.index == 3) {
         widget.onSwitchToAbc();
       }
@@ -52,6 +41,7 @@ class _FunctionPanelState extends State<FunctionPanel>
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bgColor = isDark ? const Color(0xFF1E1E2E) : const Color(0xFFF0F0F5);
 
@@ -60,7 +50,6 @@ class _FunctionPanelState extends State<FunctionPanel>
       color: bgColor,
       child: Column(
         children: [
-          // Tab bar at the top of the panel.
           Container(
             color: isDark ? const Color(0xFF181825) : const Color(0xFFE0E0EA),
             child: TabBar(
@@ -70,15 +59,14 @@ class _FunctionPanelState extends State<FunctionPanel>
               indicatorColor: Theme.of(context).colorScheme.primary,
               indicatorSize: TabBarIndicatorSize.label,
               labelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
-              tabs: const [
-                Tab(icon: Text('{}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)), text: '代码'),
-                Tab(icon: Icon(Icons.history, size: 18), text: '历史'),
-                Tab(icon: Icon(Icons.help_outline, size: 18), text: '帮助'),
-                Tab(icon: Icon(Icons.keyboard, size: 18), text: '键盘'),
+              tabs: [
+                Tab(icon: const Text('{}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)), text: l.function_tabCode),
+                Tab(icon: const Icon(Icons.history, size: 18), text: l.function_tabHistory),
+                Tab(icon: const Icon(Icons.help_outline, size: 18), text: l.function_tabHelp),
+                Tab(icon: const Icon(Icons.keyboard, size: 18), text: l.function_tabKeyboard),
               ],
             ),
           ),
-          // Tab content.
           Expanded(
             child: TabBarView(
               controller: _tabController,
@@ -89,11 +77,9 @@ class _FunctionPanelState extends State<FunctionPanel>
                         sessionId: widget.sessionId!,
                         onCommandSelected: widget.onCommandSelected,
                       )
-                    : _EmptyTab(message: '无活动会话'),
+                    : _EmptyTab(message: l.function_noActiveSession),
                 _HelpTab(),
-                // The keyboard tab triggers onSwitchToAbc via the listener,
-                // so we just show a brief message here.
-                _EmptyTab(message: '切换到系统键盘…'),
+                _EmptyTab(message: l.function_switchToKeyboard),
               ],
             ),
           ),
@@ -103,13 +89,10 @@ class _FunctionPanelState extends State<FunctionPanel>
   }
 }
 
-// ---------------------------------------------------------------------------
-// Tab content widgets
-// ---------------------------------------------------------------------------
-
 class _SnippetsPlaceholder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Center(
       child: Column(
@@ -118,7 +101,7 @@ class _SnippetsPlaceholder extends StatelessWidget {
           Icon(Icons.code, size: 40, color: isDark ? Colors.white24 : Colors.black26),
           const SizedBox(height: 8),
           Text(
-            '代码片段（即将推出）',
+            l.function_comingSoon,
             style: TextStyle(
               color: isDark ? Colors.white38 : Colors.black38,
               fontSize: 14,
@@ -133,19 +116,20 @@ class _SnippetsPlaceholder extends StatelessWidget {
 class _HelpTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textColor = isDark ? Colors.white70 : Colors.black87;
     final dimColor = isDark ? Colors.white38 : Colors.black45;
 
     final shortcuts = [
-      ('Ctrl+C', '中断当前进程'),
-      ('Ctrl+D', '发送 EOF / 退出'),
-      ('Ctrl+Z', '挂起当前进程'),
-      ('Ctrl+L', '清屏'),
-      ('Ctrl+R', '反向搜索历史'),
-      ('Ctrl+A', '光标移到行首'),
-      ('Ctrl+E', '光标移到行尾'),
-      ('Tab', '自动补全'),
+      ('Ctrl+C', l.function_helpCtrlC),
+      ('Ctrl+D', l.function_helpCtrlD),
+      ('Ctrl+Z', l.function_helpCtrlZ),
+      ('Ctrl+L', l.function_helpCtrlL),
+      ('Ctrl+R', l.function_helpCtrlR),
+      ('Ctrl+A', l.function_helpCtrlA),
+      ('Ctrl+E', l.function_helpCtrlE),
+      ('Tab', l.function_helpTab),
     ];
 
     return ListView.separated(
