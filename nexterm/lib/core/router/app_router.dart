@@ -14,6 +14,7 @@ import 'package:nexterm/features/terminal/ui/terminal_screen.dart';
 import 'package:nexterm/features/sftp/ui/sftp_screen.dart';
 import 'package:nexterm/features/sftp/ui/file_editor_screen.dart';
 import 'package:nexterm/features/settings/ui/settings_screen.dart';
+import 'package:nexterm/features/terminal/ui/toolbar_customize_screen.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -78,6 +79,11 @@ final appRouter = GoRouter(
       path: '/terminal/connect/:hostId',
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) => TerminalScreen(hostId: state.pathParameters['hostId']),
+    ),
+    GoRoute(
+      path: '/terminal/customize-keyboard',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const ToolbarCustomizeScreen(),
     ),
     GoRoute(
       path: '/sftp/:sessionId',

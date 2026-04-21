@@ -57,6 +57,8 @@ SSHClient? _getClientForSession(SSHService sshService, String sessionId) {
 // SftpState
 // ---------------------------------------------------------------------------
 
+enum SortField { name, size, date, type }
+
 class SftpState {
   final String currentPath;
   final List<RemoteFileInfo> files;
@@ -64,6 +66,9 @@ class SftpState {
   final String? error;
   final Set<String> selectedPaths;
   final bool showHidden;
+  final SortField sortField;
+  final bool sortAscending;
+  final List<String> copiedPaths;
 
   const SftpState({
     this.currentPath = '/',
@@ -72,6 +77,9 @@ class SftpState {
     this.error,
     this.selectedPaths = const {},
     this.showHidden = false,
+    this.sortField = SortField.name,
+    this.sortAscending = true,
+    this.copiedPaths = const [],
   });
 
   SftpState copyWith({
@@ -81,6 +89,9 @@ class SftpState {
     Object? error = _sentinel,
     Set<String>? selectedPaths,
     bool? showHidden,
+    SortField? sortField,
+    bool? sortAscending,
+    List<String>? copiedPaths,
   }) {
     return SftpState(
       currentPath: currentPath ?? this.currentPath,
@@ -89,16 +100,44 @@ class SftpState {
       error: error == _sentinel ? this.error : error as String?,
       selectedPaths: selectedPaths ?? this.selectedPaths,
       showHidden: showHidden ?? this.showHidden,
+      sortField: sortField ?? this.sortField,
+      sortAscending: sortAscending ?? this.sortAscending,
+      copiedPaths: copiedPaths ?? this.copiedPaths,
     );
   }
 
-  /// Visible files — hides dot-files when [showHidden] is false.
+  /// Visible files — hides dot-files when [showHidden] is false, then sorts.
   List<RemoteFileInfo> get visibleFiles {
-    if (showHidden) return files;
-    return files.where((f) => !f.name.startsWith('.')).toList();
+    var result = showHidden ? files : files.where((f) => !f.name.startsWith('.')).toList();
+    return _sorted(result);
+  }
+
+  List<RemoteFileInfo> _sorted(List<RemoteFileInfo> input) {
+    final sorted = List<RemoteFileInfo>.from(input);
+    sorted.sort((a, b) {
+      // Directories always first.
+      if (a.isDirectory != b.isDirectory) {
+        return a.isDirectory ? -1 : 1;
+      }
+      final cmp = switch (sortField) {
+        SortField.name => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
+        SortField.size => a.size.compareTo(b.size),
+        SortField.date => (a.modified ?? DateTime(0)).compareTo(b.modified ?? DateTime(0)),
+        SortField.type => _ext(a.name).compareTo(_ext(b.name)),
+      };
+      return sortAscending ? cmp : -cmp;
+    });
+    return sorted;
+  }
+
+  static String _ext(String name) {
+    final dot = name.lastIndexOf('.');
+    return dot == -1 ? '' : name.substring(dot + 1).toLowerCase();
   }
 
   bool get isMultiSelectMode => selectedPaths.isNotEmpty;
+
+  bool get hasCopiedFiles => copiedPaths.isNotEmpty;
 }
 
 // Sentinel value for copyWith nullable fields.
@@ -145,6 +184,18 @@ class SftpNotifier extends StateNotifier<SftpState> {
 
   void toggleHidden() {
     state = state.copyWith(showHidden: !state.showHidden);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Sort
+  // ---------------------------------------------------------------------------
+
+  void setSort(SortField field) {
+    if (state.sortField == field) {
+      state = state.copyWith(sortAscending: !state.sortAscending);
+    } else {
+      state = state.copyWith(sortField: field, sortAscending: true);
+    }
   }
 
   // ---------------------------------------------------------------------------
@@ -206,6 +257,39 @@ class SftpNotifier extends StateNotifier<SftpState> {
       await delete(path, isDirectory: file.isDirectory);
     }
     clearSelection();
+  }
+
+  // ---------------------------------------------------------------------------
+  // Copy / Paste
+  // ---------------------------------------------------------------------------
+
+  void copyPaths(List<String> paths) {
+    state = state.copyWith(copiedPaths: paths);
+  }
+
+  void clearCopied() {
+    state = state.copyWith(copiedPaths: []);
+  }
+
+  Future<void> pasteFiles() async {
+    if (state.copiedPaths.isEmpty) return;
+    state = state.copyWith(isLoading: true);
+    try {
+      for (final srcPath in state.copiedPaths) {
+        final name = p.basename(srcPath);
+        final destPath = _joinPath(state.currentPath, name);
+        final info = await _sftp.stat(srcPath);
+        if (info.isDirectory) {
+          await _sftp.copyRecursive(srcPath, destPath);
+        } else {
+          await _sftp.copyFile(srcPath, destPath);
+        }
+      }
+      state = state.copyWith(copiedPaths: []);
+      await refresh();
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e.toString());
+    }
   }
 
   // ---------------------------------------------------------------------------

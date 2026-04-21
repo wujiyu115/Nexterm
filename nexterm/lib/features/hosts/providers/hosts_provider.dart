@@ -60,6 +60,43 @@ class HostsNotifier extends StateNotifier<AsyncValue<void>> {
       await _repo.update(host.copyWith(lastConnected: () => DateTime.now()));
     }
   }
+
+  /// Duplicates a host by copying its configuration with a new ID and name.
+  Future<void> duplicateHost(String hostId) async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      final host = await _repo.getById(hostId);
+      if (host == null) return;
+      await _repo.insert(host.copyWith(
+        id: const Uuid().v4(),
+        name: '${host.name} (副本)',
+        lastConnected: () => null,
+      ));
+    });
+  }
+
+  /// Moves a single host to a different group.
+  Future<void> moveToGroup(String hostId, String? group) async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      final host = await _repo.getById(hostId);
+      if (host == null) return;
+      await _repo.update(host.copyWith(group: () => group));
+    });
+  }
+
+  /// Moves multiple hosts to a different group.
+  Future<void> moveMultipleToGroup(List<String> ids, String? group) async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      for (final id in ids) {
+        final host = await _repo.getById(id);
+        if (host != null) {
+          await _repo.update(host.copyWith(group: () => group));
+        }
+      }
+    });
+  }
 }
 
 final hostsNotifierProvider = StateNotifierProvider<HostsNotifier, AsyncValue<void>>((ref) {

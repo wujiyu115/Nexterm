@@ -14,7 +14,14 @@ import 'package:xterm/xterm.dart';
 class TerminalViewWidget extends ConsumerWidget {
   final TerminalTab tab;
 
-  const TerminalViewWidget({super.key, required this.tab});
+  /// When true, the system soft keyboard is suppressed (function-key mode).
+  final bool hardwareKeyboardOnly;
+
+  const TerminalViewWidget({
+    super.key,
+    required this.tab,
+    this.hardwareKeyboardOnly = false,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -38,7 +45,7 @@ class TerminalViewWidget extends ConsumerWidget {
       textScaler: TextScaler.noScaling,
       autofocus: true,
       deleteDetection: true,
-      hardwareKeyboardOnly: isMobile ? false : true,
+      hardwareKeyboardOnly: isMobile ? hardwareKeyboardOnly : true,
     );
   }
 }

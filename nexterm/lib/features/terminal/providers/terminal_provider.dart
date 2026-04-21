@@ -10,6 +10,7 @@ import 'package:nexterm/features/hosts/providers/hosts_provider.dart';
 import 'package:nexterm/features/keys/providers/keys_provider.dart';
 import 'package:nexterm/features/snippets/providers/snippets_provider.dart';
 import 'package:nexterm/features/snippets/utils/variable_parser.dart';
+import 'package:nexterm/features/terminal/providers/command_history_provider.dart';
 import 'package:nexterm/features/terminal/services/reconnect_service.dart';
 import 'package:nexterm/features/terminal/services/ssh_service.dart';
 import 'package:nexterm/features/terminal/ui/tab_manager.dart';
@@ -69,12 +70,13 @@ class TerminalActions {
   /// Opens a new tab for [hostId] and starts the SSH connection.
   ///
   /// Looks up the host (and key if needed) from providers.
-  Future<void> connectHost(String hostId) async {
+  /// Returns the SSH session ID on success, or null on failure.
+  Future<String?> connectHost(String hostId) async {
     // Look up host entity.
     final hostAsync = await _ref.read(hostByIdProvider(hostId).future);
     if (hostAsync == null) {
       debugPrint('TerminalActions.connectHost: host $hostId not found');
-      return;
+      return null;
     }
     final host = hostAsync;
 
@@ -105,7 +107,11 @@ class TerminalActions {
       // Wire terminal output and resize BEFORE listening to stdout, so that
       // any autoResize triggered by TerminalView is forwarded to the remote
       // PTY immediately.
-      terminal.onOutput = (data) => _sshService.write(sessionId, data);
+      terminal.onOutput = (data) {
+        _sshService.write(sessionId, data);
+        // Record user input for command history.
+        _ref.read(commandHistoryServiceProvider).onUserInput(sessionId, data);
+      };
       terminal.onResize = (w, h, pw, ph) =>
           _sshService.resizePty(sessionId, w, h);
 
@@ -220,6 +226,7 @@ class TerminalActions {
           debugPrint('autoStart forward ${forward.id} failed: $e');
         }
       }
+      return sessionId;
     } catch (e, st) {
       debugPrint('TerminalActions.connectHost error: $e\n$st');
       _tabManager.updateTabStatus(tab.id, ConnectionStatus.error);
@@ -228,6 +235,7 @@ class TerminalActions {
       final friendlyMessage = _friendlyErrorMessage(e);
       terminal.write('\r\n\x1B[1;31m连接失败\x1B[0m: $friendlyMessage\r\n');
       terminal.write('\r\n\x1B[90m按关闭按钮关闭此标签页，或从主机列表重新连接。\x1B[0m\r\n');
+      return null;
     }
   }
 

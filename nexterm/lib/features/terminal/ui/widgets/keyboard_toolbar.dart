@@ -1,43 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nexterm/features/terminal/models/toolbar_key_definition.dart';
+import 'package:nexterm/features/terminal/providers/toolbar_config_provider.dart';
 
-/// A toolbar that sits above the soft keyboard in the terminal screen.
+/// A scrollable, grouped toolbar that sits above the soft keyboard.
 ///
-/// Provides one-tap access to Tab, Ctrl (toggle), Alt (toggle), Esc, arrow
-/// keys, and a placeholder ⚡ button for Snippets (Phase 2).
-class KeyboardToolbar extends StatefulWidget {
+/// Each group of keys is separated by a thin divider. Ctrl and Alt act as
+/// sticky modifier toggles — when active, the next key press is prefixed with
+/// the modifier byte and the toggle resets.
+class KeyboardToolbar extends ConsumerStatefulWidget {
   /// Called with the raw bytes to write to the SSH session.
   final void Function(Uint8List data) onKeyInput;
-
-  /// Called when the ⚡ (snippets) button is tapped — placeholder for Phase 2.
-  final VoidCallback? onSnippetsTap;
 
   const KeyboardToolbar({
     super.key,
     required this.onKeyInput,
-    this.onSnippetsTap,
   });
 
   @override
-  State<KeyboardToolbar> createState() => _KeyboardToolbarState();
+  ConsumerState<KeyboardToolbar> createState() => _KeyboardToolbarState();
 }
 
-class _KeyboardToolbarState extends State<KeyboardToolbar> {
+class _KeyboardToolbarState extends ConsumerState<KeyboardToolbar> {
   bool _ctrlActive = false;
   bool _altActive = false;
-
-  // -------------------------------------------------------------------------
-  // Byte helpers
-  // -------------------------------------------------------------------------
-
-  /// ANSI escape sequences for arrow keys.
-  static final Uint8List _arrowUp = Uint8List.fromList([0x1B, 0x5B, 0x41]);    // ESC[A
-  static final Uint8List _arrowDown = Uint8List.fromList([0x1B, 0x5B, 0x42]);  // ESC[B
-  static final Uint8List _arrowRight = Uint8List.fromList([0x1B, 0x5B, 0x43]); // ESC[C
-  static final Uint8List _arrowLeft = Uint8List.fromList([0x1B, 0x5B, 0x44]);  // ESC[D
-
-  static final Uint8List _tab = Uint8List.fromList([0x09]);   // \t
-  static final Uint8List _esc = Uint8List.fromList([0x1B]);   // ESC
 
   // -------------------------------------------------------------------------
   // Send helpers
@@ -45,43 +32,27 @@ class _KeyboardToolbarState extends State<KeyboardToolbar> {
 
   void _sendBytes(Uint8List bytes) {
     HapticFeedback.lightImpact();
-    widget.onKeyInput(bytes);
-  }
 
-  void _onTab() {
-    if (_ctrlActive) {
-      // Ctrl+Tab — char code of '\t' is 9, which is already the control code.
-      // Send 0x09 regardless (same byte), then reset modifiers.
-      _sendBytes(Uint8List.fromList([0x09]));
+    if (_ctrlActive && bytes.length == 1) {
+      // Ctrl + printable char → send control code.
+      final code = bytes[0];
+      if (code >= 0x40 && code <= 0x7F) {
+        widget.onKeyInput(Uint8List.fromList([code & 0x1F]));
+      } else {
+        widget.onKeyInput(bytes);
+      }
       _resetModifiers();
-    } else if (_altActive) {
-      // Alt prefix + Tab
-      _sendBytes(Uint8List.fromList([0x1B, 0x09]));
-      _resetModifiers();
-    } else {
-      _sendBytes(_tab);
+      return;
     }
-  }
 
-  void _onEsc() {
-    _sendBytes(_esc);
-    _resetModifiers();
-  }
-
-  void _onArrow(Uint8List sequence) {
     if (_altActive) {
-      // Alt + arrow: ESC ESC [ X
-      final bytes = Uint8List.fromList([0x1B, ...sequence]);
-      _sendBytes(bytes);
-    } else {
-      _sendBytes(sequence);
+      // Alt prefix: ESC + original bytes.
+      widget.onKeyInput(Uint8List.fromList([0x1B, ...bytes]));
+      _resetModifiers();
+      return;
     }
-    if (_ctrlActive || _altActive) _resetModifiers();
-  }
 
-  void _onSnippets() {
-    HapticFeedback.lightImpact();
-    widget.onSnippetsTap?.call();
+    widget.onKeyInput(bytes);
   }
 
   void _resetModifiers() {
@@ -91,15 +62,11 @@ class _KeyboardToolbarState extends State<KeyboardToolbar> {
     });
   }
 
-  // -------------------------------------------------------------------------
-  // Toggle helpers
-  // -------------------------------------------------------------------------
-
   void _toggleCtrl() {
     HapticFeedback.lightImpact();
     setState(() {
       _ctrlActive = !_ctrlActive;
-      if (_ctrlActive) _altActive = false; // Only one modifier at a time.
+      if (_ctrlActive) _altActive = false;
     });
   }
 
@@ -111,12 +78,28 @@ class _KeyboardToolbarState extends State<KeyboardToolbar> {
     });
   }
 
+  void _onKeyTap(ToolbarKeyDef key) {
+    // Ctrl and Alt are modifier toggles, not byte senders.
+    if (key.id == 'ctrl') {
+      _toggleCtrl();
+      return;
+    }
+    if (key.id == 'alt') {
+      _toggleAlt();
+      return;
+    }
+    _sendBytes(key.bytes);
+  }
+
   // -------------------------------------------------------------------------
   // Build
   // -------------------------------------------------------------------------
 
   @override
   Widget build(BuildContext context) {
+    final allGroups = ref.watch(toolbarConfigProvider);
+    final visibleCount = ref.watch(visibleGroupCountProvider);
+    final groups = allGroups.take(visibleCount).toList();
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
@@ -135,105 +118,62 @@ class _KeyboardToolbarState extends State<KeyboardToolbar> {
     final Color activeTextColor = isDark
         ? const Color(0xFF1E1E2E)
         : Colors.white;
-    final Color accentColor = theme.colorScheme.primary;
+    final Color dividerColor = isDark ? Colors.white12 : Colors.black12;
 
     return Container(
       height: 44,
       color: background,
-      child: Row(
-        children: [
-          // Tab
-          Expanded(
-            child: _ToolbarButton(
-              label: 'Tab',
-              color: buttonColor,
-              textColor: textColor,
-              onTap: _onTab,
-            ),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.symmetric(horizontal: 4),
+        child: Row(
+          children: _buildGroupWidgets(
+            groups,
+            buttonColor: buttonColor,
+            activeColor: activeColor,
+            textColor: textColor,
+            activeTextColor: activeTextColor,
+            dividerColor: dividerColor,
           ),
-
-          // Ctrl (toggle)
-          Expanded(
-            child: _ToolbarButton(
-              label: 'Ctrl',
-              color: _ctrlActive ? activeColor : buttonColor,
-              textColor: _ctrlActive ? activeTextColor : textColor,
-              onTap: _toggleCtrl,
-            ),
-          ),
-
-          // Alt (toggle)
-          Expanded(
-            child: _ToolbarButton(
-              label: 'Alt',
-              color: _altActive ? activeColor : buttonColor,
-              textColor: _altActive ? activeTextColor : textColor,
-              onTap: _toggleAlt,
-            ),
-          ),
-
-          // Esc
-          Expanded(
-            child: _ToolbarButton(
-              label: 'Esc',
-              color: buttonColor,
-              textColor: textColor,
-              onTap: _onEsc,
-            ),
-          ),
-
-          // Divider
-          _Divider(color: isDark ? Colors.white12 : Colors.black12),
-
-          // Arrow keys
-          Expanded(
-            child: _ToolbarButton(
-              label: '↑',
-              color: buttonColor,
-              textColor: textColor,
-              onTap: () => _onArrow(_arrowUp),
-            ),
-          ),
-          Expanded(
-            child: _ToolbarButton(
-              label: '↓',
-              color: buttonColor,
-              textColor: textColor,
-              onTap: () => _onArrow(_arrowDown),
-            ),
-          ),
-          Expanded(
-            child: _ToolbarButton(
-              label: '←',
-              color: buttonColor,
-              textColor: textColor,
-              onTap: () => _onArrow(_arrowLeft),
-            ),
-          ),
-          Expanded(
-            child: _ToolbarButton(
-              label: '→',
-              color: buttonColor,
-              textColor: textColor,
-              onTap: () => _onArrow(_arrowRight),
-            ),
-          ),
-
-          // Divider
-          _Divider(color: isDark ? Colors.white12 : Colors.black12),
-
-          // Snippets placeholder (⚡)
-          Expanded(
-            child: _ToolbarButton(
-              label: '⚡',
-              color: accentColor.withValues(alpha: 0.2),
-              textColor: accentColor,
-              onTap: _onSnippets,
-            ),
-          ),
-        ],
+        ),
       ),
     );
+  }
+
+  List<Widget> _buildGroupWidgets(
+    List<ToolbarKeyGroup> groups, {
+    required Color buttonColor,
+    required Color activeColor,
+    required Color textColor,
+    required Color activeTextColor,
+    required Color dividerColor,
+  }) {
+    final widgets = <Widget>[];
+
+    for (int gi = 0; gi < groups.length; gi++) {
+      final group = groups[gi];
+      for (final key in group.keys) {
+        final isActive =
+            (key.id == 'ctrl' && _ctrlActive) ||
+            (key.id == 'alt' && _altActive);
+
+        widgets.add(
+          _ToolbarButton(
+            label: key.label,
+            color: isActive ? activeColor : buttonColor,
+            textColor: isActive ? activeTextColor : textColor,
+            onTap: () => _onKeyTap(key),
+          ),
+        );
+      }
+      // Add divider between groups (not after the last one).
+      if (gi < groups.length - 1) {
+        widgets.add(_VerticalDivider(color: dividerColor));
+      }
+    }
+
+    return widgets;
   }
 }
 
@@ -259,7 +199,8 @@ class _ToolbarButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 4),
+        constraints: const BoxConstraints(minWidth: 40),
+        padding: const EdgeInsets.symmetric(horizontal: 6),
         height: double.infinity,
         margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 6),
         decoration: BoxDecoration(
@@ -281,10 +222,10 @@ class _ToolbarButton extends StatelessWidget {
   }
 }
 
-class _Divider extends StatelessWidget {
+class _VerticalDivider extends StatelessWidget {
   final Color color;
 
-  const _Divider({required this.color});
+  const _VerticalDivider({required this.color});
 
   @override
   Widget build(BuildContext context) {

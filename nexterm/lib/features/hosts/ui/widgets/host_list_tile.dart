@@ -6,15 +6,21 @@ import 'package:nexterm/shared/widgets/status_indicator.dart';
 class HostListTile extends StatelessWidget {
   final HostEntity host;
   final VoidCallback onTap;
-  final VoidCallback onEdit;
+  final VoidCallback onLongPress;
   final VoidCallback onToggleFavorite;
+  final bool isSelected;
+  final bool isSelectionMode;
+  final VoidCallback? onSelectionToggle;
 
   const HostListTile({
     super.key,
     required this.host,
     required this.onTap,
-    required this.onEdit,
+    required this.onLongPress,
     required this.onToggleFavorite,
+    this.isSelected = false,
+    this.isSelectionMode = false,
+    this.onSelectionToggle,
   });
 
   @override
@@ -28,13 +34,25 @@ class HostListTile extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
-        onTap: onTap,
-        onLongPress: onEdit,
+        onTap: isSelectionMode ? onSelectionToggle : onTap,
+        onLongPress: onLongPress,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: Row(
             children: [
-              StatusIndicator(status: ConnectionStatus.disconnected, size: 10),
+              if (isSelectionMode)
+                Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: Icon(
+                    isSelected ? Icons.check_circle : Icons.radio_button_unchecked,
+                    size: 22,
+                    color: isSelected
+                        ? Theme.of(context).colorScheme.primary
+                        : Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                )
+              else
+                StatusIndicator(status: ConnectionStatus.disconnected, size: 10),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(

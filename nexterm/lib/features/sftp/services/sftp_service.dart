@@ -282,6 +282,31 @@ class SftpService {
     return _attrsToInfo(name, remotePath, attrs);
   }
 
+  /// Copies a remote file from [sourcePath] to [destPath] by reading and
+  /// re-writing through the SFTP channel.
+  Future<void> copyFile(String sourcePath, String destPath) async {
+    final data = await readFile(sourcePath);
+    await writeFile(destPath, data);
+  }
+
+  /// Recursively copies a directory from [sourcePath] to [destPath].
+  Future<void> copyRecursive(String sourcePath, String destPath) async {
+    _requireConnected();
+    final attrs = await _client!.stat(sourcePath);
+    if (!attrs.isDirectory) {
+      await copyFile(sourcePath, destPath);
+      return;
+    }
+    await mkdir(destPath);
+    final children = await _client!.listdir(sourcePath);
+    for (final child in children) {
+      if (child.filename == '.' || child.filename == '..') continue;
+      final childSrc = _joinPath(sourcePath, child.filename);
+      final childDst = _joinPath(destPath, child.filename);
+      await copyRecursive(childSrc, childDst);
+    }
+  }
+
   // ---------------------------------------------------------------------------
   // Helpers
   // ---------------------------------------------------------------------------
