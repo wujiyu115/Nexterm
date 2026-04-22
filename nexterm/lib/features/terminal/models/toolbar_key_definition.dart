@@ -108,11 +108,23 @@ Uint8List _ctrlXX() =>
 // ---------------------------------------------------------------------------
 
 List<ToolbarKeyGroup> get defaultToolbarGroups => [
+      ToolbarKeyGroup(id: 'arrows', name: '方向键', keys: [
+        ToolbarKeyDef(id: 'arrow_left', label: '←', groupId: 'arrows', bytes: _arrowLeft),
+        ToolbarKeyDef(id: 'arrow_up', label: '↑', groupId: 'arrows', bytes: _arrowUp),
+        ToolbarKeyDef(id: 'arrow_down', label: '↓', groupId: 'arrows', bytes: _arrowDown),
+        ToolbarKeyDef(id: 'arrow_right', label: '→', groupId: 'arrows', bytes: _arrowRight),
+      ]),
+      ToolbarKeyGroup(id: 'clipboard', name: '剪贴板', keys: [
+        ToolbarKeyDef(id: 'paste', label: 'Paste', groupId: 'clipboard', bytes: Uint8List(0)),
+        ToolbarKeyDef(id: 'ctrl_u', label: '^U', groupId: 'clipboard', bytes: _ctrl('U')),
+        ToolbarKeyDef(id: 'ctrl_k', label: '^K', groupId: 'clipboard', bytes: _ctrl('K')),
+        ToolbarKeyDef(id: 'ctrl_y', label: '^Y', groupId: 'clipboard', bytes: _ctrl('Y')),
+      ]),
       ToolbarKeyGroup(id: 'terminal_ctrl', name: '终端控制', keys: [
         ToolbarKeyDef(id: 'esc', label: 'Esc', groupId: 'terminal_ctrl', bytes: _esc),
         ToolbarKeyDef(id: 'tab', label: 'Tab', groupId: 'terminal_ctrl', bytes: _tab),
-        ToolbarKeyDef(id: 'ctrl', label: 'Ctrl', groupId: 'terminal_ctrl', bytes: Uint8List(0)), // modifier toggle
-        ToolbarKeyDef(id: 'alt', label: 'Alt', groupId: 'terminal_ctrl', bytes: Uint8List(0)), // modifier toggle
+        ToolbarKeyDef(id: 'ctrl', label: 'Ctrl', groupId: 'terminal_ctrl', bytes: Uint8List(0)),
+        ToolbarKeyDef(id: 'alt', label: 'Alt', groupId: 'terminal_ctrl', bytes: Uint8List(0)),
       ]),
       ToolbarKeyGroup(id: 'signals', name: '信号', keys: [
         ToolbarKeyDef(id: 'ctrl_c', label: '^C', groupId: 'signals', bytes: _ctrl('C')),
@@ -131,6 +143,18 @@ List<ToolbarKeyGroup> get defaultToolbarGroups => [
         ToolbarKeyDef(id: 'pgup', label: 'PgUp', groupId: 'navigation', bytes: _pgUp),
         ToolbarKeyDef(id: 'pgdn', label: 'PgDn', groupId: 'navigation', bytes: _pgDn),
         ToolbarKeyDef(id: 'end', label: 'End', groupId: 'navigation', bytes: _end),
+      ]),
+      ToolbarKeyGroup(id: 'editing', name: '编辑', keys: [
+        ToolbarKeyDef(id: 'del', label: 'Del', groupId: 'editing', bytes: _del),
+        ToolbarKeyDef(id: 'ins', label: 'Ins', groupId: 'editing', bytes: _ins),
+        ToolbarKeyDef(id: 'at', label: '@', groupId: 'editing', bytes: _char('@')),
+        ToolbarKeyDef(id: 'question', label: '?', groupId: 'editing', bytes: _char('?')),
+      ]),
+      ToolbarKeyGroup(id: 'search', name: '搜索', keys: [
+        ToolbarKeyDef(id: 'ctrl_r', label: '^R', groupId: 'search', bytes: _ctrl('R')),
+        ToolbarKeyDef(id: 'ctrl_g', label: '^G', groupId: 'search', bytes: _ctrl('G')),
+        ToolbarKeyDef(id: 'ctrl_n', label: '^N', groupId: 'search', bytes: _ctrl('N')),
+        ToolbarKeyDef(id: 'ctrl_p', label: '^P', groupId: 'search', bytes: _ctrl('P')),
       ]),
       ToolbarKeyGroup(id: 'punctuation', name: '标点', keys: [
         ToolbarKeyDef(id: 'equals', label: '=', groupId: 'punctuation', bytes: _char('=')),
@@ -156,12 +180,6 @@ List<ToolbarKeyGroup> get defaultToolbarGroups => [
         ToolbarKeyDef(id: 'lbracket', label: '[', groupId: 'brackets2', bytes: _char('[')),
         ToolbarKeyDef(id: 'rbracket', label: ']', groupId: 'brackets2', bytes: _char(']')),
       ]),
-      ToolbarKeyGroup(id: 'editing', name: '编辑', keys: [
-        ToolbarKeyDef(id: 'del', label: 'Del', groupId: 'editing', bytes: _del),
-        ToolbarKeyDef(id: 'ins', label: 'Ins', groupId: 'editing', bytes: _ins),
-        ToolbarKeyDef(id: 'at', label: '@', groupId: 'editing', bytes: _char('@')),
-        ToolbarKeyDef(id: 'question', label: '?', groupId: 'editing', bytes: _char('?')),
-      ]),
       ToolbarKeyGroup(id: 'fkeys1', name: 'F1–F4', keys: [
         ToolbarKeyDef(id: 'f1', label: 'F1', groupId: 'fkeys1', bytes: _fKey(1)),
         ToolbarKeyDef(id: 'f2', label: 'F2', groupId: 'fkeys1', bytes: _fKey(2)),
@@ -186,34 +204,23 @@ List<ToolbarKeyGroup> get defaultToolbarGroups => [
         ToolbarKeyDef(id: 'alt_r', label: 'Alt-r', groupId: 'advanced', bytes: _altR()),
         ToolbarKeyDef(id: 'ctrl_x_x', label: '^X^X', groupId: 'advanced', bytes: _ctrlXX()),
       ]),
-      ToolbarKeyGroup(id: 'search', name: '搜索', keys: [
-        ToolbarKeyDef(id: 'ctrl_r', label: '^R', groupId: 'search', bytes: _ctrl('R')),
-        ToolbarKeyDef(id: 'ctrl_g', label: '^G', groupId: 'search', bytes: _ctrl('G')),
-        ToolbarKeyDef(id: 'ctrl_n', label: '^N', groupId: 'search', bytes: _ctrl('N')),
-        ToolbarKeyDef(id: 'ctrl_p', label: '^P', groupId: 'search', bytes: _ctrl('P')),
-      ]),
-      ToolbarKeyGroup(id: 'arrows', name: '方向键', keys: [
-        ToolbarKeyDef(id: 'arrow_left', label: '←', groupId: 'arrows', bytes: _arrowLeft),
-        ToolbarKeyDef(id: 'arrow_up', label: '↑', groupId: 'arrows', bytes: _arrowUp),
-        ToolbarKeyDef(id: 'arrow_down', label: '↓', groupId: 'arrows', bytes: _arrowDown),
-        ToolbarKeyDef(id: 'arrow_right', label: '→', groupId: 'arrows', bytes: _arrowRight),
-      ]),
     ];
 
 String toolbarGroupName(String groupId, AppLocalizations l) {
   return switch (groupId) {
+    'arrows' => l.toolbar_groupArrows,
+    'clipboard' => l.toolbar_groupClipboard,
     'terminal_ctrl' => l.toolbar_groupTerminalCtrl,
     'signals' => l.toolbar_groupSignals,
     'symbols1' => l.toolbar_groupSymbols1,
     'navigation' => l.toolbar_groupNavigation,
+    'editing' => l.toolbar_groupEditing,
+    'search' => l.toolbar_groupSearch,
     'punctuation' => l.toolbar_groupPunctuation,
     'symbols2' => l.toolbar_groupSymbols2,
     'brackets1' => l.toolbar_groupBrackets1,
     'brackets2' => l.toolbar_groupBrackets2,
-    'editing' => l.toolbar_groupEditing,
     'advanced' => l.toolbar_groupAdvanced,
-    'search' => l.toolbar_groupSearch,
-    'arrows' => l.toolbar_groupArrows,
     _ => groupId,
   };
 }

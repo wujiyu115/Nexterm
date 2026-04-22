@@ -11,6 +11,7 @@ import 'package:nexterm/features/keys/providers/keys_provider.dart';
 import 'package:nexterm/features/snippets/providers/snippets_provider.dart';
 import 'package:nexterm/features/snippets/utils/variable_parser.dart';
 import 'package:nexterm/features/terminal/providers/command_history_provider.dart';
+import 'package:nexterm/features/terminal/providers/toolbar_modifier_provider.dart';
 import 'package:nexterm/features/terminal/services/reconnect_service.dart';
 import 'package:nexterm/features/terminal/services/ssh_service.dart';
 import 'package:nexterm/features/terminal/ui/tab_manager.dart';
@@ -67,6 +68,29 @@ class TerminalActions {
   PortForwardService get _portForwardService => _ref.read(portForwardServiceProvider);
   ReconnectService get _reconnectService => _ref.read(reconnectServiceProvider);
 
+  void _writeWithModifiers(String sessionId, String data) {
+    final modifier = _ref.read(toolbarModifierProvider);
+    if (modifier.isActive && data.length == 1) {
+      final code = data.codeUnitAt(0);
+      if (modifier.ctrl) {
+        if (code >= 0x61 && code <= 0x7A) {
+          _sshService.writeBytes(sessionId, Uint8List.fromList([code - 0x60]));
+        } else if (code >= 0x41 && code <= 0x5A) {
+          _sshService.writeBytes(sessionId, Uint8List.fromList([code - 0x40]));
+        } else if (code >= 0x5B && code <= 0x5F) {
+          _sshService.writeBytes(sessionId, Uint8List.fromList([code - 0x40]));
+        } else {
+          _sshService.write(sessionId, data);
+        }
+      } else if (modifier.alt) {
+        _sshService.writeBytes(sessionId, Uint8List.fromList([0x1B, code]));
+      }
+      _ref.read(toolbarModifierProvider.notifier).reset();
+    } else {
+      _sshService.write(sessionId, data);
+    }
+  }
+
   /// Opens a new tab for [hostId] and starts the SSH connection.
   ///
   /// Looks up the host (and key if needed) from providers.
@@ -108,8 +132,7 @@ class TerminalActions {
       // any autoResize triggered by TerminalView is forwarded to the remote
       // PTY immediately.
       terminal.onOutput = (data) {
-        _sshService.write(sessionId, data);
-        // Record user input for command history.
+        _writeWithModifiers(sessionId, data);
         _ref.read(commandHistoryServiceProvider).onUserInput(sessionId, data);
       };
       terminal.onResize = (w, h, pw, ph) =>
@@ -144,7 +167,7 @@ class TerminalActions {
                     tab.id, ConnectionStatus.connected);
                 // Wire resize and output before stdout to avoid PTY size mismatch.
                 terminal.onOutput =
-                    (data) => _sshService.write(newSessionId, data);
+                    (data) => _writeWithModifiers(newSessionId, data);
                 terminal.onResize = (w, h, pw, ph) =>
                     _sshService.resizePty(newSessionId, w, h);
                 // Sync current terminal size to the new PTY.

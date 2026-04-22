@@ -48,7 +48,7 @@ class SettingsScreen extends ConsumerWidget {
             fontSize: double.tryParse(
                   settings[SettingsKeys.terminalFontSize] ?? '',
                 ) ??
-                14.0,
+                13.0,
             onChanged: (v) => settingsNotifier.set(SettingsKeys.terminalFontSize, v.round().toString()),
           ),
           ListTile(

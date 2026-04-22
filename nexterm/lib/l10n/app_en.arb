@@ -123,6 +123,7 @@
   "toolbar_groupAdvanced": "Advanced",
   "toolbar_groupSearch": "Search",
   "toolbar_groupArrows": "Arrow Keys",
+  "toolbar_groupClipboard": "Clipboard",
 
   "function_tabCode": "Code",
   "function_tabHistory": "History",
