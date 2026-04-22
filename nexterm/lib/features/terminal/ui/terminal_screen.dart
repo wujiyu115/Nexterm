@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -75,7 +74,12 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
           SizedBox(height: MediaQuery.of(context).padding.top),
 
           TerminalTabBar(
-            onAddTab: () {},
+            onAddTab: () => context.go('/hosts'),
+            isFunctionMode: _isFunctionMode,
+            onToggleMode: activeTab != null ? _toggleKeyboardMode : null,
+            onCustomizeTap: activeTab != null
+                ? () => context.push('/terminal/customize-keyboard')
+                : null,
           ),
 
           Expanded(
@@ -90,12 +94,6 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
           ),
 
           if (activeTab != null) ...[
-            _ModeToggleBar(
-              isFunctionMode: _isFunctionMode,
-              onToggle: _toggleKeyboardMode,
-              onCustomizeTap: () => context.push('/terminal/customize-keyboard'),
-            ),
-
             if (_isFunctionMode)
               FunctionPanel(
                 sessionId: activeTab.sessionId,
@@ -119,79 +117,6 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
                 },
               ),
           ],
-        ],
-      ),
-    );
-  }
-}
-
-class _ModeToggleBar extends StatelessWidget {
-  final bool isFunctionMode;
-  final VoidCallback onToggle;
-  final VoidCallback? onCustomizeTap;
-
-  const _ModeToggleBar({
-    required this.isFunctionMode,
-    required this.onToggle,
-    this.onCustomizeTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context)!;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bgColor = isDark ? const Color(0xFF181825) : const Color(0xFFDDDDE5);
-    final textColor = isDark ? Colors.white70 : Colors.black54;
-    final activeColor = Theme.of(context).colorScheme.primary;
-
-    return Container(
-      height: 32,
-      color: bgColor,
-      child: Row(
-        children: [
-          Expanded(
-            child: GestureDetector(
-              onTap: () {
-                HapticFeedback.lightImpact();
-                onToggle();
-              },
-              behavior: HitTestBehavior.opaque,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    isFunctionMode ? Icons.keyboard : Icons.grid_view_rounded,
-                    size: 16,
-                    color: activeColor,
-                  ),
-                  const SizedBox(width: 6),
-                  Text(
-                    isFunctionMode ? l.terminal_switchToAbc : l.terminal_switchToFunction,
-                    style: TextStyle(
-                      color: textColor,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          if (onCustomizeTap != null)
-            GestureDetector(
-              onTap: () {
-                HapticFeedback.lightImpact();
-                onCustomizeTap!();
-              },
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Icon(
-                  Icons.settings,
-                  size: 16,
-                  color: activeColor,
-                ),
-              ),
-            ),
         ],
       ),
     );

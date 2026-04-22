@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nexterm/domain/entities/enums.dart';
@@ -14,7 +15,17 @@ class TerminalTabBar extends ConsumerWidget {
   /// Called when the user taps the "+" button to add a new tab.
   final VoidCallback? onAddTab;
 
-  const TerminalTabBar({super.key, this.onAddTab});
+  final bool isFunctionMode;
+  final VoidCallback? onToggleMode;
+  final VoidCallback? onCustomizeTap;
+
+  const TerminalTabBar({
+    super.key,
+    this.onAddTab,
+    this.isFunctionMode = false,
+    this.onToggleMode,
+    this.onCustomizeTap,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -48,11 +59,60 @@ class TerminalTabBar extends ConsumerWidget {
             ),
           ),
 
-          // "+" add tab button.
-          IconButton(
-            icon: const Icon(Icons.add, size: 18),
-            tooltip: AppLocalizations.of(context)!.terminal_newTab,
-            onPressed: onAddTab,
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.more_horiz, size: 18),
+            padding: EdgeInsets.zero,
+            onSelected: (value) {
+              HapticFeedback.lightImpact();
+              switch (value) {
+                case 'toggle':
+                  onToggleMode?.call();
+                case 'customize':
+                  onCustomizeTap?.call();
+                case 'add':
+                  onAddTab?.call();
+              }
+            },
+            itemBuilder: (ctx) {
+              final l = AppLocalizations.of(ctx)!;
+              return [
+                if (onToggleMode != null)
+                  PopupMenuItem(
+                    value: 'toggle',
+                    child: ListTile(
+                      leading: Icon(
+                        isFunctionMode ? Icons.keyboard : Icons.grid_view_rounded,
+                      ),
+                      title: Text(
+                        isFunctionMode
+                            ? l.terminal_switchToAbc
+                            : l.terminal_switchToFunction,
+                      ),
+                      contentPadding: EdgeInsets.zero,
+                      visualDensity: VisualDensity.compact,
+                    ),
+                  ),
+                if (onCustomizeTap != null)
+                  PopupMenuItem(
+                    value: 'customize',
+                    child: ListTile(
+                      leading: const Icon(Icons.settings),
+                      title: Text(l.toolbar_customize),
+                      contentPadding: EdgeInsets.zero,
+                      visualDensity: VisualDensity.compact,
+                    ),
+                  ),
+                PopupMenuItem(
+                  value: 'add',
+                  child: ListTile(
+                    leading: const Icon(Icons.add),
+                    title: Text(l.terminal_newTab),
+                    contentPadding: EdgeInsets.zero,
+                    visualDensity: VisualDensity.compact,
+                  ),
+                ),
+              ];
+            },
           ),
         ],
       ),
