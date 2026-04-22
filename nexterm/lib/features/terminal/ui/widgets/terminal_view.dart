@@ -45,22 +45,18 @@ class _TerminalViewWidgetState extends ConsumerState<TerminalViewWidget> {
     final fontSize = ref.watch(terminalFontSizeProvider);
     final isMobile = Platform.isIOS || Platform.isAndroid;
 
-    Widget child = Scrollbar(
-      controller: _scrollController,
-      thumbVisibility: true,
-      child: TerminalView(
-        terminal,
-        theme: app_themes.TerminalThemes.catppuccin,
-        textStyle: TerminalStyle(
-          fontFamily: 'monospace',
-          fontSize: fontSize,
-        ),
-        textScaler: TextScaler.noScaling,
-        scrollController: _scrollController,
-        autofocus: true,
-        deleteDetection: true,
-        hardwareKeyboardOnly: isMobile ? widget.hardwareKeyboardOnly : true,
+    Widget child = TerminalView(
+      terminal,
+      theme: app_themes.TerminalThemes.catppuccin,
+      textStyle: TerminalStyle(
+        fontFamily: 'monospace',
+        fontSize: fontSize,
       ),
+      textScaler: TextScaler.noScaling,
+      scrollController: _scrollController,
+      autofocus: true,
+      deleteDetection: true,
+      hardwareKeyboardOnly: isMobile ? widget.hardwareKeyboardOnly : true,
     );
 
     if (isMobile) {
