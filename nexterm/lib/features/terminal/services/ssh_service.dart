@@ -205,7 +205,7 @@ class SSHService {
       onUserInfoRequest: config.authMethod == AuthMethod.keyboardInteractive
           ? (request) => List.filled(request.prompts.length, '')
           : null,
-      keepAliveInterval: const Duration(seconds: 30),
+      keepAliveInterval: const Duration(seconds: 10),
     );
   }
 
