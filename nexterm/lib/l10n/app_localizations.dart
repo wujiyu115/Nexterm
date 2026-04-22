@@ -650,6 +650,12 @@ abstract class AppLocalizations {
   /// **'收起键盘'**
   String get terminal_hideKeyboard;
 
+  /// No description provided for @terminal_backToHosts.
+  ///
+  /// In zh, this message translates to:
+  /// **'返回主机'**
+  String get terminal_backToHosts;
+
   /// No description provided for @terminal_connectionFailed.
   ///
   /// In zh, this message translates to:

@@ -20,6 +20,7 @@ class TerminalTabBar extends ConsumerWidget {
   final VoidCallback? onCustomizeTap;
   final VoidCallback? onHideKeyboard;
   final VoidCallback? onShowHelp;
+  final VoidCallback? onGoToHosts;
 
   const TerminalTabBar({
     super.key,
@@ -29,6 +30,7 @@ class TerminalTabBar extends ConsumerWidget {
     this.onCustomizeTap,
     this.onHideKeyboard,
     this.onShowHelp,
+    this.onGoToHosts,
   });
 
   @override
@@ -79,6 +81,8 @@ class TerminalTabBar extends ConsumerWidget {
                   onHideKeyboard?.call();
                 case 'help':
                   onShowHelp?.call();
+                case 'hosts':
+                  onGoToHosts?.call();
               }
             },
             itemBuilder: (ctx) {
@@ -126,6 +130,16 @@ class TerminalTabBar extends ConsumerWidget {
                     child: ListTile(
                       leading: const Icon(Icons.help_outline),
                       title: Text(l.function_tabHelp),
+                      contentPadding: EdgeInsets.zero,
+                      visualDensity: VisualDensity.compact,
+                    ),
+                  ),
+                if (onGoToHosts != null)
+                  PopupMenuItem(
+                    value: 'hosts',
+                    child: ListTile(
+                      leading: const Icon(Icons.dns_outlined),
+                      title: Text(l.terminal_backToHosts),
                       contentPadding: EdgeInsets.zero,
                       visualDensity: VisualDensity.compact,
                     ),

@@ -299,6 +299,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get terminal_hideKeyboard => 'Hide Keyboard';
 
   @override
+  String get terminal_backToHosts => 'Back to Hosts';
+
+  @override
   String get terminal_connectionFailed => 'Connection Failed';
 
   @override

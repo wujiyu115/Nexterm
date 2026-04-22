@@ -146,6 +146,7 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
                 ? () => FocusScope.of(context).unfocus()
                 : null,
             onShowHelp: activeTab != null ? _showHelpDialog : null,
+            onGoToHosts: activeTab != null ? () => context.go('/hosts') : null,
           ),
 
           Expanded(

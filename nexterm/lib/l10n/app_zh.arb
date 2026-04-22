@@ -105,6 +105,7 @@
   "terminal_switchToFunction": "切换到功能面板",
   "terminal_newTab": "新建终端",
   "terminal_hideKeyboard": "收起键盘",
+  "terminal_backToHosts": "返回主机",
   "terminal_connectionFailed": "连接失败",
   "terminal_connectionFailedHint": "按关闭按钮关闭此标签页，或从主机列表重新连接。",
   "terminal_errorTimeout": "连接超时，请检查主机地址和端口是否正确，以及网络是否可达。",

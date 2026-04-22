@@ -295,6 +295,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get terminal_hideKeyboard => '收起键盘';
 
   @override
+  String get terminal_backToHosts => '返回主机';
+
+  @override
   String get terminal_connectionFailed => '连接失败';
 
   @override
