@@ -776,6 +776,12 @@ abstract class AppLocalizations {
   /// **'方向键'**
   String get toolbar_groupArrows;
 
+  /// No description provided for @toolbar_groupClipboard.
+  ///
+  /// In zh, this message translates to:
+  /// **'剪贴板'**
+  String get toolbar_groupClipboard;
+
   /// No description provided for @function_tabCode.
   ///
   /// In zh, this message translates to:

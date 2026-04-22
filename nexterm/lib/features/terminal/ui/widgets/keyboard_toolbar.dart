@@ -1,8 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nexterm/features/terminal/models/toolbar_key_definition.dart';
 import 'package:nexterm/features/terminal/providers/toolbar_config_provider.dart';
+import 'package:nexterm/features/terminal/providers/toolbar_modifier_provider.dart';
 
 /// A scrollable, grouped toolbar that sits above the soft keyboard.
 ///
@@ -23,63 +26,83 @@ class KeyboardToolbar extends ConsumerStatefulWidget {
 }
 
 class _KeyboardToolbarState extends ConsumerState<KeyboardToolbar> {
-  bool _ctrlActive = false;
-  bool _altActive = false;
-
   // -------------------------------------------------------------------------
   // Send helpers
   // -------------------------------------------------------------------------
 
   void _sendBytes(Uint8List bytes) {
     HapticFeedback.lightImpact();
+    final modifier = ref.read(toolbarModifierProvider);
 
-    if (_ctrlActive && bytes.length == 1) {
-      // Ctrl + printable char → send control code.
-      final code = bytes[0];
-      if (code >= 0x40 && code <= 0x7F) {
-        widget.onKeyInput(Uint8List.fromList([code & 0x1F]));
+    if (modifier.ctrl) {
+      if (bytes.length == 1) {
+        final code = bytes[0];
+        if (code >= 0x40 && code <= 0x7F) {
+          widget.onKeyInput(Uint8List.fromList([code & 0x1F]));
+        } else {
+          widget.onKeyInput(bytes);
+        }
       } else {
-        widget.onKeyInput(bytes);
+        widget.onKeyInput(_applyEscModifier(bytes, 5));
       }
-      _resetModifiers();
+      ref.read(toolbarModifierProvider.notifier).reset();
       return;
     }
 
-    if (_altActive) {
-      // Alt prefix: ESC + original bytes.
-      widget.onKeyInput(Uint8List.fromList([0x1B, ...bytes]));
-      _resetModifiers();
+    if (modifier.alt) {
+      if (bytes.length == 1) {
+        widget.onKeyInput(Uint8List.fromList([0x1B, ...bytes]));
+      } else {
+        widget.onKeyInput(_applyEscModifier(bytes, 3));
+      }
+      ref.read(toolbarModifierProvider.notifier).reset();
       return;
     }
 
     widget.onKeyInput(bytes);
   }
 
-  void _resetModifiers() {
-    setState(() {
-      _ctrlActive = false;
-      _altActive = false;
-    });
+  /// Inserts an xterm modifier parameter into a CSI or SS3 escape sequence.
+  ///
+  /// [mod]: 3 = Alt, 5 = Ctrl (xterm modifier encoding).
+  static Uint8List _applyEscModifier(Uint8List bytes, int mod) {
+    if (bytes.length < 3 || bytes[0] != 0x1B) return bytes;
+
+    // SS3: ESC O <final> → ESC [ 1;<mod> <final>
+    if (bytes[1] == 0x4F && bytes.length == 3) {
+      return Uint8List.fromList(
+          [0x1B, 0x5B, 0x31, 0x3B, 0x30 + mod, bytes[2]]);
+    }
+
+    // CSI: ESC [ <params> <final>
+    if (bytes[1] == 0x5B) {
+      final finalByte = bytes.last;
+      final params = bytes.sublist(2, bytes.length - 1);
+      if (params.isEmpty) {
+        // ESC [ A → ESC [ 1;<mod> A
+        return Uint8List.fromList(
+            [0x1B, 0x5B, 0x31, 0x3B, 0x30 + mod, finalByte]);
+      } else {
+        // ESC [ 5 ~ → ESC [ 5;<mod> ~
+        return Uint8List.fromList(
+            [0x1B, 0x5B, ...params, 0x3B, 0x30 + mod, finalByte]);
+      }
+    }
+
+    return bytes;
   }
 
   void _toggleCtrl() {
     HapticFeedback.lightImpact();
-    setState(() {
-      _ctrlActive = !_ctrlActive;
-      if (_ctrlActive) _altActive = false;
-    });
+    ref.read(toolbarModifierProvider.notifier).toggleCtrl();
   }
 
   void _toggleAlt() {
     HapticFeedback.lightImpact();
-    setState(() {
-      _altActive = !_altActive;
-      if (_altActive) _ctrlActive = false;
-    });
+    ref.read(toolbarModifierProvider.notifier).toggleAlt();
   }
 
   void _onKeyTap(ToolbarKeyDef key) {
-    // Ctrl and Alt are modifier toggles, not byte senders.
     if (key.id == 'ctrl') {
       _toggleCtrl();
       return;
@@ -88,7 +111,19 @@ class _KeyboardToolbarState extends ConsumerState<KeyboardToolbar> {
       _toggleAlt();
       return;
     }
+    if (key.id == 'paste') {
+      _pasteFromClipboard();
+      return;
+    }
     _sendBytes(key.bytes);
+  }
+
+  Future<void> _pasteFromClipboard() async {
+    HapticFeedback.lightImpact();
+    final data = await Clipboard.getData(Clipboard.kTextPlain);
+    if (data?.text != null && data!.text!.isNotEmpty) {
+      widget.onKeyInput(Uint8List.fromList(utf8.encode(data.text!)));
+    }
   }
 
   // -------------------------------------------------------------------------
@@ -99,6 +134,7 @@ class _KeyboardToolbarState extends ConsumerState<KeyboardToolbar> {
   Widget build(BuildContext context) {
     final allGroups = ref.watch(toolbarConfigProvider);
     final visibleCount = ref.watch(visibleGroupCountProvider);
+    final modifier = ref.watch(toolbarModifierProvider);
     final groups = allGroups.take(visibleCount).toList();
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
@@ -130,6 +166,7 @@ class _KeyboardToolbarState extends ConsumerState<KeyboardToolbar> {
         child: Row(
           children: _buildGroupWidgets(
             groups,
+            modifier: modifier,
             buttonColor: buttonColor,
             activeColor: activeColor,
             textColor: textColor,
@@ -143,6 +180,7 @@ class _KeyboardToolbarState extends ConsumerState<KeyboardToolbar> {
 
   List<Widget> _buildGroupWidgets(
     List<ToolbarKeyGroup> groups, {
+    required ToolbarModifierState modifier,
     required Color buttonColor,
     required Color activeColor,
     required Color textColor,
@@ -155,8 +193,8 @@ class _KeyboardToolbarState extends ConsumerState<KeyboardToolbar> {
       final group = groups[gi];
       for (final key in group.keys) {
         final isActive =
-            (key.id == 'ctrl' && _ctrlActive) ||
-            (key.id == 'alt' && _altActive);
+            (key.id == 'ctrl' && modifier.ctrl) ||
+            (key.id == 'alt' && modifier.alt);
 
         widgets.add(
           _ToolbarButton(

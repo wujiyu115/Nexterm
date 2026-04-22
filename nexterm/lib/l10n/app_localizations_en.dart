@@ -372,6 +372,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get toolbar_groupArrows => 'Arrow Keys';
 
   @override
+  String get toolbar_groupClipboard => 'Clipboard';
+
+  @override
   String get function_tabCode => 'Code';
 
   @override

@@ -129,6 +129,7 @@
   "toolbar_groupAdvanced": "高级控制",
   "toolbar_groupSearch": "搜索",
   "toolbar_groupArrows": "方向键",
+  "toolbar_groupClipboard": "剪贴板",
 
   "function_tabCode": "代码",
   "function_tabHistory": "历史",

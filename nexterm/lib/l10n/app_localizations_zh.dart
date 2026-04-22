@@ -361,6 +361,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get toolbar_groupArrows => '方向键';
 
   @override
+  String get toolbar_groupClipboard => '剪贴板';
+
+  @override
   String get function_tabCode => '代码';
 
   @override
