@@ -3,18 +3,13 @@ import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nexterm/core/theme/terminal_themes.dart' as app_themes;
+import 'package:nexterm/features/terminal/providers/terminal_font_size_provider.dart';
 import 'package:nexterm/features/terminal/providers/terminal_provider.dart';
 import 'package:nexterm/features/terminal/ui/tab_manager.dart';
 import 'package:xterm/xterm.dart';
 
-/// Wrapper around xterm's [TerminalView] widget.
-///
-/// It looks up the correct [Terminal] instance for the given [tab] from the
-/// provider, applies the app's current terminal theme, and wires autofocus.
-class TerminalViewWidget extends ConsumerWidget {
+class TerminalViewWidget extends ConsumerStatefulWidget {
   final TerminalTab tab;
-
-  /// When true, the system soft keyboard is suppressed (function-key mode).
   final bool hardwareKeyboardOnly;
 
   const TerminalViewWidget({
@@ -24,28 +19,65 @@ class TerminalViewWidget extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<TerminalViewWidget> createState() =>
+      _TerminalViewWidgetState();
+}
+
+class _TerminalViewWidgetState extends ConsumerState<TerminalViewWidget> {
+  final _scrollController = ScrollController();
+  double _pinchBaseSize = 0;
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final controllers = ref.watch(terminalControllersProvider);
-    final terminal = controllers[tab.id];
+    final terminal = controllers[widget.tab.id];
 
     if (terminal == null) {
-      // Terminal not yet initialised (e.g., still connecting).
       return const Center(child: CircularProgressIndicator());
     }
 
+    final fontSize = ref.watch(terminalFontSizeProvider);
     final isMobile = Platform.isIOS || Platform.isAndroid;
 
-    return TerminalView(
-      terminal,
-      theme: app_themes.TerminalThemes.catppuccin,
-      textStyle: const TerminalStyle(
-        fontFamily: 'monospace',
-        fontSize: 13,
+    Widget child = Scrollbar(
+      controller: _scrollController,
+      thumbVisibility: true,
+      child: TerminalView(
+        terminal,
+        theme: app_themes.TerminalThemes.catppuccin,
+        textStyle: TerminalStyle(
+          fontFamily: 'monospace',
+          fontSize: fontSize,
+        ),
+        textScaler: TextScaler.noScaling,
+        scrollController: _scrollController,
+        autofocus: true,
+        deleteDetection: true,
+        hardwareKeyboardOnly: isMobile ? widget.hardwareKeyboardOnly : true,
       ),
-      textScaler: TextScaler.noScaling,
-      autofocus: true,
-      deleteDetection: true,
-      hardwareKeyboardOnly: isMobile ? hardwareKeyboardOnly : true,
     );
+
+    if (isMobile) {
+      child = GestureDetector(
+        onScaleStart: (_) {
+          _pinchBaseSize = ref.read(terminalFontSizeProvider);
+        },
+        onScaleUpdate: (details) {
+          if (details.pointerCount >= 2) {
+            final newSize = (_pinchBaseSize * details.scale).clamp(8.0, 24.0);
+            ref.read(terminalFontSizeProvider.notifier).setSize(newSize);
+          }
+        },
+        child: child,
+      );
+    }
+
+    return child;
   }
 }
