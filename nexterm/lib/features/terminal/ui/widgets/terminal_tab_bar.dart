@@ -18,6 +18,7 @@ class TerminalTabBar extends ConsumerWidget {
   final bool isFunctionMode;
   final VoidCallback? onToggleMode;
   final VoidCallback? onCustomizeTap;
+  final VoidCallback? onHideKeyboard;
 
   const TerminalTabBar({
     super.key,
@@ -25,6 +26,7 @@ class TerminalTabBar extends ConsumerWidget {
     this.isFunctionMode = false,
     this.onToggleMode,
     this.onCustomizeTap,
+    this.onHideKeyboard,
   });
 
   @override
@@ -71,6 +73,8 @@ class TerminalTabBar extends ConsumerWidget {
                   onCustomizeTap?.call();
                 case 'add':
                   onAddTab?.call();
+                case 'hide_keyboard':
+                  onHideKeyboard?.call();
               }
             },
             itemBuilder: (ctx) {
@@ -98,6 +102,16 @@ class TerminalTabBar extends ConsumerWidget {
                     child: ListTile(
                       leading: const Icon(Icons.settings),
                       title: Text(l.toolbar_customize),
+                      contentPadding: EdgeInsets.zero,
+                      visualDensity: VisualDensity.compact,
+                    ),
+                  ),
+                if (onHideKeyboard != null)
+                  PopupMenuItem(
+                    value: 'hide_keyboard',
+                    child: ListTile(
+                      leading: const Icon(Icons.keyboard_hide),
+                      title: Text(l.terminal_hideKeyboard),
                       contentPadding: EdgeInsets.zero,
                       visualDensity: VisualDensity.compact,
                     ),

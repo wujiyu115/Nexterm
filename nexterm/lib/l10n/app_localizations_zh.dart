@@ -268,6 +268,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get terminal_newTab => '新建终端';
 
   @override
+  String get terminal_hideKeyboard => '收起键盘';
+
+  @override
   String get terminal_connectionFailed => '连接失败';
 
   @override
@@ -382,7 +385,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get function_switchToKeyboard => '切换到系统键盘…';
 
   @override
-  String get function_comingSoon => '代码片段（即将推出）';
+  String get function_noSnippets => '暂无代码片段';
+
+  @override
+  String get function_noSnippetsHint => '请在代码片段页面中添加';
 
   @override
   String get function_helpCtrlC => '中断当前进程';

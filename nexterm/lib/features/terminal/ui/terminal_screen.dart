@@ -80,6 +80,9 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
             onCustomizeTap: activeTab != null
                 ? () => context.push('/terminal/customize-keyboard')
                 : null,
+            onHideKeyboard: activeTab != null
+                ? () => FocusScope.of(context).unfocus()
+                : null,
           ),
 
           Expanded(

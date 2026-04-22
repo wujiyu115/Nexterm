@@ -596,6 +596,12 @@ abstract class AppLocalizations {
   /// **'新建终端'**
   String get terminal_newTab;
 
+  /// No description provided for @terminal_hideKeyboard.
+  ///
+  /// In zh, this message translates to:
+  /// **'收起键盘'**
+  String get terminal_hideKeyboard;
+
   /// No description provided for @terminal_connectionFailed.
   ///
   /// In zh, this message translates to:
@@ -818,11 +824,17 @@ abstract class AppLocalizations {
   /// **'切换到系统键盘…'**
   String get function_switchToKeyboard;
 
-  /// No description provided for @function_comingSoon.
+  /// No description provided for @function_noSnippets.
   ///
   /// In zh, this message translates to:
-  /// **'代码片段（即将推出）'**
-  String get function_comingSoon;
+  /// **'暂无代码片段'**
+  String get function_noSnippets;
+
+  /// No description provided for @function_noSnippetsHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'请在代码片段页面中添加'**
+  String get function_noSnippetsHint;
 
   /// No description provided for @function_helpCtrlC.
   ///

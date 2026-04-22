@@ -272,6 +272,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get terminal_newTab => 'New Terminal';
 
   @override
+  String get terminal_hideKeyboard => 'Hide Keyboard';
+
+  @override
   String get terminal_connectionFailed => 'Connection Failed';
 
   @override
@@ -393,7 +396,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get function_switchToKeyboard => 'Switching to keyboard...';
 
   @override
-  String get function_comingSoon => 'Snippets (coming soon)';
+  String get function_noSnippets => 'No snippets yet';
+
+  @override
+  String get function_noSnippetsHint => 'Add snippets in the Snippets page';
 
   @override
   String get function_helpCtrlC => 'Interrupt current process';
