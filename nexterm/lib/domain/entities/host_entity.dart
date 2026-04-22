@@ -14,6 +14,7 @@ class HostEntity {
   final bool isFavorite;
   final List<String> jumpHosts;
   final String? startupSnippetId;
+  final String? startupCommand;
   final DateTime? lastConnected;
   final int sortOrder;
 
@@ -31,6 +32,7 @@ class HostEntity {
     this.isFavorite = false,
     this.jumpHosts = const [],
     this.startupSnippetId,
+    this.startupCommand,
     this.lastConnected,
     this.sortOrder = 0,
   });
@@ -49,6 +51,7 @@ class HostEntity {
     bool? isFavorite,
     List<String>? jumpHosts,
     String? Function()? startupSnippetId,
+    String? Function()? startupCommand,
     DateTime? Function()? lastConnected,
     int? sortOrder,
   }) {
@@ -66,6 +69,7 @@ class HostEntity {
       isFavorite: isFavorite ?? this.isFavorite,
       jumpHosts: jumpHosts ?? this.jumpHosts,
       startupSnippetId: startupSnippetId != null ? startupSnippetId() : this.startupSnippetId,
+      startupCommand: startupCommand != null ? startupCommand() : this.startupCommand,
       lastConnected: lastConnected != null ? lastConnected() : this.lastConnected,
       sortOrder: sortOrder ?? this.sortOrder,
     );

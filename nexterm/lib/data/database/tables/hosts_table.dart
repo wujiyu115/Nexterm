@@ -14,6 +14,7 @@ class Hosts extends Table {
   BoolColumn get isFavorite => boolean().withDefault(const Constant(false))();
   TextColumn get jumpHosts => text().withDefault(const Constant('[]'))();
   TextColumn get startupSnippetId => text().nullable()();
+  TextColumn get startupCommand => text().nullable()();
   DateTimeColumn get lastConnected => dateTime().nullable()();
   IntColumn get sortOrder => integer().withDefault(const Constant(0))();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();

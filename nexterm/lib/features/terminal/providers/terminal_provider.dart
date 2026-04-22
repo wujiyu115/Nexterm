@@ -205,13 +205,14 @@ class TerminalActions {
         },
       );
 
-      // --- Gap 2: execute startup snippet ---
+      // --- Gap 2: execute startup command/snippet ---
       final snippetId = host.startupSnippetId;
+      final startupCmd = host.startupCommand;
+
       if (snippetId != null) {
         final snippet =
             await _ref.read(snippetByIdProvider(snippetId).future);
         if (snippet != null) {
-          // Build defaults map from the snippet's variable definitions.
           final defaults = {
             for (final v in snippet.variables)
               if (v.defaultValue != null) v.name: v.defaultValue!,
@@ -222,6 +223,11 @@ class TerminalActions {
           for (final line in lines) {
             _sshService.write(sessionId, '$line\n');
           }
+        }
+      } else if (startupCmd != null && startupCmd.isNotEmpty) {
+        final lines = VariableParser.splitLines(startupCmd);
+        for (final line in lines) {
+          _sshService.write(sessionId, '$line\n');
         }
       }
 

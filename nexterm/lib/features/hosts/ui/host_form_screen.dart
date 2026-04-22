@@ -4,9 +4,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nexterm/domain/entities/enums.dart';
 import 'package:nexterm/domain/entities/host_entity.dart';
+import 'package:nexterm/domain/entities/snippet_entity.dart';
 import 'package:nexterm/domain/entities/ssh_key_entity.dart';
 import 'package:nexterm/features/hosts/providers/hosts_provider.dart';
 import 'package:nexterm/features/keys/providers/keys_provider.dart';
+import 'package:nexterm/features/snippets/providers/snippets_provider.dart';
+
+enum _StartupMode { command, snippet }
 
 class HostFormScreen extends ConsumerStatefulWidget {
   final String? hostId;
@@ -30,6 +34,9 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
   AuthMethod _authMethod = AuthMethod.password;
   String? _selectedKeyId;
   List<String> _jumpHosts = [];
+  _StartupMode _startupMode = _StartupMode.command;
+  final _startupCommandController = TextEditingController();
+  String? _startupSnippetId;
 
   bool _isLoading = false;
   bool _isInitialized = false;
@@ -46,6 +53,7 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
     _passwordController.dispose();
     _groupController.dispose();
     _tagsController.dispose();
+    _startupCommandController.dispose();
     super.dispose();
   }
 
@@ -69,6 +77,13 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
         _authMethod = host.authMethod;
         _selectedKeyId = host.keyId;
         _jumpHosts = List<String>.from(host.jumpHosts);
+        if (host.startupSnippetId != null) {
+          _startupMode = _StartupMode.snippet;
+          _startupSnippetId = host.startupSnippetId;
+        } else if (host.startupCommand != null) {
+          _startupMode = _StartupMode.command;
+          _startupCommandController.text = host.startupCommand!;
+        }
       });
     }
   }
@@ -84,6 +99,9 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
     final group = _groupController.text.trim().isEmpty ? null : _groupController.text.trim();
     final password = _authMethod == AuthMethod.password ? _passwordController.text : null;
     final keyId = _authMethod == AuthMethod.key ? _selectedKeyId : null;
+    final startupSnippetId = _startupMode == _StartupMode.snippet ? _startupSnippetId : null;
+    final startupCommand = _startupMode == _StartupMode.command && _startupCommandController.text.trim().isNotEmpty
+        ? _startupCommandController.text.trim() : null;
 
     if (_isEditMode && _existingHost != null) {
       final updated = _existingHost!.copyWith(
@@ -97,6 +115,8 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
         group: () => group,
         tags: tags,
         jumpHosts: _jumpHosts,
+        startupSnippetId: () => startupSnippetId,
+        startupCommand: () => startupCommand,
       );
       await notifier.updateHost(updated);
     } else {
@@ -112,6 +132,8 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
         group: group,
         tags: tags,
         jumpHosts: _jumpHosts,
+        startupSnippetId: startupSnippetId,
+        startupCommand: startupCommand,
       );
       await notifier.addHost(newHost);
     }
@@ -279,6 +301,8 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
                 const SizedBox(height: 20),
                 _buildJumpHostsSection(allHosts),
                 const SizedBox(height: 20),
+                _buildStartupCommandSection(),
+                const SizedBox(height: 20),
                 _FormSection(title: l.hostForm_sectionGroup, children: [
                   _buildField(
                     controller: _groupController,
@@ -390,6 +414,101 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
         icon: const Icon(Icons.add, size: 18),
         label: Text(l.hostForm_addJumpHost),
       ),
+    ]);
+  }
+
+  Widget _buildStartupCommandSection() {
+    final l = AppLocalizations.of(context)!;
+    final snippetsAsync = ref.watch(snippetsStreamProvider);
+
+    return _FormSection(title: l.hostForm_sectionStartup, children: [
+      SegmentedButton<_StartupMode>(
+        segments: [
+          ButtonSegment<_StartupMode>(
+            value: _StartupMode.command,
+            label: Text(l.hostForm_startupModeCommand),
+            icon: const Icon(Icons.terminal, size: 18),
+          ),
+          ButtonSegment<_StartupMode>(
+            value: _StartupMode.snippet,
+            label: Text(l.hostForm_startupModeSnippet),
+            icon: const Icon(Icons.code, size: 18),
+          ),
+        ],
+        selected: {_startupMode},
+        onSelectionChanged: (selection) {
+          setState(() {
+            final newMode = selection.first;
+            if (newMode != _startupMode) {
+              if (newMode == _StartupMode.command) {
+                _startupSnippetId = null;
+              } else {
+                _startupCommandController.clear();
+              }
+              _startupMode = newMode;
+            }
+          });
+        },
+        style: const ButtonStyle(visualDensity: VisualDensity.compact),
+      ),
+      if (_startupMode == _StartupMode.command) ...[
+        const SizedBox(height: 12),
+        TextFormField(
+          controller: _startupCommandController,
+          decoration: InputDecoration(
+            labelText: l.hostForm_startupCommand,
+            hintText: l.hostForm_startupCommandHint,
+          ),
+          maxLines: 3,
+          minLines: 1,
+        ),
+      ],
+      if (_startupMode == _StartupMode.snippet) ...[
+        const SizedBox(height: 12),
+        snippetsAsync.when(
+          loading: () => const LinearProgressIndicator(),
+          error: (e, _) => Text(e.toString(), style: TextStyle(color: Theme.of(context).colorScheme.error)),
+          data: (snippets) {
+            if (snippets.isEmpty) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Text(
+                  l.hostForm_noSnippets,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              );
+            }
+            final effectiveSnippetId =
+                (_startupSnippetId != null && snippets.any((s) => s.id == _startupSnippetId))
+                    ? _startupSnippetId : null;
+            if (effectiveSnippetId != _startupSnippetId) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (mounted) setState(() => _startupSnippetId = null);
+              });
+            }
+            return DropdownButtonFormField<String>(
+              value: effectiveSnippetId,
+              decoration: InputDecoration(
+                labelText: l.hostForm_startupSnippet,
+                hintText: l.hostForm_startupSnippetHint,
+              ),
+              items: snippets.map((SnippetEntity s) {
+                return DropdownMenuItem<String>(
+                  value: s.id,
+                  child: Text(
+                    '${s.name}  (${s.command})',
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
+                );
+              }).toList(),
+              onChanged: (value) => setState(() => _startupSnippetId = value),
+            );
+          },
+        ),
+      ],
     ]);
   }
 

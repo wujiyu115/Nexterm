@@ -250,6 +250,30 @@ class AppLocalizationsZh extends AppLocalizations {
   String get hostForm_addJumpHost => '添加跳板机';
 
   @override
+  String get hostForm_sectionStartup => '启动命令';
+
+  @override
+  String get hostForm_startupModeCommand => '命令';
+
+  @override
+  String get hostForm_startupModeSnippet => '片段';
+
+  @override
+  String get hostForm_startupCommand => '命令';
+
+  @override
+  String get hostForm_startupCommandHint => 'cd /var/log && tail -f syslog';
+
+  @override
+  String get hostForm_startupSnippet => '选择片段';
+
+  @override
+  String get hostForm_startupSnippetHint => '选择已保存的片段';
+
+  @override
+  String get hostForm_noSnippets => '暂无片段';
+
+  @override
   String get terminal_connecting => '正在连接…';
 
   @override

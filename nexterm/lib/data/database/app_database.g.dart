@@ -158,6 +158,17 @@ class $HostsTable extends Hosts with TableInfo<$HostsTable, Host> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _startupCommandMeta = const VerificationMeta(
+    'startupCommand',
+  );
+  @override
+  late final GeneratedColumn<String> startupCommand = GeneratedColumn<String>(
+    'startup_command',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _lastConnectedMeta = const VerificationMeta(
     'lastConnected',
   );
@@ -221,6 +232,7 @@ class $HostsTable extends Hosts with TableInfo<$HostsTable, Host> {
     isFavorite,
     jumpHosts,
     startupSnippetId,
+    startupCommand,
     lastConnected,
     sortOrder,
     createdAt,
@@ -326,6 +338,15 @@ class $HostsTable extends Hosts with TableInfo<$HostsTable, Host> {
         ),
       );
     }
+    if (data.containsKey('startup_command')) {
+      context.handle(
+        _startupCommandMeta,
+        startupCommand.isAcceptableOrUnknown(
+          data['startup_command']!,
+          _startupCommandMeta,
+        ),
+      );
+    }
     if (data.containsKey('last_connected')) {
       context.handle(
         _lastConnectedMeta,
@@ -423,6 +444,10 @@ class $HostsTable extends Hosts with TableInfo<$HostsTable, Host> {
         DriftSqlType.string,
         data['${effectivePrefix}startup_snippet_id'],
       ),
+      startupCommand: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}startup_command'],
+      ),
       lastConnected: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}last_connected'],
@@ -465,6 +490,7 @@ class Host extends DataClass implements Insertable<Host> {
   final bool isFavorite;
   final String jumpHosts;
   final String? startupSnippetId;
+  final String? startupCommand;
   final DateTime? lastConnected;
   final int sortOrder;
   final DateTime createdAt;
@@ -483,6 +509,7 @@ class Host extends DataClass implements Insertable<Host> {
     required this.isFavorite,
     required this.jumpHosts,
     this.startupSnippetId,
+    this.startupCommand,
     this.lastConnected,
     required this.sortOrder,
     required this.createdAt,
@@ -511,6 +538,9 @@ class Host extends DataClass implements Insertable<Host> {
     map['jump_hosts'] = Variable<String>(jumpHosts);
     if (!nullToAbsent || startupSnippetId != null) {
       map['startup_snippet_id'] = Variable<String>(startupSnippetId);
+    }
+    if (!nullToAbsent || startupCommand != null) {
+      map['startup_command'] = Variable<String>(startupCommand);
     }
     if (!nullToAbsent || lastConnected != null) {
       map['last_connected'] = Variable<DateTime>(lastConnected);
@@ -544,6 +574,10 @@ class Host extends DataClass implements Insertable<Host> {
           startupSnippetId == null && nullToAbsent
               ? const Value.absent()
               : Value(startupSnippetId),
+      startupCommand:
+          startupCommand == null && nullToAbsent
+              ? const Value.absent()
+              : Value(startupCommand),
       lastConnected:
           lastConnected == null && nullToAbsent
               ? const Value.absent()
@@ -573,6 +607,7 @@ class Host extends DataClass implements Insertable<Host> {
       isFavorite: serializer.fromJson<bool>(json['isFavorite']),
       jumpHosts: serializer.fromJson<String>(json['jumpHosts']),
       startupSnippetId: serializer.fromJson<String?>(json['startupSnippetId']),
+      startupCommand: serializer.fromJson<String?>(json['startupCommand']),
       lastConnected: serializer.fromJson<DateTime?>(json['lastConnected']),
       sortOrder: serializer.fromJson<int>(json['sortOrder']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
@@ -596,6 +631,7 @@ class Host extends DataClass implements Insertable<Host> {
       'isFavorite': serializer.toJson<bool>(isFavorite),
       'jumpHosts': serializer.toJson<String>(jumpHosts),
       'startupSnippetId': serializer.toJson<String?>(startupSnippetId),
+      'startupCommand': serializer.toJson<String?>(startupCommand),
       'lastConnected': serializer.toJson<DateTime?>(lastConnected),
       'sortOrder': serializer.toJson<int>(sortOrder),
       'createdAt': serializer.toJson<DateTime>(createdAt),
@@ -617,6 +653,7 @@ class Host extends DataClass implements Insertable<Host> {
     bool? isFavorite,
     String? jumpHosts,
     Value<String?> startupSnippetId = const Value.absent(),
+    Value<String?> startupCommand = const Value.absent(),
     Value<DateTime?> lastConnected = const Value.absent(),
     int? sortOrder,
     DateTime? createdAt,
@@ -638,6 +675,8 @@ class Host extends DataClass implements Insertable<Host> {
         startupSnippetId.present
             ? startupSnippetId.value
             : this.startupSnippetId,
+    startupCommand:
+        startupCommand.present ? startupCommand.value : this.startupCommand,
     lastConnected:
         lastConnected.present ? lastConnected.value : this.lastConnected,
     sortOrder: sortOrder ?? this.sortOrder,
@@ -664,6 +703,10 @@ class Host extends DataClass implements Insertable<Host> {
           data.startupSnippetId.present
               ? data.startupSnippetId.value
               : this.startupSnippetId,
+      startupCommand:
+          data.startupCommand.present
+              ? data.startupCommand.value
+              : this.startupCommand,
       lastConnected:
           data.lastConnected.present
               ? data.lastConnected.value
@@ -690,6 +733,7 @@ class Host extends DataClass implements Insertable<Host> {
           ..write('isFavorite: $isFavorite, ')
           ..write('jumpHosts: $jumpHosts, ')
           ..write('startupSnippetId: $startupSnippetId, ')
+          ..write('startupCommand: $startupCommand, ')
           ..write('lastConnected: $lastConnected, ')
           ..write('sortOrder: $sortOrder, ')
           ..write('createdAt: $createdAt, ')
@@ -713,6 +757,7 @@ class Host extends DataClass implements Insertable<Host> {
     isFavorite,
     jumpHosts,
     startupSnippetId,
+    startupCommand,
     lastConnected,
     sortOrder,
     createdAt,
@@ -735,6 +780,7 @@ class Host extends DataClass implements Insertable<Host> {
           other.isFavorite == this.isFavorite &&
           other.jumpHosts == this.jumpHosts &&
           other.startupSnippetId == this.startupSnippetId &&
+          other.startupCommand == this.startupCommand &&
           other.lastConnected == this.lastConnected &&
           other.sortOrder == this.sortOrder &&
           other.createdAt == this.createdAt &&
@@ -755,6 +801,7 @@ class HostsCompanion extends UpdateCompanion<Host> {
   final Value<bool> isFavorite;
   final Value<String> jumpHosts;
   final Value<String?> startupSnippetId;
+  final Value<String?> startupCommand;
   final Value<DateTime?> lastConnected;
   final Value<int> sortOrder;
   final Value<DateTime> createdAt;
@@ -774,6 +821,7 @@ class HostsCompanion extends UpdateCompanion<Host> {
     this.isFavorite = const Value.absent(),
     this.jumpHosts = const Value.absent(),
     this.startupSnippetId = const Value.absent(),
+    this.startupCommand = const Value.absent(),
     this.lastConnected = const Value.absent(),
     this.sortOrder = const Value.absent(),
     this.createdAt = const Value.absent(),
@@ -794,6 +842,7 @@ class HostsCompanion extends UpdateCompanion<Host> {
     this.isFavorite = const Value.absent(),
     this.jumpHosts = const Value.absent(),
     this.startupSnippetId = const Value.absent(),
+    this.startupCommand = const Value.absent(),
     this.lastConnected = const Value.absent(),
     this.sortOrder = const Value.absent(),
     this.createdAt = const Value.absent(),
@@ -818,6 +867,7 @@ class HostsCompanion extends UpdateCompanion<Host> {
     Expression<bool>? isFavorite,
     Expression<String>? jumpHosts,
     Expression<String>? startupSnippetId,
+    Expression<String>? startupCommand,
     Expression<DateTime>? lastConnected,
     Expression<int>? sortOrder,
     Expression<DateTime>? createdAt,
@@ -838,6 +888,7 @@ class HostsCompanion extends UpdateCompanion<Host> {
       if (isFavorite != null) 'is_favorite': isFavorite,
       if (jumpHosts != null) 'jump_hosts': jumpHosts,
       if (startupSnippetId != null) 'startup_snippet_id': startupSnippetId,
+      if (startupCommand != null) 'startup_command': startupCommand,
       if (lastConnected != null) 'last_connected': lastConnected,
       if (sortOrder != null) 'sort_order': sortOrder,
       if (createdAt != null) 'created_at': createdAt,
@@ -860,6 +911,7 @@ class HostsCompanion extends UpdateCompanion<Host> {
     Value<bool>? isFavorite,
     Value<String>? jumpHosts,
     Value<String?>? startupSnippetId,
+    Value<String?>? startupCommand,
     Value<DateTime?>? lastConnected,
     Value<int>? sortOrder,
     Value<DateTime>? createdAt,
@@ -880,6 +932,7 @@ class HostsCompanion extends UpdateCompanion<Host> {
       isFavorite: isFavorite ?? this.isFavorite,
       jumpHosts: jumpHosts ?? this.jumpHosts,
       startupSnippetId: startupSnippetId ?? this.startupSnippetId,
+      startupCommand: startupCommand ?? this.startupCommand,
       lastConnected: lastConnected ?? this.lastConnected,
       sortOrder: sortOrder ?? this.sortOrder,
       createdAt: createdAt ?? this.createdAt,
@@ -930,6 +983,9 @@ class HostsCompanion extends UpdateCompanion<Host> {
     if (startupSnippetId.present) {
       map['startup_snippet_id'] = Variable<String>(startupSnippetId.value);
     }
+    if (startupCommand.present) {
+      map['startup_command'] = Variable<String>(startupCommand.value);
+    }
     if (lastConnected.present) {
       map['last_connected'] = Variable<DateTime>(lastConnected.value);
     }
@@ -964,6 +1020,7 @@ class HostsCompanion extends UpdateCompanion<Host> {
           ..write('isFavorite: $isFavorite, ')
           ..write('jumpHosts: $jumpHosts, ')
           ..write('startupSnippetId: $startupSnippetId, ')
+          ..write('startupCommand: $startupCommand, ')
           ..write('lastConnected: $lastConnected, ')
           ..write('sortOrder: $sortOrder, ')
           ..write('createdAt: $createdAt, ')
@@ -2978,6 +3035,7 @@ typedef $$HostsTableCreateCompanionBuilder =
       Value<bool> isFavorite,
       Value<String> jumpHosts,
       Value<String?> startupSnippetId,
+      Value<String?> startupCommand,
       Value<DateTime?> lastConnected,
       Value<int> sortOrder,
       Value<DateTime> createdAt,
@@ -2999,6 +3057,7 @@ typedef $$HostsTableUpdateCompanionBuilder =
       Value<bool> isFavorite,
       Value<String> jumpHosts,
       Value<String?> startupSnippetId,
+      Value<String?> startupCommand,
       Value<DateTime?> lastConnected,
       Value<int> sortOrder,
       Value<DateTime> createdAt,
@@ -3076,6 +3135,11 @@ class $$HostsTableFilterComposer extends Composer<_$AppDatabase, $HostsTable> {
 
   ColumnFilters<String> get startupSnippetId => $composableBuilder(
     column: $table.startupSnippetId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get startupCommand => $composableBuilder(
+    column: $table.startupCommand,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3174,6 +3238,11 @@ class $$HostsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get startupCommand => $composableBuilder(
+    column: $table.startupCommand,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get lastConnected => $composableBuilder(
     column: $table.lastConnected,
     builder: (column) => ColumnOrderings(column),
@@ -3249,6 +3318,11 @@ class $$HostsTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<String> get startupCommand => $composableBuilder(
+    column: $table.startupCommand,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<DateTime> get lastConnected => $composableBuilder(
     column: $table.lastConnected,
     builder: (column) => column,
@@ -3305,6 +3379,7 @@ class $$HostsTableTableManager
                 Value<bool> isFavorite = const Value.absent(),
                 Value<String> jumpHosts = const Value.absent(),
                 Value<String?> startupSnippetId = const Value.absent(),
+                Value<String?> startupCommand = const Value.absent(),
                 Value<DateTime?> lastConnected = const Value.absent(),
                 Value<int> sortOrder = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
@@ -3324,6 +3399,7 @@ class $$HostsTableTableManager
                 isFavorite: isFavorite,
                 jumpHosts: jumpHosts,
                 startupSnippetId: startupSnippetId,
+                startupCommand: startupCommand,
                 lastConnected: lastConnected,
                 sortOrder: sortOrder,
                 createdAt: createdAt,
@@ -3345,6 +3421,7 @@ class $$HostsTableTableManager
                 Value<bool> isFavorite = const Value.absent(),
                 Value<String> jumpHosts = const Value.absent(),
                 Value<String?> startupSnippetId = const Value.absent(),
+                Value<String?> startupCommand = const Value.absent(),
                 Value<DateTime?> lastConnected = const Value.absent(),
                 Value<int> sortOrder = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
@@ -3364,6 +3441,7 @@ class $$HostsTableTableManager
                 isFavorite: isFavorite,
                 jumpHosts: jumpHosts,
                 startupSnippetId: startupSnippetId,
+                startupCommand: startupCommand,
                 lastConnected: lastConnected,
                 sortOrder: sortOrder,
                 createdAt: createdAt,

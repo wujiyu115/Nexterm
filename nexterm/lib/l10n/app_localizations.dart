@@ -560,6 +560,54 @@ abstract class AppLocalizations {
   /// **'添加跳板机'**
   String get hostForm_addJumpHost;
 
+  /// No description provided for @hostForm_sectionStartup.
+  ///
+  /// In zh, this message translates to:
+  /// **'启动命令'**
+  String get hostForm_sectionStartup;
+
+  /// No description provided for @hostForm_startupModeCommand.
+  ///
+  /// In zh, this message translates to:
+  /// **'命令'**
+  String get hostForm_startupModeCommand;
+
+  /// No description provided for @hostForm_startupModeSnippet.
+  ///
+  /// In zh, this message translates to:
+  /// **'片段'**
+  String get hostForm_startupModeSnippet;
+
+  /// No description provided for @hostForm_startupCommand.
+  ///
+  /// In zh, this message translates to:
+  /// **'命令'**
+  String get hostForm_startupCommand;
+
+  /// No description provided for @hostForm_startupCommandHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'cd /var/log && tail -f syslog'**
+  String get hostForm_startupCommandHint;
+
+  /// No description provided for @hostForm_startupSnippet.
+  ///
+  /// In zh, this message translates to:
+  /// **'选择片段'**
+  String get hostForm_startupSnippet;
+
+  /// No description provided for @hostForm_startupSnippetHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'选择已保存的片段'**
+  String get hostForm_startupSnippetHint;
+
+  /// No description provided for @hostForm_noSnippets.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂无片段'**
+  String get hostForm_noSnippets;
+
   /// No description provided for @terminal_connecting.
   ///
   /// In zh, this message translates to:

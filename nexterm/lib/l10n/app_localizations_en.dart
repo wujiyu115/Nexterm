@@ -253,6 +253,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostForm_addJumpHost => 'Add Jump Host';
 
   @override
+  String get hostForm_sectionStartup => 'Startup Command';
+
+  @override
+  String get hostForm_startupModeCommand => 'Command';
+
+  @override
+  String get hostForm_startupModeSnippet => 'Snippet';
+
+  @override
+  String get hostForm_startupCommand => 'Command';
+
+  @override
+  String get hostForm_startupCommandHint => 'cd /var/log && tail -f syslog';
+
+  @override
+  String get hostForm_startupSnippet => 'Select Snippet';
+
+  @override
+  String get hostForm_startupSnippetHint => 'Choose a saved snippet';
+
+  @override
+  String get hostForm_noSnippets => 'No snippets available';
+
+  @override
   String get terminal_connecting => 'Connecting...';
 
   @override
