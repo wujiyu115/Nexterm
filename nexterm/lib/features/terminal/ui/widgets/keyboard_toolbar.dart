@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nexterm/features/terminal/models/toolbar_key_definition.dart';
 import 'package:nexterm/features/terminal/providers/toolbar_config_provider.dart';
 import 'package:nexterm/features/terminal/providers/toolbar_modifier_provider.dart';
+import 'package:nexterm/features/terminal/providers/toolbar_usage_provider.dart';
 
 /// A scrollable, grouped toolbar that sits above the soft keyboard.
 ///
@@ -116,6 +117,7 @@ class _KeyboardToolbarState extends ConsumerState<KeyboardToolbar> {
       return;
     }
     _sendBytes(key.bytes);
+    ref.read(toolbarUsageProvider.notifier).increment(key.id);
   }
 
   Future<void> _pasteFromClipboard() async {

@@ -148,6 +148,7 @@
   "function_helpCtrlA": "光标移到行首",
   "function_helpCtrlE": "光标移到行尾",
   "function_helpTab": "自动补全",
+  "function_allShortcuts": "全部快捷键",
 
   "commandHistory_searchHint": "搜索命令…",
   "commandHistory_empty": "暂无命令历史",

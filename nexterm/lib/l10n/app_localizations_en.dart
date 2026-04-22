@@ -426,6 +426,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get function_helpTab => 'Auto-complete';
 
   @override
+  String get function_allShortcuts => 'All Shortcuts';
+
+  @override
   String get commandHistory_searchHint => 'Search commands...';
 
   @override

@@ -206,6 +206,10 @@ List<ToolbarKeyGroup> get defaultToolbarGroups => [
       ]),
     ];
 
+/// Flattens all default groups into a single list of key definitions.
+List<ToolbarKeyDef> get allToolbarKeys =>
+    defaultToolbarGroups.expand((g) => g.keys).toList();
+
 String toolbarGroupName(String groupId, AppLocalizations l) {
   return switch (groupId) {
     'arrows' => l.toolbar_groupArrows,

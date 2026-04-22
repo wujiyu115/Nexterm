@@ -142,6 +142,7 @@
   "function_helpCtrlA": "Move cursor to beginning",
   "function_helpCtrlE": "Move cursor to end",
   "function_helpTab": "Auto-complete",
+  "function_allShortcuts": "All Shortcuts",
 
   "commandHistory_searchHint": "Search commands...",
   "commandHistory_empty": "No command history",

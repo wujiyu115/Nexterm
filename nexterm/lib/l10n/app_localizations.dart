@@ -884,6 +884,12 @@ abstract class AppLocalizations {
   /// **'自动补全'**
   String get function_helpTab;
 
+  /// No description provided for @function_allShortcuts.
+  ///
+  /// In zh, this message translates to:
+  /// **'全部快捷键'**
+  String get function_allShortcuts;
+
   /// No description provided for @commandHistory_searchHint.
   ///
   /// In zh, this message translates to:

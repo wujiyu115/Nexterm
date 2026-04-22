@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nexterm/domain/entities/snippet_entity.dart';
 import 'package:nexterm/features/snippets/providers/snippets_provider.dart';
 import 'package:nexterm/features/snippets/utils/variable_parser.dart';
+import 'package:nexterm/features/terminal/models/toolbar_key_definition.dart';
+import 'package:nexterm/features/terminal/providers/toolbar_modifier_provider.dart';
+import 'package:nexterm/features/terminal/providers/toolbar_usage_provider.dart';
 import 'package:nexterm/features/terminal/ui/widgets/command_history_panel.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 
@@ -10,12 +14,14 @@ class FunctionPanel extends ConsumerStatefulWidget {
   final String? sessionId;
   final void Function(String command) onCommandSelected;
   final VoidCallback onSwitchToAbc;
+  final void Function(Uint8List data) onKeyInput;
 
   const FunctionPanel({
     super.key,
     required this.sessionId,
     required this.onCommandSelected,
     required this.onSwitchToAbc,
+    required this.onKeyInput,
   });
 
   @override
@@ -43,11 +49,22 @@ class _FunctionPanelState extends ConsumerState<FunctionPanel>
     super.dispose();
   }
 
+  void _showAllShortcuts() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => _AllShortcutsOverlay(
+        onKeyInput: widget.onKeyInput,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bgColor = isDark ? const Color(0xFF1E1E2E) : const Color(0xFFF0F0F5);
+    final headerColor = isDark ? const Color(0xFF181825) : const Color(0xFFE0E0EA);
 
     return Container(
       height: 260,
@@ -55,19 +72,31 @@ class _FunctionPanelState extends ConsumerState<FunctionPanel>
       child: Column(
         children: [
           Container(
-            color: isDark ? const Color(0xFF181825) : const Color(0xFFE0E0EA),
-            child: TabBar(
-              controller: _tabController,
-              labelColor: isDark ? Colors.white : Colors.black87,
-              unselectedLabelColor: isDark ? Colors.white38 : Colors.black38,
-              indicatorColor: Theme.of(context).colorScheme.primary,
-              indicatorSize: TabBarIndicatorSize.label,
-              labelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
-              tabs: [
-                Tab(icon: const Text('{}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)), text: l.function_tabCode),
-                Tab(icon: const Icon(Icons.history, size: 18), text: l.function_tabHistory),
-                Tab(icon: const Icon(Icons.help_outline, size: 18), text: l.function_tabHelp),
-                Tab(icon: const Icon(Icons.keyboard, size: 18), text: l.function_tabKeyboard),
+            color: headerColor,
+            child: Row(
+              children: [
+                Expanded(
+                  child: TabBar(
+                    controller: _tabController,
+                    labelColor: isDark ? Colors.white : Colors.black87,
+                    unselectedLabelColor: isDark ? Colors.white38 : Colors.black38,
+                    indicatorColor: Theme.of(context).colorScheme.primary,
+                    indicatorSize: TabBarIndicatorSize.label,
+                    labelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                    tabs: [
+                      Tab(icon: const Text('{}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)), text: l.function_tabCode),
+                      Tab(icon: const Icon(Icons.history, size: 18), text: l.function_tabHistory),
+                      Tab(icon: const Icon(Icons.help_outline, size: 18), text: l.function_tabHelp),
+                      Tab(icon: const Icon(Icons.keyboard, size: 18), text: l.function_tabKeyboard),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.app_shortcut, size: 20),
+                  color: isDark ? Colors.white54 : Colors.black54,
+                  tooltip: l.function_allShortcuts,
+                  onPressed: _showAllShortcuts,
+                ),
               ],
             ),
           ),
@@ -85,6 +114,189 @@ class _FunctionPanelState extends ConsumerState<FunctionPanel>
                 _HelpTab(),
                 _EmptyTab(message: l.function_switchToKeyboard),
               ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AllShortcutsOverlay extends ConsumerWidget {
+  final void Function(Uint8List data) onKeyInput;
+
+  const _AllShortcutsOverlay({required this.onKeyInput});
+
+  void _onKeyTap(WidgetRef ref, ToolbarKeyDef key) {
+    HapticFeedback.lightImpact();
+    final modifier = ref.read(toolbarModifierProvider);
+
+    if (key.id == 'ctrl') {
+      ref.read(toolbarModifierProvider.notifier).toggleCtrl();
+      return;
+    }
+    if (key.id == 'alt') {
+      ref.read(toolbarModifierProvider.notifier).toggleAlt();
+      return;
+    }
+    if (key.id == 'paste') {
+      _pasteFromClipboard(ref);
+      return;
+    }
+
+    Uint8List bytes = key.bytes;
+    if (modifier.ctrl) {
+      if (bytes.length == 1 && bytes[0] >= 0x40 && bytes[0] <= 0x7F) {
+        bytes = Uint8List.fromList([bytes[0] & 0x1F]);
+      } else if (bytes.length >= 3 && bytes[0] == 0x1B) {
+        bytes = _applyEscModifier(bytes, 5);
+      }
+      ref.read(toolbarModifierProvider.notifier).reset();
+    } else if (modifier.alt) {
+      if (bytes.length == 1) {
+        bytes = Uint8List.fromList([0x1B, ...bytes]);
+      } else if (bytes.length >= 3 && bytes[0] == 0x1B) {
+        bytes = _applyEscModifier(bytes, 3);
+      }
+      ref.read(toolbarModifierProvider.notifier).reset();
+    }
+
+    onKeyInput(bytes);
+    ref.read(toolbarUsageProvider.notifier).increment(key.id);
+  }
+
+  Future<void> _pasteFromClipboard(WidgetRef ref) async {
+    final data = await Clipboard.getData(Clipboard.kTextPlain);
+    if (data?.text != null && data!.text!.isNotEmpty) {
+      final bytes = Uint8List.fromList(data.text!.codeUnits);
+      onKeyInput(bytes);
+    }
+  }
+
+  static Uint8List _applyEscModifier(Uint8List bytes, int mod) {
+    if (bytes.length < 3 || bytes[0] != 0x1B) return bytes;
+    if (bytes[1] == 0x4F && bytes.length == 3) {
+      return Uint8List.fromList([0x1B, 0x5B, 0x31, 0x3B, 0x30 + mod, bytes[2]]);
+    }
+    if (bytes[1] == 0x5B) {
+      final finalByte = bytes.last;
+      final params = bytes.sublist(2, bytes.length - 1);
+      if (params.isEmpty) {
+        return Uint8List.fromList([0x1B, 0x5B, 0x31, 0x3B, 0x30 + mod, finalByte]);
+      } else {
+        return Uint8List.fromList([0x1B, 0x5B, ...params, 0x3B, 0x30 + mod, finalByte]);
+      }
+    }
+    return bytes;
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final usage = ref.watch(toolbarUsageProvider);
+    final modifier = ref.watch(toolbarModifierProvider);
+
+    final keys = allToolbarKeys.toList();
+    keys.sort((a, b) {
+      final aCount = usage[a.id] ?? 0;
+      final bCount = usage[b.id] ?? 0;
+      if (aCount != bCount) return bCount - aCount;
+      // Preserve definition order for equal-frequency keys
+      final aIdx = allToolbarKeys.indexWhere((k) => k.id == a.id);
+      final bIdx = allToolbarKeys.indexWhere((k) => k.id == b.id);
+      return aIdx - bIdx;
+    });
+
+    final bgColor = isDark ? const Color(0xFF1E1E2E) : const Color(0xFFF0F0F5);
+    final buttonColor = isDark ? const Color(0xFF313244) : const Color(0xFFD0D0E0);
+    final activeColor = isDark ? const Color(0xFF89B4FA) : const Color(0xFF1E66F5);
+    final textColor = isDark ? const Color(0xFFCDD6F4) : const Color(0xFF1C1C2E);
+    final activeTextColor = isDark ? const Color(0xFF1E1E2E) : Colors.white;
+
+    return Container(
+      constraints: const BoxConstraints(maxHeight: 400),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 8, 4),
+            child: Row(
+              children: [
+                Text(
+                  l.function_allShortcuts,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? Colors.white : Colors.black87,
+                  ),
+                ),
+                const Spacer(),
+                if (modifier.ctrl)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: Chip(
+                      label: const Text('Ctrl'),
+                      visualDensity: VisualDensity.compact,
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                  ),
+                if (modifier.alt)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: Chip(
+                      label: const Text('Alt'),
+                      visualDensity: VisualDensity.compact,
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                  ),
+                IconButton(
+                  icon: const Icon(Icons.close, size: 20),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: GridView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 4,
+                childAspectRatio: 2.0,
+                mainAxisSpacing: 4,
+                crossAxisSpacing: 4,
+              ),
+              itemCount: keys.length,
+              itemBuilder: (context, index) {
+                final key = keys[index];
+                final isActive =
+                    (key.id == 'ctrl' && modifier.ctrl) ||
+                    (key.id == 'alt' && modifier.alt);
+
+                return GestureDetector(
+                  onTap: () => _onKeyTap(ref, key),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: isActive ? activeColor : buttonColor,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      key.label,
+                      style: TextStyle(
+                        color: isActive ? activeTextColor : textColor,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        height: 1,
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
           ),
         ],

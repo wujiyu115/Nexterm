@@ -415,6 +415,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get function_helpTab => '自动补全';
 
   @override
+  String get function_allShortcuts => '全部快捷键';
+
+  @override
   String get commandHistory_searchHint => '搜索命令…';
 
   @override

@@ -109,6 +109,12 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
                 onSwitchToAbc: () {
                   setState(() => _isFunctionMode = false);
                 },
+                onKeyInput: (data) {
+                  final sshService = ref.read(sshServiceProvider);
+                  if (activeTab.sessionId != null) {
+                    sshService.writeBytes(activeTab.sessionId!, data);
+                  }
+                },
               )
             else
               KeyboardToolbar(
