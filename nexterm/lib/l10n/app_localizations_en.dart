@@ -296,7 +296,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get terminal_newTab => 'New Terminal';
 
   @override
-  String get terminal_hideKeyboard => 'Hide Keyboard';
+  String get terminal_toggleKeyboard => 'Toggle Keyboard';
 
   @override
   String get terminal_backToHosts => 'Back to Hosts';

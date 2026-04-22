@@ -644,11 +644,11 @@ abstract class AppLocalizations {
   /// **'新建终端'**
   String get terminal_newTab;
 
-  /// No description provided for @terminal_hideKeyboard.
+  /// No description provided for @terminal_toggleKeyboard.
   ///
   /// In zh, this message translates to:
-  /// **'收起键盘'**
-  String get terminal_hideKeyboard;
+  /// **'切换键盘'**
+  String get terminal_toggleKeyboard;
 
   /// No description provided for @terminal_backToHosts.
   ///

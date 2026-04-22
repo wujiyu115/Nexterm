@@ -50,6 +50,15 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
     }
   }
 
+  void _toggleKeyboard() {
+    final hasFocus = FocusScope.of(context).hasFocus;
+    if (hasFocus) {
+      FocusScope.of(context).unfocus();
+    } else {
+      FocusScope.of(context).requestFocus();
+    }
+  }
+
   void _showHelpDialog() {
     final l = AppLocalizations.of(context)!;
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -142,9 +151,7 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
             onCustomizeTap: activeTab != null
                 ? () => context.push('/terminal/customize-keyboard')
                 : null,
-            onHideKeyboard: activeTab != null
-                ? () => FocusScope.of(context).unfocus()
-                : null,
+            onHideKeyboard: activeTab != null ? _toggleKeyboard : null,
             onShowHelp: activeTab != null ? _showHelpDialog : null,
             onGoToHosts: activeTab != null ? () => context.go('/hosts') : null,
           ),

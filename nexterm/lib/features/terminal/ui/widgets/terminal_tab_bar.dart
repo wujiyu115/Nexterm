@@ -118,8 +118,8 @@ class TerminalTabBar extends ConsumerWidget {
                   PopupMenuItem(
                     value: 'hide_keyboard',
                     child: ListTile(
-                      leading: const Icon(Icons.keyboard_hide),
-                      title: Text(l.terminal_hideKeyboard),
+                      leading: const Icon(Icons.keyboard),
+                      title: Text(l.terminal_toggleKeyboard),
                       contentPadding: EdgeInsets.zero,
                       visualDensity: VisualDensity.compact,
                     ),

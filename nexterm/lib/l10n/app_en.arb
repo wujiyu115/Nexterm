@@ -99,7 +99,7 @@
   "terminal_switchToAbc": "Switch to ABC Keyboard",
   "terminal_switchToFunction": "Switch to Function Panel",
   "terminal_newTab": "New Terminal",
-  "terminal_hideKeyboard": "Hide Keyboard",
+  "terminal_toggleKeyboard": "Toggle Keyboard",
   "terminal_backToHosts": "Back to Hosts",
   "terminal_connectionFailed": "Connection Failed",
   "terminal_connectionFailedHint": "Press the close button to close this tab, or reconnect from the host list.",

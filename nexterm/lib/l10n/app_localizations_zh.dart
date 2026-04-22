@@ -292,7 +292,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get terminal_newTab => '新建终端';
 
   @override
-  String get terminal_hideKeyboard => '收起键盘';
+  String get terminal_toggleKeyboard => '切换键盘';
 
   @override
   String get terminal_backToHosts => '返回主机';
