@@ -49,16 +49,6 @@ class _FunctionPanelState extends ConsumerState<FunctionPanel>
     super.dispose();
   }
 
-  void _showAllShortcuts() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (_) => _AllShortcutsOverlay(
-        onKeyInput: widget.onKeyInput,
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
@@ -73,30 +63,18 @@ class _FunctionPanelState extends ConsumerState<FunctionPanel>
         children: [
           Container(
             color: headerColor,
-            child: Row(
-              children: [
-                Expanded(
-                  child: TabBar(
-                    controller: _tabController,
-                    labelColor: isDark ? Colors.white : Colors.black87,
-                    unselectedLabelColor: isDark ? Colors.white38 : Colors.black38,
-                    indicatorColor: Theme.of(context).colorScheme.primary,
-                    indicatorSize: TabBarIndicatorSize.label,
-                    labelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
-                    tabs: [
-                      Tab(icon: const Text('{}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)), text: l.function_tabCode),
-                      Tab(icon: const Icon(Icons.history, size: 18), text: l.function_tabHistory),
-                      Tab(icon: const Icon(Icons.help_outline, size: 18), text: l.function_tabHelp),
-                      Tab(icon: const Icon(Icons.keyboard, size: 18), text: l.function_tabKeyboard),
-                    ],
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.app_shortcut, size: 20),
-                  color: isDark ? Colors.white54 : Colors.black54,
-                  tooltip: l.function_allShortcuts,
-                  onPressed: _showAllShortcuts,
-                ),
+            child: TabBar(
+              controller: _tabController,
+              labelColor: isDark ? Colors.white : Colors.black87,
+              unselectedLabelColor: isDark ? Colors.white38 : Colors.black38,
+              indicatorColor: Theme.of(context).colorScheme.primary,
+              indicatorSize: TabBarIndicatorSize.label,
+              labelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+              tabs: [
+                Tab(icon: const Text('{}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold))),
+                Tab(icon: const Icon(Icons.history, size: 18)),
+                Tab(icon: const Icon(Icons.app_shortcut, size: 18)),
+                Tab(icon: const Icon(Icons.keyboard, size: 18)),
               ],
             ),
           ),
@@ -111,7 +89,7 @@ class _FunctionPanelState extends ConsumerState<FunctionPanel>
                         onCommandSelected: widget.onCommandSelected,
                       )
                     : _EmptyTab(message: l.function_noActiveSession),
-                _HelpTab(),
+                _AllShortcutsOverlayInline(onKeyInput: widget.onKeyInput),
                 _EmptyTab(message: l.function_switchToKeyboard),
               ],
             ),
@@ -122,10 +100,10 @@ class _FunctionPanelState extends ConsumerState<FunctionPanel>
   }
 }
 
-class _AllShortcutsOverlay extends ConsumerWidget {
+class _AllShortcutsOverlayInline extends ConsumerWidget {
   final void Function(Uint8List data) onKeyInput;
 
-  const _AllShortcutsOverlay({required this.onKeyInput});
+  const _AllShortcutsOverlayInline({required this.onKeyInput});
 
   void _onKeyTap(WidgetRef ref, ToolbarKeyDef key) {
     HapticFeedback.lightImpact();
@@ -192,7 +170,6 @@ class _AllShortcutsOverlay extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l = AppLocalizations.of(context)!;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final usage = ref.watch(toolbarUsageProvider);
     final modifier = ref.watch(toolbarModifierProvider);
@@ -202,43 +179,26 @@ class _AllShortcutsOverlay extends ConsumerWidget {
       final aCount = usage[a.id] ?? 0;
       final bCount = usage[b.id] ?? 0;
       if (aCount != bCount) return bCount - aCount;
-      // Preserve definition order for equal-frequency keys
       final aIdx = allToolbarKeys.indexWhere((k) => k.id == a.id);
       final bIdx = allToolbarKeys.indexWhere((k) => k.id == b.id);
       return aIdx - bIdx;
     });
 
-    final bgColor = isDark ? const Color(0xFF1E1E2E) : const Color(0xFFF0F0F5);
     final buttonColor = isDark ? const Color(0xFF313244) : const Color(0xFFD0D0E0);
     final activeColor = isDark ? const Color(0xFF89B4FA) : const Color(0xFF1E66F5);
     final textColor = isDark ? const Color(0xFFCDD6F4) : const Color(0xFF1C1C2E);
     final activeTextColor = isDark ? const Color(0xFF1E1E2E) : Colors.white;
 
-    return Container(
-      constraints: const BoxConstraints(maxHeight: 400),
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
+    return Column(
+      children: [
+        if (modifier.ctrl || modifier.alt)
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 8, 4),
+            padding: const EdgeInsets.fromLTRB(12, 6, 12, 2),
             child: Row(
               children: [
-                Text(
-                  l.function_allShortcuts,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: isDark ? Colors.white : Colors.black87,
-                  ),
-                ),
-                const Spacer(),
                 if (modifier.ctrl)
                   Padding(
-                    padding: const EdgeInsets.only(right: 8),
+                    padding: const EdgeInsets.only(right: 6),
                     child: Chip(
                       label: const Text('Ctrl'),
                       visualDensity: VisualDensity.compact,
@@ -246,61 +206,53 @@ class _AllShortcutsOverlay extends ConsumerWidget {
                     ),
                   ),
                 if (modifier.alt)
-                  Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: Chip(
-                      label: const Text('Alt'),
-                      visualDensity: VisualDensity.compact,
-                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
+                  Chip(
+                    label: const Text('Alt'),
+                    visualDensity: VisualDensity.compact,
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
-                IconButton(
-                  icon: const Icon(Icons.close, size: 20),
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
               ],
             ),
           ),
-          Expanded(
-            child: GridView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 4,
-                childAspectRatio: 2.0,
-                mainAxisSpacing: 4,
-                crossAxisSpacing: 4,
-              ),
-              itemCount: keys.length,
-              itemBuilder: (context, index) {
-                final key = keys[index];
-                final isActive =
-                    (key.id == 'ctrl' && modifier.ctrl) ||
-                    (key.id == 'alt' && modifier.alt);
+        Expanded(
+          child: GridView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 4,
+              childAspectRatio: 2.0,
+              mainAxisSpacing: 4,
+              crossAxisSpacing: 4,
+            ),
+            itemCount: keys.length,
+            itemBuilder: (context, index) {
+              final key = keys[index];
+              final isActive =
+                  (key.id == 'ctrl' && modifier.ctrl) ||
+                  (key.id == 'alt' && modifier.alt);
 
-                return GestureDetector(
-                  onTap: () => _onKeyTap(ref, key),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: isActive ? activeColor : buttonColor,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      key.label,
-                      style: TextStyle(
-                        color: isActive ? activeTextColor : textColor,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        height: 1,
-                      ),
+              return GestureDetector(
+                onTap: () => _onKeyTap(ref, key),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: isActive ? activeColor : buttonColor,
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    key.label,
+                    style: TextStyle(
+                      color: isActive ? activeTextColor : textColor,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      height: 1,
                     ),
                   ),
-                );
-              },
-            ),
+                ),
+              );
+            },
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
@@ -487,64 +439,6 @@ class _VariableDialogState extends State<_VariableDialog> {
           child: Text(l.snippetExecute_execute),
         ),
       ],
-    );
-  }
-}
-
-class _HelpTab extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context)!;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textColor = isDark ? Colors.white70 : Colors.black87;
-    final dimColor = isDark ? Colors.white38 : Colors.black45;
-
-    final shortcuts = [
-      ('Ctrl+C', l.function_helpCtrlC),
-      ('Ctrl+D', l.function_helpCtrlD),
-      ('Ctrl+Z', l.function_helpCtrlZ),
-      ('Ctrl+L', l.function_helpCtrlL),
-      ('Ctrl+R', l.function_helpCtrlR),
-      ('Ctrl+A', l.function_helpCtrlA),
-      ('Ctrl+E', l.function_helpCtrlE),
-      ('Tab', l.function_helpTab),
-    ];
-
-    return ListView.separated(
-      padding: const EdgeInsets.all(12),
-      itemCount: shortcuts.length,
-      separatorBuilder: (_, __) => Divider(
-        height: 1,
-        color: isDark ? Colors.white10 : Colors.black12,
-      ),
-      itemBuilder: (context, index) {
-        final (key, desc) = shortcuts[index];
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: isDark ? Colors.white10 : Colors.black.withValues(alpha: 0.06),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Text(
-                  key,
-                  style: TextStyle(
-                    fontFamily: 'monospace',
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: textColor,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Text(desc, style: TextStyle(fontSize: 13, color: dimColor)),
-            ],
-          ),
-        );
-      },
     );
   }
 }

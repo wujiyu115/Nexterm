@@ -50,6 +50,68 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
     }
   }
 
+  void _showHelpDialog() {
+    final l = AppLocalizations.of(context)!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDark ? Colors.white70 : Colors.black87;
+    final dimColor = isDark ? Colors.white38 : Colors.black45;
+
+    final shortcuts = [
+      ('Ctrl+C', l.function_helpCtrlC),
+      ('Ctrl+D', l.function_helpCtrlD),
+      ('Ctrl+Z', l.function_helpCtrlZ),
+      ('Ctrl+L', l.function_helpCtrlL),
+      ('Ctrl+R', l.function_helpCtrlR),
+      ('Ctrl+A', l.function_helpCtrlA),
+      ('Ctrl+E', l.function_helpCtrlE),
+      ('Tab', l.function_helpTab),
+    ];
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l.function_tabHelp),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: shortcuts.map((entry) {
+            final (key, desc) = entry;
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 6),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: isDark ? Colors.white10 : Colors.black.withValues(alpha: 0.06),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      key,
+                      style: TextStyle(
+                        fontFamily: 'monospace',
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: textColor,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(child: Text(desc, style: TextStyle(fontSize: 13, color: dimColor))),
+                ],
+              ),
+            );
+          }).toList(),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(l.common_cancel),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final tabManager = ref.watch(tabManagerProvider);
@@ -83,6 +145,7 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
             onHideKeyboard: activeTab != null
                 ? () => FocusScope.of(context).unfocus()
                 : null,
+            onShowHelp: activeTab != null ? _showHelpDialog : null,
           ),
 
           Expanded(
