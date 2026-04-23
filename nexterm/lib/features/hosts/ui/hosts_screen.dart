@@ -76,7 +76,7 @@ class _HostsScreenState extends ConsumerState<HostsScreen> {
       case HostContextAction.moveToGroup:
         await _showMoveToGroupDialog([host.id]);
       case HostContextAction.edit:
-        context.push('/hosts/edit/${host.id}');
+        context.push('/vaults/hosts/edit/${host.id}');
       case HostContextAction.select:
         _enterSelectionMode(host.id);
       case HostContextAction.delete:
@@ -261,12 +261,16 @@ class _HostsScreenState extends ConsumerState<HostsScreen> {
               ],
             )
           : AppBar(
+              leading: IconButton(
+                icon: const Icon(Icons.chevron_left),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
               title: Text(l.hosts_title),
               actions: [
                 IconButton(
                   icon: const Icon(Icons.add),
                   tooltip: l.hosts_addTooltip,
-                  onPressed: () => context.push('/hosts/add'),
+                  onPressed: () => context.push('/vaults/hosts/add'),
                 ),
               ],
             ),
@@ -335,7 +339,7 @@ class _HostsScreenState extends ConsumerState<HostsScreen> {
           Text(l.hosts_noHosts, style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 8),
           FilledButton.icon(
-            onPressed: () => context.push('/hosts/add'),
+            onPressed: () => context.push('/vaults/hosts/add'),
             icon: const Icon(Icons.add),
             label: Text(l.hosts_add),
           ),

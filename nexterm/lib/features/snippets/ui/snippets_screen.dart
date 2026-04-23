@@ -17,12 +17,16 @@ class SnippetsScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.chevron_left),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         title: Text(l.snippets_title),
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
             tooltip: l.snippets_addTooltip,
-            onPressed: () => context.push('/snippets/add'),
+            onPressed: () => context.push('/vaults/snippets/add'),
           ),
         ],
       ),
@@ -67,8 +71,8 @@ class SnippetsScreen extends ConsumerWidget {
     return SnippetListTile(
       key: ValueKey(snippet.id),
       snippet: snippet,
-      onTap: () => context.push('/snippets/edit/${snippet.id}'),
-      onEdit: () => context.push('/snippets/edit/${snippet.id}'),
+      onTap: () => context.push('/vaults/snippets/edit/${snippet.id}'),
+      onEdit: () => context.push('/vaults/snippets/edit/${snippet.id}'),
       onToggleFavorite: () => notifier.toggleFavorite(snippet),
     );
   }
@@ -84,7 +88,7 @@ class SnippetsScreen extends ConsumerWidget {
           Text(l.snippets_noSnippets, style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 8),
           FilledButton.icon(
-            onPressed: () => context.push('/snippets/add'),
+            onPressed: () => context.push('/vaults/snippets/add'),
             icon: const Icon(Icons.add),
             label: Text(l.snippets_add),
           ),

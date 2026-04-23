@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nexterm/shared/widgets/app_scaffold.dart';
+import 'package:nexterm/features/vaults/ui/vaults_screen.dart';
+import 'package:nexterm/features/vaults/ui/known_hosts_screen.dart';
+import 'package:nexterm/features/vaults/ui/logs_screen.dart';
 import 'package:nexterm/features/hosts/ui/hosts_screen.dart';
 import 'package:nexterm/features/hosts/ui/host_form_screen.dart';
 import 'package:nexterm/features/keys/ui/keys_screen.dart';
@@ -20,56 +23,73 @@ final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
 final appRouter = GoRouter(
   navigatorKey: _rootNavigatorKey,
-  initialLocation: '/hosts',
+  initialLocation: '/vaults',
   routes: [
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
         return AppScaffold(navigationShell: navigationShell);
       },
       branches: [
+        // Vaults branch
         StatefulShellBranch(routes: [
           GoRoute(
-            path: '/hosts',
-            builder: (context, state) => const HostsScreen(),
+            path: '/vaults',
+            builder: (context, state) => const VaultsScreen(),
             routes: [
-              GoRoute(path: 'add', parentNavigatorKey: _rootNavigatorKey, builder: (context, state) => const HostFormScreen()),
-              GoRoute(path: 'edit/:id', parentNavigatorKey: _rootNavigatorKey, builder: (context, state) => HostFormScreen(hostId: state.pathParameters['id'])),
+              GoRoute(
+                path: 'hosts',
+                parentNavigatorKey: _rootNavigatorKey,
+                builder: (context, state) => const HostsScreen(),
+                routes: [
+                  GoRoute(path: 'add', parentNavigatorKey: _rootNavigatorKey, builder: (context, state) => const HostFormScreen()),
+                  GoRoute(path: 'edit/:id', parentNavigatorKey: _rootNavigatorKey, builder: (context, state) => HostFormScreen(hostId: state.pathParameters['id'])),
+                ],
+              ),
+              GoRoute(
+                path: 'keys',
+                parentNavigatorKey: _rootNavigatorKey,
+                builder: (context, state) => const KeysScreen(),
+                routes: [
+                  GoRoute(path: 'generate', parentNavigatorKey: _rootNavigatorKey, builder: (context, state) => const KeyGenerateScreen()),
+                  GoRoute(path: 'import', parentNavigatorKey: _rootNavigatorKey, builder: (context, state) => const KeyImportScreen()),
+                ],
+              ),
+              GoRoute(
+                path: 'snippets',
+                parentNavigatorKey: _rootNavigatorKey,
+                builder: (context, state) => const SnippetsScreen(),
+                routes: [
+                  GoRoute(path: 'add', parentNavigatorKey: _rootNavigatorKey, builder: (context, state) => const SnippetFormScreen()),
+                  GoRoute(path: 'edit/:id', parentNavigatorKey: _rootNavigatorKey, builder: (context, state) => SnippetFormScreen(snippetId: state.pathParameters['id'])),
+                ],
+              ),
+              GoRoute(
+                path: 'forwarding',
+                parentNavigatorKey: _rootNavigatorKey,
+                builder: (context, state) => const ForwardingScreen(),
+                routes: [
+                  GoRoute(path: 'add', parentNavigatorKey: _rootNavigatorKey, builder: (context, state) => const ForwardFormScreen()),
+                  GoRoute(path: 'edit/:id', parentNavigatorKey: _rootNavigatorKey, builder: (context, state) => ForwardFormScreen(forwardId: state.pathParameters['id'])),
+                ],
+              ),
+              GoRoute(
+                path: 'known-hosts',
+                parentNavigatorKey: _rootNavigatorKey,
+                builder: (context, state) => const KnownHostsScreen(),
+              ),
+              GoRoute(
+                path: 'logs',
+                parentNavigatorKey: _rootNavigatorKey,
+                builder: (context, state) => const LogsScreen(),
+              ),
             ],
           ),
         ]),
+        // Terminal branch
         StatefulShellBranch(routes: [
           GoRoute(path: '/terminal', builder: (context, state) => const TerminalScreen()),
         ]),
-        StatefulShellBranch(routes: [
-          GoRoute(
-            path: '/keys',
-            builder: (context, state) => const KeysScreen(),
-            routes: [
-              GoRoute(path: 'generate', parentNavigatorKey: _rootNavigatorKey, builder: (context, state) => const KeyGenerateScreen()),
-              GoRoute(path: 'import', parentNavigatorKey: _rootNavigatorKey, builder: (context, state) => const KeyImportScreen()),
-            ],
-          ),
-        ]),
-        StatefulShellBranch(routes: [
-          GoRoute(
-            path: '/snippets',
-            builder: (context, state) => const SnippetsScreen(),
-            routes: [
-              GoRoute(path: 'add', parentNavigatorKey: _rootNavigatorKey, builder: (context, state) => const SnippetFormScreen()),
-              GoRoute(path: 'edit/:id', parentNavigatorKey: _rootNavigatorKey, builder: (context, state) => SnippetFormScreen(snippetId: state.pathParameters['id'])),
-            ],
-          ),
-        ]),
-        StatefulShellBranch(routes: [
-          GoRoute(
-            path: '/forwarding',
-            builder: (context, state) => const ForwardingScreen(),
-            routes: [
-              GoRoute(path: 'add', parentNavigatorKey: _rootNavigatorKey, builder: (context, state) => const ForwardFormScreen()),
-              GoRoute(path: 'edit/:id', parentNavigatorKey: _rootNavigatorKey, builder: (context, state) => ForwardFormScreen(forwardId: state.pathParameters['id'])),
-            ],
-          ),
-        ]),
+        // Settings branch
         StatefulShellBranch(routes: [
           GoRoute(path: '/settings', builder: (context, state) => const SettingsScreen()),
         ]),

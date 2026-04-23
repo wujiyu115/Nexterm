@@ -1215,4 +1215,46 @@ class AppLocalizationsZh extends AppLocalizations {
   String keysProvider_unsupportedFormat(String format) {
     return '不支持的私钥格式: $format';
   }
+
+  @override
+  String get nav_vaults => '保险库';
+
+  @override
+  String get nav_connections => '连接';
+
+  @override
+  String get nav_profile => '我的';
+
+  @override
+  String get vaults_title => '个人保险库';
+
+  @override
+  String get vaults_hosts => '主机';
+
+  @override
+  String get vaults_portForwarding => '端口转发';
+
+  @override
+  String get vaults_snippets => '代码片段';
+
+  @override
+  String get vaults_keychain => '密钥';
+
+  @override
+  String get vaults_knownHosts => '已知主机';
+
+  @override
+  String get vaults_logs => '日志';
+
+  @override
+  String get knownHosts_title => '已知主机';
+
+  @override
+  String get knownHosts_empty => '暂无已知主机';
+
+  @override
+  String get logs_title => '日志';
+
+  @override
+  String get logs_empty => '暂无日志';
 }

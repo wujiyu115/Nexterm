@@ -17,17 +17,21 @@ class KeysScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.chevron_left),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         title: Text(l.keys_title),
         actions: [
           IconButton(
             icon: const Icon(Icons.file_upload_outlined),
             tooltip: l.keys_importTooltip,
-            onPressed: () => context.push('/keys/import'),
+            onPressed: () => context.push('/vaults/keys/import'),
           ),
           IconButton(
             icon: const Icon(Icons.add),
             tooltip: l.keys_generateTooltip,
-            onPressed: () => context.push('/keys/generate'),
+            onPressed: () => context.push('/vaults/keys/generate'),
           ),
         ],
       ),
@@ -80,13 +84,13 @@ class KeysScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 24),
           FilledButton.icon(
-            onPressed: () => context.push('/keys/generate'),
+            onPressed: () => context.push('/vaults/keys/generate'),
             icon: const Icon(Icons.add),
             label: Text(l.keys_generate),
           ),
           const SizedBox(height: 12),
           OutlinedButton.icon(
-            onPressed: () => context.push('/keys/import'),
+            onPressed: () => context.push('/vaults/keys/import'),
             icon: const Icon(Icons.file_upload_outlined),
             label: Text(l.keys_import),
           ),

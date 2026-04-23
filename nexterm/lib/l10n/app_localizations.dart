@@ -2395,6 +2395,90 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'不支持的私钥格式: {format}'**
   String keysProvider_unsupportedFormat(String format);
+
+  /// No description provided for @nav_vaults.
+  ///
+  /// In zh, this message translates to:
+  /// **'保险库'**
+  String get nav_vaults;
+
+  /// No description provided for @nav_connections.
+  ///
+  /// In zh, this message translates to:
+  /// **'连接'**
+  String get nav_connections;
+
+  /// No description provided for @nav_profile.
+  ///
+  /// In zh, this message translates to:
+  /// **'我的'**
+  String get nav_profile;
+
+  /// No description provided for @vaults_title.
+  ///
+  /// In zh, this message translates to:
+  /// **'个人保险库'**
+  String get vaults_title;
+
+  /// No description provided for @vaults_hosts.
+  ///
+  /// In zh, this message translates to:
+  /// **'主机'**
+  String get vaults_hosts;
+
+  /// No description provided for @vaults_portForwarding.
+  ///
+  /// In zh, this message translates to:
+  /// **'端口转发'**
+  String get vaults_portForwarding;
+
+  /// No description provided for @vaults_snippets.
+  ///
+  /// In zh, this message translates to:
+  /// **'代码片段'**
+  String get vaults_snippets;
+
+  /// No description provided for @vaults_keychain.
+  ///
+  /// In zh, this message translates to:
+  /// **'密钥'**
+  String get vaults_keychain;
+
+  /// No description provided for @vaults_knownHosts.
+  ///
+  /// In zh, this message translates to:
+  /// **'已知主机'**
+  String get vaults_knownHosts;
+
+  /// No description provided for @vaults_logs.
+  ///
+  /// In zh, this message translates to:
+  /// **'日志'**
+  String get vaults_logs;
+
+  /// No description provided for @knownHosts_title.
+  ///
+  /// In zh, this message translates to:
+  /// **'已知主机'**
+  String get knownHosts_title;
+
+  /// No description provided for @knownHosts_empty.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂无已知主机'**
+  String get knownHosts_empty;
+
+  /// No description provided for @logs_title.
+  ///
+  /// In zh, this message translates to:
+  /// **'日志'**
+  String get logs_title;
+
+  /// No description provided for @logs_empty.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂无日志'**
+  String get logs_empty;
 }
 
 class _AppLocalizationsDelegate

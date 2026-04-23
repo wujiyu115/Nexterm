@@ -34,12 +34,16 @@ class ForwardingScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.chevron_left),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         title: Text(l.forwarding_title),
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
             tooltip: l.forwarding_addTooltip,
-            onPressed: () => context.push('/forwarding/add'),
+            onPressed: () => context.push('/vaults/forwarding/add'),
           ),
         ],
       ),
@@ -93,7 +97,7 @@ class ForwardingScreen extends ConsumerWidget {
       key: ValueKey(forward.id),
       forward: forward,
       status: service.getStatus(forward.id),
-      onEdit: () => context.push('/forwarding/edit/${forward.id}'),
+      onEdit: () => context.push('/vaults/forwarding/edit/${forward.id}'),
       onStartStop: () {
         // Toggle: stop if active, otherwise show a snackbar (no client here).
         if (service.isActive(forward.id)) {
@@ -125,7 +129,7 @@ class ForwardingScreen extends ConsumerWidget {
           Text(l.forwarding_noForwards, style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 8),
           FilledButton.icon(
-            onPressed: () => context.push('/forwarding/add'),
+            onPressed: () => context.push('/vaults/forwarding/add'),
             icon: const Icon(Icons.add),
             label: Text(l.forwarding_add),
           ),

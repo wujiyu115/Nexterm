@@ -1242,4 +1242,46 @@ class AppLocalizationsEn extends AppLocalizations {
   String keysProvider_unsupportedFormat(String format) {
     return 'Unsupported private key format: $format';
   }
+
+  @override
+  String get nav_vaults => 'Vaults';
+
+  @override
+  String get nav_connections => 'Connections';
+
+  @override
+  String get nav_profile => 'Profile';
+
+  @override
+  String get vaults_title => 'Personal Vault';
+
+  @override
+  String get vaults_hosts => 'Hosts';
+
+  @override
+  String get vaults_portForwarding => 'Port Forwarding';
+
+  @override
+  String get vaults_snippets => 'Snippets';
+
+  @override
+  String get vaults_keychain => 'Keychain';
+
+  @override
+  String get vaults_knownHosts => 'Known Hosts';
+
+  @override
+  String get vaults_logs => 'Logs';
+
+  @override
+  String get knownHosts_title => 'Known Hosts';
+
+  @override
+  String get knownHosts_empty => 'No known hosts yet';
+
+  @override
+  String get logs_title => 'Logs';
+
+  @override
+  String get logs_empty => 'No logs yet';
 }

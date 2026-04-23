@@ -411,5 +411,20 @@
   "keysProvider_invalidMagic": "Invalid OpenSSH private key magic",
   "keysProvider_encryptedNotSupported": "Encrypted private keys are not yet supported. Please decrypt before importing.",
   "keysProvider_singleKeyOnly": "Only files containing a single key are supported",
-  "keysProvider_unsupportedFormat": "Unsupported private key format: {format}"
+  "keysProvider_unsupportedFormat": "Unsupported private key format: {format}",
+
+  "nav_vaults": "Vaults",
+  "nav_connections": "Connections",
+  "nav_profile": "Profile",
+  "vaults_title": "Personal Vault",
+  "vaults_hosts": "Hosts",
+  "vaults_portForwarding": "Port Forwarding",
+  "vaults_snippets": "Snippets",
+  "vaults_keychain": "Keychain",
+  "vaults_knownHosts": "Known Hosts",
+  "vaults_logs": "Logs",
+  "knownHosts_title": "Known Hosts",
+  "knownHosts_empty": "No known hosts yet",
+  "logs_title": "Logs",
+  "logs_empty": "No logs yet"
 }

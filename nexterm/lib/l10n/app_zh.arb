@@ -440,5 +440,20 @@
   "keysProvider_encryptedNotSupported": "暂不支持加密的私钥，请先解密后再导入",
   "keysProvider_singleKeyOnly": "仅支持包含单个密钥的文件",
   "keysProvider_unsupportedFormat": "不支持的私钥格式: {format}",
-  "@keysProvider_unsupportedFormat": { "placeholders": { "format": { "type": "String" } } }
+  "@keysProvider_unsupportedFormat": { "placeholders": { "format": { "type": "String" } } },
+
+  "nav_vaults": "保险库",
+  "nav_connections": "连接",
+  "nav_profile": "我的",
+  "vaults_title": "个人保险库",
+  "vaults_hosts": "主机",
+  "vaults_portForwarding": "端口转发",
+  "vaults_snippets": "代码片段",
+  "vaults_keychain": "密钥",
+  "vaults_knownHosts": "已知主机",
+  "vaults_logs": "日志",
+  "knownHosts_title": "已知主机",
+  "knownHosts_empty": "暂无已知主机",
+  "logs_title": "日志",
+  "logs_empty": "暂无日志"
 }
