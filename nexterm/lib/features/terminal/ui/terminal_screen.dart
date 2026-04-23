@@ -50,6 +50,10 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
     }
   }
 
+  void _hideKeyboard() {
+    FocusScope.of(context).unfocus();
+  }
+
   void _toggleKeyboard() {
     final hasFocus = FocusScope.of(context).hasFocus;
     if (hasFocus) {
@@ -195,6 +199,7 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
                     sshService.writeBytes(activeTab.sessionId!, data);
                   }
                 },
+                onHideKeyboard: _hideKeyboard,
               ),
           ],
         ],
