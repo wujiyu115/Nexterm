@@ -125,6 +125,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hosts_copy => 'Copy';
 
   @override
+  String get hosts_selectToConnect => 'Select a host to connect';
+
+  @override
+  String hosts_activeConnections(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count active connections',
+      one: '1 active connection',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get hosts_contextConnect => 'Connect';
 
   @override

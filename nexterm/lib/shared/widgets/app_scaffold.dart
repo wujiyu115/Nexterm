@@ -21,6 +21,14 @@ class AppScaffold extends ConsumerWidget {
           : NavigationBar(
               selectedIndex: navigationShell.currentIndex,
               onDestinationSelected: (index) {
+                // For the Terminal tab: if there is no active session yet,
+                // route through the Hosts page so users can pick a host to
+                // connect, and so the system back-swipe gesture can take them
+                // back here naturally.
+                if (index == 1 && tabManager.tabs.isEmpty) {
+                  context.push('/vaults/hosts');
+                  return;
+                }
                 navigationShell.goBranch(index, initialLocation: index == navigationShell.currentIndex);
               },
               destinations: [

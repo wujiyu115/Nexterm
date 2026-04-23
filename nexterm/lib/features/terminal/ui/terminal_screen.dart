@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nexterm/domain/entities/host_entity.dart';
+import 'package:nexterm/features/hosts/providers/hosts_provider.dart';
 import 'package:nexterm/features/terminal/providers/terminal_provider.dart';
 import 'package:nexterm/features/terminal/ui/widgets/function_panel.dart';
 import 'package:nexterm/features/terminal/ui/widgets/keyboard_toolbar.dart';
 import 'package:nexterm/features/terminal/ui/widgets/terminal_tab_bar.dart';
 import 'package:nexterm/features/terminal/ui/widgets/terminal_view.dart';
+import 'package:nexterm/shared/widgets/dashed_divider.dart';
 
 class TerminalScreen extends ConsumerStatefulWidget {
   final String? hostId;
@@ -125,6 +128,18 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
     );
   }
 
+  Future<void> _showHostPickerDialog() async {
+    final selectedHostId = await showDialog<String>(
+      context: context,
+      builder: (ctx) => const _HostPickerDialog(),
+    );
+    if (selectedHostId == null || !mounted) return;
+    // Push the connect route on top of the navigation stack so the system
+    // back-swipe gesture returns the user to the previous page (e.g. the
+    // hosts list) and the bottom navigation bar reappears naturally.
+    context.push('/terminal/connect/$selectedHostId');
+  }
+
   @override
   Widget build(BuildContext context) {
     final tabManager = ref.watch(tabManagerProvider);
@@ -149,7 +164,7 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
           SizedBox(height: MediaQuery.of(context).padding.top),
 
           TerminalTabBar(
-            onAddTab: () => context.go('/vaults/hosts'),
+            onAddTab: _showHostPickerDialog,
             isFunctionMode: _isFunctionMode,
             onToggleMode: activeTab != null ? _toggleKeyboardMode : null,
             onCustomizeTap: activeTab != null
@@ -157,7 +172,6 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
                 : null,
             onHideKeyboard: activeTab != null ? _toggleKeyboard : null,
             onShowHelp: activeTab != null ? _showHelpDialog : null,
-            onGoToHosts: activeTab != null ? () => context.go('/vaults/hosts') : null,
           ),
 
           Expanded(
@@ -180,9 +194,6 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
                   if (activeTab.sessionId != null) {
                     sshService.write(activeTab.sessionId!, '$command\n');
                   }
-                },
-                onSwitchToAbc: () {
-                  setState(() => _isFunctionMode = false);
                 },
                 onKeyInput: (data) {
                   final sshService = ref.read(sshServiceProvider);
@@ -250,6 +261,161 @@ class _EmptyState extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// Modal dialog that lists all available hosts and lets the user pick one to
+/// open in a new terminal tab.
+class _HostPickerDialog extends ConsumerWidget {
+  const _HostPickerDialog();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
+    final hostsAsync = ref.watch(hostsStreamProvider);
+    final theme = Theme.of(context);
+
+    return Dialog(
+      insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 48),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 480, maxHeight: 560),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 8, 8),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      l.hosts_selectToConnect,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ],
+              ),
+            ),
+            DashedDivider(
+              color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+            ),
+            Flexible(
+              child: hostsAsync.when(
+                data: (hosts) {
+                  if (hosts.isEmpty) {
+                    return Padding(
+                      padding: const EdgeInsets.all(32),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.dns_outlined,
+                            size: 48,
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            l.hosts_noHosts,
+                            style: theme.textTheme.bodyMedium,
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                  return _HostPickerList(hosts: hosts);
+                },
+                loading: () => const Padding(
+                  padding: EdgeInsets.all(32),
+                  child: Center(child: CircularProgressIndicator()),
+                ),
+                error: (e, _) => Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Text(l.common_error(e.toString())),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _HostPickerList extends ConsumerWidget {
+  final List<HostEntity> hosts;
+
+  const _HostPickerList({required this.hosts});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final tabManager = ref.watch(tabManagerProvider);
+
+    final activeCounts = <String, int>{};
+    for (final tab in tabManager.tabs) {
+      activeCounts[tab.hostId] = (activeCounts[tab.hostId] ?? 0) + 1;
+    }
+
+    final dividerColor =
+        theme.colorScheme.outlineVariant.withValues(alpha: 0.4);
+    return ListView.separated(
+      shrinkWrap: true,
+      itemCount: hosts.length,
+      separatorBuilder: (_, __) => DashedDivider(
+        color: dividerColor,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+      ),
+      itemBuilder: (context, index) {
+        final host = hosts[index];
+        final activeCount = activeCounts[host.id] ?? 0;
+        return ListTile(
+          leading: Icon(
+            host.isFavorite ? Icons.star : Icons.dns_outlined,
+            color: host.isFavorite
+                ? Colors.amber
+                : theme.colorScheme.primary,
+          ),
+          title: Text(
+            host.name,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          subtitle: Text(
+            '${host.username}@${host.hostname}:${host.port}',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
+          ),
+          trailing: activeCount > 0
+              ? Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    l.hosts_activeConnections(activeCount),
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: theme.colorScheme.onPrimaryContainer,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                )
+              : null,
+          onTap: () => Navigator.of(context).pop(host.id),
+        );
+      },
     );
   }
 }

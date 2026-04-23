@@ -123,6 +123,14 @@ class AppLocalizationsZh extends AppLocalizations {
   String get hosts_copy => '副本';
 
   @override
+  String get hosts_selectToConnect => '选择要连接的主机';
+
+  @override
+  String hosts_activeConnections(int count) {
+    return '$count 个活跃连接';
+  }
+
+  @override
   String get hosts_contextConnect => '连接';
 
   @override

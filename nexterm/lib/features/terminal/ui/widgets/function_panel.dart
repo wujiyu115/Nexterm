@@ -13,14 +13,12 @@ import 'package:nexterm/l10n/app_localizations.dart';
 class FunctionPanel extends ConsumerStatefulWidget {
   final String? sessionId;
   final void Function(String command) onCommandSelected;
-  final VoidCallback onSwitchToAbc;
   final void Function(Uint8List data) onKeyInput;
 
   const FunctionPanel({
     super.key,
     required this.sessionId,
     required this.onCommandSelected,
-    required this.onSwitchToAbc,
     required this.onKeyInput,
   });
 
@@ -35,12 +33,7 @@ class _FunctionPanelState extends ConsumerState<FunctionPanel>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
-    _tabController.addListener(() {
-      if (_tabController.index == 3) {
-        widget.onSwitchToAbc();
-      }
-    });
+    _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -70,11 +63,10 @@ class _FunctionPanelState extends ConsumerState<FunctionPanel>
               indicatorColor: Theme.of(context).colorScheme.primary,
               indicatorSize: TabBarIndicatorSize.label,
               labelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
-              tabs: [
-                Tab(icon: const Text('{}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold))),
-                Tab(icon: const Icon(Icons.history, size: 18)),
-                Tab(icon: const Icon(Icons.app_shortcut, size: 18)),
-                Tab(icon: const Icon(Icons.keyboard, size: 18)),
+              tabs: const [
+                Tab(icon: Text('{}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold))),
+                Tab(icon: Icon(Icons.history, size: 18)),
+                Tab(icon: Icon(Icons.app_shortcut, size: 18)),
               ],
             ),
           ),
@@ -90,7 +82,6 @@ class _FunctionPanelState extends ConsumerState<FunctionPanel>
                       )
                     : _EmptyTab(message: l.function_noActiveSession),
                 _AllShortcutsOverlayInline(onKeyInput: widget.onKeyInput),
-                _EmptyTab(message: l.function_switchToKeyboard),
               ],
             ),
           ),

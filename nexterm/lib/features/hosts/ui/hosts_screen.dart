@@ -300,22 +300,35 @@ class _HostsScreenState extends ConsumerState<HostsScreen> {
       groups.putIfAbsent(host.group, () => []).add(host);
     }
 
+    // Compute active connection counts per hostId from the tab manager.
+    final tabManager = ref.watch(tabManagerProvider);
+    final activeCounts = <String, int>{};
+    for (final tab in tabManager.tabs) {
+      activeCounts[tab.hostId] = (activeCounts[tab.hostId] ?? 0) + 1;
+    }
+
     return ListView(
       children: [
         if (favorites.isNotEmpty) ...[
           _SectionHeader(title: l.hosts_favorites),
-          ...favorites.map((host) => _buildTile(host, notifier)),
+          ...favorites
+              .map((host) => _buildTile(host, notifier, activeCounts)),
         ],
         ...groups.entries.expand((entry) => [
           _SectionHeader(title: entry.key ?? l.hosts_ungrouped),
-          ...entry.value.map((host) => _buildTile(host, notifier)),
+          ...entry.value
+              .map((host) => _buildTile(host, notifier, activeCounts)),
         ]),
         const SizedBox(height: 80),
       ],
     );
   }
 
-  Widget _buildTile(HostEntity host, HostsNotifier notifier) {
+  Widget _buildTile(
+    HostEntity host,
+    HostsNotifier notifier,
+    Map<String, int> activeCounts,
+  ) {
     return HostListTile(
       key: ValueKey(host.id),
       host: host,
@@ -325,6 +338,7 @@ class _HostsScreenState extends ConsumerState<HostsScreen> {
       isSelectionMode: _isSelectionMode,
       isSelected: _selectedIds.contains(host.id),
       onSelectionToggle: () => _toggleSelection(host.id),
+      activeConnectionCount: activeCounts[host.id] ?? 0,
     );
   }
 

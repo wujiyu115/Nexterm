@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nexterm/domain/entities/enums.dart';
 import 'package:nexterm/features/terminal/providers/terminal_provider.dart';
 import 'package:nexterm/features/terminal/ui/tab_manager.dart';
+import 'package:nexterm/shared/widgets/dashed_divider.dart';
 
 /// Horizontal tab bar showing all open terminal tabs with:
 /// - Status indicator dot (color by [ConnectionStatus])
@@ -20,7 +21,6 @@ class TerminalTabBar extends ConsumerWidget {
   final VoidCallback? onCustomizeTap;
   final VoidCallback? onHideKeyboard;
   final VoidCallback? onShowHelp;
-  final VoidCallback? onGoToHosts;
 
   const TerminalTabBar({
     super.key,
@@ -30,7 +30,6 @@ class TerminalTabBar extends ConsumerWidget {
     this.onCustomizeTap,
     this.onHideKeyboard,
     this.onShowHelp,
-    this.onGoToHosts,
   });
 
   @override
@@ -66,8 +65,17 @@ class TerminalTabBar extends ConsumerWidget {
           ),
 
           PopupMenuButton<String>(
-            icon: const Icon(Icons.more_horiz, size: 18),
+            icon: Icon(
+              Icons.more_horiz,
+              size: 18,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
             padding: EdgeInsets.zero,
+            color: Theme.of(context).colorScheme.surface,
+            surfaceTintColor: Theme.of(context).colorScheme.surfaceTint,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
             onSelected: (value) {
               HapticFeedback.lightImpact();
               switch (value) {
@@ -77,82 +85,81 @@ class TerminalTabBar extends ConsumerWidget {
                   onCustomizeTap?.call();
                 case 'add':
                   onAddTab?.call();
-                case 'hide_keyboard':
-                  onHideKeyboard?.call();
                 case 'help':
                   onShowHelp?.call();
-                case 'hosts':
-                  onGoToHosts?.call();
               }
             },
             itemBuilder: (ctx) {
               final l = AppLocalizations.of(ctx)!;
-              return [
+              final theme = Theme.of(ctx);
+              final iconColor = theme.colorScheme.onSurfaceVariant;
+              final textColor = theme.colorScheme.onSurface;
+              final dividerColor =
+                  theme.colorScheme.outlineVariant.withValues(alpha: 0.4);
+
+              PopupMenuItem<String> menuItem({
+                required String value,
+                required IconData icon,
+                required String label,
+              }) {
+                return PopupMenuItem<String>(
+                  value: value,
+                  height: 40,
+                  child: Row(
+                    children: [
+                      Icon(icon, size: 18, color: iconColor),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          label,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: textColor,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }
+
+              PopupMenuItem<String> divider() => PopupMenuItem<String>(
+                    enabled: false,
+                    height: 9,
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: DashedDivider(color: dividerColor),
+                  );
+
+              return <PopupMenuEntry<String>>[
                 if (onToggleMode != null)
-                  PopupMenuItem(
+                  menuItem(
                     value: 'toggle',
-                    child: ListTile(
-                      leading: Icon(
-                        isFunctionMode ? Icons.keyboard : Icons.grid_view_rounded,
-                      ),
-                      title: Text(
-                        isFunctionMode
-                            ? l.terminal_switchToAbc
-                            : l.terminal_switchToFunction,
-                      ),
-                      contentPadding: EdgeInsets.zero,
-                      visualDensity: VisualDensity.compact,
-                    ),
+                    icon: isFunctionMode
+                        ? Icons.keyboard
+                        : Icons.grid_view_rounded,
+                    label: isFunctionMode
+                        ? l.terminal_switchToAbc
+                        : l.terminal_switchToFunction,
                   ),
                 if (onCustomizeTap != null)
-                  PopupMenuItem(
+                  menuItem(
                     value: 'customize',
-                    child: ListTile(
-                      leading: const Icon(Icons.settings),
-                      title: Text(l.toolbar_customize),
-                      contentPadding: EdgeInsets.zero,
-                      visualDensity: VisualDensity.compact,
-                    ),
+                    icon: Icons.settings,
+                    label: l.toolbar_customize,
                   ),
-                if (onHideKeyboard != null)
-                  PopupMenuItem(
-                    value: 'hide_keyboard',
-                    child: ListTile(
-                      leading: const Icon(Icons.keyboard),
-                      title: Text(l.terminal_toggleKeyboard),
-                      contentPadding: EdgeInsets.zero,
-                      visualDensity: VisualDensity.compact,
-                    ),
-                  ),
-                if (onShowHelp != null)
-                  PopupMenuItem(
-                    value: 'help',
-                    child: ListTile(
-                      leading: const Icon(Icons.help_outline),
-                      title: Text(l.function_tabHelp),
-                      contentPadding: EdgeInsets.zero,
-                      visualDensity: VisualDensity.compact,
-                    ),
-                  ),
-                if (onGoToHosts != null)
-                  PopupMenuItem(
-                    value: 'hosts',
-                    child: ListTile(
-                      leading: const Icon(Icons.dns_outlined),
-                      title: Text(l.terminal_backToHosts),
-                      contentPadding: EdgeInsets.zero,
-                      visualDensity: VisualDensity.compact,
-                    ),
-                  ),
-                PopupMenuItem(
+                divider(),
+                menuItem(
                   value: 'add',
-                  child: ListTile(
-                    leading: const Icon(Icons.add),
-                    title: Text(l.terminal_newTab),
-                    contentPadding: EdgeInsets.zero,
-                    visualDensity: VisualDensity.compact,
-                  ),
+                  icon: Icons.add,
+                  label: l.terminal_newTab,
                 ),
+                if (onShowHelp != null) ...[
+                  divider(),
+                  menuItem(
+                    value: 'help',
+                    icon: Icons.help_outline,
+                    label: l.function_tabHelp,
+                  ),
+                ],
               ];
             },
           ),
@@ -256,3 +263,4 @@ class _StatusDot extends StatelessWidget {
     );
   }
 }
+

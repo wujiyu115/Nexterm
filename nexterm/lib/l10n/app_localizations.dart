@@ -314,6 +314,18 @@ abstract class AppLocalizations {
   /// **'副本'**
   String get hosts_copy;
 
+  /// No description provided for @hosts_selectToConnect.
+  ///
+  /// In zh, this message translates to:
+  /// **'选择要连接的主机'**
+  String get hosts_selectToConnect;
+
+  /// No description provided for @hosts_activeConnections.
+  ///
+  /// In zh, this message translates to:
+  /// **'{count} 个活跃连接'**
+  String hosts_activeConnections(int count);
+
   /// No description provided for @hosts_contextConnect.
   ///
   /// In zh, this message translates to:

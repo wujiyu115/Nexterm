@@ -12,6 +12,7 @@ class HostListTile extends StatelessWidget {
   final bool isSelected;
   final bool isSelectionMode;
   final VoidCallback? onSelectionToggle;
+  final int activeConnectionCount;
 
   const HostListTile({
     super.key,
@@ -22,6 +23,7 @@ class HostListTile extends StatelessWidget {
     this.isSelected = false,
     this.isSelectionMode = false,
     this.onSelectionToggle,
+    this.activeConnectionCount = 0,
   });
 
   @override
@@ -59,13 +61,23 @@ class HostListTile extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      host.name,
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            host.name,
+                            style: theme.textTheme.titleSmall?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        if (activeConnectionCount > 0) ...[
+                          const SizedBox(width: 6),
+                          _ActiveConnectionBadge(count: activeConnectionCount),
+                        ],
+                      ],
                     ),
                     const SizedBox(height: 2),
                     Text(
@@ -100,6 +112,53 @@ class HostListTile extends StatelessWidget {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ActiveConnectionBadge extends StatelessWidget {
+  final int count;
+
+  const _ActiveConnectionBadge({required this.count});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Tooltip(
+      message: AppLocalizations.of(context)!.hosts_activeConnections(count),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+        decoration: BoxDecoration(
+          color: Colors.green.withValues(alpha: 0.15),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: Colors.green.withValues(alpha: 0.4),
+            width: 0.5,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 6,
+              height: 6,
+              decoration: const BoxDecoration(
+                color: Colors.green,
+                shape: BoxShape.circle,
+              ),
+            ),
+            const SizedBox(width: 4),
+            Text(
+              '$count',
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: Colors.green.shade700,
+                fontWeight: FontWeight.w600,
+                height: 1,
+              ),
+            ),
+          ],
         ),
       ),
     );

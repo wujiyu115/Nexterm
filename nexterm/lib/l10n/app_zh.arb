@@ -44,6 +44,9 @@
   "hosts_newGroup": "新建分组",
   "hosts_newGroupHint": "输入分组名称",
   "hosts_copy": "副本",
+  "hosts_selectToConnect": "选择要连接的主机",
+  "hosts_activeConnections": "{count} 个活跃连接",
+  "@hosts_activeConnections": { "placeholders": { "count": { "type": "int" } } },
 
   "hosts_contextConnect": "连接",
   "hosts_contextSftp": "SFTP 连接",
