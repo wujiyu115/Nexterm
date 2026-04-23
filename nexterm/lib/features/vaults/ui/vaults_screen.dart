@@ -2,58 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 
-class _VaultItem {
-  final IconData icon;
-  final String Function(AppLocalizations l) titleBuilder;
-  final String route;
-
-  const _VaultItem({
-    required this.icon,
-    required this.titleBuilder,
-    required this.route,
-  });
-}
-
-final _vaultItems = [
-  _VaultItem(
-    icon: Icons.dns_outlined,
-    titleBuilder: (l) => l.vaults_hosts,
-    route: '/vaults/hosts',
-  ),
-  _VaultItem(
-    icon: Icons.swap_horiz_outlined,
-    titleBuilder: (l) => l.vaults_portForwarding,
-    route: '/vaults/forwarding',
-  ),
-  _VaultItem(
-    icon: Icons.bolt_outlined,
-    titleBuilder: (l) => l.vaults_snippets,
-    route: '/vaults/snippets',
-  ),
-  _VaultItem(
-    icon: Icons.vpn_key_outlined,
-    titleBuilder: (l) => l.vaults_keychain,
-    route: '/vaults/keys',
-  ),
-  _VaultItem(
-    icon: Icons.wifi_tethering_outlined,
-    titleBuilder: (l) => l.vaults_knownHosts,
-    route: '/vaults/known-hosts',
-  ),
-  _VaultItem(
-    icon: Icons.receipt_long_outlined,
-    titleBuilder: (l) => l.vaults_logs,
-    route: '/vaults/logs',
-  ),
-];
-
 class VaultsScreen extends StatelessWidget {
   const VaultsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -65,24 +19,71 @@ class VaultsScreen extends StatelessWidget {
             Icon(
               Icons.keyboard_arrow_down,
               size: 20,
-              color: theme.colorScheme.onSurfaceVariant,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ],
         ),
       ),
-      body: ListView.separated(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        itemCount: _vaultItems.length,
-        separatorBuilder: (context, index) => const Divider(height: 1, indent: 56),
-        itemBuilder: (context, index) {
-          final item = _vaultItems[index];
-          return ListTile(
-            leading: Icon(item.icon, color: theme.colorScheme.onSurfaceVariant),
-            title: Text(item.titleBuilder(l)),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => context.push(item.route),
-          );
-        },
+      body: ListView(
+        children: [
+          _SectionHeader(title: l.vaults_hosts),
+          ListTile(
+            leading: const Icon(Icons.dns_outlined),
+            title: Text(l.vaults_hosts),
+            onTap: () => context.push('/vaults/hosts'),
+          ),
+          ListTile(
+            leading: const Icon(Icons.swap_horiz_outlined),
+            title: Text(l.vaults_portForwarding),
+            onTap: () => context.push('/vaults/forwarding'),
+          ),
+          ListTile(
+            leading: const Icon(Icons.bolt_outlined),
+            title: Text(l.vaults_snippets),
+            onTap: () => context.push('/vaults/snippets'),
+          ),
+
+          _SectionHeader(title: l.vaults_keychain),
+          ListTile(
+            leading: const Icon(Icons.vpn_key_outlined),
+            title: Text(l.vaults_keychain),
+            onTap: () => context.push('/vaults/keys'),
+          ),
+          ListTile(
+            leading: const Icon(Icons.wifi_tethering_outlined),
+            title: Text(l.vaults_knownHosts),
+            onTap: () => context.push('/vaults/known-hosts'),
+          ),
+
+          _SectionHeader(title: l.vaults_logs),
+          ListTile(
+            leading: const Icon(Icons.receipt_long_outlined),
+            title: Text(l.vaults_logs),
+            onTap: () => context.push('/vaults/logs'),
+          ),
+
+          const SizedBox(height: 32),
+        ],
+      ),
+    );
+  }
+}
+
+class _SectionHeader extends StatelessWidget {
+  final String title;
+  const _SectionHeader({required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 20, 16, 4),
+      child: Text(
+        title,
+        style: Theme.of(context).textTheme.labelMedium?.copyWith(
+              color: Theme.of(context).colorScheme.primary,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.8,
+            ),
       ),
     );
   }
