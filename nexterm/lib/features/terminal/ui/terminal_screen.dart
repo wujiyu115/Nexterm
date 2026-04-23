@@ -134,10 +134,7 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
       builder: (ctx) => const _HostPickerDialog(),
     );
     if (selectedHostId == null || !mounted) return;
-    // Push the connect route on top of the navigation stack so the system
-    // back-swipe gesture returns the user to the previous page (e.g. the
-    // hosts list) and the bottom navigation bar reappears naturally.
-    context.push('/terminal/connect/$selectedHostId');
+    await ref.read(terminalActionsProvider).connectHost(selectedHostId);
   }
 
   @override
