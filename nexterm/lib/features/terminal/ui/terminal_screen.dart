@@ -132,7 +132,7 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
         if (mounted && context.canPop()) {
           context.pop();
         } else if (mounted) {
-          context.go('/hosts');
+          context.go('/vaults');
         }
       });
     }
@@ -145,7 +145,7 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
           SizedBox(height: MediaQuery.of(context).padding.top),
 
           TerminalTabBar(
-            onAddTab: () => context.go('/hosts'),
+            onAddTab: () => context.go('/vaults'),
             isFunctionMode: _isFunctionMode,
             onToggleMode: activeTab != null ? _toggleKeyboardMode : null,
             onCustomizeTap: activeTab != null
@@ -153,7 +153,7 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
                 : null,
             onHideKeyboard: activeTab != null ? _toggleKeyboard : null,
             onShowHelp: activeTab != null ? _showHelpDialog : null,
-            onGoToHosts: activeTab != null ? () => context.go('/hosts') : null,
+            onGoToHosts: activeTab != null ? () => context.go('/vaults') : null,
           ),
 
           Expanded(
