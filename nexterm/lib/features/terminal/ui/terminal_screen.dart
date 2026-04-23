@@ -169,6 +169,7 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
                 : null,
             onHideKeyboard: activeTab != null ? _toggleKeyboard : null,
             onShowHelp: activeTab != null ? _showHelpDialog : null,
+            onGoToHosts: () => context.go('/vaults/hosts'),
           ),
 
           Expanded(
