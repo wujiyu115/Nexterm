@@ -17,9 +17,13 @@ class KeyboardToolbar extends ConsumerStatefulWidget {
   /// Called with the raw bytes to write to the SSH session.
   final void Function(Uint8List data) onKeyInput;
 
+  /// Called to dismiss the soft keyboard without toggling.
+  final VoidCallback? onHideKeyboard;
+
   const KeyboardToolbar({
     super.key,
     required this.onKeyInput,
+    this.onHideKeyboard,
   });
 
   @override
@@ -161,21 +165,41 @@ class _KeyboardToolbarState extends ConsumerState<KeyboardToolbar> {
     return Container(
       height: 44,
       color: background,
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.symmetric(horizontal: 4),
-        child: Row(
-          children: _buildGroupWidgets(
-            groups,
-            modifier: modifier,
-            buttonColor: buttonColor,
-            activeColor: activeColor,
-            textColor: textColor,
-            activeTextColor: activeTextColor,
-            dividerColor: dividerColor,
+      child: Row(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: Row(
+                children: _buildGroupWidgets(
+                  groups,
+                  modifier: modifier,
+                  buttonColor: buttonColor,
+                  activeColor: activeColor,
+                  textColor: textColor,
+                  activeTextColor: activeTextColor,
+                  dividerColor: dividerColor,
+                ),
+              ),
+            ),
           ),
-        ),
+          if (widget.onHideKeyboard != null)
+            GestureDetector(
+              onTap: widget.onHideKeyboard,
+              child: Container(
+                width: 44,
+                height: double.infinity,
+                alignment: Alignment.center,
+                child: Icon(
+                  Icons.keyboard_hide,
+                  size: 20,
+                  color: textColor,
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
