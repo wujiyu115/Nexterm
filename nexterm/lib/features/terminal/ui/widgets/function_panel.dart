@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nexterm/core/theme/terminal_themes.dart';
+import 'package:nexterm/core/theme/theme_provider.dart';
 import 'package:nexterm/domain/entities/snippet_entity.dart';
 import 'package:nexterm/features/snippets/providers/snippets_provider.dart';
 import 'package:nexterm/features/snippets/utils/variable_parser.dart';
@@ -42,6 +44,15 @@ class _FunctionPanelState extends ConsumerState<FunctionPanel>
     super.dispose();
   }
 
+  Future<void> _showTerminalThemePicker(BuildContext context) async {
+    HapticFeedback.lightImpact();
+    final current = ref.read(themeProvider).terminalThemeName;
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => _TerminalThemeSheet(current: current),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
@@ -56,17 +67,40 @@ class _FunctionPanelState extends ConsumerState<FunctionPanel>
         children: [
           Container(
             color: headerColor,
-            child: TabBar(
-              controller: _tabController,
-              labelColor: isDark ? Colors.white : Colors.black87,
-              unselectedLabelColor: isDark ? Colors.white38 : Colors.black38,
-              indicatorColor: Theme.of(context).colorScheme.primary,
-              indicatorSize: TabBarIndicatorSize.label,
-              labelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
-              tabs: const [
-                Tab(icon: Text('{}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold))),
-                Tab(icon: Icon(Icons.history, size: 18)),
-                Tab(icon: Icon(Icons.app_shortcut, size: 18)),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TabBar(
+                    controller: _tabController,
+                    labelColor: isDark ? Colors.white : Colors.black87,
+                    unselectedLabelColor:
+                        isDark ? Colors.white38 : Colors.black38,
+                    indicatorColor: Theme.of(context).colorScheme.primary,
+                    indicatorSize: TabBarIndicatorSize.label,
+                    labelStyle: const TextStyle(
+                        fontSize: 13, fontWeight: FontWeight.w600),
+                    tabs: const [
+                      Tab(
+                        icon: Text(
+                          '{}',
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      Tab(icon: Icon(Icons.history, size: 18)),
+                      Tab(icon: Icon(Icons.app_shortcut, size: 18)),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  tooltip: l.settings_terminalTheme,
+                  icon: Icon(
+                    Icons.palette_outlined,
+                    size: 18,
+                    color: isDark ? Colors.white70 : Colors.black54,
+                  ),
+                  onPressed: () => _showTerminalThemePicker(context),
+                ),
               ],
             ),
           ),
@@ -449,6 +483,51 @@ class _EmptyTab extends StatelessWidget {
           fontSize: 14,
         ),
       ),
+    );
+  }
+}
+
+// ---------- Inline terminal theme picker (shares state with Settings) ----------
+
+class _TerminalThemeSheet extends ConsumerWidget {
+  final String current;
+  const _TerminalThemeSheet({required this.current});
+
+  static String _label(String name) => switch (name) {
+        'catppuccin' => 'Catppuccin Mocha',
+        'dracula' => 'Dracula',
+        'monokai' => 'Monokai',
+        'solarized-dark' => 'Solarized Dark',
+        'solarized-light' => 'Solarized Light',
+        _ => name,
+      };
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
+    final selected = ref.watch(themeProvider).terminalThemeName;
+    return SimpleDialog(
+      title: Text(l.settings_selectTerminalTheme),
+      children: [
+        RadioGroup<String>(
+          groupValue: selected,
+          onChanged: (v) {
+            if (v != null) {
+              ref.read(themeProvider.notifier).setTerminalTheme(v);
+              Navigator.of(context).pop();
+            }
+          },
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: TerminalThemes.all.keys.map((name) {
+              return RadioListTile<String>(
+                title: Text(_label(name)),
+                value: name,
+              );
+            }).toList(),
+          ),
+        ),
+      ],
     );
   }
 }
