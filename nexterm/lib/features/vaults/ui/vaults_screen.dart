@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
+import 'package:go_router/go_router.dart';
 
 class VaultsScreen extends StatelessWidget {
   const VaultsScreen({super.key});
