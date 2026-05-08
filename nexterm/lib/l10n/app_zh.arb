@@ -452,11 +452,5 @@
   "vaults_hosts": "主机",
   "vaults_portForwarding": "端口转发",
   "vaults_snippets": "代码片段",
-  "vaults_keychain": "密钥",
-  "vaults_knownHosts": "已知主机",
-  "vaults_logs": "日志",
-  "knownHosts_title": "已知主机",
-  "knownHosts_empty": "暂无已知主机",
-  "logs_title": "日志",
-  "logs_empty": "暂无日志"
-}
+  "vaults_keychain": "密钥"
+  }

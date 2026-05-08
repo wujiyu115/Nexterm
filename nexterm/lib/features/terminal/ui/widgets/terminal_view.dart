@@ -44,7 +44,7 @@ class _TerminalViewWidgetState extends ConsumerState<TerminalViewWidget> {
     }
 
     final fontSize = ref.watch(terminalFontSizeProvider);
-    final terminalThemeName =
+final terminalThemeName =
         ref.watch(themeProvider.select((s) => s.terminalThemeName));
     final terminalTheme =
         app_themes.TerminalThemes.byName(terminalThemeName);

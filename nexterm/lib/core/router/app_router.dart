@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nexterm/shared/widgets/app_scaffold.dart';
 import 'package:nexterm/features/vaults/ui/vaults_screen.dart';
-import 'package:nexterm/features/vaults/ui/known_hosts_screen.dart';
-import 'package:nexterm/features/vaults/ui/logs_screen.dart';
 import 'package:nexterm/features/hosts/ui/hosts_screen.dart';
 import 'package:nexterm/features/hosts/ui/host_form_screen.dart';
 import 'package:nexterm/features/keys/ui/keys_screen.dart';
@@ -72,17 +70,7 @@ final appRouter = GoRouter(
                   GoRoute(path: 'edit/:id', parentNavigatorKey: _rootNavigatorKey, builder: (context, state) => ForwardFormScreen(forwardId: state.pathParameters['id'])),
                 ],
               ),
-              GoRoute(
-                path: 'known-hosts',
-                parentNavigatorKey: _rootNavigatorKey,
-                builder: (context, state) => const KnownHostsScreen(),
-              ),
-              GoRoute(
-                path: 'logs',
-                parentNavigatorKey: _rootNavigatorKey,
-                builder: (context, state) => const LogsScreen(),
-              ),
-            ],
+                          ],
           ),
         ]),
         // Terminal branch

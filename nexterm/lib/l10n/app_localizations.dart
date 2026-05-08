@@ -2455,42 +2455,6 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'密钥'**
   String get vaults_keychain;
-
-  /// No description provided for @vaults_knownHosts.
-  ///
-  /// In zh, this message translates to:
-  /// **'已知主机'**
-  String get vaults_knownHosts;
-
-  /// No description provided for @vaults_logs.
-  ///
-  /// In zh, this message translates to:
-  /// **'日志'**
-  String get vaults_logs;
-
-  /// No description provided for @knownHosts_title.
-  ///
-  /// In zh, this message translates to:
-  /// **'已知主机'**
-  String get knownHosts_title;
-
-  /// No description provided for @knownHosts_empty.
-  ///
-  /// In zh, this message translates to:
-  /// **'暂无已知主机'**
-  String get knownHosts_empty;
-
-  /// No description provided for @logs_title.
-  ///
-  /// In zh, this message translates to:
-  /// **'日志'**
-  String get logs_title;
-
-  /// No description provided for @logs_empty.
-  ///
-  /// In zh, this message translates to:
-  /// **'暂无日志'**
-  String get logs_empty;
 }
 
 class _AppLocalizationsDelegate

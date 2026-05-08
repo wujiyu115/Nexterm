@@ -1247,22 +1247,4 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get vaults_keychain => '密钥';
-
-  @override
-  String get vaults_knownHosts => '已知主机';
-
-  @override
-  String get vaults_logs => '日志';
-
-  @override
-  String get knownHosts_title => '已知主机';
-
-  @override
-  String get knownHosts_empty => '暂无已知主机';
-
-  @override
-  String get logs_title => '日志';
-
-  @override
-  String get logs_empty => '暂无日志';
 }

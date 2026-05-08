@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
-import 'package:go_router/go_router.dart';
 
 class VaultsScreen extends StatelessWidget {
   const VaultsScreen({super.key});
@@ -11,6 +10,8 @@ class VaultsScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: 44,
+        titleTextStyle: Theme.of(context).textTheme.titleMedium,
         title: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -18,7 +19,7 @@ class VaultsScreen extends StatelessWidget {
             const SizedBox(width: 4),
             Icon(
               Icons.keyboard_arrow_down,
-              size: 20,
+              size: 18,
               color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ],
@@ -49,19 +50,7 @@ class VaultsScreen extends StatelessWidget {
             title: Text(l.vaults_keychain),
             onTap: () => context.push('/vaults/keys'),
           ),
-          ListTile(
-            leading: const Icon(Icons.wifi_tethering_outlined),
-            title: Text(l.vaults_knownHosts),
-            onTap: () => context.push('/vaults/known-hosts'),
-          ),
-
-          _SectionHeader(title: l.vaults_logs),
-          ListTile(
-            leading: const Icon(Icons.receipt_long_outlined),
-            title: Text(l.vaults_logs),
-            onTap: () => context.push('/vaults/logs'),
-          ),
-
+          
           const SizedBox(height: 32),
         ],
       ),

@@ -423,11 +423,5 @@
   "vaults_hosts": "Hosts",
   "vaults_portForwarding": "Port Forwarding",
   "vaults_snippets": "Snippets",
-  "vaults_keychain": "Keychain",
-  "vaults_knownHosts": "Known Hosts",
-  "vaults_logs": "Logs",
-  "knownHosts_title": "Known Hosts",
-  "knownHosts_empty": "No known hosts yet",
-  "logs_title": "Logs",
-  "logs_empty": "No logs yet"
-}
+  "vaults_keychain": "Keychain"
+  }

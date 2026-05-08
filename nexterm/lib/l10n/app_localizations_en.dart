@@ -1280,22 +1280,4 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get vaults_keychain => 'Keychain';
-
-  @override
-  String get vaults_knownHosts => 'Known Hosts';
-
-  @override
-  String get vaults_logs => 'Logs';
-
-  @override
-  String get knownHosts_title => 'Known Hosts';
-
-  @override
-  String get knownHosts_empty => 'No known hosts yet';
-
-  @override
-  String get logs_title => 'Logs';
-
-  @override
-  String get logs_empty => 'No logs yet';
 }

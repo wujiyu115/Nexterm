@@ -26,7 +26,11 @@ class SettingsScreen extends ConsumerWidget {
     final authState = ref.watch(authProvider);
 
     return Scaffold(
-      appBar: AppBar(title: Text(l.settings_title)),
+      appBar: AppBar(
+        toolbarHeight: 44,
+        titleTextStyle: Theme.of(context).textTheme.titleMedium,
+        title: Text(l.settings_title),
+      ),
       body: ListView(
         children: [
           _SectionHeader(title: l.settings_sectionGeneral),
