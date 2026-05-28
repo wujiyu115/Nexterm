@@ -173,14 +173,16 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
           ),
 
           Expanded(
-            child: activeTab == null
-                ? _EmptyState(
-                    isConnecting: widget.hostId != null && !_didAutoConnect,
-                  )
-                : TerminalViewWidget(
-                    tab: activeTab,
-                    hardwareKeyboardOnly: _isFunctionMode,
-                  ),
+            child: ClipRect(
+              child: activeTab == null
+                  ? _EmptyState(
+                      isConnecting: widget.hostId != null && !_didAutoConnect,
+                    )
+                  : TerminalViewWidget(
+                      tab: activeTab,
+                      hardwareKeyboardOnly: _isFunctionMode,
+                    ),
+            ),
           ),
 
           if (activeTab != null) ...[
