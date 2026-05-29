@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:nexterm/core/theme/outdoor_colors.dart';
 import 'package:nexterm/domain/entities/snippet_entity.dart';
+import 'package:nexterm/shared/widgets/glass_card.dart';
 
 class SnippetListTile extends StatelessWidget {
   final SnippetEntity snippet;
@@ -20,63 +22,66 @@ class SnippetListTile extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: onTap,
-        onLongPress: onEdit,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      snippet.name,
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      snippet.command,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                        fontFamily: 'monospace',
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    if (snippet.tags.isNotEmpty) ...[
-                      const SizedBox(height: 6),
-                      Wrap(
-                        spacing: 4,
-                        runSpacing: 4,
-                        children: snippet.tags
-                            .map((tag) => _TagChip(tag: tag))
-                            .toList(),
-                      ),
-                    ],
-                  ],
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return GlassCard(
+      onTap: onTap,
+      onLongPress: onEdit,
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  snippet.name,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-              ),
-              IconButton(
-                icon: Icon(
-                  snippet.isFavorite ? Icons.star : Icons.star_border,
-                  size: 20,
-                  color: snippet.isFavorite ? Colors.amber : colorScheme.onSurfaceVariant,
+                const SizedBox(height: 6),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: isDark ? OutdoorColors.darkInputBg : OutdoorColors.lightInputBg,
+                    borderRadius: BorderRadius.circular(OutdoorColors.radiusSm),
+                  ),
+                  child: Text(
+                    snippet.command,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                      fontFamily: 'monospace',
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-                onPressed: onToggleFavorite,
-                visualDensity: VisualDensity.compact,
-              ),
-            ],
+                if (snippet.tags.isNotEmpty) ...[
+                  const SizedBox(height: 6),
+                  Wrap(
+                    spacing: 4,
+                    runSpacing: 4,
+                    children: snippet.tags
+                        .map((tag) => _TagChip(tag: tag))
+                        .toList(),
+                  ),
+                ],
+              ],
+            ),
           ),
-        ),
+          IconButton(
+            icon: Icon(
+              snippet.isFavorite ? Icons.star : Icons.star_border,
+              size: 20,
+              color: snippet.isFavorite ? Colors.amber : colorScheme.onSurfaceVariant,
+            ),
+            onPressed: onToggleFavorite,
+            visualDensity: VisualDensity.compact,
+          ),
+        ],
       ),
     );
   }
@@ -88,17 +93,16 @@ class _TagChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
-        color: colorScheme.primaryContainer,
+        color: OutdoorColors.accentDim,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
         tag,
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-          color: colorScheme.onPrimaryContainer,
+          color: OutdoorColors.accent,
         ),
       ),
     );

@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nexterm/core/theme/outdoor_colors.dart';
 import 'package:nexterm/domain/entities/snippet_entity.dart';
 import 'package:nexterm/features/snippets/providers/snippets_provider.dart';
 import 'package:nexterm/features/snippets/ui/widgets/snippet_list_tile.dart';
+import 'package:nexterm/shared/widgets/section_label.dart';
 
 class SnippetsScreen extends ConsumerWidget {
   const SnippetsScreen({super.key});
@@ -16,7 +18,9 @@ class SnippetsScreen extends ConsumerWidget {
     final snippetsAsync = ref.watch(snippetsStreamProvider);
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
         leading: IconButton(
           icon: const Icon(Icons.chevron_left),
           onPressed: () => Navigator.of(context).pop(),
@@ -24,9 +28,17 @@ class SnippetsScreen extends ConsumerWidget {
         title: Text(l.snippets_title),
         actions: [
           IconButton(
-            icon: const Icon(Icons.add),
             tooltip: l.snippets_addTooltip,
             onPressed: () => context.push('/vaults/snippets/add'),
+            icon: Container(
+              width: 32,
+              height: 32,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: OutdoorColors.accentDim,
+              ),
+              child: const Icon(Icons.add, size: 16, color: OutdoorColors.accent),
+            ),
           ),
         ],
       ),
@@ -55,11 +67,11 @@ class SnippetsScreen extends ConsumerWidget {
     return ListView(
       children: [
         if (favorites.isNotEmpty) ...[
-          _SectionHeader(title: l.snippets_favorites),
+          SectionLabel(title: l.snippets_favorites),
           ...favorites.map((s) => _buildTile(context, s, notifier)),
         ],
         ...groups.entries.expand((entry) => [
-          _SectionHeader(title: entry.key ?? l.snippets_ungrouped),
+          SectionLabel(title: entry.key ?? l.snippets_ungrouped),
           ...entry.value.map((s) => _buildTile(context, s, notifier)),
         ]),
         const SizedBox(height: 80),
@@ -98,22 +110,3 @@ class SnippetsScreen extends ConsumerWidget {
   }
 }
 
-class _SectionHeader extends StatelessWidget {
-  final String title;
-  const _SectionHeader({required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-      child: Text(
-        title,
-        style: Theme.of(context).textTheme.labelMedium?.copyWith(
-          color: Theme.of(context).colorScheme.primary,
-          fontWeight: FontWeight.w600,
-          letterSpacing: 0.8,
-        ),
-      ),
-    );
-  }
-}
