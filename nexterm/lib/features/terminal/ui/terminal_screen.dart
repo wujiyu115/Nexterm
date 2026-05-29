@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nexterm/core/theme/outdoor_colors.dart';
 import 'package:nexterm/domain/entities/host_entity.dart';
 import 'package:nexterm/features/hosts/providers/hosts_provider.dart';
 import 'package:nexterm/features/terminal/providers/terminal_provider.dart';
@@ -155,7 +156,7 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
     _hadTabs = hasTabs;
 
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: OutdoorColors.darkTerminalBg,
       body: Column(
         children: [
           SizedBox(height: MediaQuery.of(context).padding.top),
@@ -234,7 +235,7 @@ class _EmptyState extends StatelessWidget {
           children: [
             const CircularProgressIndicator(),
             const SizedBox(height: 16),
-            Text(l.terminal_connecting, style: const TextStyle(color: Colors.white70)),
+            Text(l.terminal_connecting, style: const TextStyle(color: OutdoorColors.darkFg)),
           ],
         ),
       );
@@ -247,17 +248,17 @@ class _EmptyState extends StatelessWidget {
           const Icon(
             Icons.terminal,
             size: 64,
-            color: Colors.white24,
+            color: OutdoorColors.darkFgTertiary,
           ),
           const SizedBox(height: 16),
           Text(
             l.terminal_noTabs,
-            style: const TextStyle(color: Colors.white54, fontSize: 16),
+            style: const TextStyle(color: OutdoorColors.darkFgSecondary, fontSize: 16),
           ),
           const SizedBox(height: 8),
           Text(
             l.terminal_noTabsHint,
-            style: const TextStyle(color: Colors.white38, fontSize: 13),
+            style: const TextStyle(color: OutdoorColors.darkFgTertiary, fontSize: 13),
           ),
         ],
       ),
