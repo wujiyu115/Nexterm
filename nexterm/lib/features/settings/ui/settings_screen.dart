@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nexterm/core/locale/locale_provider.dart';
+import 'package:nexterm/core/theme/outdoor_colors.dart';
 import 'package:nexterm/core/theme/terminal_themes.dart';
 import 'package:nexterm/core/theme/theme_provider.dart';
 import 'package:nexterm/domain/entities/enums.dart';
@@ -10,6 +11,7 @@ import 'package:nexterm/features/hosts/providers/hosts_provider.dart';
 import 'package:nexterm/features/settings/providers/settings_provider.dart';
 import 'package:nexterm/features/settings/utils/ssh_config_parser.dart';
 import 'package:nexterm/features/sync/providers/auth_provider.dart';
+import 'package:nexterm/shared/widgets/section_label.dart';
 import 'package:file_picker/file_picker.dart';
 import 'dart:io';
 
@@ -18,6 +20,7 @@ class SettingsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final l = AppLocalizations.of(context)!;
     final settings = ref.watch(settingsNotifierProvider);
     final settingsNotifier = ref.read(settingsNotifierProvider.notifier);
@@ -26,14 +29,11 @@ class SettingsScreen extends ConsumerWidget {
     final authState = ref.watch(authProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: 44,
-        titleTextStyle: Theme.of(context).textTheme.titleMedium,
-        title: Text(l.settings_title),
-      ),
+      backgroundColor: Colors.transparent,
+      appBar: AppBar(backgroundColor: Colors.transparent, title: Text(l.settings_title)),
       body: ListView(
         children: [
-          _SectionHeader(title: l.settings_sectionGeneral),
+          SectionLabel(title: l.settings_sectionGeneral),
           ListTile(
             leading: const Icon(Icons.palette_outlined),
             title: Text(l.settings_theme),
@@ -47,7 +47,7 @@ class SettingsScreen extends ConsumerWidget {
             onTap: () => _showLanguagePicker(context, ref),
           ),
 
-          _SectionHeader(title: l.settings_sectionTerminal),
+          SectionLabel(title: l.settings_sectionTerminal),
           _FontSizeTile(
             fontSize: double.tryParse(
                   settings[SettingsKeys.terminalFontSize] ?? '',
@@ -74,7 +74,7 @@ class SettingsScreen extends ConsumerWidget {
             onChanged: (v) => settingsNotifier.set(SettingsKeys.hapticFeedback, v.toString()),
           ),
 
-          _SectionHeader(title: l.settings_sectionSecurity),
+          SectionLabel(title: l.settings_sectionSecurity),
           SwitchListTile(
             secondary: const Icon(Icons.fingerprint_outlined),
             title: Text(l.settings_biometric),
@@ -95,7 +95,7 @@ class SettingsScreen extends ConsumerWidget {
             onChanged: (v) => settingsNotifier.set(SettingsKeys.clipboardAutoClear, v.toString()),
           ),
 
-          _SectionHeader(title: l.settings_sectionSync),
+          SectionLabel(title: l.settings_sectionSync),
           if (authState.isLoggedIn) ...[
             ListTile(
               leading: const Icon(Icons.account_circle_outlined),
@@ -128,7 +128,7 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ],
 
-          _SectionHeader(title: l.settings_sectionData),
+          SectionLabel(title: l.settings_sectionData),
           ListTile(
             leading: const Icon(Icons.upload_file_outlined),
             title: Text(l.settings_importSshConfig),
@@ -142,14 +142,18 @@ class SettingsScreen extends ConsumerWidget {
             onTap: () => _showExportDialog(context),
           ),
 
-          _SectionHeader(title: l.settings_sectionAbout),
-          ListTile(
-            leading: const Icon(Icons.info_outline),
-            title: Text(l.settings_version),
-            subtitle: const Text('v0.1.0'),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 24),
+            child: Center(
+              child: Text(
+                'v0.1.0',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: isDark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary,
+                ),
+              ),
+            ),
           ),
-
-          const SizedBox(height: 32),
         ],
       ),
     );
@@ -381,28 +385,6 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-// ---------- Section header ----------
-
-class _SectionHeader extends StatelessWidget {
-  final String title;
-  const _SectionHeader({required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 20, 16, 4),
-      child: Text(
-        title,
-        style: Theme.of(context).textTheme.labelMedium?.copyWith(
-              color: Theme.of(context).colorScheme.primary,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 0.8,
-            ),
       ),
     );
   }
