@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nexterm/core/theme/outdoor_colors.dart';
+import 'package:nexterm/shared/widgets/glass_card.dart';
+import 'package:nexterm/shared/widgets/section_label.dart';
 
 class VaultsScreen extends StatelessWidget {
   const VaultsScreen({super.key});
@@ -10,71 +13,113 @@ class VaultsScreen extends StatelessWidget {
     final l = AppLocalizations.of(context)!;
 
     return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: 44,
-        titleTextStyle: Theme.of(context).textTheme.titleMedium,
-        title: Row(
-          mainAxisSize: MainAxisSize.min,
+      backgroundColor: Colors.transparent,
+      body: SafeArea(
+        child: ListView(
           children: [
-            Text(l.vaults_title),
-            const SizedBox(width: 4),
-            Icon(
-              Icons.keyboard_arrow_down,
-              size: 18,
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+              child: _NavTitle(title: l.vaults_title),
             ),
+
+            SectionLabel(title: l.vaults_hosts),
+            GlassCard(
+              onTap: () => context.push('/vaults/hosts'),
+              child: _VaultItem(icon: Icons.dns_outlined, title: l.vaults_hosts),
+            ),
+            GlassCard(
+              onTap: () => context.push('/vaults/forwarding'),
+              child: _VaultItem(icon: Icons.swap_horiz_outlined, title: l.vaults_portForwarding),
+            ),
+            GlassCard(
+              onTap: () => context.push('/vaults/snippets'),
+              child: _VaultItem(icon: Icons.bolt_outlined, title: l.vaults_snippets),
+            ),
+
+            SectionLabel(title: l.vaults_keychain),
+            GlassCard(
+              onTap: () => context.push('/vaults/keys'),
+              child: _VaultItem(icon: Icons.vpn_key_outlined, title: l.vaults_keychain),
+            ),
+
+            const SizedBox(height: 32),
           ],
         ),
-      ),
-      body: ListView(
-        children: [
-          _SectionHeader(title: l.vaults_hosts),
-          ListTile(
-            leading: const Icon(Icons.dns_outlined),
-            title: Text(l.vaults_hosts),
-            onTap: () => context.push('/vaults/hosts'),
-          ),
-          ListTile(
-            leading: const Icon(Icons.swap_horiz_outlined),
-            title: Text(l.vaults_portForwarding),
-            onTap: () => context.push('/vaults/forwarding'),
-          ),
-          ListTile(
-            leading: const Icon(Icons.bolt_outlined),
-            title: Text(l.vaults_snippets),
-            onTap: () => context.push('/vaults/snippets'),
-          ),
-
-          _SectionHeader(title: l.vaults_keychain),
-          ListTile(
-            leading: const Icon(Icons.vpn_key_outlined),
-            title: Text(l.vaults_keychain),
-            onTap: () => context.push('/vaults/keys'),
-          ),
-          
-          const SizedBox(height: 32),
-        ],
       ),
     );
   }
 }
 
-class _SectionHeader extends StatelessWidget {
+class _NavTitle extends StatelessWidget {
   final String title;
-  const _SectionHeader({required this.title});
+  const _NavTitle({required this.title});
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 20, 16, 4),
-      child: Text(
-        title,
-        style: Theme.of(context).textTheme.labelMedium?.copyWith(
-              color: Theme.of(context).colorScheme.primary,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 0.8,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 34,
+            fontWeight: FontWeight.w700,
+            letterSpacing: -0.5,
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Container(
+          width: 32,
+          height: 2,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(1),
+            gradient: const LinearGradient(
+              colors: [OutdoorColors.accent, Colors.transparent],
             ),
-      ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _VaultItem extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  const _VaultItem({required this.icon, required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Row(
+      children: [
+        Container(
+          width: 36,
+          height: 36,
+          decoration: BoxDecoration(
+            color: OutdoorColors.accentDim,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(icon, size: 18, color: OutdoorColors.accent),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            title,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: isDark ? OutdoorColors.darkFg : OutdoorColors.lightFg,
+            ),
+          ),
+        ),
+        Icon(
+          Icons.chevron_right,
+          size: 18,
+          color: isDark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary,
+        ),
+      ],
     );
   }
 }
