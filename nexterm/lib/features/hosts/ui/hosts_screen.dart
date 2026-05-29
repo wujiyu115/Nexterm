@@ -4,10 +4,12 @@ import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nexterm/domain/entities/host_entity.dart';
+import 'package:nexterm/core/theme/outdoor_colors.dart';
+import 'package:nexterm/shared/widgets/section_label.dart';
+import 'package:nexterm/shared/widgets/outdoor_search_bar.dart';
 import 'package:nexterm/features/hosts/providers/hosts_provider.dart';
 import 'package:nexterm/features/hosts/ui/widgets/host_context_menu.dart';
 import 'package:nexterm/features/hosts/ui/widgets/host_list_tile.dart';
-import 'package:nexterm/features/hosts/ui/widgets/host_search_bar.dart';
 import 'package:nexterm/features/terminal/providers/terminal_provider.dart';
 
 class HostsScreen extends ConsumerStatefulWidget {
@@ -227,8 +229,10 @@ class _HostsScreenState extends ConsumerState<HostsScreen> {
     }
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: _isSelectionMode
           ? AppBar(
+              backgroundColor: Colors.transparent,
               leading: IconButton(
                 icon: const Icon(Icons.close),
                 onPressed: _exitSelectionMode,
@@ -261,6 +265,7 @@ class _HostsScreenState extends ConsumerState<HostsScreen> {
               ],
             )
           : AppBar(
+              backgroundColor: Colors.transparent,
               leading: IconButton(
                 icon: const Icon(Icons.chevron_left),
                 onPressed: () => Navigator.of(context).pop(),
@@ -268,7 +273,12 @@ class _HostsScreenState extends ConsumerState<HostsScreen> {
               title: Text(l.hosts_title),
               actions: [
                 IconButton(
-                  icon: const Icon(Icons.add),
+                  icon: Container(
+                    width: 32,
+                    height: 32,
+                    decoration: const BoxDecoration(shape: BoxShape.circle, color: OutdoorColors.accentDim),
+                    child: const Icon(Icons.add, size: 16, color: OutdoorColors.accent),
+                  ),
                   tooltip: l.hosts_addTooltip,
                   onPressed: () => context.push('/vaults/hosts/add'),
                 ),
@@ -276,9 +286,10 @@ class _HostsScreenState extends ConsumerState<HostsScreen> {
             ),
       body: Column(
         children: [
-          HostSearchBar(
+          OutdoorSearchBar(
             controller: _searchController,
             onChanged: (value) => setState(() => _searchQuery = value),
+            hintText: l.hosts_search,
           ),
           Expanded(child: buildContent()),
         ],
@@ -310,12 +321,12 @@ class _HostsScreenState extends ConsumerState<HostsScreen> {
     return ListView(
       children: [
         if (favorites.isNotEmpty) ...[
-          _SectionHeader(title: l.hosts_favorites),
+          SectionLabel(title: l.hosts_favorites, padding: const EdgeInsets.fromLTRB(16, 12, 16, 4)),
           ...favorites
               .map((host) => _buildTile(host, notifier, activeCounts)),
         ],
         ...groups.entries.expand((entry) => [
-          _SectionHeader(title: entry.key ?? l.hosts_ungrouped),
+          SectionLabel(title: entry.key ?? l.hosts_ungrouped, padding: const EdgeInsets.fromLTRB(16, 12, 16, 4)),
           ...entry.value
               .map((host) => _buildTile(host, notifier, activeCounts)),
         ]),
@@ -363,22 +374,3 @@ class _HostsScreenState extends ConsumerState<HostsScreen> {
   }
 }
 
-class _SectionHeader extends StatelessWidget {
-  final String title;
-  const _SectionHeader({required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-      child: Text(
-        title,
-        style: Theme.of(context).textTheme.labelMedium?.copyWith(
-          color: Theme.of(context).colorScheme.primary,
-          fontWeight: FontWeight.w600,
-          letterSpacing: 0.8,
-        ),
-      ),
-    );
-  }
-}
