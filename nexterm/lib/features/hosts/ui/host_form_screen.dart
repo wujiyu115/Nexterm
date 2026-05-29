@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nexterm/core/theme/outdoor_colors.dart';
 import 'package:nexterm/domain/entities/enums.dart';
 import 'package:nexterm/domain/entities/host_entity.dart';
 import 'package:nexterm/domain/entities/snippet_entity.dart';
@@ -9,6 +10,8 @@ import 'package:nexterm/domain/entities/ssh_key_entity.dart';
 import 'package:nexterm/features/hosts/providers/hosts_provider.dart';
 import 'package:nexterm/features/keys/providers/keys_provider.dart';
 import 'package:nexterm/features/snippets/providers/snippets_provider.dart';
+import 'package:nexterm/shared/widgets/glass_card.dart';
+import 'package:nexterm/shared/widgets/section_label.dart';
 
 enum _StartupMode { command, snippet }
 
@@ -222,7 +225,9 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
       future: _loadHost(),
       builder: (context, _) {
         return Scaffold(
+          backgroundColor: Colors.transparent,
           appBar: AppBar(
+            backgroundColor: Colors.transparent,
             title: Text(_isEditMode ? l.hostForm_editTitle : l.hostForm_addTitle),
             actions: [
               if (_isEditMode)
@@ -238,90 +243,128 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
             child: ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                _FormSection(title: l.hostForm_sectionBasic, children: [
-                  _buildField(
-                    controller: _nameController,
-                    label: l.hostForm_name,
-                    hint: l.hostForm_nameHint,
-                    validator: (v) => v == null || v.trim().isEmpty ? l.hostForm_nameRequired : null,
-                  ),
-                  const SizedBox(height: 12),
-                  _buildField(
-                    controller: _hostnameController,
-                    label: l.hostForm_host,
-                    hint: l.hostForm_hostHint,
-                    validator: (v) => v == null || v.trim().isEmpty ? l.hostForm_hostRequired : null,
-                  ),
-                  const SizedBox(height: 12),
-                  Row(children: [
-                    Expanded(
-                      flex: 3,
-                      child: _buildField(
-                        controller: _usernameController,
-                        label: l.hostForm_username,
-                        hint: 'root',
-                        validator: (v) => v == null || v.trim().isEmpty ? l.hostForm_usernameRequired : null,
-                      ),
+                SectionLabel(title: l.hostForm_sectionBasic, padding: EdgeInsets.zero),
+                const SizedBox(height: 8),
+                GlassCard(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(children: [
+                    _buildField(
+                      controller: _nameController,
+                      label: l.hostForm_name,
+                      hint: l.hostForm_nameHint,
+                      validator: (v) => v == null || v.trim().isEmpty ? l.hostForm_nameRequired : null,
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _buildField(
-                        controller: _portController,
-                        label: l.hostForm_port,
-                        hint: '22',
-                        keyboardType: TextInputType.number,
-                        validator: (v) {
-                          final port = int.tryParse(v ?? '');
-                          if (port == null || port < 1 || port > 65535) return l.hostForm_portInvalid;
-                          return null;
-                        },
-                      ),
+                    const SizedBox(height: 12),
+                    _buildField(
+                      controller: _hostnameController,
+                      label: l.hostForm_host,
+                      hint: l.hostForm_hostHint,
+                      validator: (v) => v == null || v.trim().isEmpty ? l.hostForm_hostRequired : null,
                     ),
+                    const SizedBox(height: 12),
+                    Row(children: [
+                      Expanded(
+                        flex: 3,
+                        child: _buildField(
+                          controller: _usernameController,
+                          label: l.hostForm_username,
+                          hint: 'root',
+                          validator: (v) => v == null || v.trim().isEmpty ? l.hostForm_usernameRequired : null,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _buildField(
+                          controller: _portController,
+                          label: l.hostForm_port,
+                          hint: '22',
+                          keyboardType: TextInputType.number,
+                          validator: (v) {
+                            final port = int.tryParse(v ?? '');
+                            if (port == null || port < 1 || port > 65535) return l.hostForm_portInvalid;
+                            return null;
+                          },
+                        ),
+                      ),
+                    ]),
                   ]),
-                ]),
+                ),
                 const SizedBox(height: 20),
-                _FormSection(title: l.hostForm_sectionAuth, children: [
-                  SegmentedButton<AuthMethod>(
-                    segments: AuthMethod.values
-                        .map((m) => ButtonSegment<AuthMethod>(value: m, label: Text(m.localizedName(l))))
-                        .toList(),
-                    selected: {_authMethod},
-                    onSelectionChanged: (s) => setState(() => _authMethod = s.first),
-                    style: const ButtonStyle(visualDensity: VisualDensity.compact),
-                  ),
-                  if (_authMethod == AuthMethod.password) ...[
-                    const SizedBox(height: 12),
-                    _buildPasswordField(),
-                  ],
-                  if (_authMethod == AuthMethod.key) ...[
-                    const SizedBox(height: 12),
-                    _buildKeySelector(),
-                  ],
-                ]),
+                SectionLabel(title: l.hostForm_sectionAuth, padding: EdgeInsets.zero),
+                const SizedBox(height: 8),
+                GlassCard(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(children: [
+                    SegmentedButton<AuthMethod>(
+                      segments: AuthMethod.values
+                          .map((m) => ButtonSegment<AuthMethod>(value: m, label: Text(m.localizedName(l))))
+                          .toList(),
+                      selected: {_authMethod},
+                      onSelectionChanged: (s) => setState(() => _authMethod = s.first),
+                      style: ButtonStyle(
+                        visualDensity: VisualDensity.compact,
+                        backgroundColor: WidgetStateProperty.resolveWith((states) {
+                          if (states.contains(WidgetState.selected)) {
+                            return OutdoorColors.accentDim;
+                          }
+                          return null;
+                        }),
+                        foregroundColor: WidgetStateProperty.resolveWith((states) {
+                          if (states.contains(WidgetState.selected)) {
+                            return OutdoorColors.accent;
+                          }
+                          return null;
+                        }),
+                        side: WidgetStateProperty.resolveWith((states) {
+                          if (states.contains(WidgetState.selected)) {
+                            return const BorderSide(color: OutdoorColors.accent, width: 1);
+                          }
+                          return null;
+                        }),
+                      ),
+                    ),
+                    if (_authMethod == AuthMethod.password) ...[
+                      const SizedBox(height: 12),
+                      _buildPasswordField(),
+                    ],
+                    if (_authMethod == AuthMethod.key) ...[
+                      const SizedBox(height: 12),
+                      _buildKeySelector(),
+                    ],
+                  ]),
+                ),
                 const SizedBox(height: 20),
                 _buildJumpHostsSection(allHosts),
                 const SizedBox(height: 20),
                 _buildStartupCommandSection(),
                 const SizedBox(height: 20),
-                _FormSection(title: l.hostForm_sectionGroup, children: [
-                  _buildField(
-                    controller: _groupController,
-                    label: l.hostForm_group,
-                    hint: l.hostForm_groupHint,
-                  ),
-                  const SizedBox(height: 12),
-                  _buildField(
-                    controller: _tagsController,
-                    label: l.hostForm_tags,
-                    hint: l.hostForm_tagsHint,
-                  ),
-                ]),
+                SectionLabel(title: l.hostForm_sectionGroup, padding: EdgeInsets.zero),
+                const SizedBox(height: 8),
+                GlassCard(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(children: [
+                    _buildField(
+                      controller: _groupController,
+                      label: l.hostForm_group,
+                      hint: l.hostForm_groupHint,
+                    ),
+                    const SizedBox(height: 12),
+                    _buildField(
+                      controller: _tagsController,
+                      label: l.hostForm_tags,
+                      hint: l.hostForm_tagsHint,
+                    ),
+                  ]),
+                ),
                 const SizedBox(height: 32),
-                FilledButton(
-                  onPressed: _isLoading ? null : _save,
-                  child: _isLoading
-                      ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                      : Text(l.common_save),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    onPressed: _isLoading ? null : _save,
+                    child: _isLoading
+                        ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                        : Text(l.common_save),
+                  ),
                 ),
                 const SizedBox(height: 80),
               ],
@@ -380,136 +423,179 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
 
   Widget _buildJumpHostsSection(List<HostEntity> allHosts) {
     final l = AppLocalizations.of(context)!;
-    return _FormSection(title: l.hostForm_sectionJumpHost, children: [
-      if (_jumpHosts.isEmpty)
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4),
-          child: Text(
-            l.hostForm_noJumpHostConfigured,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SectionLabel(title: l.hostForm_sectionJumpHost, padding: EdgeInsets.zero),
+        const SizedBox(height: 8),
+        GlassCard(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (_jumpHosts.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Text(
+                    l.hostForm_noJumpHostConfigured,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                )
+              else
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 4,
+                  children: _jumpHosts.map((hostId) {
+                    final host = allHosts.where((h) => h.id == hostId).firstOrNull;
+                    final label = host != null
+                        ? '${host.name} (${host.hostname})'
+                        : hostId;
+                    return Chip(
+                      label: Text(label, overflow: TextOverflow.ellipsis),
+                      onDeleted: () => setState(() => _jumpHosts.remove(hostId)),
+                      deleteIcon: const Icon(Icons.close, size: 16),
+                      visualDensity: VisualDensity.compact,
+                    );
+                  }).toList(),
+                ),
+              const SizedBox(height: 8),
+              OutlinedButton.icon(
+                onPressed: () => _addJumpHost(allHosts),
+                icon: const Icon(Icons.add, size: 18),
+                label: Text(l.hostForm_addJumpHost),
+              ),
+            ],
           ),
-        )
-      else
-        Wrap(
-          spacing: 8,
-          runSpacing: 4,
-          children: _jumpHosts.map((hostId) {
-            final host = allHosts.where((h) => h.id == hostId).firstOrNull;
-            final label = host != null
-                ? '${host.name} (${host.hostname})'
-                : hostId;
-            return Chip(
-              label: Text(label, overflow: TextOverflow.ellipsis),
-              onDeleted: () => setState(() => _jumpHosts.remove(hostId)),
-              deleteIcon: const Icon(Icons.close, size: 16),
-              visualDensity: VisualDensity.compact,
-            );
-          }).toList(),
         ),
-      const SizedBox(height: 8),
-      OutlinedButton.icon(
-        onPressed: () => _addJumpHost(allHosts),
-        icon: const Icon(Icons.add, size: 18),
-        label: Text(l.hostForm_addJumpHost),
-      ),
-    ]);
+      ],
+    );
   }
 
   Widget _buildStartupCommandSection() {
     final l = AppLocalizations.of(context)!;
     final snippetsAsync = ref.watch(snippetsStreamProvider);
 
-    return _FormSection(title: l.hostForm_sectionStartup, children: [
-      SegmentedButton<_StartupMode>(
-        segments: [
-          ButtonSegment<_StartupMode>(
-            value: _StartupMode.command,
-            label: Text(l.hostForm_startupModeCommand),
-            icon: const Icon(Icons.terminal, size: 18),
-          ),
-          ButtonSegment<_StartupMode>(
-            value: _StartupMode.snippet,
-            label: Text(l.hostForm_startupModeSnippet),
-            icon: const Icon(Icons.code, size: 18),
-          ),
-        ],
-        selected: {_startupMode},
-        onSelectionChanged: (selection) {
-          setState(() {
-            final newMode = selection.first;
-            if (newMode != _startupMode) {
-              if (newMode == _StartupMode.command) {
-                _startupSnippetId = null;
-              } else {
-                _startupCommandController.clear();
-              }
-              _startupMode = newMode;
-            }
-          });
-        },
-        style: const ButtonStyle(visualDensity: VisualDensity.compact),
-      ),
-      if (_startupMode == _StartupMode.command) ...[
-        const SizedBox(height: 12),
-        TextFormField(
-          controller: _startupCommandController,
-          decoration: InputDecoration(
-            labelText: l.hostForm_startupCommand,
-            hintText: l.hostForm_startupCommandHint,
-          ),
-          maxLines: 3,
-          minLines: 1,
-        ),
-      ],
-      if (_startupMode == _StartupMode.snippet) ...[
-        const SizedBox(height: 12),
-        snippetsAsync.when(
-          loading: () => const LinearProgressIndicator(),
-          error: (e, _) => Text(e.toString(), style: TextStyle(color: Theme.of(context).colorScheme.error)),
-          data: (snippets) {
-            if (snippets.isEmpty) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Text(
-                  l.hostForm_noSnippets,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SectionLabel(title: l.hostForm_sectionStartup, padding: EdgeInsets.zero),
+        const SizedBox(height: 8),
+        GlassCard(
+          padding: const EdgeInsets.all(16),
+          child: Column(children: [
+            SegmentedButton<_StartupMode>(
+              segments: [
+                ButtonSegment<_StartupMode>(
+                  value: _StartupMode.command,
+                  label: Text(l.hostForm_startupModeCommand),
+                  icon: const Icon(Icons.terminal, size: 18),
                 ),
-              );
-            }
-            final effectiveSnippetId =
-                (_startupSnippetId != null && snippets.any((s) => s.id == _startupSnippetId))
-                    ? _startupSnippetId : null;
-            if (effectiveSnippetId != _startupSnippetId) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (mounted) setState(() => _startupSnippetId = null);
-              });
-            }
-            return DropdownButtonFormField<String>(
-              value: effectiveSnippetId,
-              decoration: InputDecoration(
-                labelText: l.hostForm_startupSnippet,
-                hintText: l.hostForm_startupSnippetHint,
+                ButtonSegment<_StartupMode>(
+                  value: _StartupMode.snippet,
+                  label: Text(l.hostForm_startupModeSnippet),
+                  icon: const Icon(Icons.code, size: 18),
+                ),
+              ],
+              selected: {_startupMode},
+              onSelectionChanged: (selection) {
+                setState(() {
+                  final newMode = selection.first;
+                  if (newMode != _startupMode) {
+                    if (newMode == _StartupMode.command) {
+                      _startupSnippetId = null;
+                    } else {
+                      _startupCommandController.clear();
+                    }
+                    _startupMode = newMode;
+                  }
+                });
+              },
+              style: ButtonStyle(
+                visualDensity: VisualDensity.compact,
+                backgroundColor: WidgetStateProperty.resolveWith((states) {
+                  if (states.contains(WidgetState.selected)) {
+                    return OutdoorColors.accentDim;
+                  }
+                  return null;
+                }),
+                foregroundColor: WidgetStateProperty.resolveWith((states) {
+                  if (states.contains(WidgetState.selected)) {
+                    return OutdoorColors.accent;
+                  }
+                  return null;
+                }),
+                side: WidgetStateProperty.resolveWith((states) {
+                  if (states.contains(WidgetState.selected)) {
+                    return const BorderSide(color: OutdoorColors.accent, width: 1);
+                  }
+                  return null;
+                }),
               ),
-              items: snippets.map((SnippetEntity s) {
-                return DropdownMenuItem<String>(
-                  value: s.id,
-                  child: Text(
-                    '${s.name}  (${s.command})',
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                  ),
-                );
-              }).toList(),
-              onChanged: (value) => setState(() => _startupSnippetId = value),
-            );
-          },
+            ),
+            if (_startupMode == _StartupMode.command) ...[
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _startupCommandController,
+                decoration: InputDecoration(
+                  labelText: l.hostForm_startupCommand,
+                  hintText: l.hostForm_startupCommandHint,
+                ),
+                maxLines: 3,
+                minLines: 1,
+              ),
+            ],
+            if (_startupMode == _StartupMode.snippet) ...[
+              const SizedBox(height: 12),
+              snippetsAsync.when(
+                loading: () => const LinearProgressIndicator(),
+                error: (e, _) => Text(e.toString(), style: TextStyle(color: Theme.of(context).colorScheme.error)),
+                data: (snippets) {
+                  if (snippets.isEmpty) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: Text(
+                        l.hostForm_noSnippets,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    );
+                  }
+                  final effectiveSnippetId =
+                      (_startupSnippetId != null && snippets.any((s) => s.id == _startupSnippetId))
+                          ? _startupSnippetId : null;
+                  if (effectiveSnippetId != _startupSnippetId) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      if (mounted) setState(() => _startupSnippetId = null);
+                    });
+                  }
+                  return DropdownButtonFormField<String>(
+                    value: effectiveSnippetId,
+                    decoration: InputDecoration(
+                      labelText: l.hostForm_startupSnippet,
+                      hintText: l.hostForm_startupSnippetHint,
+                    ),
+                    items: snippets.map((SnippetEntity s) {
+                      return DropdownMenuItem<String>(
+                        value: s.id,
+                        child: Text(
+                          '${s.name}  (${s.command})',
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (value) => setState(() => _startupSnippetId = value),
+                  );
+                },
+              ),
+            ],
+          ]),
         ),
       ],
-    ]);
+    );
   }
 
   Widget _buildField({
@@ -550,26 +636,3 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
   }
 }
 
-class _FormSection extends StatelessWidget {
-  final String title;
-  final List<Widget> children;
-  const _FormSection({required this.title, required this.children});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: Theme.of(context).textTheme.labelLarge?.copyWith(
-            color: Theme.of(context).colorScheme.primary,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        const SizedBox(height: 10),
-        ...children,
-      ],
-    );
-  }
-}
