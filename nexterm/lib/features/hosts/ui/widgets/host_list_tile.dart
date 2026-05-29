@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:nexterm/domain/entities/enums.dart';
 import 'package:nexterm/domain/entities/host_entity.dart';
 import 'package:nexterm/core/theme/outdoor_colors.dart';
