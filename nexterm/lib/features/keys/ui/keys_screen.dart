@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nexterm/core/theme/outdoor_colors.dart';
 import 'package:nexterm/domain/entities/ssh_key_entity.dart';
 import 'package:nexterm/features/keys/providers/keys_provider.dart';
 import 'package:nexterm/features/keys/ui/widgets/key_list_tile.dart';
@@ -16,7 +17,9 @@ class KeysScreen extends ConsumerWidget {
     final notifier = ref.read(keysNotifierProvider.notifier);
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
         leading: IconButton(
           icon: const Icon(Icons.chevron_left),
           onPressed: () => Navigator.of(context).pop(),
@@ -24,14 +27,30 @@ class KeysScreen extends ConsumerWidget {
         title: Text(l.keys_title),
         actions: [
           IconButton(
-            icon: const Icon(Icons.file_upload_outlined),
             tooltip: l.keys_importTooltip,
             onPressed: () => context.push('/vaults/keys/import'),
+            icon: Container(
+              width: 32,
+              height: 32,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: OutdoorColors.accentDim,
+              ),
+              child: const Icon(Icons.file_upload_outlined, size: 16, color: OutdoorColors.accent),
+            ),
           ),
           IconButton(
-            icon: const Icon(Icons.add),
             tooltip: l.keys_generateTooltip,
             onPressed: () => context.push('/vaults/keys/generate'),
+            icon: Container(
+              width: 32,
+              height: 32,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: OutdoorColors.accentDim,
+              ),
+              child: const Icon(Icons.add, size: 16, color: OutdoorColors.accent),
+            ),
           ),
         ],
       ),

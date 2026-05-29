@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nexterm/core/theme/outdoor_colors.dart';
 import 'package:nexterm/domain/entities/ssh_key_entity.dart';
 import 'package:nexterm/features/keys/providers/keys_provider.dart';
+import 'package:nexterm/shared/widgets/glass_card.dart';
 
 class KeyListTile extends ConsumerWidget {
   final SSHKeyEntity sshKey;
@@ -21,107 +23,103 @@ class KeyListTile extends ConsumerWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: colorScheme.primaryContainer,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Icon(
-                Icons.key,
-                color: colorScheme.onPrimaryContainer,
-                size: 20,
-              ),
+    return GlassCard(
+      child: Row(
+        children: [
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: OutdoorColors.accentDim,
+              borderRadius: BorderRadius.circular(10),
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    sshKey.name,
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    sshKey.type.displayName,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: colorScheme.primary,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    sshKey.fingerprint,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                      fontFamily: 'monospace',
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
+            child: const Icon(
+              Icons.key,
+              color: OutdoorColors.accent,
+              size: 18,
             ),
-            PopupMenuButton<_KeyAction>(
-              icon: Icon(Icons.more_vert, color: colorScheme.onSurfaceVariant),
-              onSelected: (action) => _handleAction(context, ref, action),
-              itemBuilder: (context) => [
-                PopupMenuItem(
-                  value: _KeyAction.copyPublicKey,
-                  child: Row(
-                    children: [
-                      const Icon(Icons.copy, size: 18),
-                      const SizedBox(width: 10),
-                      Text(l.keyTile_copyPublicKey),
-                    ],
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  sshKey.name,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  sshKey.type.displayName,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: OutdoorColors.accent,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
-                PopupMenuItem(
-                  value: _KeyAction.exportPrivateKey,
-                  child: Row(
-                    children: [
-                      const Icon(Icons.file_download_outlined, size: 18),
-                      const SizedBox(width: 10),
-                      Text(l.keyTile_exportPrivateKey),
-                    ],
+                const SizedBox(height: 2),
+                Text(
+                  sshKey.fingerprint,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                    fontFamily: 'monospace',
                   ),
-                ),
-                PopupMenuItem(
-                  value: _KeyAction.exportPublicKey,
-                  child: Row(
-                    children: [
-                      const Icon(Icons.file_upload_outlined, size: 18),
-                      const SizedBox(width: 10),
-                      Text(l.keyTile_exportPublicKey),
-                    ],
-                  ),
-                ),
-                PopupMenuItem(
-                  value: _KeyAction.delete,
-                  child: Row(
-                    children: [
-                      Icon(Icons.delete_outline, size: 18, color: Theme.of(context).colorScheme.error),
-                      const SizedBox(width: 10),
-                      Text(l.keyTile_delete, style: TextStyle(color: Theme.of(context).colorScheme.error)),
-                    ],
-                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
-          ],
-        ),
+          ),
+          PopupMenuButton<_KeyAction>(
+            icon: Icon(Icons.more_vert, color: colorScheme.onSurfaceVariant),
+            onSelected: (action) => _handleAction(context, ref, action),
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                value: _KeyAction.copyPublicKey,
+                child: Row(
+                  children: [
+                    const Icon(Icons.copy, size: 18),
+                    const SizedBox(width: 10),
+                    Text(l.keyTile_copyPublicKey),
+                  ],
+                ),
+              ),
+              PopupMenuItem(
+                value: _KeyAction.exportPrivateKey,
+                child: Row(
+                  children: [
+                    const Icon(Icons.file_download_outlined, size: 18),
+                    const SizedBox(width: 10),
+                    Text(l.keyTile_exportPrivateKey),
+                  ],
+                ),
+              ),
+              PopupMenuItem(
+                value: _KeyAction.exportPublicKey,
+                child: Row(
+                  children: [
+                    const Icon(Icons.file_upload_outlined, size: 18),
+                    const SizedBox(width: 10),
+                    Text(l.keyTile_exportPublicKey),
+                  ],
+                ),
+              ),
+              PopupMenuItem(
+                value: _KeyAction.delete,
+                child: Row(
+                  children: [
+                    Icon(Icons.delete_outline, size: 18, color: Theme.of(context).colorScheme.error),
+                    const SizedBox(width: 10),
+                    Text(l.keyTile_delete, style: TextStyle(color: Theme.of(context).colorScheme.error)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
