@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nexterm/core/theme/outdoor_colors.dart';
 import 'package:nexterm/domain/entities/enums.dart';
 import 'package:nexterm/domain/entities/port_forward_entity.dart';
 import 'package:nexterm/features/forwarding/providers/forwarding_provider.dart';
 import 'package:nexterm/features/forwarding/services/port_forward_service.dart';
 import 'package:nexterm/features/forwarding/ui/widgets/forward_list_tile.dart';
+import 'package:nexterm/shared/widgets/section_label.dart';
 
 // ---------------------------------------------------------------------------
 // Service provider — one instance per app lifetime, disposed on teardown.
@@ -33,7 +35,9 @@ class ForwardingScreen extends ConsumerWidget {
     final notifier = ref.read(forwardingNotifierProvider.notifier);
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
         leading: IconButton(
           icon: const Icon(Icons.chevron_left),
           onPressed: () => Navigator.of(context).pop(),
@@ -41,9 +45,17 @@ class ForwardingScreen extends ConsumerWidget {
         title: Text(l.forwarding_title),
         actions: [
           IconButton(
-            icon: const Icon(Icons.add),
             tooltip: l.forwarding_addTooltip,
             onPressed: () => context.push('/vaults/forwarding/add'),
+            icon: Container(
+              width: 32,
+              height: 32,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: OutdoorColors.accentDim,
+              ),
+              child: const Icon(Icons.add, size: 16, color: OutdoorColors.accent),
+            ),
           ),
         ],
       ),
@@ -79,7 +91,7 @@ class ForwardingScreen extends ConsumerWidget {
       children: [
         for (final type in ForwardType.values)
           if (groups[type]!.isNotEmpty) ...[
-            _SectionHeader(title: type.localizedName(l)),
+            SectionLabel(title: type.localizedName(l)),
             ...groups[type]!.map((f) => _buildTile(context, f, service, notifier)),
           ],
         const SizedBox(height: 80),
@@ -139,22 +151,3 @@ class ForwardingScreen extends ConsumerWidget {
   }
 }
 
-class _SectionHeader extends StatelessWidget {
-  final String title;
-  const _SectionHeader({required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-      child: Text(
-        title,
-        style: Theme.of(context).textTheme.labelMedium?.copyWith(
-              color: Theme.of(context).colorScheme.primary,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 0.8,
-            ),
-      ),
-    );
-  }
-}
