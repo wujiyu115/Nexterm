@@ -30,9 +30,13 @@ class SettingsScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      appBar: AppBar(backgroundColor: Colors.transparent, title: Text(l.settings_title)),
-      body: ListView(
+      body: SafeArea(
+        child: ListView(
         children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+            child: _NavTitle(title: l.settings_title),
+          ),
           SectionLabel(title: l.settings_sectionGeneral),
           ListTile(
             leading: const Icon(Icons.palette_outlined),
@@ -155,6 +159,7 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ),
         ],
+      ),
       ),
     );
   }
@@ -721,6 +726,40 @@ class _LoginDialogState extends State<_LoginDialog> {
           child: _loading
               ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
               : Text(_isRegister ? l.settings_registerButton : l.settings_loginButton),
+        ),
+      ],
+    );
+  }
+}
+
+class _NavTitle extends StatelessWidget {
+  final String title;
+  const _NavTitle({required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.w700,
+            letterSpacing: -0.3,
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Container(
+          width: 32,
+          height: 2,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(1),
+            gradient: const LinearGradient(
+              colors: [OutdoorColors.accent, Colors.transparent],
+            ),
+          ),
         ),
       ],
     );

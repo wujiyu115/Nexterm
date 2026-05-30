@@ -62,9 +62,9 @@ class _NavTitle extends StatelessWidget {
         Text(
           title,
           style: TextStyle(
-            fontSize: 34,
+            fontSize: 24,
             fontWeight: FontWeight.w700,
-            letterSpacing: -0.5,
+            letterSpacing: -0.3,
             color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
