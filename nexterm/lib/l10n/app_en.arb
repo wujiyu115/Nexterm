@@ -3,6 +3,7 @@
 
   "nav_hosts": "Hosts",
   "nav_terminal": "Terminal",
+  "nav_sessions": "Sessions",
   "nav_keys": "Keys",
   "nav_snippets": "Snippets",
   "nav_forwarding": "Forward",
@@ -95,6 +96,13 @@
   "hostForm_startupSnippet": "Select Snippet",
   "hostForm_startupSnippetHint": "Choose a saved snippet",
   "hostForm_noSnippets": "No snippets available",
+
+  "sessions_title": "Sessions",
+  "sessions_activeConnections": "Active Connections",
+  "sessions_hosts": "Hosts",
+  "sessions_recentConnections": "Recent Connections",
+  "sessions_noActive": "No active sessions",
+  "sessions_noActiveHint": "Connect to a host to start a session",
 
   "terminal_connecting": "Connecting...",
   "terminal_noTabs": "No open terminals",

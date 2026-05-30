@@ -110,6 +110,12 @@ abstract class AppLocalizations {
   /// **'终端'**
   String get nav_terminal;
 
+  /// No description provided for @nav_sessions.
+  ///
+  /// In zh, this message translates to:
+  /// **'会话'**
+  String get nav_sessions;
+
   /// No description provided for @nav_keys.
   ///
   /// In zh, this message translates to:
@@ -619,6 +625,42 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'暂无片段'**
   String get hostForm_noSnippets;
+
+  /// No description provided for @sessions_title.
+  ///
+  /// In zh, this message translates to:
+  /// **'会话'**
+  String get sessions_title;
+
+  /// No description provided for @sessions_activeConnections.
+  ///
+  /// In zh, this message translates to:
+  /// **'活跃连接'**
+  String get sessions_activeConnections;
+
+  /// No description provided for @sessions_hosts.
+  ///
+  /// In zh, this message translates to:
+  /// **'主机'**
+  String get sessions_hosts;
+
+  /// No description provided for @sessions_recentConnections.
+  ///
+  /// In zh, this message translates to:
+  /// **'最近连接'**
+  String get sessions_recentConnections;
+
+  /// No description provided for @sessions_noActive.
+  ///
+  /// In zh, this message translates to:
+  /// **'没有活跃会话'**
+  String get sessions_noActive;
+
+  /// No description provided for @sessions_noActiveHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'连接一台主机以开始会话'**
+  String get sessions_noActiveHint;
 
   /// No description provided for @terminal_connecting.
   ///

@@ -40,11 +40,10 @@ class TerminalTabBar extends ConsumerWidget {
     final tabManager = ref.watch(tabManagerProvider);
     final tabs = tabManager.tabs;
     final activeIndex = tabManager.activeTabIndex;
-    final hasTabs = tabs.isNotEmpty;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final barBg = hasTabs ? OutdoorColors.darkSurfaceSolid : (isDark ? OutdoorColors.darkBgElevated : OutdoorColors.lightBgElevated);
-    final barFg = hasTabs ? OutdoorColors.darkFg : (isDark ? OutdoorColors.darkFg : OutdoorColors.lightFg);
-    final menuBg = hasTabs ? OutdoorColors.darkBgElevated : (isDark ? OutdoorColors.darkBgElevated : OutdoorColors.lightBgElevated);
+    final barBg = isDark ? OutdoorColors.darkBgElevated : OutdoorColors.lightBgElevated;
+    final barFg = isDark ? OutdoorColors.darkFg : OutdoorColors.lightFg;
+    final menuBg = isDark ? OutdoorColors.darkBgElevated : OutdoorColors.lightBgElevated;
 
     return Container(
       height: 40,
@@ -101,7 +100,7 @@ class TerminalTabBar extends ConsumerWidget {
             itemBuilder: (ctx) {
               final l = AppLocalizations.of(ctx)!;
               final theme = Theme.of(ctx);
-              final menuDark = hasTabs || theme.brightness == Brightness.dark;
+              final menuDark = theme.brightness == Brightness.dark;
               final iconColor = menuDark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary;
               final textColor = menuDark ? OutdoorColors.darkFg : OutdoorColors.lightFg;
               final dividerColor = menuDark ? OutdoorColors.darkBorder : OutdoorColors.lightBorder;

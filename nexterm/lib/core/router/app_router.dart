@@ -12,6 +12,7 @@ import 'package:nexterm/features/snippets/ui/snippet_form_screen.dart';
 import 'package:nexterm/features/forwarding/ui/forwarding_screen.dart';
 import 'package:nexterm/features/forwarding/ui/forward_form_screen.dart';
 import 'package:nexterm/features/terminal/ui/terminal_screen.dart';
+import 'package:nexterm/features/terminal/ui/sessions_screen.dart';
 import 'package:nexterm/features/sftp/ui/sftp_screen.dart';
 import 'package:nexterm/features/sftp/ui/file_editor_screen.dart';
 import 'package:nexterm/features/settings/ui/settings_screen.dart';
@@ -73,9 +74,9 @@ final appRouter = GoRouter(
                           ],
           ),
         ]),
-        // Terminal branch
+        // Sessions branch
         StatefulShellBranch(routes: [
-          GoRoute(path: '/terminal', builder: (context, state) => const TerminalScreen()),
+          GoRoute(path: '/sessions', builder: (context, state) => const SessionsScreen()),
         ]),
         // Settings branch
         StatefulShellBranch(routes: [
@@ -87,6 +88,11 @@ final appRouter = GoRouter(
       path: '/terminal/connect/:hostId',
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) => TerminalScreen(hostId: state.pathParameters['hostId']),
+    ),
+    GoRoute(
+      path: '/terminal/session/:tabId',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => TerminalScreen(tabId: state.pathParameters['tabId']),
     ),
     GoRoute(
       path: '/terminal/customize-keyboard',

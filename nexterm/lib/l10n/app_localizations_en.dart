@@ -15,6 +15,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get nav_terminal => 'Terminal';
 
   @override
+  String get nav_sessions => 'Sessions';
+
+  @override
   String get nav_keys => 'Keys';
 
   @override
@@ -289,6 +292,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostForm_noSnippets => 'No snippets available';
+
+  @override
+  String get sessions_title => 'Sessions';
+
+  @override
+  String get sessions_activeConnections => 'Active Connections';
+
+  @override
+  String get sessions_hosts => 'Hosts';
+
+  @override
+  String get sessions_recentConnections => 'Recent Connections';
+
+  @override
+  String get sessions_noActive => 'No active sessions';
+
+  @override
+  String get sessions_noActiveHint => 'Connect to a host to start a session';
 
   @override
   String get terminal_connecting => 'Connecting...';

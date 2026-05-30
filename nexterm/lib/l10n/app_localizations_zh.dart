@@ -15,6 +15,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get nav_terminal => '终端';
 
   @override
+  String get nav_sessions => '会话';
+
+  @override
   String get nav_keys => '密钥';
 
   @override
@@ -280,6 +283,24 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get hostForm_noSnippets => '暂无片段';
+
+  @override
+  String get sessions_title => '会话';
+
+  @override
+  String get sessions_activeConnections => '活跃连接';
+
+  @override
+  String get sessions_hosts => '主机';
+
+  @override
+  String get sessions_recentConnections => '最近连接';
+
+  @override
+  String get sessions_noActive => '没有活跃会话';
+
+  @override
+  String get sessions_noActiveHint => '连接一台主机以开始会话';
 
   @override
   String get terminal_connecting => '正在连接…';

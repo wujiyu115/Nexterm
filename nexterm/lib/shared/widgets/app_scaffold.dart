@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:nexterm/features/terminal/providers/terminal_provider.dart';
 import 'package:nexterm/shared/widgets/decorative_background.dart';
 
 class AppScaffold extends ConsumerWidget {
@@ -12,27 +11,22 @@ class AppScaffold extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
-    final tabManager = ref.watch(tabManagerProvider);
-    final hasActiveTerminal = navigationShell.currentIndex == 1 && tabManager.tabs.isNotEmpty;
 
     return DecorativeBackground(
-      showRidge: !hasActiveTerminal,
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: navigationShell,
-        bottomNavigationBar: hasActiveTerminal
-            ? null
-            : NavigationBar(
-                selectedIndex: navigationShell.currentIndex,
-                onDestinationSelected: (index) {
-                  navigationShell.goBranch(index, initialLocation: index == navigationShell.currentIndex);
-                },
-                destinations: [
-                  NavigationDestination(icon: const Icon(Icons.lock_outlined), selectedIcon: const Icon(Icons.lock), label: l.nav_vaults),
-                  NavigationDestination(icon: const Icon(Icons.terminal_outlined), selectedIcon: const Icon(Icons.terminal), label: l.nav_terminal),
-                  NavigationDestination(icon: const Icon(Icons.settings_outlined), selectedIcon: const Icon(Icons.settings), label: l.nav_settings),
-                ],
-              ),
+        bottomNavigationBar: NavigationBar(
+          selectedIndex: navigationShell.currentIndex,
+          onDestinationSelected: (index) {
+            navigationShell.goBranch(index, initialLocation: index == navigationShell.currentIndex);
+          },
+          destinations: [
+            NavigationDestination(icon: const Icon(Icons.lock_outlined), selectedIcon: const Icon(Icons.lock), label: l.nav_vaults),
+            NavigationDestination(icon: const Icon(Icons.link_outlined), selectedIcon: const Icon(Icons.link), label: l.nav_sessions),
+            NavigationDestination(icon: const Icon(Icons.settings_outlined), selectedIcon: const Icon(Icons.settings), label: l.nav_settings),
+          ],
+        ),
       ),
     );
   }

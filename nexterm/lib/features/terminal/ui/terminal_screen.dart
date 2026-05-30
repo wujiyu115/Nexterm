@@ -3,6 +3,8 @@ import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nexterm/core/theme/outdoor_colors.dart';
+import 'package:nexterm/core/theme/terminal_themes.dart';
+import 'package:nexterm/core/theme/theme_provider.dart';
 import 'package:nexterm/domain/entities/host_entity.dart';
 import 'package:nexterm/features/hosts/providers/hosts_provider.dart';
 import 'package:nexterm/features/terminal/providers/terminal_provider.dart';
@@ -11,12 +13,12 @@ import 'package:nexterm/features/terminal/ui/widgets/keyboard_toolbar.dart';
 import 'package:nexterm/features/terminal/ui/widgets/terminal_tab_bar.dart';
 import 'package:nexterm/features/terminal/ui/widgets/terminal_view.dart';
 import 'package:nexterm/shared/widgets/dashed_divider.dart';
-import 'package:nexterm/shared/widgets/decorative_background.dart';
 
 class TerminalScreen extends ConsumerStatefulWidget {
   final String? hostId;
+  final String? tabId;
 
-  const TerminalScreen({super.key, this.hostId});
+  const TerminalScreen({super.key, this.hostId, this.tabId});
 
   @override
   ConsumerState<TerminalScreen> createState() => _TerminalScreenState();
@@ -29,19 +31,27 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
   @override
   void initState() {
     super.initState();
-    if (widget.hostId != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.hostId != null) {
         _autoConnect();
-      });
-    }
+      } else if (widget.tabId != null) {
+        _resumeTab();
+      }
+    });
   }
 
   Future<void> _autoConnect() async {
     if (_didAutoConnect) return;
     _didAutoConnect = true;
-    await ref
-        .read(terminalActionsProvider)
-        .connectHost(widget.hostId!);
+    await ref.read(terminalActionsProvider).connectHost(widget.hostId!);
+  }
+
+  void _resumeTab() {
+    final tabManager = ref.read(tabManagerProvider);
+    final index = tabManager.tabs.indexWhere((t) => t.id == widget.tabId);
+    if (index >= 0) {
+      tabManager.setActiveTab(index);
+    }
   }
 
   bool _isFunctionMode = false;
@@ -154,15 +164,17 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted && context.canPop()) {
           context.pop();
-        } else if (mounted) {
-          context.go('/vaults/hosts');
         }
       });
     }
     _hadTabs = hasTabs;
 
-    final scaffold = Scaffold(
-      backgroundColor: hasTabs ? OutdoorColors.darkTerminalBg : Colors.transparent,
+    final l = AppLocalizations.of(context)!;
+    final terminalThemeName = ref.watch(themeProvider.select((s) => s.terminalThemeName));
+    final terminalBg = TerminalThemes.byName(terminalThemeName).background;
+
+    return Scaffold(
+      backgroundColor: terminalBg,
       body: Column(
         children: [
           SizedBox(height: MediaQuery.of(context).padding.top),
@@ -176,14 +188,23 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
                 : null,
             onHideKeyboard: activeTab != null ? _toggleKeyboard : null,
             onShowHelp: activeTab != null ? _showHelpDialog : null,
-            onGoToHosts: () => context.go('/vaults/hosts'),
+            onGoToHosts: () {
+              if (context.canPop()) context.pop();
+            },
           ),
 
           Expanded(
             child: ClipRect(
               child: activeTab == null
-                  ? _EmptyState(
-                      isConnecting: widget.hostId != null && !_didAutoConnect,
+                  ? Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const CircularProgressIndicator(),
+                          const SizedBox(height: 16),
+                          Text(l.terminal_connecting, style: const TextStyle(color: OutdoorColors.darkFg)),
+                        ],
+                      ),
                     )
                   : TerminalViewWidget(
                       tab: activeTab,
@@ -223,65 +244,9 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
         ],
       ),
     );
-
-    if (hasTabs) return scaffold;
-    return DecorativeBackground(showRidge: false, child: scaffold);
   }
 }
 
-class _EmptyState extends StatelessWidget {
-  final bool isConnecting;
-
-  const _EmptyState({required this.isConnecting});
-
-  @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context)!;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final fgColor = isDark ? OutdoorColors.darkFg : OutdoorColors.lightFg;
-    final fgSecondary = isDark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary;
-    final fgTertiary = isDark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary;
-
-    if (isConnecting) {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const CircularProgressIndicator(),
-            const SizedBox(height: 16),
-            Text(l.terminal_connecting, style: TextStyle(color: fgColor)),
-          ],
-        ),
-      );
-    }
-
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            Icons.terminal,
-            size: 64,
-            color: fgTertiary,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            l.terminal_noTabs,
-            style: TextStyle(color: fgSecondary, fontSize: 16),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            l.terminal_noTabsHint,
-            style: TextStyle(color: fgTertiary, fontSize: 13),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Modal dialog that lists all available hosts and lets the user pick one to
-/// open in a new terminal tab.
 class _HostPickerDialog extends ConsumerWidget {
   const _HostPickerDialog();
 
@@ -405,7 +370,7 @@ class _HostPickerList extends ConsumerWidget {
             '${host.username}@${host.hostname}:${host.port}',
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(color: Theme.of(context).brightness == Brightness.dark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary),
+            style: TextStyle(color: isDark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary),
           ),
           trailing: activeCount > 0
               ? Container(

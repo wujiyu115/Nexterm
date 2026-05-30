@@ -3,6 +3,7 @@
 
   "nav_hosts": "主机",
   "nav_terminal": "终端",
+  "nav_sessions": "会话",
   "nav_keys": "密钥",
   "nav_snippets": "片段",
   "nav_forwarding": "转发",
@@ -100,6 +101,13 @@
   "hostForm_startupSnippet": "选择片段",
   "hostForm_startupSnippetHint": "选择已保存的片段",
   "hostForm_noSnippets": "暂无片段",
+
+  "sessions_title": "会话",
+  "sessions_activeConnections": "活跃连接",
+  "sessions_hosts": "主机",
+  "sessions_recentConnections": "最近连接",
+  "sessions_noActive": "没有活跃会话",
+  "sessions_noActiveHint": "连接一台主机以开始会话",
 
   "terminal_connecting": "正在连接…",
   "terminal_noTabs": "没有打开的终端",
