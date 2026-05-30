@@ -337,6 +337,37 @@ class AppLocalizationsEn extends AppLocalizations {
   String get terminal_backToHosts => 'Back to Hosts';
 
   @override
+  String get terminal_uploadFile => 'Upload File';
+
+  @override
+  String terminal_uploading(String name) {
+    return 'Uploading $name...';
+  }
+
+  @override
+  String get terminal_uploadComplete => 'Upload complete';
+
+  @override
+  String terminal_uploadFailed(String error) {
+    return 'Upload failed: $error';
+  }
+
+  @override
+  String get terminal_remotePath => 'Remote path';
+
+  @override
+  String get terminal_copyPath => 'Copy Path';
+
+  @override
+  String get terminal_pasteToTerminal => 'Paste to Terminal';
+
+  @override
+  String get terminal_pathCopied => 'Path copied';
+
+  @override
+  String get terminal_uploadTarget => 'Upload to';
+
+  @override
   String get terminal_connectionFailed => 'Connection Failed';
 
   @override

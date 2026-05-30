@@ -327,6 +327,37 @@ class AppLocalizationsZh extends AppLocalizations {
   String get terminal_backToHosts => '返回主机';
 
   @override
+  String get terminal_uploadFile => '上传文件';
+
+  @override
+  String terminal_uploading(String name) {
+    return '正在上传 $name...';
+  }
+
+  @override
+  String get terminal_uploadComplete => '上传完成';
+
+  @override
+  String terminal_uploadFailed(String error) {
+    return '上传失败：$error';
+  }
+
+  @override
+  String get terminal_remotePath => '远程路径';
+
+  @override
+  String get terminal_copyPath => '复制路径';
+
+  @override
+  String get terminal_pasteToTerminal => '粘贴到终端';
+
+  @override
+  String get terminal_pathCopied => '路径已复制';
+
+  @override
+  String get terminal_uploadTarget => '上传到';
+
+  @override
   String get terminal_connectionFailed => '连接失败';
 
   @override

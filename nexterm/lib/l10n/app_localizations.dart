@@ -710,6 +710,60 @@ abstract class AppLocalizations {
   /// **'返回主机'**
   String get terminal_backToHosts;
 
+  /// No description provided for @terminal_uploadFile.
+  ///
+  /// In zh, this message translates to:
+  /// **'上传文件'**
+  String get terminal_uploadFile;
+
+  /// No description provided for @terminal_uploading.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在上传 {name}...'**
+  String terminal_uploading(String name);
+
+  /// No description provided for @terminal_uploadComplete.
+  ///
+  /// In zh, this message translates to:
+  /// **'上传完成'**
+  String get terminal_uploadComplete;
+
+  /// No description provided for @terminal_uploadFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'上传失败：{error}'**
+  String terminal_uploadFailed(String error);
+
+  /// No description provided for @terminal_remotePath.
+  ///
+  /// In zh, this message translates to:
+  /// **'远程路径'**
+  String get terminal_remotePath;
+
+  /// No description provided for @terminal_copyPath.
+  ///
+  /// In zh, this message translates to:
+  /// **'复制路径'**
+  String get terminal_copyPath;
+
+  /// No description provided for @terminal_pasteToTerminal.
+  ///
+  /// In zh, this message translates to:
+  /// **'粘贴到终端'**
+  String get terminal_pasteToTerminal;
+
+  /// No description provided for @terminal_pathCopied.
+  ///
+  /// In zh, this message translates to:
+  /// **'路径已复制'**
+  String get terminal_pathCopied;
+
+  /// No description provided for @terminal_uploadTarget.
+  ///
+  /// In zh, this message translates to:
+  /// **'上传到'**
+  String get terminal_uploadTarget;
+
   /// No description provided for @terminal_connectionFailed.
   ///
   /// In zh, this message translates to:

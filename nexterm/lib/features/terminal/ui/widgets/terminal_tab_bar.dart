@@ -23,6 +23,7 @@ class TerminalTabBar extends ConsumerWidget {
   final VoidCallback? onHideKeyboard;
   final VoidCallback? onShowHelp;
   final VoidCallback? onGoToHosts;
+  final VoidCallback? onUploadFile;
 
   const TerminalTabBar({
     super.key,
@@ -33,6 +34,7 @@ class TerminalTabBar extends ConsumerWidget {
     this.onHideKeyboard,
     this.onShowHelp,
     this.onGoToHosts,
+    this.onUploadFile,
   });
 
   @override
@@ -95,6 +97,8 @@ class TerminalTabBar extends ConsumerWidget {
                   onGoToHosts?.call();
                 case 'help':
                   onShowHelp?.call();
+                case 'upload':
+                  onUploadFile?.call();
               }
             },
             itemBuilder: (ctx) {
@@ -161,6 +165,12 @@ class TerminalTabBar extends ConsumerWidget {
                   icon: Icons.add,
                   label: l.terminal_newTab,
                 ),
+                if (onUploadFile != null)
+                  menuItem(
+                    value: 'upload',
+                    icon: Icons.upload_file_outlined,
+                    label: l.terminal_uploadFile,
+                  ),
                 if (onGoToHosts != null)
                   menuItem(
                     value: 'hosts',

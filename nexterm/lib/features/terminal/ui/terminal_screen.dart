@@ -1,8 +1,11 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nexterm/core/theme/outdoor_colors.dart';
+import 'package:nexterm/features/sftp/services/sftp_service.dart';
 import 'package:nexterm/core/theme/terminal_themes.dart';
 import 'package:nexterm/core/theme/theme_provider.dart';
 import 'package:nexterm/domain/entities/host_entity.dart';
@@ -145,6 +148,99 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
     );
   }
 
+  Future<void> _uploadFile() async {
+    final tabManager = ref.read(tabManagerProvider);
+    final activeTab = tabManager.activeTab;
+    if (activeTab?.sessionId == null) return;
+
+    final l = AppLocalizations.of(context)!;
+    final sshService = ref.read(sshServiceProvider);
+    final client = sshService.getClient(activeTab!.sessionId!);
+    if (client == null) return;
+
+    final result = await FilePicker.pickFiles();
+    if (result == null || result.files.isEmpty || !mounted) return;
+
+    final file = result.files.single;
+    final localPath = file.path;
+    if (localPath == null) return;
+
+    final sftp = SftpService();
+    try {
+      await sftp.connect(client);
+      final homePath = await sftp.homePath();
+      final remotePath = '$homePath/${file.name}';
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l.terminal_uploading(file.name)),
+          duration: const Duration(minutes: 5),
+        ),
+      );
+
+      await sftp.uploadFile(localPath, remotePath);
+      sftp.disconnect();
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
+      _showUploadCompleteDialog(remotePath);
+    } catch (e) {
+      sftp.disconnect();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l.terminal_uploadFailed(e.toString()))),
+      );
+    }
+  }
+
+  void _showUploadCompleteDialog(String remotePath) {
+    final l = AppLocalizations.of(context)!;
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l.terminal_uploadComplete),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(l.terminal_remotePath, style: const TextStyle(fontSize: 12)),
+            const SizedBox(height: 4),
+            SelectableText(
+              remotePath,
+              style: const TextStyle(fontFamily: 'monospace', fontSize: 14),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Clipboard.setData(ClipboardData(text: remotePath));
+              Navigator.of(ctx).pop();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(l.terminal_pathCopied)),
+              );
+            },
+            child: Text(l.terminal_copyPath),
+          ),
+          FilledButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              final tabManager = ref.read(tabManagerProvider);
+              final tab = tabManager.activeTab;
+              if (tab?.sessionId != null) {
+                ref.read(sshServiceProvider).write(tab!.sessionId!, remotePath);
+              }
+            },
+            child: Text(l.terminal_pasteToTerminal),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _showHostPickerDialog() async {
     final selectedHostId = await showDialog<String>(
       context: context,
@@ -188,6 +284,7 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
                 : null,
             onHideKeyboard: activeTab != null ? _toggleKeyboard : null,
             onShowHelp: activeTab != null ? _showHelpDialog : null,
+            onUploadFile: activeTab != null ? _uploadFile : null,
             onGoToHosts: () {
               if (context.canPop()) context.pop();
             },

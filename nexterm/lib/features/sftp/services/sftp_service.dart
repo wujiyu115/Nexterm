@@ -63,6 +63,12 @@ class SftpService {
     _client = await sshClient.sftp();
   }
 
+  /// Returns the absolute path of the SFTP home directory.
+  Future<String> homePath() async {
+    _requireConnected();
+    return await _client!.absolute('.');
+  }
+
   /// Closes the SFTP session.
   void disconnect() {
     _client?.close();
