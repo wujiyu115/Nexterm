@@ -91,17 +91,17 @@ class _VaultItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final colorScheme = Theme.of(context).colorScheme;
     return Row(
       children: [
         Container(
           width: 36,
           height: 36,
           decoration: BoxDecoration(
-            color: OutdoorColors.accentDim,
+            color: colorScheme.primaryContainer,
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Icon(icon, size: 18, color: OutdoorColors.accent),
+          child: Icon(icon, size: 18, color: colorScheme.onSurfaceVariant),
         ),
         const SizedBox(width: 12),
         Expanded(
@@ -110,14 +110,14 @@ class _VaultItem extends StatelessWidget {
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
-              color: isDark ? OutdoorColors.darkFg : OutdoorColors.lightFg,
+              color: colorScheme.onSurface,
             ),
           ),
         ),
         Icon(
           Icons.chevron_right,
           size: 18,
-          color: isDark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary,
+          color: colorScheme.onSurfaceVariant,
         ),
       ],
     );
