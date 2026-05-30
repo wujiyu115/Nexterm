@@ -22,9 +22,9 @@ class ToolbarCustomizeScreen extends ConsumerWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: isDark ? OutdoorColors.darkBg : OutdoorColors.lightBg,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: isDark ? OutdoorColors.darkBg : OutdoorColors.lightBg,
         foregroundColor: isDark ? OutdoorColors.darkFg : OutdoorColors.lightFg,
         title: Text(l.toolbar_customize),
         actions: [
