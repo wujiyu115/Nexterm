@@ -949,6 +949,60 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get portDetect_title => 'Port Detection';
+
+  @override
+  String get portDetect_tooltip => 'Detect remote ports';
+
+  @override
+  String get portDetect_noSessions =>
+      'No active SSH sessions. Please connect to a host first.';
+
+  @override
+  String get portDetect_scanning => 'Scanning remote ports…';
+
+  @override
+  String get portDetect_scanButton => 'Scan';
+
+  @override
+  String get portDetect_rescanButton => 'Rescan';
+
+  @override
+  String get portDetect_noPorts => 'No listening ports detected';
+
+  @override
+  String portDetect_portsFound(int count) {
+    return '$count listening ports detected';
+  }
+
+  @override
+  String get portDetect_alreadyForwarded => 'Forwarded';
+
+  @override
+  String get portDetect_addForward => 'Add Forward';
+
+  @override
+  String get portDetect_systemPorts => 'System Ports';
+
+  @override
+  String get portDetect_userPorts => 'User Ports';
+
+  @override
+  String get portDetect_unknownProcess => 'Unknown process';
+
+  @override
+  String get portDetect_permissionHint =>
+      'Some process names require root privileges';
+
+  @override
+  String portDetect_error(String error) {
+    return 'Scan failed: $error';
+  }
+
+  @override
+  String get portDetect_selectSession => 'Select Session';
+
+  @override
   String get sftp_copy => 'Copy';
 
   @override
@@ -1362,4 +1416,166 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get vaults_keychain => 'Keychain';
+
+  @override
+  String get git_title => 'Git';
+
+  @override
+  String get git_repos => 'Git Repos';
+
+  @override
+  String get git_reposEmpty => 'No saved repositories';
+
+  @override
+  String get git_addRepo => 'Add Repository';
+
+  @override
+  String get git_editRepo => 'Edit Repository';
+
+  @override
+  String get git_repoLabel => 'Label';
+
+  @override
+  String get git_repoLabelHint => 'e.g. My Project';
+
+  @override
+  String get git_repoPath => 'Remote Path';
+
+  @override
+  String get git_repoPathHint => 'e.g. /home/user/project';
+
+  @override
+  String get git_selectHost => 'Select Host';
+
+  @override
+  String get git_tabWorkTree => 'Working Tree';
+
+  @override
+  String get git_tabBranches => 'Branches';
+
+  @override
+  String get git_tabTags => 'Tags';
+
+  @override
+  String get git_commits => 'Commits';
+
+  @override
+  String get git_commitDetail => 'Commit Detail';
+
+  @override
+  String get git_author => 'Author';
+
+  @override
+  String get git_date => 'Date';
+
+  @override
+  String get git_message => 'Message';
+
+  @override
+  String get git_changedFiles => 'Changed Files';
+
+  @override
+  String get git_staged => 'Staged';
+
+  @override
+  String get git_unstaged => 'Unstaged';
+
+  @override
+  String get git_untracked => 'Untracked';
+
+  @override
+  String get git_noChanges => 'Working tree clean';
+
+  @override
+  String get git_branchGraph => 'Branch Graph';
+
+  @override
+  String get git_currentBranch => 'Current';
+
+  @override
+  String get git_deleteBranch => 'Delete Branch';
+
+  @override
+  String get git_deleteBranchProtected =>
+      'Cannot delete current or default branch';
+
+  @override
+  String get git_deleteTag => 'Delete Tag';
+
+  @override
+  String git_deleteTagConfirm(String name) {
+    return 'Delete tag \"$name\"?';
+  }
+
+  @override
+  String get git_checkoutTag => 'Checkout';
+
+  @override
+  String get git_checkoutDirtyTitle => 'Uncommitted Changes';
+
+  @override
+  String get git_checkoutDirtyMessage =>
+      'Your working tree has uncommitted changes. Stash them before checking out?';
+
+  @override
+  String get git_stashAndCheckout => 'Stash & Checkout';
+
+  @override
+  String get git_initTitle => 'Not a Git Repository';
+
+  @override
+  String get git_initMessage =>
+      'This directory is not a git repository. Initialize one?';
+
+  @override
+  String get git_initButton => 'Initialize';
+
+  @override
+  String get git_initConfirm => 'Initialize a git repository at this path?';
+
+  @override
+  String get git_fileHistory => 'File History';
+
+  @override
+  String get git_diff => 'Diff';
+
+  @override
+  String git_additions(int count) {
+    return '+$count';
+  }
+
+  @override
+  String git_deletions(int count) {
+    return '-$count';
+  }
+
+  @override
+  String get git_statusModified => 'Modified';
+
+  @override
+  String get git_statusAdded => 'Added';
+
+  @override
+  String get git_statusDeleted => 'Deleted';
+
+  @override
+  String get git_statusRenamed => 'Renamed';
+
+  @override
+  String get git_statusUntracked => 'Untracked';
+
+  @override
+  String get git_noBranches => 'No branches';
+
+  @override
+  String get git_noTags => 'No tags';
+
+  @override
+  String get git_noCommits => 'No commits yet';
+
+  @override
+  String get git_openGit => 'Open Git';
+
+  @override
+  String get git_connecting => 'Connecting...';
 }

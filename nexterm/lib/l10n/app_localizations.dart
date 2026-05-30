@@ -1838,6 +1838,102 @@ abstract class AppLocalizations {
   /// **'加载主机失败: {error}'**
   String forwardForm_hostLoadError(String error);
 
+  /// No description provided for @portDetect_title.
+  ///
+  /// In zh, this message translates to:
+  /// **'端口探测'**
+  String get portDetect_title;
+
+  /// No description provided for @portDetect_tooltip.
+  ///
+  /// In zh, this message translates to:
+  /// **'探测远程端口'**
+  String get portDetect_tooltip;
+
+  /// No description provided for @portDetect_noSessions.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂无活跃的 SSH 会话，请先连接主机'**
+  String get portDetect_noSessions;
+
+  /// No description provided for @portDetect_scanning.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在扫描远程端口…'**
+  String get portDetect_scanning;
+
+  /// No description provided for @portDetect_scanButton.
+  ///
+  /// In zh, this message translates to:
+  /// **'扫描'**
+  String get portDetect_scanButton;
+
+  /// No description provided for @portDetect_rescanButton.
+  ///
+  /// In zh, this message translates to:
+  /// **'重新扫描'**
+  String get portDetect_rescanButton;
+
+  /// No description provided for @portDetect_noPorts.
+  ///
+  /// In zh, this message translates to:
+  /// **'未检测到监听端口'**
+  String get portDetect_noPorts;
+
+  /// No description provided for @portDetect_portsFound.
+  ///
+  /// In zh, this message translates to:
+  /// **'检测到 {count} 个监听端口'**
+  String portDetect_portsFound(int count);
+
+  /// No description provided for @portDetect_alreadyForwarded.
+  ///
+  /// In zh, this message translates to:
+  /// **'已转发'**
+  String get portDetect_alreadyForwarded;
+
+  /// No description provided for @portDetect_addForward.
+  ///
+  /// In zh, this message translates to:
+  /// **'添加转发'**
+  String get portDetect_addForward;
+
+  /// No description provided for @portDetect_systemPorts.
+  ///
+  /// In zh, this message translates to:
+  /// **'系统端口'**
+  String get portDetect_systemPorts;
+
+  /// No description provided for @portDetect_userPorts.
+  ///
+  /// In zh, this message translates to:
+  /// **'用户端口'**
+  String get portDetect_userPorts;
+
+  /// No description provided for @portDetect_unknownProcess.
+  ///
+  /// In zh, this message translates to:
+  /// **'未知进程'**
+  String get portDetect_unknownProcess;
+
+  /// No description provided for @portDetect_permissionHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'部分进程名需要 root 权限才能显示'**
+  String get portDetect_permissionHint;
+
+  /// No description provided for @portDetect_error.
+  ///
+  /// In zh, this message translates to:
+  /// **'扫描失败: {error}'**
+  String portDetect_error(String error);
+
+  /// No description provided for @portDetect_selectSession.
+  ///
+  /// In zh, this message translates to:
+  /// **'选择会话'**
+  String get portDetect_selectSession;
+
   /// No description provided for @sftp_copy.
   ///
   /// In zh, this message translates to:
@@ -2605,6 +2701,312 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'密钥'**
   String get vaults_keychain;
+
+  /// No description provided for @git_title.
+  ///
+  /// In zh, this message translates to:
+  /// **'Git'**
+  String get git_title;
+
+  /// No description provided for @git_repos.
+  ///
+  /// In zh, this message translates to:
+  /// **'Git 仓库'**
+  String get git_repos;
+
+  /// No description provided for @git_reposEmpty.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂无已保存的仓库'**
+  String get git_reposEmpty;
+
+  /// No description provided for @git_addRepo.
+  ///
+  /// In zh, this message translates to:
+  /// **'添加仓库'**
+  String get git_addRepo;
+
+  /// No description provided for @git_editRepo.
+  ///
+  /// In zh, this message translates to:
+  /// **'编辑仓库'**
+  String get git_editRepo;
+
+  /// No description provided for @git_repoLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'标签'**
+  String get git_repoLabel;
+
+  /// No description provided for @git_repoLabelHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'例如: 我的项目'**
+  String get git_repoLabelHint;
+
+  /// No description provided for @git_repoPath.
+  ///
+  /// In zh, this message translates to:
+  /// **'远程路径'**
+  String get git_repoPath;
+
+  /// No description provided for @git_repoPathHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'例如: /home/user/project'**
+  String get git_repoPathHint;
+
+  /// No description provided for @git_selectHost.
+  ///
+  /// In zh, this message translates to:
+  /// **'选择主机'**
+  String get git_selectHost;
+
+  /// No description provided for @git_tabWorkTree.
+  ///
+  /// In zh, this message translates to:
+  /// **'工作树'**
+  String get git_tabWorkTree;
+
+  /// No description provided for @git_tabBranches.
+  ///
+  /// In zh, this message translates to:
+  /// **'分支'**
+  String get git_tabBranches;
+
+  /// No description provided for @git_tabTags.
+  ///
+  /// In zh, this message translates to:
+  /// **'标签'**
+  String get git_tabTags;
+
+  /// No description provided for @git_commits.
+  ///
+  /// In zh, this message translates to:
+  /// **'提交'**
+  String get git_commits;
+
+  /// No description provided for @git_commitDetail.
+  ///
+  /// In zh, this message translates to:
+  /// **'提交详情'**
+  String get git_commitDetail;
+
+  /// No description provided for @git_author.
+  ///
+  /// In zh, this message translates to:
+  /// **'作者'**
+  String get git_author;
+
+  /// No description provided for @git_date.
+  ///
+  /// In zh, this message translates to:
+  /// **'日期'**
+  String get git_date;
+
+  /// No description provided for @git_message.
+  ///
+  /// In zh, this message translates to:
+  /// **'提交信息'**
+  String get git_message;
+
+  /// No description provided for @git_changedFiles.
+  ///
+  /// In zh, this message translates to:
+  /// **'变更文件'**
+  String get git_changedFiles;
+
+  /// No description provided for @git_staged.
+  ///
+  /// In zh, this message translates to:
+  /// **'已暂存'**
+  String get git_staged;
+
+  /// No description provided for @git_unstaged.
+  ///
+  /// In zh, this message translates to:
+  /// **'未暂存'**
+  String get git_unstaged;
+
+  /// No description provided for @git_untracked.
+  ///
+  /// In zh, this message translates to:
+  /// **'未跟踪'**
+  String get git_untracked;
+
+  /// No description provided for @git_noChanges.
+  ///
+  /// In zh, this message translates to:
+  /// **'工作树干净'**
+  String get git_noChanges;
+
+  /// No description provided for @git_branchGraph.
+  ///
+  /// In zh, this message translates to:
+  /// **'分支图'**
+  String get git_branchGraph;
+
+  /// No description provided for @git_currentBranch.
+  ///
+  /// In zh, this message translates to:
+  /// **'当前'**
+  String get git_currentBranch;
+
+  /// No description provided for @git_deleteBranch.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除分支'**
+  String get git_deleteBranch;
+
+  /// No description provided for @git_deleteBranchProtected.
+  ///
+  /// In zh, this message translates to:
+  /// **'无法删除当前分支或默认分支'**
+  String get git_deleteBranchProtected;
+
+  /// No description provided for @git_deleteTag.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除标签'**
+  String get git_deleteTag;
+
+  /// No description provided for @git_deleteTagConfirm.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除标签 \"{name}\"？'**
+  String git_deleteTagConfirm(String name);
+
+  /// No description provided for @git_checkoutTag.
+  ///
+  /// In zh, this message translates to:
+  /// **'检出'**
+  String get git_checkoutTag;
+
+  /// No description provided for @git_checkoutDirtyTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'未提交的更改'**
+  String get git_checkoutDirtyTitle;
+
+  /// No description provided for @git_checkoutDirtyMessage.
+  ///
+  /// In zh, this message translates to:
+  /// **'工作树有未提交的更改。是否先暂存再检出？'**
+  String get git_checkoutDirtyMessage;
+
+  /// No description provided for @git_stashAndCheckout.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂存并检出'**
+  String get git_stashAndCheckout;
+
+  /// No description provided for @git_initTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'非 Git 仓库'**
+  String get git_initTitle;
+
+  /// No description provided for @git_initMessage.
+  ///
+  /// In zh, this message translates to:
+  /// **'此目录不是 git 仓库。是否初始化？'**
+  String get git_initMessage;
+
+  /// No description provided for @git_initButton.
+  ///
+  /// In zh, this message translates to:
+  /// **'初始化'**
+  String get git_initButton;
+
+  /// No description provided for @git_initConfirm.
+  ///
+  /// In zh, this message translates to:
+  /// **'在此路径初始化 git 仓库？'**
+  String get git_initConfirm;
+
+  /// No description provided for @git_fileHistory.
+  ///
+  /// In zh, this message translates to:
+  /// **'文件历史'**
+  String get git_fileHistory;
+
+  /// No description provided for @git_diff.
+  ///
+  /// In zh, this message translates to:
+  /// **'差异'**
+  String get git_diff;
+
+  /// No description provided for @git_additions.
+  ///
+  /// In zh, this message translates to:
+  /// **'+{count}'**
+  String git_additions(int count);
+
+  /// No description provided for @git_deletions.
+  ///
+  /// In zh, this message translates to:
+  /// **'-{count}'**
+  String git_deletions(int count);
+
+  /// No description provided for @git_statusModified.
+  ///
+  /// In zh, this message translates to:
+  /// **'已修改'**
+  String get git_statusModified;
+
+  /// No description provided for @git_statusAdded.
+  ///
+  /// In zh, this message translates to:
+  /// **'已添加'**
+  String get git_statusAdded;
+
+  /// No description provided for @git_statusDeleted.
+  ///
+  /// In zh, this message translates to:
+  /// **'已删除'**
+  String get git_statusDeleted;
+
+  /// No description provided for @git_statusRenamed.
+  ///
+  /// In zh, this message translates to:
+  /// **'已重命名'**
+  String get git_statusRenamed;
+
+  /// No description provided for @git_statusUntracked.
+  ///
+  /// In zh, this message translates to:
+  /// **'未跟踪'**
+  String get git_statusUntracked;
+
+  /// No description provided for @git_noBranches.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂无分支'**
+  String get git_noBranches;
+
+  /// No description provided for @git_noTags.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂无标签'**
+  String get git_noTags;
+
+  /// No description provided for @git_noCommits.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂无提交'**
+  String get git_noCommits;
+
+  /// No description provided for @git_openGit.
+  ///
+  /// In zh, this message translates to:
+  /// **'打开 Git'**
+  String get git_openGit;
+
+  /// No description provided for @git_connecting.
+  ///
+  /// In zh, this message translates to:
+  /// **'连接中...'**
+  String get git_connecting;
 }
 
 class _AppLocalizationsDelegate

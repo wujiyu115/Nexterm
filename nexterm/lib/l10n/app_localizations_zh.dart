@@ -923,6 +923,58 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String get portDetect_title => '端口探测';
+
+  @override
+  String get portDetect_tooltip => '探测远程端口';
+
+  @override
+  String get portDetect_noSessions => '暂无活跃的 SSH 会话，请先连接主机';
+
+  @override
+  String get portDetect_scanning => '正在扫描远程端口…';
+
+  @override
+  String get portDetect_scanButton => '扫描';
+
+  @override
+  String get portDetect_rescanButton => '重新扫描';
+
+  @override
+  String get portDetect_noPorts => '未检测到监听端口';
+
+  @override
+  String portDetect_portsFound(int count) {
+    return '检测到 $count 个监听端口';
+  }
+
+  @override
+  String get portDetect_alreadyForwarded => '已转发';
+
+  @override
+  String get portDetect_addForward => '添加转发';
+
+  @override
+  String get portDetect_systemPorts => '系统端口';
+
+  @override
+  String get portDetect_userPorts => '用户端口';
+
+  @override
+  String get portDetect_unknownProcess => '未知进程';
+
+  @override
+  String get portDetect_permissionHint => '部分进程名需要 root 权限才能显示';
+
+  @override
+  String portDetect_error(String error) {
+    return '扫描失败: $error';
+  }
+
+  @override
+  String get portDetect_selectSession => '选择会话';
+
+  @override
   String get sftp_copy => '复制';
 
   @override
@@ -1329,4 +1381,163 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get vaults_keychain => '密钥';
+
+  @override
+  String get git_title => 'Git';
+
+  @override
+  String get git_repos => 'Git 仓库';
+
+  @override
+  String get git_reposEmpty => '暂无已保存的仓库';
+
+  @override
+  String get git_addRepo => '添加仓库';
+
+  @override
+  String get git_editRepo => '编辑仓库';
+
+  @override
+  String get git_repoLabel => '标签';
+
+  @override
+  String get git_repoLabelHint => '例如: 我的项目';
+
+  @override
+  String get git_repoPath => '远程路径';
+
+  @override
+  String get git_repoPathHint => '例如: /home/user/project';
+
+  @override
+  String get git_selectHost => '选择主机';
+
+  @override
+  String get git_tabWorkTree => '工作树';
+
+  @override
+  String get git_tabBranches => '分支';
+
+  @override
+  String get git_tabTags => '标签';
+
+  @override
+  String get git_commits => '提交';
+
+  @override
+  String get git_commitDetail => '提交详情';
+
+  @override
+  String get git_author => '作者';
+
+  @override
+  String get git_date => '日期';
+
+  @override
+  String get git_message => '提交信息';
+
+  @override
+  String get git_changedFiles => '变更文件';
+
+  @override
+  String get git_staged => '已暂存';
+
+  @override
+  String get git_unstaged => '未暂存';
+
+  @override
+  String get git_untracked => '未跟踪';
+
+  @override
+  String get git_noChanges => '工作树干净';
+
+  @override
+  String get git_branchGraph => '分支图';
+
+  @override
+  String get git_currentBranch => '当前';
+
+  @override
+  String get git_deleteBranch => '删除分支';
+
+  @override
+  String get git_deleteBranchProtected => '无法删除当前分支或默认分支';
+
+  @override
+  String get git_deleteTag => '删除标签';
+
+  @override
+  String git_deleteTagConfirm(String name) {
+    return '删除标签 \"$name\"？';
+  }
+
+  @override
+  String get git_checkoutTag => '检出';
+
+  @override
+  String get git_checkoutDirtyTitle => '未提交的更改';
+
+  @override
+  String get git_checkoutDirtyMessage => '工作树有未提交的更改。是否先暂存再检出？';
+
+  @override
+  String get git_stashAndCheckout => '暂存并检出';
+
+  @override
+  String get git_initTitle => '非 Git 仓库';
+
+  @override
+  String get git_initMessage => '此目录不是 git 仓库。是否初始化？';
+
+  @override
+  String get git_initButton => '初始化';
+
+  @override
+  String get git_initConfirm => '在此路径初始化 git 仓库？';
+
+  @override
+  String get git_fileHistory => '文件历史';
+
+  @override
+  String get git_diff => '差异';
+
+  @override
+  String git_additions(int count) {
+    return '+$count';
+  }
+
+  @override
+  String git_deletions(int count) {
+    return '-$count';
+  }
+
+  @override
+  String get git_statusModified => '已修改';
+
+  @override
+  String get git_statusAdded => '已添加';
+
+  @override
+  String get git_statusDeleted => '已删除';
+
+  @override
+  String get git_statusRenamed => '已重命名';
+
+  @override
+  String get git_statusUntracked => '未跟踪';
+
+  @override
+  String get git_noBranches => '暂无分支';
+
+  @override
+  String get git_noTags => '暂无标签';
+
+  @override
+  String get git_noCommits => '暂无提交';
+
+  @override
+  String get git_openGit => '打开 Git';
+
+  @override
+  String get git_connecting => '连接中...';
 }
