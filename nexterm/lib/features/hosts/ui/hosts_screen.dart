@@ -11,6 +11,7 @@ import 'package:nexterm/features/hosts/providers/hosts_provider.dart';
 import 'package:nexterm/features/hosts/ui/widgets/host_context_menu.dart';
 import 'package:nexterm/features/hosts/ui/widgets/host_list_tile.dart';
 import 'package:nexterm/features/terminal/providers/terminal_provider.dart';
+import 'package:nexterm/shared/widgets/decorative_background.dart';
 
 class HostsScreen extends ConsumerStatefulWidget {
   const HostsScreen({super.key});
@@ -228,7 +229,9 @@ class _HostsScreenState extends ConsumerState<HostsScreen> {
       );
     }
 
-    return Scaffold(
+    return DecorativeBackground(
+      showRidge: false,
+      child: Scaffold(
       backgroundColor: Colors.transparent,
       appBar: _isSelectionMode
           ? AppBar(
@@ -294,6 +297,7 @@ class _HostsScreenState extends ConsumerState<HostsScreen> {
           Expanded(child: buildContent()),
         ],
       ),
+    ),
     );
   }
 

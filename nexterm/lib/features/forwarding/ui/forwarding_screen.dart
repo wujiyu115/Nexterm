@@ -8,6 +8,7 @@ import 'package:nexterm/domain/entities/port_forward_entity.dart';
 import 'package:nexterm/features/forwarding/providers/forwarding_provider.dart';
 import 'package:nexterm/features/forwarding/services/port_forward_service.dart';
 import 'package:nexterm/features/forwarding/ui/widgets/forward_list_tile.dart';
+import 'package:nexterm/shared/widgets/decorative_background.dart';
 import 'package:nexterm/shared/widgets/section_label.dart';
 
 // ---------------------------------------------------------------------------
@@ -34,7 +35,9 @@ class ForwardingScreen extends ConsumerWidget {
     final service = ref.watch(portForwardServiceProvider);
     final notifier = ref.read(forwardingNotifierProvider.notifier);
 
-    return Scaffold(
+    return DecorativeBackground(
+      showRidge: false,
+      child: Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -64,6 +67,7 @@ class ForwardingScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text(l.common_error(e.toString()))),
       ),
+    ),
     );
   }
 

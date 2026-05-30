@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:nexterm/core/theme/outdoor_colors.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nexterm/features/terminal/models/toolbar_key_definition.dart';
 import 'package:nexterm/features/terminal/providers/toolbar_config_provider.dart';
+import 'package:nexterm/shared/widgets/glass_card.dart';
 
 class ToolbarCustomizeScreen extends ConsumerWidget {
   const ToolbarCustomizeScreen({super.key});
@@ -17,8 +19,13 @@ class ToolbarCustomizeScreen extends ConsumerWidget {
     final visibleCount = ref.watch(visibleGroupCountProvider);
     final visibleCountNotifier = ref.read(visibleGroupCountProvider.notifier);
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        foregroundColor: isDark ? OutdoorColors.darkFg : OutdoorColors.lightFg,
         title: Text(l.toolbar_customize),
         actions: [
           if (removedGroups.isNotEmpty)
@@ -208,10 +215,10 @@ class _ToolbarPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bg = isDark ? const Color(0xFF1E1E2E) : const Color(0xFFE8E8F0);
-    final btnColor = isDark ? const Color(0xFF313244) : const Color(0xFFD0D0E0);
-    final txtColor = isDark ? const Color(0xFFCDD6F4) : const Color(0xFF1C1C2E);
-    final divColor = isDark ? Colors.white12 : Colors.black12;
+    final bg = isDark ? OutdoorColors.darkBgElevated : OutdoorColors.lightBgElevated;
+    final btnColor = isDark ? OutdoorColors.darkSurfaceSolid : OutdoorColors.lightSurface;
+    final txtColor = isDark ? OutdoorColors.darkFg : OutdoorColors.lightFg;
+    final divColor = isDark ? OutdoorColors.darkBorder : OutdoorColors.lightBorder;
 
     final visible = groups.take(visibleCount).toList();
 
@@ -276,62 +283,69 @@ class _GroupTile extends StatelessWidget {
     final keysPreview = group.keys.map((k) => k.label).join('  ');
     final groupName = toolbarGroupName(group.id, l);
 
+    final isDark = theme.brightness == Brightness.dark;
+
     return Opacity(
       opacity: isVisible ? 1.0 : 0.45,
-      child: Card(
+      child: GlassCard(
         margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-          child: Row(
-            children: [
-              IconButton(
-                icon: const Icon(Icons.remove_circle, color: Colors.red, size: 22),
-                onPressed: onRemove,
-                visualDensity: VisualDensity.compact,
-              ),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          groupName,
-                          style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+        child: Row(
+          children: [
+            IconButton(
+              icon: Icon(Icons.remove_circle, color: const Color(0xFFF85149), size: 22),
+              onPressed: onRemove,
+              visualDensity: VisualDensity.compact,
+            ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        groupName,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: isDark ? OutdoorColors.darkFg : OutdoorColors.lightFg,
                         ),
-                        if (!isVisible) ...[
-                          const SizedBox(width: 6),
-                          Text(
-                            l.toolbar_hidden,
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      keysPreview,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                        letterSpacing: 1.2,
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                      if (!isVisible) ...[
+                        const SizedBox(width: 6),
+                        Text(
+                          l.toolbar_hidden,
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: isDark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    keysPreview,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: isDark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary,
+                      letterSpacing: 1.2,
                     ),
-                  ],
-                ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
               ),
-              ReorderableDragStartListener(
-                index: index,
-                child: const Padding(
-                  padding: EdgeInsets.all(8),
-                  child: Icon(Icons.drag_handle, size: 22),
-                ),
+            ),
+            ReorderableDragStartListener(
+              index: index,
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: Icon(Icons.drag_handle, size: 22,
+                  color: isDark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

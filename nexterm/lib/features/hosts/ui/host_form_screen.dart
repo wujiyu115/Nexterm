@@ -10,6 +10,7 @@ import 'package:nexterm/domain/entities/ssh_key_entity.dart';
 import 'package:nexterm/features/hosts/providers/hosts_provider.dart';
 import 'package:nexterm/features/keys/providers/keys_provider.dart';
 import 'package:nexterm/features/snippets/providers/snippets_provider.dart';
+import 'package:nexterm/shared/widgets/decorative_background.dart';
 import 'package:nexterm/shared/widgets/glass_card.dart';
 import 'package:nexterm/shared/widgets/section_label.dart';
 
@@ -224,7 +225,9 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
     return FutureBuilder(
       future: _loadHost(),
       builder: (context, _) {
-        return Scaffold(
+        return DecorativeBackground(
+          showRidge: false,
+          child: Scaffold(
           backgroundColor: Colors.transparent,
           appBar: AppBar(
             backgroundColor: Colors.transparent,
@@ -297,12 +300,12 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
                   child: Column(children: [
                     SegmentedButton<AuthMethod>(
                       segments: AuthMethod.values
-                          .map((m) => ButtonSegment<AuthMethod>(value: m, label: Text(m.localizedName(l))))
+                          .map((m) => ButtonSegment<AuthMethod>(value: m, label: Text(m.localizedName(l), style: const TextStyle(fontSize: 13))))
                           .toList(),
                       selected: {_authMethod},
                       onSelectionChanged: (s) => setState(() => _authMethod = s.first),
                       style: ButtonStyle(
-                        visualDensity: VisualDensity.compact,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         backgroundColor: WidgetStateProperty.resolveWith((states) {
                           if (states.contains(WidgetState.selected)) {
                             return OutdoorColors.accentDim;
@@ -370,6 +373,7 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
               ],
             ),
           ),
+        ),
         );
       },
     );
@@ -385,11 +389,22 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
         if (keys.isEmpty) {
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
-            child: Text(
-              l.hostForm_noKeys,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    l.hostForm_noKeys,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+                TextButton.icon(
+                  onPressed: () => context.push('/vaults/keys/generate'),
+                  icon: const Icon(Icons.add, size: 16),
+                  label: Text(l.keys_generate),
+                ),
+              ],
             ),
           );
         }
@@ -489,12 +504,12 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
               segments: [
                 ButtonSegment<_StartupMode>(
                   value: _StartupMode.command,
-                  label: Text(l.hostForm_startupModeCommand),
+                  label: Text(l.hostForm_startupModeCommand, style: const TextStyle(fontSize: 13)),
                   icon: const Icon(Icons.terminal, size: 18),
                 ),
                 ButtonSegment<_StartupMode>(
                   value: _StartupMode.snippet,
-                  label: Text(l.hostForm_startupModeSnippet),
+                  label: Text(l.hostForm_startupModeSnippet, style: const TextStyle(fontSize: 13)),
                   icon: const Icon(Icons.code, size: 18),
                 ),
               ],
@@ -513,7 +528,7 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
                 });
               },
               style: ButtonStyle(
-                visualDensity: VisualDensity.compact,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 backgroundColor: WidgetStateProperty.resolveWith((states) {
                   if (states.contains(WidgetState.selected)) {
                     return OutdoorColors.accentDim;

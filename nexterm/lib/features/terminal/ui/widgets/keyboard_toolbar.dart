@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nexterm/core/theme/outdoor_colors.dart';
 import 'package:nexterm/features/terminal/models/toolbar_key_definition.dart';
 import 'package:nexterm/features/terminal/providers/toolbar_config_provider.dart';
 import 'package:nexterm/features/terminal/providers/toolbar_modifier_provider.dart';
@@ -146,21 +147,21 @@ class _KeyboardToolbarState extends ConsumerState<KeyboardToolbar> {
     final isDark = theme.brightness == Brightness.dark;
 
     final Color background = isDark
-        ? const Color(0xFF1E1E2E)
-        : const Color(0xFFE8E8F0);
+        ? OutdoorColors.darkBgElevated
+        : OutdoorColors.lightBgElevated;
     final Color buttonColor = isDark
-        ? const Color(0xFF313244)
-        : const Color(0xFFD0D0E0);
-    final Color activeColor = isDark
-        ? const Color(0xFF89B4FA)
-        : const Color(0xFF1E66F5);
+        ? OutdoorColors.darkSurfaceSolid
+        : OutdoorColors.lightSurface;
+    final Color activeColor = OutdoorColors.accent;
     final Color textColor = isDark
-        ? const Color(0xFFCDD6F4)
-        : const Color(0xFF1C1C2E);
+        ? OutdoorColors.darkFg
+        : OutdoorColors.lightFg;
     final Color activeTextColor = isDark
-        ? const Color(0xFF1E1E2E)
+        ? OutdoorColors.darkBg
         : Colors.white;
-    final Color dividerColor = isDark ? Colors.white12 : Colors.black12;
+    final Color dividerColor = isDark
+        ? OutdoorColors.darkBorder
+        : OutdoorColors.lightBorder;
 
     return Container(
       height: 44,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nexterm/core/theme/outdoor_colors.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nexterm/features/terminal/providers/command_history_provider.dart';
@@ -53,23 +54,23 @@ class _CommandHistoryPanelState extends ConsumerState<CommandHistoryPanel> {
           child: TextField(
             controller: _searchController,
             style: TextStyle(
-              color: isDark ? Colors.white : Colors.black87,
+              color: isDark ? OutdoorColors.darkFg : OutdoorColors.lightFg,
               fontSize: 14,
             ),
             decoration: InputDecoration(
               hintText: AppLocalizations.of(context)!.commandHistory_searchHint,
               hintStyle: TextStyle(
-                color: isDark ? Colors.white38 : Colors.black38,
+                color: isDark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary,
               ),
               prefixIcon: Icon(
                 Icons.search,
                 size: 20,
-                color: isDark ? Colors.white38 : Colors.black38,
+                color: isDark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary,
               ),
               filled: true,
-              fillColor: isDark ? Colors.white10 : Colors.black.withValues(alpha: 0.05),
+              fillColor: isDark ? OutdoorColors.darkInputBg : OutdoorColors.lightInputBg,
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(OutdoorColors.radiusMd),
                 borderSide: BorderSide.none,
               ),
               contentPadding: const EdgeInsets.symmetric(vertical: 8),
@@ -85,7 +86,7 @@ class _CommandHistoryPanelState extends ConsumerState<CommandHistoryPanel> {
                   child: Text(
                     _query.isEmpty ? AppLocalizations.of(context)!.commandHistory_empty : AppLocalizations.of(context)!.commandHistory_noMatch,
                     style: TextStyle(
-                      color: isDark ? Colors.white38 : Colors.black38,
+                      color: isDark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary,
                       fontSize: 14,
                     ),
                   ),
@@ -95,13 +96,13 @@ class _CommandHistoryPanelState extends ConsumerState<CommandHistoryPanel> {
                   itemCount: reversed.length,
                   separatorBuilder: (_, __) => Divider(
                     height: 1,
-                    color: isDark ? Colors.white10 : Colors.black12,
+                    color: isDark ? OutdoorColors.darkBorder : OutdoorColors.lightBorder,
                   ),
                   itemBuilder: (context, index) {
                     final cmd = reversed[index];
                     return InkWell(
                       onTap: () => widget.onCommandSelected(cmd),
-                      borderRadius: BorderRadius.circular(6),
+                      borderRadius: BorderRadius.circular(OutdoorColors.radiusSm),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 10),
@@ -110,7 +111,7 @@ class _CommandHistoryPanelState extends ConsumerState<CommandHistoryPanel> {
                             Icon(
                               Icons.chevron_right,
                               size: 16,
-                              color: isDark ? Colors.white24 : Colors.black26,
+                              color: isDark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary,
                             ),
                             const SizedBox(width: 8),
                             Expanded(
@@ -119,7 +120,7 @@ class _CommandHistoryPanelState extends ConsumerState<CommandHistoryPanel> {
                                 style: TextStyle(
                                   fontFamily: 'monospace',
                                   fontSize: 13,
-                                  color: isDark ? Colors.white70 : Colors.black87,
+                                  color: isDark ? OutdoorColors.darkFg : OutdoorColors.lightFg,
                                 ),
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,

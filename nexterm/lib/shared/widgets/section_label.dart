@@ -15,7 +15,7 @@ class SectionLabel extends StatelessWidget {
         children: [
           Container(
             width: 3,
-            height: 12,
+            height: 14,
             decoration: BoxDecoration(
               color: OutdoorColors.accent,
               borderRadius: BorderRadius.circular(2),
@@ -32,8 +32,8 @@ class SectionLabel extends StatelessWidget {
           Text(
             title.toUpperCase(),
             style: const TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
               color: OutdoorColors.accent,
               letterSpacing: 0.5,
             ),

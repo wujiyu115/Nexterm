@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nexterm/core/theme/outdoor_colors.dart';
 import 'package:nexterm/core/theme/terminal_themes.dart';
 import 'package:nexterm/core/theme/theme_provider.dart';
 import 'package:nexterm/domain/entities/snippet_entity.dart';
@@ -57,8 +58,8 @@ class _FunctionPanelState extends ConsumerState<FunctionPanel>
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bgColor = isDark ? const Color(0xFF1E1E2E) : const Color(0xFFF0F0F5);
-    final headerColor = isDark ? const Color(0xFF181825) : const Color(0xFFE0E0EA);
+    final bgColor = isDark ? OutdoorColors.darkBgElevated : OutdoorColors.lightBgElevated;
+    final headerColor = isDark ? OutdoorColors.darkBg : OutdoorColors.lightBg;
 
     return Container(
       height: 260,
@@ -72,10 +73,10 @@ class _FunctionPanelState extends ConsumerState<FunctionPanel>
                 Expanded(
                   child: TabBar(
                     controller: _tabController,
-                    labelColor: isDark ? Colors.white : Colors.black87,
+                    labelColor: isDark ? OutdoorColors.darkFg : OutdoorColors.lightFg,
                     unselectedLabelColor:
-                        isDark ? Colors.white38 : Colors.black38,
-                    indicatorColor: Theme.of(context).colorScheme.primary,
+                        isDark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary,
+                    indicatorColor: OutdoorColors.accent,
                     indicatorSize: TabBarIndicatorSize.label,
                     labelStyle: const TextStyle(
                         fontSize: 13, fontWeight: FontWeight.w600),
@@ -97,7 +98,7 @@ class _FunctionPanelState extends ConsumerState<FunctionPanel>
                   icon: Icon(
                     Icons.palette_outlined,
                     size: 18,
-                    color: isDark ? Colors.white70 : Colors.black54,
+                    color: isDark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary,
                   ),
                   onPressed: () => _showTerminalThemePicker(context),
                 ),
@@ -209,10 +210,10 @@ class _AllShortcutsOverlayInline extends ConsumerWidget {
       return aIdx - bIdx;
     });
 
-    final buttonColor = isDark ? const Color(0xFF313244) : const Color(0xFFD0D0E0);
-    final activeColor = isDark ? const Color(0xFF89B4FA) : const Color(0xFF1E66F5);
-    final textColor = isDark ? const Color(0xFFCDD6F4) : const Color(0xFF1C1C2E);
-    final activeTextColor = isDark ? const Color(0xFF1E1E2E) : Colors.white;
+    final buttonColor = isDark ? OutdoorColors.darkSurfaceSolid : OutdoorColors.lightSurface;
+    final activeColor = OutdoorColors.accent;
+    final textColor = isDark ? OutdoorColors.darkFg : OutdoorColors.lightFg;
+    final activeTextColor = isDark ? OutdoorColors.darkBg : Colors.white;
 
     return Column(
       children: [
@@ -315,7 +316,6 @@ class _SnippetsTab extends ConsumerWidget {
     final l = AppLocalizations.of(context)!;
     final snippetsAsync = ref.watch(snippetsStreamProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final theme = Theme.of(context);
 
     return snippetsAsync.when(
       data: (snippets) {
@@ -324,12 +324,12 @@ class _SnippetsTab extends ConsumerWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.code, size: 40, color: isDark ? Colors.white24 : Colors.black26),
+                Icon(Icons.code, size: 40, color: isDark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary),
                 const SizedBox(height: 8),
                 Text(
                   l.function_noSnippets,
                   style: TextStyle(
-                    color: isDark ? Colors.white38 : Colors.black38,
+                    color: isDark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary,
                     fontSize: 14,
                   ),
                 ),
@@ -337,7 +337,7 @@ class _SnippetsTab extends ConsumerWidget {
                 Text(
                   l.function_noSnippetsHint,
                   style: TextStyle(
-                    color: isDark ? Colors.white24 : Colors.black26,
+                    color: isDark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary,
                     fontSize: 12,
                   ),
                 ),
@@ -351,7 +351,7 @@ class _SnippetsTab extends ConsumerWidget {
           itemCount: snippets.length,
           separatorBuilder: (_, __) => Divider(
             height: 1,
-            color: isDark ? Colors.white10 : Colors.black12,
+            color: isDark ? OutdoorColors.darkBorder : OutdoorColors.lightBorder,
           ),
           itemBuilder: (context, index) {
             final snippet = snippets[index];
@@ -360,7 +360,7 @@ class _SnippetsTab extends ConsumerWidget {
               visualDensity: VisualDensity.compact,
               leading: Icon(
                 snippet.variables.isEmpty ? Icons.terminal : Icons.edit_note,
-                color: theme.colorScheme.primary,
+                color: OutdoorColors.accent,
                 size: 20,
               ),
               title: Text(
@@ -376,11 +376,11 @@ class _SnippetsTab extends ConsumerWidget {
                 style: TextStyle(
                   fontFamily: 'monospace',
                   fontSize: 11,
-                  color: isDark ? Colors.white38 : Colors.black45,
+                  color: isDark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary,
                 ),
               ),
               trailing: snippet.isFavorite
-                  ? const Icon(Icons.star, size: 14, color: Colors.amber)
+                  ? const Icon(Icons.star, size: 14, color: OutdoorColors.accent)
                   : null,
               onTap: () => _execute(context, snippet),
             );
@@ -391,7 +391,7 @@ class _SnippetsTab extends ConsumerWidget {
       error: (e, _) => Center(
         child: Text(
           e.toString(),
-          style: TextStyle(color: isDark ? Colors.white38 : Colors.black38),
+          style: TextStyle(color: isDark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary),
         ),
       ),
     );
@@ -479,7 +479,7 @@ class _EmptyTab extends StatelessWidget {
       child: Text(
         message,
         style: TextStyle(
-          color: isDark ? Colors.white38 : Colors.black38,
+          color: isDark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary,
           fontSize: 14,
         ),
       ),

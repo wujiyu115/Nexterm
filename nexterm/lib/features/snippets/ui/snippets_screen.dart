@@ -6,6 +6,7 @@ import 'package:nexterm/core/theme/outdoor_colors.dart';
 import 'package:nexterm/domain/entities/snippet_entity.dart';
 import 'package:nexterm/features/snippets/providers/snippets_provider.dart';
 import 'package:nexterm/features/snippets/ui/widgets/snippet_list_tile.dart';
+import 'package:nexterm/shared/widgets/decorative_background.dart';
 import 'package:nexterm/shared/widgets/section_label.dart';
 
 class SnippetsScreen extends ConsumerWidget {
@@ -17,7 +18,9 @@ class SnippetsScreen extends ConsumerWidget {
     final notifier = ref.read(snippetsNotifierProvider.notifier);
     final snippetsAsync = ref.watch(snippetsStreamProvider);
 
-    return Scaffold(
+    return DecorativeBackground(
+      showRidge: false,
+      child: Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -47,6 +50,7 @@ class SnippetsScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text(l.common_error(e.toString()))),
       ),
+    ),
     );
   }
 

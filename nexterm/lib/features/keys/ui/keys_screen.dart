@@ -6,6 +6,7 @@ import 'package:nexterm/core/theme/outdoor_colors.dart';
 import 'package:nexterm/domain/entities/ssh_key_entity.dart';
 import 'package:nexterm/features/keys/providers/keys_provider.dart';
 import 'package:nexterm/features/keys/ui/widgets/key_list_tile.dart';
+import 'package:nexterm/shared/widgets/decorative_background.dart';
 
 class KeysScreen extends ConsumerWidget {
   const KeysScreen({super.key});
@@ -16,7 +17,9 @@ class KeysScreen extends ConsumerWidget {
     final keysAsync = ref.watch(keysStreamProvider);
     final notifier = ref.read(keysNotifierProvider.notifier);
 
-    return Scaffold(
+    return DecorativeBackground(
+      showRidge: false,
+      child: Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -59,6 +62,7 @@ class KeysScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text(l.common_error(e.toString()))),
       ),
+    ),
     );
   }
 

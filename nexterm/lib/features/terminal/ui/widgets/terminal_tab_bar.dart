@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:nexterm/core/theme/outdoor_colors.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nexterm/domain/entities/enums.dart';
@@ -194,9 +195,8 @@ class _TabItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final color = isActive
-        ? theme.colorScheme.primaryContainer
+        ? OutdoorColors.accentDim
         : Colors.transparent;
 
     return GestureDetector(
@@ -208,7 +208,7 @@ class _TabItem extends StatelessWidget {
           border: Border(
             bottom: BorderSide(
               color: isActive
-                  ? theme.colorScheme.primary
+                  ? OutdoorColors.accent
                   : Colors.transparent,
               width: 2,
             ),
@@ -225,7 +225,7 @@ class _TabItem extends StatelessWidget {
             Flexible(
               child: Text(
                 tab.title,
-                style: theme.textTheme.bodySmall?.copyWith(
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   fontWeight:
                       isActive ? FontWeight.w600 : FontWeight.normal,
                 ),
@@ -257,11 +257,12 @@ class _StatusDot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final color = switch (status) {
-      ConnectionStatus.connected => Colors.green,
-      ConnectionStatus.connecting => Colors.orange,
-      ConnectionStatus.disconnected => Colors.grey,
-      ConnectionStatus.error => Colors.red,
+      ConnectionStatus.connected => isDark ? OutdoorColors.darkStatusOnline : OutdoorColors.lightStatusOnline,
+      ConnectionStatus.connecting => OutdoorColors.accent,
+      ConnectionStatus.disconnected => isDark ? OutdoorColors.darkStatusOffline : OutdoorColors.lightStatusOffline,
+      ConnectionStatus.error => const Color(0xFFF85149),
     };
     return Container(
       width: 8,
@@ -269,6 +270,9 @@ class _StatusDot extends StatelessWidget {
       decoration: BoxDecoration(
         color: color,
         shape: BoxShape.circle,
+        boxShadow: status == ConnectionStatus.connected
+            ? [BoxShadow(color: OutdoorColors.accentGlow, blurRadius: 6)]
+            : null,
       ),
     );
   }
