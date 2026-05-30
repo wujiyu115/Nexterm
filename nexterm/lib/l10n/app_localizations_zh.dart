@@ -1167,6 +1167,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_fontSize => '字体大小';
 
   @override
+  String get settings_fontFamily => '字体';
+
+  @override
+  String get settings_selectFontFamily => '选择字体';
+
+  @override
   String get settings_selectTheme => '选择主题';
 
   @override

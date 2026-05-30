@@ -422,6 +422,8 @@
   "settings_autoLockMinutes": "{minutes} 分钟",
   "@settings_autoLockMinutes": { "placeholders": { "minutes": { "type": "int" } } },
   "settings_fontSize": "字体大小",
+  "settings_fontFamily": "字体",
+  "settings_selectFontFamily": "选择字体",
   "settings_selectTheme": "选择主题",
   "settings_selectTerminalTheme": "选择终端配色",
   "settings_selectCursorStyle": "选择光标样式",

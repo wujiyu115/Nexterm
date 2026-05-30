@@ -1194,6 +1194,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings_fontSize => 'Font Size';
 
   @override
+  String get settings_fontFamily => 'Font Family';
+
+  @override
+  String get settings_selectFontFamily => 'Select Font Family';
+
+  @override
   String get settings_selectTheme => 'Select Theme';
 
   @override

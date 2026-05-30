@@ -50,3 +50,16 @@ dev_dependencies:
 flutter:
   generate: true
   uses-material-design: true
+  fonts:
+    - family: JetBrains Mono
+      fonts:
+        - asset: assets/fonts/JetBrainsMono-Regular.ttf
+    - family: Source Code Pro
+      fonts:
+        - asset: assets/fonts/SourceCodePro-Medium.ttf
+    - family: Fira Code
+      fonts:
+        - asset: assets/fonts/FiraCode-Regular.ttf
+    - family: Ubuntu Mono
+      fonts:
+        - asset: assets/fonts/UbuntuMono-Regular.ttf

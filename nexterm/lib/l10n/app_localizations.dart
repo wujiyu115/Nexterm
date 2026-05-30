@@ -2300,6 +2300,18 @@ abstract class AppLocalizations {
   /// **'字体大小'**
   String get settings_fontSize;
 
+  /// No description provided for @settings_fontFamily.
+  ///
+  /// In zh, this message translates to:
+  /// **'字体'**
+  String get settings_fontFamily;
+
+  /// No description provided for @settings_selectFontFamily.
+  ///
+  /// In zh, this message translates to:
+  /// **'选择字体'**
+  String get settings_selectFontFamily;
+
   /// No description provided for @settings_selectTheme.
   ///
   /// In zh, this message translates to:

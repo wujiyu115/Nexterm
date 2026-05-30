@@ -13,6 +13,7 @@ class SettingsKeys {
   static const autoLockMinutes = 'auto_lock_minutes';
   static const biometricEnabled = 'biometric_enabled';
   static const clipboardAutoClear = 'clipboard_auto_clear';
+  static const terminalFontFamily = 'terminal_font_family';
 }
 
 final settingsStreamProvider = StreamProvider<Map<String, String>>((ref) {

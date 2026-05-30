@@ -9,6 +9,7 @@ import 'package:nexterm/domain/entities/enums.dart';
 import 'package:nexterm/domain/entities/host_entity.dart';
 import 'package:nexterm/features/hosts/providers/hosts_provider.dart';
 import 'package:nexterm/features/settings/providers/settings_provider.dart';
+import 'package:nexterm/features/terminal/providers/terminal_font_family_provider.dart';
 import 'package:nexterm/features/settings/utils/ssh_config_parser.dart';
 import 'package:nexterm/features/sync/providers/auth_provider.dart';
 import 'package:nexterm/shared/widgets/section_label.dart';
@@ -58,6 +59,12 @@ class SettingsScreen extends ConsumerWidget {
                 ) ??
                 13.0,
             onChanged: (v) => settingsNotifier.set(SettingsKeys.terminalFontSize, v.round().toString()),
+          ),
+          ListTile(
+            leading: const Icon(Icons.font_download_outlined),
+            title: Text(l.settings_fontFamily),
+            subtitle: Text(ref.watch(terminalFontFamilyProvider)),
+            onTap: () => _showFontFamilyPicker(context, ref),
           ),
           ListTile(
             leading: const Icon(Icons.color_lens_outlined),
@@ -223,6 +230,13 @@ class SettingsScreen extends ConsumerWidget {
     showDialog<void>(
       context: context,
       builder: (ctx) => _CursorStylePickerDialog(current: current, notifier: notifier),
+    );
+  }
+
+  void _showFontFamilyPicker(BuildContext context, WidgetRef ref) {
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => _FontFamilyPickerDialog(ref: ref),
     );
   }
 
@@ -582,6 +596,41 @@ class _CursorStylePickerDialogState extends State<_CursorStylePickerDialog> {
               return RadioListTile<String>(
                 title: Text(labelFor(style)),
                 value: style,
+              );
+            }).toList(),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ---------- Font family picker dialog ----------
+
+class _FontFamilyPickerDialog extends ConsumerWidget {
+  final WidgetRef ref;
+  const _FontFamilyPickerDialog({required this.ref});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
+    final current = ref.watch(terminalFontFamilyProvider);
+    return SimpleDialog(
+      title: Text(l.settings_selectFontFamily),
+      children: [
+        RadioGroup<String>(
+          groupValue: current,
+          onChanged: (v) {
+            if (v != null) {
+              ref.read(terminalFontFamilyProvider.notifier).setFamily(v);
+              Navigator.of(context).pop();
+            }
+          },
+          child: Column(
+            children: terminalFontFamilies.map((family) {
+              return RadioListTile<String>(
+                title: Text(family, style: TextStyle(fontFamily: family)),
+                value: family,
               );
             }).toList(),
           ),

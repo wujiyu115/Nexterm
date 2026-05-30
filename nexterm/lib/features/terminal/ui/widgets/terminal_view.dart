@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nexterm/core/theme/terminal_themes.dart' as app_themes;
 import 'package:nexterm/core/theme/theme_provider.dart';
+import 'package:nexterm/features/terminal/providers/terminal_font_family_provider.dart';
 import 'package:nexterm/features/terminal/providers/terminal_font_size_provider.dart';
 import 'package:nexterm/features/terminal/providers/terminal_provider.dart';
 import 'package:nexterm/features/terminal/ui/tab_manager.dart';
@@ -44,6 +45,7 @@ class _TerminalViewWidgetState extends ConsumerState<TerminalViewWidget> {
     }
 
     final fontSize = ref.watch(terminalFontSizeProvider);
+    final fontFamily = ref.watch(terminalFontFamilyProvider);
 final terminalThemeName =
         ref.watch(themeProvider.select((s) => s.terminalThemeName));
     final terminalTheme =
@@ -54,7 +56,7 @@ final terminalThemeName =
       terminal,
       theme: terminalTheme,
       textStyle: TerminalStyle(
-        fontFamily: 'monospace',
+        fontFamily: fontFamily,
         fontSize: fontSize,
       ),
       textScaler: TextScaler.noScaling,

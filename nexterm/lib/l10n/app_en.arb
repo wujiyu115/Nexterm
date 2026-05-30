@@ -397,6 +397,8 @@
   "settings_autoLockOneMinute": "1 minute",
   "settings_autoLockMinutes": "{minutes} minutes",
   "settings_fontSize": "Font Size",
+  "settings_fontFamily": "Font Family",
+  "settings_selectFontFamily": "Select Font Family",
   "settings_selectTheme": "Select Theme",
   "settings_selectTerminalTheme": "Select Terminal Theme",
   "settings_selectCursorStyle": "Select Cursor Style",
