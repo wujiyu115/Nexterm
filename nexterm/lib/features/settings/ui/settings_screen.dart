@@ -10,6 +10,7 @@ import 'package:nexterm/domain/entities/host_entity.dart';
 import 'package:nexterm/features/hosts/providers/hosts_provider.dart';
 import 'package:nexterm/features/settings/providers/settings_provider.dart';
 import 'package:nexterm/features/terminal/providers/terminal_font_family_provider.dart';
+import 'package:nexterm/features/terminal/providers/terminal_scrollback_provider.dart';
 import 'package:nexterm/features/settings/utils/ssh_config_parser.dart';
 import 'package:nexterm/features/sync/providers/auth_provider.dart';
 import 'package:nexterm/shared/widgets/section_label.dart';
@@ -65,6 +66,12 @@ class SettingsScreen extends ConsumerWidget {
             title: Text(l.settings_fontFamily),
             subtitle: Text(ref.watch(terminalFontFamilyProvider)),
             onTap: () => _showFontFamilyPicker(context, ref),
+          ),
+          ListTile(
+            leading: const Icon(Icons.history_outlined),
+            title: Text(l.settings_scrollbackLines),
+            subtitle: Text(_scrollbackLabel(ref.watch(terminalScrollbackProvider))),
+            onTap: () => _showScrollbackPicker(context, ref),
           ),
           ListTile(
             leading: const Icon(Icons.color_lens_outlined),
@@ -202,6 +209,11 @@ class SettingsScreen extends ConsumerWidget {
     return l.settings_autoLockMinutes(m);
   }
 
+  static String _scrollbackLabel(int lines) {
+    if (lines >= 1000) return '${lines ~/ 1000}k';
+    return lines.toString();
+  }
+
   static String _languageLabel(WidgetRef ref, AppLocalizations l) {
     final locale = ref.watch(localeProvider);
     if (locale == null) return l.settings_languageSystem;
@@ -230,6 +242,13 @@ class SettingsScreen extends ConsumerWidget {
     showDialog<void>(
       context: context,
       builder: (ctx) => _CursorStylePickerDialog(current: current, notifier: notifier),
+    );
+  }
+
+  void _showScrollbackPicker(BuildContext context, WidgetRef ref) {
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => _ScrollbackPickerDialog(ref: ref),
     );
   }
 
@@ -631,6 +650,46 @@ class _FontFamilyPickerDialog extends ConsumerWidget {
               return RadioListTile<String>(
                 title: Text(family, style: TextStyle(fontFamily: family)),
                 value: family,
+              );
+            }).toList(),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ---------- Scrollback lines picker dialog ----------
+
+class _ScrollbackPickerDialog extends ConsumerWidget {
+  final WidgetRef ref;
+  const _ScrollbackPickerDialog({required this.ref});
+
+  static String _label(int lines) {
+    if (lines >= 1000) return '${lines ~/ 1000}k';
+    return lines.toString();
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
+    final current = ref.watch(terminalScrollbackProvider);
+    return SimpleDialog(
+      title: Text(l.settings_selectScrollbackLines),
+      children: [
+        RadioGroup<int>(
+          groupValue: current,
+          onChanged: (v) {
+            if (v != null) {
+              ref.read(terminalScrollbackProvider.notifier).setLines(v);
+              Navigator.of(context).pop();
+            }
+          },
+          child: Column(
+            children: scrollbackOptions.map((lines) {
+              return RadioListTile<int>(
+                title: Text('${_label(lines)} ${l.settings_scrollbackLinesSuffix}'),
+                value: lines,
               );
             }).toList(),
           ),

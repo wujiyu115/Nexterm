@@ -1188,6 +1188,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_selectFontFamily => '选择字体';
 
   @override
+  String get settings_scrollbackLines => '回滚行数';
+
+  @override
+  String get settings_selectScrollbackLines => '选择回滚行数';
+
+  @override
+  String get settings_scrollbackLinesSuffix => '行';
+
+  @override
   String get settings_selectTheme => '选择主题';
 
   @override

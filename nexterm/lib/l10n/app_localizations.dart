@@ -2336,6 +2336,24 @@ abstract class AppLocalizations {
   /// **'选择字体'**
   String get settings_selectFontFamily;
 
+  /// No description provided for @settings_scrollbackLines.
+  ///
+  /// In zh, this message translates to:
+  /// **'回滚行数'**
+  String get settings_scrollbackLines;
+
+  /// No description provided for @settings_selectScrollbackLines.
+  ///
+  /// In zh, this message translates to:
+  /// **'选择回滚行数'**
+  String get settings_selectScrollbackLines;
+
+  /// No description provided for @settings_scrollbackLinesSuffix.
+  ///
+  /// In zh, this message translates to:
+  /// **'行'**
+  String get settings_scrollbackLinesSuffix;
+
   /// No description provided for @settings_selectTheme.
   ///
   /// In zh, this message translates to:

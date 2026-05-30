@@ -1215,6 +1215,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings_selectFontFamily => 'Select Font Family';
 
   @override
+  String get settings_scrollbackLines => 'Scrollback Lines';
+
+  @override
+  String get settings_selectScrollbackLines => 'Select Scrollback Lines';
+
+  @override
+  String get settings_scrollbackLinesSuffix => 'lines';
+
+  @override
   String get settings_selectTheme => 'Select Theme';
 
   @override

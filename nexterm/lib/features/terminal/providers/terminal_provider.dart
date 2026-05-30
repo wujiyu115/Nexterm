@@ -11,6 +11,7 @@ import 'package:nexterm/features/keys/providers/keys_provider.dart';
 import 'package:nexterm/features/snippets/providers/snippets_provider.dart';
 import 'package:nexterm/features/snippets/utils/variable_parser.dart';
 import 'package:nexterm/features/terminal/providers/command_history_provider.dart';
+import 'package:nexterm/features/terminal/providers/terminal_scrollback_provider.dart';
 import 'package:nexterm/features/terminal/providers/toolbar_modifier_provider.dart';
 import 'package:nexterm/features/terminal/services/reconnect_service.dart';
 import 'package:nexterm/features/terminal/services/ssh_service.dart';
@@ -109,7 +110,8 @@ class TerminalActions {
     _tabManager.updateTabStatus(tab.id, ConnectionStatus.connecting);
 
     // Create a Terminal instance for this tab.
-    final terminal = Terminal(maxLines: 10000);
+    final scrollback = _ref.read(terminalScrollbackProvider);
+    final terminal = Terminal(maxLines: scrollback);
     _ref.read(terminalControllersProvider.notifier).update(
           (state) => Map.unmodifiable({...state, tab.id: terminal}),
         );
