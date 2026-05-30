@@ -17,6 +17,9 @@ import 'package:nexterm/features/sftp/ui/sftp_screen.dart';
 import 'package:nexterm/features/sftp/ui/file_editor_screen.dart';
 import 'package:nexterm/features/settings/ui/settings_screen.dart';
 import 'package:nexterm/features/terminal/ui/toolbar_customize_screen.dart';
+import 'package:nexterm/features/git/ui/git_screen.dart';
+import 'package:nexterm/features/git/ui/git_repos_screen.dart';
+import 'package:nexterm/features/git/ui/git_repo_form_screen.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -67,11 +70,20 @@ final appRouter = GoRouter(
                 parentNavigatorKey: _rootNavigatorKey,
                 builder: (context, state) => const ForwardingScreen(),
                 routes: [
-                  GoRoute(path: 'add', parentNavigatorKey: _rootNavigatorKey, builder: (context, state) => const ForwardFormScreen()),
+                  GoRoute(path: 'add', parentNavigatorKey: _rootNavigatorKey, builder: (context, state) => ForwardFormScreen(initialData: state.extra as Map<String, dynamic>?)),
                   GoRoute(path: 'edit/:id', parentNavigatorKey: _rootNavigatorKey, builder: (context, state) => ForwardFormScreen(forwardId: state.pathParameters['id'])),
                 ],
               ),
-                          ],
+              GoRoute(
+                path: 'git',
+                parentNavigatorKey: _rootNavigatorKey,
+                builder: (context, state) => const GitReposScreen(),
+                routes: [
+                  GoRoute(path: 'add', parentNavigatorKey: _rootNavigatorKey, builder: (context, state) => const GitRepoFormScreen()),
+                  GoRoute(path: 'edit/:id', parentNavigatorKey: _rootNavigatorKey, builder: (context, state) => GitRepoFormScreen(repoId: state.pathParameters['id'])),
+                ],
+              ),
+            ],
           ),
         ]),
         // Sessions branch
@@ -111,6 +123,14 @@ final appRouter = GoRouter(
         final extra = state.extra as Map<String, String>;
         return FileEditorScreen(sessionId: extra['sessionId']!, filePath: extra['path']!);
       },
+    ),
+    GoRoute(
+      path: '/git/:sessionId',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => GitScreen(
+        sessionId: state.pathParameters['sessionId']!,
+        remotePath: state.uri.queryParameters['path'] ?? '.',
+      ),
     ),
   ],
 );

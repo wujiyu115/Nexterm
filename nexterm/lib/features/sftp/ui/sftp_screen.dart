@@ -11,6 +11,7 @@ import 'package:nexterm/features/sftp/ui/widgets/file_breadcrumb.dart';
 import 'package:nexterm/features/sftp/ui/widgets/file_list_view.dart';
 import 'package:nexterm/features/sftp/ui/widgets/transfer_queue_bar.dart';
 import 'package:nexterm/features/terminal/providers/terminal_provider.dart';
+import 'package:go_router/go_router.dart';
 
 class SftpScreen extends ConsumerStatefulWidget {
   final String sessionId;
@@ -411,6 +412,14 @@ class _SftpScreenState extends ConsumerState<SftpScreen> {
             tooltip: state.showHidden ? l.sftp_hideHidden : l.sftp_showHidden,
             onPressed: notifier.toggleHidden,
           ),
+          if (state.visibleFiles.any((f) => f.isDirectory && f.name == '.git'))
+            IconButton(
+              icon: const Icon(Icons.source_outlined),
+              tooltip: l.git_openGit,
+              onPressed: () {
+                context.push('/git/${widget.sessionId}?path=${Uri.encodeComponent(state.currentPath)}');
+              },
+            ),
           PopupMenuButton<String>(
             icon: const Icon(Icons.more_horiz),
             onSelected: (value) {

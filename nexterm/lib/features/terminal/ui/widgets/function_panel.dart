@@ -12,6 +12,8 @@ import 'package:nexterm/features/terminal/providers/toolbar_modifier_provider.da
 import 'package:nexterm/features/terminal/providers/toolbar_usage_provider.dart';
 import 'package:nexterm/features/terminal/ui/widgets/command_history_panel.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
+import 'package:go_router/go_router.dart';
+import 'package:nexterm/features/terminal/providers/terminal_provider.dart';
 
 class FunctionPanel extends ConsumerStatefulWidget {
   final String? sessionId;
@@ -36,7 +38,7 @@ class _FunctionPanelState extends ConsumerState<FunctionPanel>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
   }
 
   @override
@@ -90,6 +92,7 @@ class _FunctionPanelState extends ConsumerState<FunctionPanel>
                       ),
                       Tab(icon: Icon(Icons.history, size: 18)),
                       Tab(icon: Icon(Icons.app_shortcut, size: 18)),
+                      Tab(icon: Icon(Icons.source_outlined, size: 18)),
                     ],
                   ),
                 ),
@@ -117,6 +120,9 @@ class _FunctionPanelState extends ConsumerState<FunctionPanel>
                       )
                     : _EmptyTab(message: l.function_noActiveSession),
                 _AllShortcutsOverlayInline(onKeyInput: widget.onKeyInput),
+                widget.sessionId != null
+                    ? _GitTab(sessionId: widget.sessionId!)
+                    : _EmptyTab(message: l.function_noActiveSession),
               ],
             ),
           ),
@@ -484,6 +490,39 @@ class _EmptyTab extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class _GitTab extends ConsumerWidget {
+  final String sessionId;
+  const _GitTab({required this.sessionId});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
+      Icon(Icons.source_outlined, size: 40, color: isDark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary),
+      const SizedBox(height: 12),
+      FilledButton.icon(
+        onPressed: () async {
+          final sshService = ref.read(sshServiceProvider);
+          final client = sshService.getClient(sessionId);
+          if (client == null) return;
+          try {
+            final session = await client.execute('pwd');
+            final stdoutBytes = await session.stdout.toList();
+            final pwd = String.fromCharCodes(stdoutBytes.expand((b) => b)).trim();
+            await session.done;
+            if (context.mounted) GoRouter.of(context).push('/git/$sessionId?path=${Uri.encodeComponent(pwd)}');
+          } catch (e) {
+            if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+          }
+        },
+        icon: const Icon(Icons.folder_open),
+        label: Text(l.git_openGit),
+      ),
+    ]));
   }
 }
 
