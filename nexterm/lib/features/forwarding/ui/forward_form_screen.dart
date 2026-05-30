@@ -189,7 +189,15 @@ class _ForwardFormScreenState extends ConsumerState<ForwardFormScreen> {
                   _buildHostDropdown(),
                 ]),
                 const SizedBox(height: 20),
-                _FormSection(title: l.forwardForm_sectionType, children: [
+                _FormSection(
+                  title: l.forwardForm_sectionType,
+                  trailing: IconButton(
+                    icon: const Icon(Icons.help_outline, size: 20),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    onPressed: () => _showForwardTypeHelp(context),
+                  ),
+                  children: [
                   SegmentedButton<ForwardType>(
                     segments: ForwardType.values
                         .map((t) => ButtonSegment<ForwardType>(
@@ -305,6 +313,44 @@ class _ForwardFormScreenState extends ConsumerState<ForwardFormScreen> {
     );
   }
 
+  void _showForwardTypeHelp(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l.forwardForm_typeHelpTitle),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _HelpItem(
+                title: l.forwarding_local,
+                description: l.forwardForm_typeHelpLocal,
+              ),
+              const SizedBox(height: 16),
+              _HelpItem(
+                title: l.forwarding_remote,
+                description: l.forwardForm_typeHelpRemote,
+              ),
+              const SizedBox(height: 16),
+              _HelpItem(
+                title: l.forwarding_dynamic,
+                description: l.forwardForm_typeHelpDynamic,
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(l.common_confirm),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildHostDropdown() {
     final l = AppLocalizations.of(context)!;
     final hostsAsync = ref.watch(hostsStreamProvider);
@@ -341,22 +387,49 @@ class _ForwardFormScreenState extends ConsumerState<ForwardFormScreen> {
   }
 }
 
-class _FormSection extends StatelessWidget {
+class _HelpItem extends StatelessWidget {
   final String title;
-  final List<Widget> children;
-  const _FormSection({required this.title, required this.children});
+  final String description;
+  const _HelpItem({required this.title, required this.description});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          title,
-          style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                color: OutdoorColors.accent,
-                fontWeight: FontWeight.w600,
-              ),
+        Text(title, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
+        const SizedBox(height: 4),
+        Text(description, style: Theme.of(context).textTheme.bodySmall),
+      ],
+    );
+  }
+}
+
+class _FormSection extends StatelessWidget {
+  final String title;
+  final Widget? trailing;
+  final List<Widget> children;
+  const _FormSection({required this.title, this.trailing, required this.children});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              title,
+              style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    color: OutdoorColors.accent,
+                    fontWeight: FontWeight.w600,
+                  ),
+            ),
+            if (trailing != null) ...[
+              const SizedBox(width: 4),
+              trailing!,
+            ],
+          ],
         ),
         const SizedBox(height: 10),
         ...children,

@@ -885,6 +885,21 @@ class AppLocalizationsZh extends AppLocalizations {
   String get forwardForm_bindAddressRequired => '请输入绑定地址';
 
   @override
+  String get forwardForm_typeHelpTitle => '转发类型说明';
+
+  @override
+  String get forwardForm_typeHelpLocal =>
+      '将本地端口映射到远程地址，通过 SSH 隧道访问远程服务（如数据库、内部 API），就像它们运行在本地一样。\n示例：本地端口 3306 → 远程 db.internal:3306';
+
+  @override
+  String get forwardForm_typeHelpRemote =>
+      '将本地服务暴露给远程服务器，让远程主机能够访问你设备上运行的服务。\n示例：远程端口 8080 → 本地 127.0.0.1:3000';
+
+  @override
+  String get forwardForm_typeHelpDynamic =>
+      '在本地端口创建 SOCKS5 代理，所有通过该代理的流量都会经由 SSH 服务器转发。适用于通过单个端口浏览网页或访问多个远程资源。';
+
+  @override
   String get forwardForm_sectionOptions => '选项';
 
   @override

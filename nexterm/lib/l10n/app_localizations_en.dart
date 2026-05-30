@@ -909,6 +909,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get forwardForm_bindAddressRequired => 'Please enter a bind address';
 
   @override
+  String get forwardForm_typeHelpTitle => 'Forward Types';
+
+  @override
+  String get forwardForm_typeHelpLocal =>
+      'Maps a local port to a remote address via SSH. Use it to access remote services (databases, internal APIs) as if they were running locally.\nExample: Local port 3306 → remote db.internal:3306';
+
+  @override
+  String get forwardForm_typeHelpRemote =>
+      'Exposes a local service to the remote server. Use it to let the remote host access a service running on your device.\nExample: Remote port 8080 → local 127.0.0.1:3000';
+
+  @override
+  String get forwardForm_typeHelpDynamic =>
+      'Creates a SOCKS5 proxy on a local port. All traffic routed through the proxy is tunneled via the SSH server. Use it to browse the internet or access multiple remote resources through a single port.';
+
+  @override
   String get forwardForm_sectionOptions => 'Options';
 
   @override

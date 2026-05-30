@@ -1772,6 +1772,30 @@ abstract class AppLocalizations {
   /// **'请输入绑定地址'**
   String get forwardForm_bindAddressRequired;
 
+  /// No description provided for @forwardForm_typeHelpTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'转发类型说明'**
+  String get forwardForm_typeHelpTitle;
+
+  /// No description provided for @forwardForm_typeHelpLocal.
+  ///
+  /// In zh, this message translates to:
+  /// **'将本地端口映射到远程地址，通过 SSH 隧道访问远程服务（如数据库、内部 API），就像它们运行在本地一样。\n示例：本地端口 3306 → 远程 db.internal:3306'**
+  String get forwardForm_typeHelpLocal;
+
+  /// No description provided for @forwardForm_typeHelpRemote.
+  ///
+  /// In zh, this message translates to:
+  /// **'将本地服务暴露给远程服务器，让远程主机能够访问你设备上运行的服务。\n示例：远程端口 8080 → 本地 127.0.0.1:3000'**
+  String get forwardForm_typeHelpRemote;
+
+  /// No description provided for @forwardForm_typeHelpDynamic.
+  ///
+  /// In zh, this message translates to:
+  /// **'在本地端口创建 SOCKS5 代理，所有通过该代理的流量都会经由 SSH 服务器转发。适用于通过单个端口浏览网页或访问多个远程资源。'**
+  String get forwardForm_typeHelpDynamic;
+
   /// No description provided for @forwardForm_sectionOptions.
   ///
   /// In zh, this message translates to:
