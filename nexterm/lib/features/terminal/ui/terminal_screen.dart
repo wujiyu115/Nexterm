@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nexterm/core/theme/app_theme.dart';
 import 'package:nexterm/core/theme/outdoor_colors.dart';
 import 'package:nexterm/domain/entities/host_entity.dart';
 import 'package:nexterm/features/hosts/providers/hosts_provider.dart';
@@ -88,7 +89,10 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(l.function_tabHelp),
-        content: Column(
+        content: SizedBox(
+          width: double.maxFinite,
+          child: SingleChildScrollView(
+          child: Column(
           mainAxisSize: MainAxisSize.min,
           children: shortcuts.map((entry) {
             final (key, desc) = entry;
@@ -118,6 +122,8 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
               ),
             );
           }).toList(),
+        ),
+        ),
         ),
         actions: [
           TextButton(
@@ -155,22 +161,28 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
     }
     _hadTabs = hasTabs;
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final scaffoldBg = hasTabs ? OutdoorColors.darkTerminalBg : (isDark ? OutdoorColors.darkBg : OutdoorColors.lightBg);
+
     return Scaffold(
-      backgroundColor: OutdoorColors.darkTerminalBg,
+      backgroundColor: scaffoldBg,
       body: Column(
         children: [
           SizedBox(height: MediaQuery.of(context).padding.top),
 
-          TerminalTabBar(
-            onAddTab: _showHostPickerDialog,
-            isFunctionMode: _isFunctionMode,
-            onToggleMode: activeTab != null ? _toggleKeyboardMode : null,
-            onCustomizeTap: activeTab != null
-                ? () => context.push('/terminal/customize-keyboard')
-                : null,
-            onHideKeyboard: activeTab != null ? _toggleKeyboard : null,
-            onShowHelp: activeTab != null ? _showHelpDialog : null,
-            onGoToHosts: () => context.go('/vaults/hosts'),
+          Theme(
+            data: hasTabs ? AppTheme.dark() : Theme.of(context),
+            child: TerminalTabBar(
+              onAddTab: _showHostPickerDialog,
+              isFunctionMode: _isFunctionMode,
+              onToggleMode: activeTab != null ? _toggleKeyboardMode : null,
+              onCustomizeTap: activeTab != null
+                  ? () => context.push('/terminal/customize-keyboard')
+                  : null,
+              onHideKeyboard: activeTab != null ? _toggleKeyboard : null,
+              onShowHelp: activeTab != null ? _showHelpDialog : null,
+              onGoToHosts: () => context.go('/vaults/hosts'),
+            ),
           ),
 
           Expanded(
@@ -228,6 +240,11 @@ class _EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final fgColor = isDark ? OutdoorColors.darkFg : OutdoorColors.lightFg;
+    final fgSecondary = isDark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary;
+    final fgTertiary = isDark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary;
+
     if (isConnecting) {
       return Center(
         child: Column(
@@ -235,7 +252,7 @@ class _EmptyState extends StatelessWidget {
           children: [
             const CircularProgressIndicator(),
             const SizedBox(height: 16),
-            Text(l.terminal_connecting, style: const TextStyle(color: OutdoorColors.darkFg)),
+            Text(l.terminal_connecting, style: TextStyle(color: fgColor)),
           ],
         ),
       );
@@ -245,20 +262,20 @@ class _EmptyState extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(
+          Icon(
             Icons.terminal,
             size: 64,
-            color: OutdoorColors.darkFgTertiary,
+            color: fgTertiary,
           ),
           const SizedBox(height: 16),
           Text(
             l.terminal_noTabs,
-            style: const TextStyle(color: OutdoorColors.darkFgSecondary, fontSize: 16),
+            style: TextStyle(color: fgSecondary, fontSize: 16),
           ),
           const SizedBox(height: 8),
           Text(
             l.terminal_noTabsHint,
-            style: const TextStyle(color: OutdoorColors.darkFgTertiary, fontSize: 13),
+            style: TextStyle(color: fgTertiary, fontSize: 13),
           ),
         ],
       ),
