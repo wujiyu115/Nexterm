@@ -2992,6 +2992,369 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
   }
 }
 
+class $GitReposTable extends GitRepos with TableInfo<$GitReposTable, GitRepo> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $GitReposTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _hostIdMeta = const VerificationMeta('hostId');
+  @override
+  late final GeneratedColumn<String> hostId = GeneratedColumn<String>(
+    'host_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES hosts (id)',
+    ),
+  );
+  static const VerificationMeta _remotePathMeta = const VerificationMeta(
+    'remotePath',
+  );
+  @override
+  late final GeneratedColumn<String> remotePath = GeneratedColumn<String>(
+    'remote_path',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _labelMeta = const VerificationMeta('label');
+  @override
+  late final GeneratedColumn<String> label = GeneratedColumn<String>(
+    'label',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    hostId,
+    remotePath,
+    label,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'git_repos';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<GitRepo> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('host_id')) {
+      context.handle(
+        _hostIdMeta,
+        hostId.isAcceptableOrUnknown(data['host_id']!, _hostIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_hostIdMeta);
+    }
+    if (data.containsKey('remote_path')) {
+      context.handle(
+        _remotePathMeta,
+        remotePath.isAcceptableOrUnknown(data['remote_path']!, _remotePathMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_remotePathMeta);
+    }
+    if (data.containsKey('label')) {
+      context.handle(
+        _labelMeta,
+        label.isAcceptableOrUnknown(data['label']!, _labelMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  GitRepo map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return GitRepo(
+      id:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}id'],
+          )!,
+      hostId:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}host_id'],
+          )!,
+      remotePath:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}remote_path'],
+          )!,
+      label: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}label'],
+      ),
+      createdAt:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.dateTime,
+            data['${effectivePrefix}created_at'],
+          )!,
+    );
+  }
+
+  @override
+  $GitReposTable createAlias(String alias) {
+    return $GitReposTable(attachedDatabase, alias);
+  }
+}
+
+class GitRepo extends DataClass implements Insertable<GitRepo> {
+  final String id;
+  final String hostId;
+  final String remotePath;
+  final String? label;
+  final DateTime createdAt;
+  const GitRepo({
+    required this.id,
+    required this.hostId,
+    required this.remotePath,
+    this.label,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['host_id'] = Variable<String>(hostId);
+    map['remote_path'] = Variable<String>(remotePath);
+    if (!nullToAbsent || label != null) {
+      map['label'] = Variable<String>(label);
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  GitReposCompanion toCompanion(bool nullToAbsent) {
+    return GitReposCompanion(
+      id: Value(id),
+      hostId: Value(hostId),
+      remotePath: Value(remotePath),
+      label:
+          label == null && nullToAbsent ? const Value.absent() : Value(label),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory GitRepo.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return GitRepo(
+      id: serializer.fromJson<String>(json['id']),
+      hostId: serializer.fromJson<String>(json['hostId']),
+      remotePath: serializer.fromJson<String>(json['remotePath']),
+      label: serializer.fromJson<String?>(json['label']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'hostId': serializer.toJson<String>(hostId),
+      'remotePath': serializer.toJson<String>(remotePath),
+      'label': serializer.toJson<String?>(label),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  GitRepo copyWith({
+    String? id,
+    String? hostId,
+    String? remotePath,
+    Value<String?> label = const Value.absent(),
+    DateTime? createdAt,
+  }) => GitRepo(
+    id: id ?? this.id,
+    hostId: hostId ?? this.hostId,
+    remotePath: remotePath ?? this.remotePath,
+    label: label.present ? label.value : this.label,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  GitRepo copyWithCompanion(GitReposCompanion data) {
+    return GitRepo(
+      id: data.id.present ? data.id.value : this.id,
+      hostId: data.hostId.present ? data.hostId.value : this.hostId,
+      remotePath:
+          data.remotePath.present ? data.remotePath.value : this.remotePath,
+      label: data.label.present ? data.label.value : this.label,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GitRepo(')
+          ..write('id: $id, ')
+          ..write('hostId: $hostId, ')
+          ..write('remotePath: $remotePath, ')
+          ..write('label: $label, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, hostId, remotePath, label, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is GitRepo &&
+          other.id == this.id &&
+          other.hostId == this.hostId &&
+          other.remotePath == this.remotePath &&
+          other.label == this.label &&
+          other.createdAt == this.createdAt);
+}
+
+class GitReposCompanion extends UpdateCompanion<GitRepo> {
+  final Value<String> id;
+  final Value<String> hostId;
+  final Value<String> remotePath;
+  final Value<String?> label;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const GitReposCompanion({
+    this.id = const Value.absent(),
+    this.hostId = const Value.absent(),
+    this.remotePath = const Value.absent(),
+    this.label = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  GitReposCompanion.insert({
+    required String id,
+    required String hostId,
+    required String remotePath,
+    this.label = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       hostId = Value(hostId),
+       remotePath = Value(remotePath);
+  static Insertable<GitRepo> custom({
+    Expression<String>? id,
+    Expression<String>? hostId,
+    Expression<String>? remotePath,
+    Expression<String>? label,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (hostId != null) 'host_id': hostId,
+      if (remotePath != null) 'remote_path': remotePath,
+      if (label != null) 'label': label,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  GitReposCompanion copyWith({
+    Value<String>? id,
+    Value<String>? hostId,
+    Value<String>? remotePath,
+    Value<String?>? label,
+    Value<DateTime>? createdAt,
+    Value<int>? rowid,
+  }) {
+    return GitReposCompanion(
+      id: id ?? this.id,
+      hostId: hostId ?? this.hostId,
+      remotePath: remotePath ?? this.remotePath,
+      label: label ?? this.label,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (hostId.present) {
+      map['host_id'] = Variable<String>(hostId.value);
+    }
+    if (remotePath.present) {
+      map['remote_path'] = Variable<String>(remotePath.value);
+    }
+    if (label.present) {
+      map['label'] = Variable<String>(label.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GitReposCompanion(')
+          ..write('id: $id, ')
+          ..write('hostId: $hostId, ')
+          ..write('remotePath: $remotePath, ')
+          ..write('label: $label, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -3000,6 +3363,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $SnippetsTable snippets = $SnippetsTable(this);
   late final $PortForwardsTable portForwards = $PortForwardsTable(this);
   late final $AppSettingsTable appSettings = $AppSettingsTable(this);
+  late final $GitReposTable gitRepos = $GitReposTable(this);
   late final HostsDao hostsDao = HostsDao(this as AppDatabase);
   late final SshKeysDao sshKeysDao = SshKeysDao(this as AppDatabase);
   late final SnippetsDao snippetsDao = SnippetsDao(this as AppDatabase);
@@ -3007,6 +3371,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     this as AppDatabase,
   );
   late final SettingsDao settingsDao = SettingsDao(this as AppDatabase);
+  late final GitReposDao gitReposDao = GitReposDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -3017,6 +3382,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     snippets,
     portForwards,
     appSettings,
+    gitRepos,
   ];
 }
 
@@ -3064,6 +3430,30 @@ typedef $$HostsTableUpdateCompanionBuilder =
       Value<DateTime> updatedAt,
       Value<int> rowid,
     });
+
+final class $$HostsTableReferences
+    extends BaseReferences<_$AppDatabase, $HostsTable, Host> {
+  $$HostsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$GitReposTable, List<GitRepo>> _gitReposRefsTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.gitRepos,
+    aliasName: $_aliasNameGenerator(db.hosts.id, db.gitRepos.hostId),
+  );
+
+  $$GitReposTableProcessedTableManager get gitReposRefs {
+    final manager = $$GitReposTableTableManager(
+      $_db,
+      $_db.gitRepos,
+    ).filter((f) => f.hostId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_gitReposRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
 
 class $$HostsTableFilterComposer extends Composer<_$AppDatabase, $HostsTable> {
   $$HostsTableFilterComposer({
@@ -3162,6 +3552,31 @@ class $$HostsTableFilterComposer extends Composer<_$AppDatabase, $HostsTable> {
     column: $table.updatedAt,
     builder: (column) => ColumnFilters(column),
   );
+
+  Expression<bool> gitReposRefs(
+    Expression<bool> Function($$GitReposTableFilterComposer f) f,
+  ) {
+    final $$GitReposTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.gitRepos,
+      getReferencedColumn: (t) => t.hostId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GitReposTableFilterComposer(
+            $db: $db,
+            $table: $db.gitRepos,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$HostsTableOrderingComposer
@@ -3336,6 +3751,31 @@ class $$HostsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  Expression<T> gitReposRefs<T extends Object>(
+    Expression<T> Function($$GitReposTableAnnotationComposer a) f,
+  ) {
+    final $$GitReposTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.gitRepos,
+      getReferencedColumn: (t) => t.hostId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GitReposTableAnnotationComposer(
+            $db: $db,
+            $table: $db.gitRepos,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$HostsTableTableManager
@@ -3349,9 +3789,9 @@ class $$HostsTableTableManager
           $$HostsTableAnnotationComposer,
           $$HostsTableCreateCompanionBuilder,
           $$HostsTableUpdateCompanionBuilder,
-          (Host, BaseReferences<_$AppDatabase, $HostsTable, Host>),
+          (Host, $$HostsTableReferences),
           Host,
-          PrefetchHooks Function()
+          PrefetchHooks Function({bool gitReposRefs})
         > {
   $$HostsTableTableManager(_$AppDatabase db, $HostsTable table)
     : super(
@@ -3454,11 +3894,38 @@ class $$HostsTableTableManager
                       .map(
                         (e) => (
                           e.readTable(table),
-                          BaseReferences(db, table, e),
+                          $$HostsTableReferences(db, table, e),
                         ),
                       )
                       .toList(),
-          prefetchHooksCallback: null,
+          prefetchHooksCallback: ({gitReposRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [if (gitReposRefs) db.gitRepos],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (gitReposRefs)
+                    await $_getPrefetchedData<Host, $HostsTable, GitRepo>(
+                      currentTable: table,
+                      referencedTable: $$HostsTableReferences
+                          ._gitReposRefsTable(db),
+                      managerFromTypedResult:
+                          (p0) =>
+                              $$HostsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).gitReposRefs,
+                      referencedItemsForCurrentItem:
+                          (item, referencedItems) =>
+                              referencedItems.where((e) => e.hostId == item.id),
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
         ),
       );
 }
@@ -3473,9 +3940,9 @@ typedef $$HostsTableProcessedTableManager =
       $$HostsTableAnnotationComposer,
       $$HostsTableCreateCompanionBuilder,
       $$HostsTableUpdateCompanionBuilder,
-      (Host, BaseReferences<_$AppDatabase, $HostsTable, Host>),
+      (Host, $$HostsTableReferences),
       Host,
-      PrefetchHooks Function()
+      PrefetchHooks Function({bool gitReposRefs})
     >;
 typedef $$SshKeysTableCreateCompanionBuilder =
     SshKeysCompanion Function({
@@ -4495,6 +4962,326 @@ typedef $$AppSettingsTableProcessedTableManager =
       AppSetting,
       PrefetchHooks Function()
     >;
+typedef $$GitReposTableCreateCompanionBuilder =
+    GitReposCompanion Function({
+      required String id,
+      required String hostId,
+      required String remotePath,
+      Value<String?> label,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+typedef $$GitReposTableUpdateCompanionBuilder =
+    GitReposCompanion Function({
+      Value<String> id,
+      Value<String> hostId,
+      Value<String> remotePath,
+      Value<String?> label,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+
+final class $$GitReposTableReferences
+    extends BaseReferences<_$AppDatabase, $GitReposTable, GitRepo> {
+  $$GitReposTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $HostsTable _hostIdTable(_$AppDatabase db) => db.hosts.createAlias(
+    $_aliasNameGenerator(db.gitRepos.hostId, db.hosts.id),
+  );
+
+  $$HostsTableProcessedTableManager get hostId {
+    final $_column = $_itemColumn<String>('host_id')!;
+
+    final manager = $$HostsTableTableManager(
+      $_db,
+      $_db.hosts,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_hostIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$GitReposTableFilterComposer
+    extends Composer<_$AppDatabase, $GitReposTable> {
+  $$GitReposTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get remotePath => $composableBuilder(
+    column: $table.remotePath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get label => $composableBuilder(
+    column: $table.label,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$HostsTableFilterComposer get hostId {
+    final $$HostsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.hostId,
+      referencedTable: $db.hosts,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$HostsTableFilterComposer(
+            $db: $db,
+            $table: $db.hosts,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$GitReposTableOrderingComposer
+    extends Composer<_$AppDatabase, $GitReposTable> {
+  $$GitReposTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get remotePath => $composableBuilder(
+    column: $table.remotePath,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get label => $composableBuilder(
+    column: $table.label,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$HostsTableOrderingComposer get hostId {
+    final $$HostsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.hostId,
+      referencedTable: $db.hosts,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$HostsTableOrderingComposer(
+            $db: $db,
+            $table: $db.hosts,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$GitReposTableAnnotationComposer
+    extends Composer<_$AppDatabase, $GitReposTable> {
+  $$GitReposTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get remotePath => $composableBuilder(
+    column: $table.remotePath,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get label =>
+      $composableBuilder(column: $table.label, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  $$HostsTableAnnotationComposer get hostId {
+    final $$HostsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.hostId,
+      referencedTable: $db.hosts,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$HostsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.hosts,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$GitReposTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $GitReposTable,
+          GitRepo,
+          $$GitReposTableFilterComposer,
+          $$GitReposTableOrderingComposer,
+          $$GitReposTableAnnotationComposer,
+          $$GitReposTableCreateCompanionBuilder,
+          $$GitReposTableUpdateCompanionBuilder,
+          (GitRepo, $$GitReposTableReferences),
+          GitRepo,
+          PrefetchHooks Function({bool hostId})
+        > {
+  $$GitReposTableTableManager(_$AppDatabase db, $GitReposTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer:
+              () => $$GitReposTableFilterComposer($db: db, $table: table),
+          createOrderingComposer:
+              () => $$GitReposTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer:
+              () => $$GitReposTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> hostId = const Value.absent(),
+                Value<String> remotePath = const Value.absent(),
+                Value<String?> label = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => GitReposCompanion(
+                id: id,
+                hostId: hostId,
+                remotePath: remotePath,
+                label: label,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String hostId,
+                required String remotePath,
+                Value<String?> label = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => GitReposCompanion.insert(
+                id: id,
+                hostId: hostId,
+                remotePath: remotePath,
+                label: label,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper:
+              (p0) =>
+                  p0
+                      .map(
+                        (e) => (
+                          e.readTable(table),
+                          $$GitReposTableReferences(db, table, e),
+                        ),
+                      )
+                      .toList(),
+          prefetchHooksCallback: ({hostId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins: <
+                T extends TableManagerState<
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic
+                >
+              >(state) {
+                if (hostId) {
+                  state =
+                      state.withJoin(
+                            currentTable: table,
+                            currentColumn: table.hostId,
+                            referencedTable: $$GitReposTableReferences
+                                ._hostIdTable(db),
+                            referencedColumn:
+                                $$GitReposTableReferences._hostIdTable(db).id,
+                          )
+                          as T;
+                }
+
+                return state;
+              },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$GitReposTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $GitReposTable,
+      GitRepo,
+      $$GitReposTableFilterComposer,
+      $$GitReposTableOrderingComposer,
+      $$GitReposTableAnnotationComposer,
+      $$GitReposTableCreateCompanionBuilder,
+      $$GitReposTableUpdateCompanionBuilder,
+      (GitRepo, $$GitReposTableReferences),
+      GitRepo,
+      PrefetchHooks Function({bool hostId})
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -4509,4 +5296,6 @@ class $AppDatabaseManager {
       $$PortForwardsTableTableManager(_db, _db.portForwards);
   $$AppSettingsTableTableManager get appSettings =>
       $$AppSettingsTableTableManager(_db, _db.appSettings);
+  $$GitReposTableTableManager get gitRepos =>
+      $$GitReposTableTableManager(_db, _db.gitRepos);
 }

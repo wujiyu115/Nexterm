@@ -8,24 +8,26 @@ import 'package:nexterm/data/database/tables/ssh_keys_table.dart';
 import 'package:nexterm/data/database/tables/snippets_table.dart';
 import 'package:nexterm/data/database/tables/port_forwards_table.dart';
 import 'package:nexterm/data/database/tables/settings_table.dart';
+import 'package:nexterm/data/database/tables/git_repos_table.dart';
 import 'package:nexterm/data/database/daos/hosts_dao.dart';
 import 'package:nexterm/data/database/daos/ssh_keys_dao.dart';
 import 'package:nexterm/data/database/daos/snippets_dao.dart';
 import 'package:nexterm/data/database/daos/port_forwards_dao.dart';
 import 'package:nexterm/data/database/daos/settings_dao.dart';
+import 'package:nexterm/data/database/daos/git_repos_dao.dart';
 
 part 'app_database.g.dart';
 
 @DriftDatabase(
-  tables: [Hosts, SshKeys, Snippets, PortForwards, AppSettings],
-  daos: [HostsDao, SshKeysDao, SnippetsDao, PortForwardsDao, SettingsDao],
+  tables: [Hosts, SshKeys, Snippets, PortForwards, AppSettings, GitRepos],
+  daos: [HostsDao, SshKeysDao, SnippetsDao, PortForwardsDao, SettingsDao, GitReposDao],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration {
@@ -38,6 +40,7 @@ class AppDatabase extends _$AppDatabase {
         if (from < 3) await m.createTable(portForwards);
         if (from < 4) await m.createTable(appSettings);
         if (from < 5) await m.addColumn(hosts, hosts.startupCommand);
+        if (from < 6) await m.createTable(gitRepos);
       },
     );
   }
