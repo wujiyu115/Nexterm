@@ -1,0 +1,1508 @@
+
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terminal Pro — iOS SSH Client</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --accent: #5cb85c;
+  --accent-dim: rgba(92, 184, 92, 0.15);
+  --accent-glow: rgba(92, 184, 92, 0.3);
+  --radius: 14px;
+  --radius-sm: 10px;
+  --radius-xs: 8px;
+  --font: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+  --font-mono: 'SF Mono', 'JetBrains Mono', ui-monospace, Menlo, monospace;
+  --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="dark"] {
+  --bg: #0d1117;
+  --bg-elevated: #161b22;
+  --surface: rgba(22, 27, 34, 0.78);
+  --surface-solid: #1c2128;
+  --fg: #e6edf3;
+  --fg-secondary: #8b949e;
+  --fg-tertiary: #484f58;
+  --border: rgba(48, 54, 61, 0.6);
+  --nav-bg: rgba(13, 17, 23, 0.72);
+  --card-bg: rgba(22, 27, 34, 0.65);
+  --input-bg: rgba(30, 36, 44, 0.8);
+  --tab-inactive: #484f58;
+  --status-online: #3fb950;
+  --status-offline: #484f58;
+  --terminal-bg: #0d1117;
+  --glass-border: rgba(92, 184, 92, 0.08);
+}
+
+[data-theme="light"] {
+  --bg: #f5f0e6;
+  --bg-elevated: #faf8f3;
+  --surface: rgba(255, 255, 255, 0.78);
+  --surface-solid: #ffffff;
+  --fg: #1a1a1a;
+  --fg-secondary: #6b7280;
+  --fg-tertiary: #9ca3af;
+  --border: rgba(0, 0, 0, 0.08);
+  --nav-bg: rgba(245, 240, 230, 0.72);
+  --card-bg: rgba(255, 255, 255, 0.65);
+  --input-bg: rgba(0, 0, 0, 0.04);
+  --tab-inactive: #9ca3af;
+  --status-online: #5cb85c;
+  --status-offline: #d1d5db;
+  --terminal-bg: #1e1e2e;
+  --glass-border: rgba(92, 184, 92, 0.12);
+}
+
+body {
+  font-family: var(--font);
+  background: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.phone-frame {
+  width: 393px;
+  height: 852px;
+  border-radius: 54px;
+  background: var(--bg);
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.1),
+    0 25px 60px rgba(0,0,0,0.5),
+    inset 0 0 0 1px rgba(255,255,255,0.05);
+  transition: background var(--transition);
+}
+
+.dynamic-island {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 126px;
+  height: 37px;
+  background: #000;
+  border-radius: 20px;
+  z-index: 100;
+}
+
+.status-bar {
+  position: absolute;
+  top: 14px;
+  left: 32px;
+  right: 32px;
+  height: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 99;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--fg);
+}
+
+.status-bar-right {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
+.home-indicator {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 134px;
+  height: 5px;
+  background: var(--fg);
+  opacity: 0.3;
+  border-radius: 3px;
+  z-index: 100;
+}
+
+.screen-content {
+  position: absolute;
+  top: 59px;
+  left: 0;
+  right: 0;
+  bottom: 90px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.screen-content::-webkit-scrollbar { display: none; }
+
+.screen {
+  display: none;
+  padding: 0 16px;
+  padding-top: 8px;
+  min-height: 100%;
+}
+
+.screen.active { display: block; }
+
+.nav-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  padding: 12px 16px 12px;
+  margin: 0 -16px;
+  background: var(--nav-bg);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 0.5px solid var(--border);
+}
+
+.nav-title {
+  font-size: 34px;
+  font-weight: 700;
+  color: var(--fg);
+  letter-spacing: -0.5px;
+  position: relative;
+}
+
+.nav-title-sm {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--fg);
+  text-align: center;
+}
+
+.tab-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 90px;
+  padding: 8px 0 34px;
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-start;
+  background: var(--nav-bg);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-top: 0.5px solid var(--border);
+  z-index: 100;
+}
+
+.tab-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.2s;
+}
+
+.tab-item svg {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: var(--tab-inactive);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: all 0.2s;
+}
+
+.tab-item.active svg {
+  stroke: var(--accent);
+  filter: drop-shadow(0 0 6px var(--accent-glow));
+}
+
+.tab-item span {
+  font-size: 10px;
+  color: var(--tab-inactive);
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.tab-item.active span { color: var(--accent); }
+
+.card {
+  background: var(--card-bg);
+  backdrop-filter: blur(12px) saturate(150%);
+  -webkit-backdrop-filter: blur(12px) saturate(150%);
+  border: 0.5px solid var(--glass-border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  transition: all var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.card:active {
+  transform: scale(0.98);
+  background: var(--accent-dim);
+}
+
+.section-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 20px 0 8px;
+  position: relative;
+}
+
+.section-label:first-child { margin-top: 8px; }
+
+.search-bar {
+  background: var(--input-bg);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.search-bar svg {
+  width: 16px;
+  height: 16px;
+  stroke: var(--fg-tertiary);
+  fill: none;
+  stroke-width: 2;
+  flex-shrink: 0;
+}
+
+.search-bar span {
+  font-size: 15px;
+  color: var(--fg-tertiary);
+}
+
+.host-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.host-status {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--status-online);
+  box-shadow: 0 0 8px var(--accent-glow);
+  position: relative;
+}
+
+.host-status.offline {
+  background: var(--status-offline);
+  box-shadow: none;
+}
+
+.host-info { flex: 1; }
+.host-name { font-size: 16px; font-weight: 600; color: var(--fg); }
+.host-addr { font-size: 13px; color: var(--fg-secondary); font-family: var(--font-mono); margin-top: 2px; }
+
+.host-badge {
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: var(--accent-dim);
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.star-btn {
+  width: 20px;
+  height: 20px;
+  stroke: var(--fg-tertiary);
+  fill: none;
+  stroke-width: 1.5;
+  cursor: pointer;
+}
+
+.star-btn.starred {
+  fill: var(--accent);
+  stroke: var(--accent);
+}
+
+.terminal-container {
+  background: var(--terminal-bg);
+  border-radius: var(--radius);
+  padding: 14px;
+  margin: 0 -16px;
+  min-height: calc(100% - 60px);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.6;
+  color: #cdd6f4;
+  overflow: hidden;
+  position: relative;
+}
+
+.term-tab-bar {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 0.5px solid rgba(255,255,255,0.1);
+}
+
+.term-tab {
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  color: #8b949e;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.term-tab.active {
+  background: rgba(92, 184, 92, 0.15);
+  color: var(--accent);
+}
+
+.term-tab .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.term-line { margin-bottom: 2px; }
+.term-prompt { color: var(--accent); }
+.term-path { color: #89b4fa; }
+.term-cmd { color: #cdd6f4; }
+.term-output { color: #8b949e; }
+.term-cursor {
+  display: inline-block;
+  width: 8px;
+  height: 16px;
+  background: var(--accent);
+  opacity: 0.8;
+  animation: blink 1s infinite;
+  vertical-align: text-bottom;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 0.8; }
+  51%, 100% { opacity: 0; }
+}
+
+.terminal-toolbar {
+  position: sticky;
+  bottom: 0;
+  margin: 8px -16px 0;
+  padding: 8px 12px;
+  background: rgba(22, 27, 34, 0.9);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 0.5px solid rgba(255,255,255,0.08);
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.toolbar-btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.06);
+  border: 0.5px solid rgba(255,255,255,0.1);
+  color: #8b949e;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  cursor: pointer;
+}
+
+.toolbar-btn:active { background: var(--accent-dim); color: var(--accent); }
+
+.key-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.key-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--accent-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.key-icon svg {
+  width: 18px;
+  height: 18px;
+  stroke: var(--accent);
+  fill: none;
+  stroke-width: 2;
+}
+
+.key-info { flex: 1; }
+.key-name { font-size: 15px; font-weight: 600; color: var(--fg); }
+.key-meta { font-size: 12px; color: var(--fg-secondary); margin-top: 2px; }
+
+.snippet-card { padding: 14px; }
+
+.snippet-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.snippet-title { font-size: 15px; font-weight: 600; color: var(--fg); }
+.snippet-lang {
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: var(--accent-dim);
+  color: var(--accent);
+}
+
+.snippet-code {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--fg-secondary);
+  background: var(--input-bg);
+  border-radius: var(--radius-xs);
+  padding: 10px 12px;
+  line-height: 1.5;
+  overflow: hidden;
+  white-space: pre;
+}
+
+.fwd-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.fwd-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--accent-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fwd-icon svg {
+  width: 18px;
+  height: 18px;
+  stroke: var(--accent);
+  fill: none;
+  stroke-width: 2;
+}
+
+.fwd-info { flex: 1; }
+.fwd-name { font-size: 15px; font-weight: 600; color: var(--fg); }
+.fwd-detail { font-size: 12px; color: var(--fg-secondary); font-family: var(--font-mono); margin-top: 2px; }
+
+.fwd-toggle {
+  width: 44px;
+  height: 26px;
+  border-radius: 13px;
+  background: var(--fg-tertiary);
+  position: relative;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.fwd-toggle.on { background: var(--accent); }
+
+.fwd-toggle::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: white;
+  transition: transform 0.3s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.fwd-toggle.on::after { transform: translateX(18px); }
+
+.settings-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 0;
+}
+
+.settings-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--accent-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.settings-icon svg {
+  width: 16px;
+  height: 16px;
+  stroke: var(--accent);
+  fill: none;
+  stroke-width: 2;
+}
+
+.settings-info { flex: 1; }
+.settings-label { font-size: 16px; color: var(--fg); }
+.settings-value { font-size: 13px; color: var(--fg-secondary); margin-top: 1px; }
+.settings-arrow { color: var(--fg-tertiary); font-size: 18px; }
+
+.form-group { margin-bottom: 16px; }
+.form-label { font-size: 13px; color: var(--fg-secondary); margin-bottom: 6px; font-weight: 500; }
+.form-input {
+  width: 100%;
+  padding: 12px 14px;
+  background: var(--input-bg);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  color: var(--fg);
+  font-family: var(--font);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-input:focus { border-color: var(--accent); }
+.form-input::placeholder { color: var(--fg-tertiary); }
+.form-input-mono { font-family: var(--font-mono); font-size: 14px; }
+
+.btn-primary {
+  width: 100%;
+  padding: 14px;
+  background: var(--accent);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-primary:active { transform: scale(0.98); opacity: 0.9; }
+
+.btn-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.btn-secondary {
+  flex: 1;
+  padding: 10px;
+  background: var(--input-bg);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-xs);
+  font-size: 13px;
+  color: var(--fg-secondary);
+  text-align: center;
+  cursor: pointer;
+}
+
+.btn-secondary.active {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.nav-actions {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.nav-actions button {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--accent-dim);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.nav-actions button svg {
+  width: 16px;
+  height: 16px;
+  stroke: var(--accent);
+  fill: none;
+  stroke-width: 2.5;
+}
+
+.theme-toggle {
+  position: absolute;
+  top: 64px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--card-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 0.5px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 90;
+  transition: all 0.3s;
+}
+
+.theme-toggle:active { transform: scale(0.9); }
+
+.theme-toggle svg {
+  width: 18px;
+  height: 18px;
+  stroke: var(--fg-secondary);
+  fill: none;
+  stroke-width: 1.8;
+}
+
+.bg-glow {
+  position: absolute;
+  top: -100px;
+  right: -100px;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+  opacity: 0.3;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.bg-glow-2 {
+  position: absolute;
+  bottom: 120px;
+  left: -80px;
+  width: 240px;
+  height: 240px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(92,184,92,0.12) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.bg-glow-3 {
+  position: absolute;
+  top: 40%;
+  right: -60px;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(89,180,250,0.06) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.topo-pattern {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.topo-pattern svg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+[data-theme="dark"] .topo-pattern svg { opacity: 0.035; }
+[data-theme="light"] .topo-pattern svg { opacity: 0.06; }
+
+.noise-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.3;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  background-size: 128px 128px;
+}
+
+[data-theme="dark"] .noise-overlay { opacity: 0.25; }
+[data-theme="light"] .noise-overlay { opacity: 0.15; }
+
+.terrain-ridge {
+  position: absolute;
+  bottom: 90px;
+  left: 0;
+  right: 0;
+  height: 120px;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.terrain-ridge svg {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+}
+
+[data-theme="dark"] .terrain-ridge svg { opacity: 0.04; }
+[data-theme="light"] .terrain-ridge svg { opacity: 0.06; }
+
+.screen-content { z-index: 1; }
+
+.slider-track {
+  width: 100%;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  position: relative;
+  margin-top: 10px;
+}
+
+.slider-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  width: 35%;
+}
+
+.slider-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid var(--accent);
+  position: absolute;
+  top: 50%;
+  left: 35%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.count-badge {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-dim);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  right: -1px;
+  bottom: -1px;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    rgba(92,184,92,0.08) 0%,
+    transparent 40%,
+    transparent 60%,
+    rgba(92,184,92,0.04) 100%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.card > * { position: relative; z-index: 1; }
+
+.section-label::before {
+  content: '';
+  display: inline-block;
+  width: 3px;
+  height: 12px;
+  background: var(--accent);
+  border-radius: 2px;
+  margin-right: 6px;
+  vertical-align: middle;
+  box-shadow: 0 0 6px var(--accent-glow);
+}
+
+.nav-title::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 32px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), transparent);
+  border-radius: 1px;
+}
+
+.host-status::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 1px solid var(--accent);
+  opacity: 0.3;
+  animation: pulse-ring 2.5s ease-out infinite;
+}
+
+.host-status.offline::after { display: none; }
+
+@keyframes pulse-ring {
+  0% { transform: scale(1); opacity: 0.3; }
+  70% { transform: scale(1.8); opacity: 0; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+
+.key-icon, .fwd-icon, .settings-icon {
+  position: relative;
+  overflow: hidden;
+}
+
+.key-icon::after, .fwd-icon::after, .settings-icon::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    135deg,
+    transparent 40%,
+    rgba(92,184,92,0.15) 50%,
+    transparent 60%
+  );
+  pointer-events: none;
+}
+
+.terminal-container::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(92,184,92,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(92,184,92,0.02) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.terminal-container > * { position: relative; z-index: 1; }
+</style>
+</head>
+<body>
+
+<div class="phone-frame" data-theme="dark">
+  <div class="dynamic-island"></div>
+  <div class="status-bar">
+    <span>01:17</span>
+    <div class="status-bar-right">
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M1 8h2v4H1zM5 5h2v7H5zM9 3h2v9H9zM13 0h2v12h-2z"/></svg>
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 3C5.8 3 3.8 3.8 2.2 5.2l1.4 1.4C4.8 5.4 6.3 4.8 8 4.8s3.2.6 4.4 1.8l1.4-1.4C12.2 3.8 10.2 3 8 3zm0 4c-1.2 0-2.3.5-3.1 1.3L6.3 9.7c.5-.5 1.1-.7 1.7-.7s1.2.2 1.7.7l1.4-1.4C10.3 7.5 9.2 7 8 7zm0 4a1 1 0 100-2 1 1 0 000 2z"/></svg>
+      <svg width="22" height="12" viewBox="0 0 22 12" fill="currentColor"><rect x="0.5" y="0.5" width="19" height="11" rx="2.5" stroke="currentColor" fill="none" stroke-width="0.8"/><rect x="20.5" y="3.5" width="1.5" height="5" rx="0.75"/><rect x="2" y="2" width="14" height="8" rx="1.5" fill="currentColor"/></svg>
+    </div>
+  </div>
+
+  <div class="bg-glow"></div>
+  <div class="bg-glow-2"></div>
+  <div class="bg-glow-3"></div>
+
+  <!-- Topographic contour lines -->
+  <div class="topo-pattern">
+    <svg viewBox="0 0 393 852" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <g stroke="currentColor" stroke-width="0.8" fill="none" style="color: var(--accent)">
+        <ellipse cx="280" cy="160" rx="140" ry="60" transform="rotate(-12 280 160)"/>
+        <ellipse cx="280" cy="160" rx="110" ry="45" transform="rotate(-12 280 160)"/>
+        <ellipse cx="280" cy="160" rx="75" ry="28" transform="rotate(-12 280 160)"/>
+        <ellipse cx="280" cy="160" rx="40" ry="14" transform="rotate(-12 280 160)"/>
+
+        <ellipse cx="80" cy="380" rx="130" ry="55" transform="rotate(8 80 380)"/>
+        <ellipse cx="80" cy="380" rx="100" ry="40" transform="rotate(8 80 380)"/>
+        <ellipse cx="80" cy="380" rx="65" ry="24" transform="rotate(8 80 380)"/>
+        <ellipse cx="80" cy="380" rx="30" ry="10" transform="rotate(8 80 380)"/>
+
+        <ellipse cx="320" cy="580" rx="120" ry="50" transform="rotate(-18 320 580)"/>
+        <ellipse cx="320" cy="580" rx="85" ry="35" transform="rotate(-18 320 580)"/>
+        <ellipse cx="320" cy="580" rx="50" ry="18" transform="rotate(-18 320 580)"/>
+
+        <path d="M -20 250 Q 60 230, 140 260 Q 220 290, 300 270 Q 380 250, 420 265"/>
+        <path d="M -20 260 Q 70 245, 150 275 Q 230 305, 310 280 Q 390 255, 420 275"/>
+
+        <path d="M -20 650 Q 80 620, 180 645 Q 280 670, 350 640 Q 400 620, 420 630"/>
+        <path d="M -20 665 Q 90 640, 190 660 Q 290 680, 360 655 Q 410 640, 420 645"/>
+
+        <ellipse cx="200" cy="780" rx="100" ry="40" transform="rotate(5 200 780)"/>
+        <ellipse cx="200" cy="780" rx="60" ry="22" transform="rotate(5 200 780)"/>
+      </g>
+    </svg>
+  </div>
+
+  <!-- Film grain noise -->
+  <div class="noise-overlay"></div>
+
+  <!-- Mountain terrain ridge silhouette -->
+  <div class="terrain-ridge">
+    <svg viewBox="0 0 393 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0 120 L0 85 Q20 60, 45 72 Q70 84, 95 55 Q110 38, 130 50 Q155 65, 175 42 Q190 28, 210 38 Q235 52, 260 35 Q280 22, 300 40 Q325 60, 345 48 Q365 36, 380 52 Q390 60, 393 55 L393 120Z" fill="var(--accent)" opacity="0.5"/>
+      <path d="M0 120 L0 95 Q30 75, 60 88 Q90 100, 115 70 Q135 50, 160 65 Q185 80, 205 55 Q225 35, 250 50 Q275 65, 295 48 Q320 32, 340 55 Q360 72, 380 62 L393 68 L393 120Z" fill="var(--accent)" opacity="0.3"/>
+    </svg>
+  </div>
+
+  <div class="theme-toggle" onclick="toggleTheme()">
+    <svg class="sun-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+    <svg class="moon-icon" style="display:none" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+  </div>
+
+  <div class="screen-content">
+    <!-- Screen 1: Hosts -->
+    <div class="screen active" id="screen-hosts">
+      <div class="nav-header" style="position:relative">
+        <div class="nav-title">主机</div>
+        <div class="nav-actions">
+          <button onclick="showScreen('add-host')"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+        </div>
+      </div>
+      <div class="search-bar">
+        <svg viewBox="0 0 24 24" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <span>搜索主机、IP、标签…</span>
+      </div>
+
+      <div class="section-label">收藏</div>
+      <div class="card">
+        <div class="host-item">
+          <div class="host-status"></div>
+          <div class="host-info">
+            <div class="host-name">Production Server</div>
+            <div class="host-addr">root@10.0.1.42:22</div>
+          </div>
+          <svg class="star-btn starred" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+      </div>
+
+      <div class="section-label">开发环境</div>
+      <div class="card">
+        <div class="host-item">
+          <div class="host-status"></div>
+          <div class="host-info">
+            <div class="host-name">enjoy</div>
+            <div class="host-addr">ejoy@30.210.200.188:6000</div>
+          </div>
+          <div class="host-badge">密钥</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="host-item">
+          <div class="host-status"></div>
+          <div class="host-info">
+            <div class="host-name">Dev Gateway</div>
+            <div class="host-addr">dev@192.168.1.100:22</div>
+          </div>
+          <div class="host-badge">密钥</div>
+        </div>
+      </div>
+
+      <div class="section-label">测试集群</div>
+      <div class="card">
+        <div class="host-item">
+          <div class="host-status offline"></div>
+          <div class="host-info">
+            <div class="host-name">Staging DB</div>
+            <div class="host-addr">admin@staging-db.internal:5432</div>
+          </div>
+          <svg class="star-btn" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+      </div>
+      <div class="card">
+        <div class="host-item">
+          <div class="host-status offline"></div>
+          <div class="host-info">
+            <div class="host-name">CI Runner</div>
+            <div class="host-addr">runner@ci.cluster.dev:22</div>
+          </div>
+          <svg class="star-btn" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+      </div>
+      <div style="height:20px"></div>
+    </div>
+
+    <!-- Screen 2: Terminal -->
+    <div class="screen" id="screen-terminal">
+      <div class="terminal-container">
+        <div class="term-tab-bar">
+          <div class="term-tab active"><span class="dot"></span> enjoy</div>
+          <div class="term-tab">Production</div>
+        </div>
+        <div class="term-line"><span class="term-output">Welcome to Ubuntu 20.04.4 LTS (GNU/Linux 6.6.114.1</span></div>
+        <div class="term-line"><span class="term-output">-microsoft-standard-WSL2 x86_64)</span></div>
+        <div class="term-line" style="margin-top:8px"><span class="term-output"> * Documentation:  https://help.ubuntu.com</span></div>
+        <div class="term-line"><span class="term-output"> * Management:     https://landscape.canonical.com</span></div>
+        <div class="term-line"><span class="term-output"> * Support:        https://ubuntu.com/advantage</span></div>
+        <div class="term-line" style="margin-top:8px"><span class="term-output">Last login: Fri May 29 18:11:35 2026 from 172.27.3.2.1</span></div>
+        <div class="term-line" style="margin-top:8px"><span class="term-prompt">→ </span><span class="term-path">[/home/ejoy]</span> <span class="term-cmd">ls -la</span></div>
+        <div class="term-line"><span class="term-output">total 48</span></div>
+        <div class="term-line"><span class="term-output">drwxr-xr-x  6 ejoy ejoy 4096 May 29 18:12 .</span></div>
+        <div class="term-line"><span class="term-output">drwxr-xr-x  3 root root 4096 Mar 15 09:30 ..</span></div>
+        <div class="term-line"><span class="term-output">-rw-r--r--  1 ejoy ejoy  220 Mar 15 09:30 .bash_logout</span></div>
+        <div class="term-line"><span class="term-output">drwxr-xr-x  4 ejoy ejoy 4096 May 29 12:00 projects</span></div>
+        <div class="term-line"><span class="term-output">-rwxr-xr-x  1 ejoy ejoy 8192 May 28 16:45 deploy.sh</span></div>
+        <div class="term-line" style="margin-top:8px"><span class="term-prompt">→ </span><span class="term-path">[/home/ejoy]</span> <span class="term-cursor"></span></div>
+      </div>
+      <div class="terminal-toolbar">
+        <div class="toolbar-btn">Tab</div>
+        <div class="toolbar-btn">Ctrl</div>
+        <div class="toolbar-btn">↑</div>
+        <div class="toolbar-btn">↓</div>
+        <div class="toolbar-btn">←</div>
+        <div class="toolbar-btn">→</div>
+        <div class="toolbar-btn">Paste</div>
+        <div class="toolbar-btn">^C</div>
+        <div class="toolbar-btn">^D</div>
+      </div>
+    </div>
+
+    <!-- Screen 3: Keys -->
+    <div class="screen" id="screen-keys">
+      <div class="nav-header" style="position:relative">
+        <div class="nav-title">密钥</div>
+        <div class="nav-actions">
+          <button><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+        </div>
+      </div>
+
+      <div class="section-label">SSH 密钥</div>
+      <div class="card">
+        <div class="key-item">
+          <div class="key-icon"><svg viewBox="0 0 24 24"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg></div>
+          <div class="key-info">
+            <div class="key-name">id_ed25519</div>
+            <div class="key-meta">ED25519 · 添加于 2024-03-15</div>
+          </div>
+          <div class="count-badge">3 台主机</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="key-item">
+          <div class="key-icon"><svg viewBox="0 0 24 24"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg></div>
+          <div class="key-info">
+            <div class="key-name">deploy_rsa</div>
+            <div class="key-meta">RSA 4096 · 添加于 2024-01-08</div>
+          </div>
+          <div class="count-badge">1 台主机</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="key-item">
+          <div class="key-icon"><svg viewBox="0 0 24 24"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg></div>
+          <div class="key-info">
+            <div class="key-name">github_key</div>
+            <div class="key-meta">ED25519 · 添加于 2025-11-20</div>
+          </div>
+          <div class="count-badge">未绑定</div>
+        </div>
+      </div>
+
+      <div class="section-label">已知主机</div>
+      <div class="card">
+        <div class="key-item">
+          <div class="key-icon" style="background: var(--input-bg)"><svg viewBox="0 0 24 24" style="stroke: var(--fg-secondary)"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><circle cx="6" cy="6" r="1"/><circle cx="6" cy="18" r="1"/></svg></div>
+          <div class="key-info">
+            <div class="key-name">known_hosts</div>
+            <div class="key-meta">12 条指纹记录</div>
+          </div>
+          <div class="settings-arrow">›</div>
+        </div>
+      </div>
+      <div style="height:20px"></div>
+    </div>
+
+    <!-- Screen 4: Snippets -->
+    <div class="screen" id="screen-snippets">
+      <div class="nav-header" style="position:relative">
+        <div class="nav-title">片段</div>
+        <div class="nav-actions">
+          <button><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+        </div>
+      </div>
+
+      <div class="search-bar">
+        <svg viewBox="0 0 24 24" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <span>搜索片段…</span>
+      </div>
+
+      <div class="card snippet-card">
+        <div class="snippet-header">
+          <div class="snippet-title">Docker 清理</div>
+          <div class="snippet-lang">bash</div>
+        </div>
+        <div class="snippet-code">docker system prune -af
+docker volume prune -f</div>
+      </div>
+
+      <div class="card snippet-card">
+        <div class="snippet-header">
+          <div class="snippet-title">Git 日志美化</div>
+          <div class="snippet-lang">bash</div>
+        </div>
+        <div class="snippet-code">git log --oneline --graph --all --decorate -20</div>
+      </div>
+
+      <div class="card snippet-card">
+        <div class="snippet-header">
+          <div class="snippet-title">系统资源监控</div>
+          <div class="snippet-lang">bash</div>
+        </div>
+        <div class="snippet-code">htop || top -o %CPU
+free -h && df -h /</div>
+      </div>
+
+      <div class="card snippet-card">
+        <div class="snippet-header">
+          <div class="snippet-title">Nginx 重载</div>
+          <div class="snippet-lang">bash</div>
+        </div>
+        <div class="snippet-code">sudo nginx -t && sudo systemctl reload nginx</div>
+      </div>
+
+      <div class="card snippet-card">
+        <div class="snippet-header">
+          <div class="snippet-title">查找大文件</div>
+          <div class="snippet-lang">bash</div>
+        </div>
+        <div class="snippet-code">find / -type f -size +100M -exec ls -lh {} \;</div>
+      </div>
+      <div style="height:20px"></div>
+    </div>
+
+    <!-- Screen 5: Port Forwarding -->
+    <div class="screen" id="screen-forwarding">
+      <div class="nav-header" style="position:relative">
+        <div class="nav-title">转发</div>
+        <div class="nav-actions">
+          <button><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+        </div>
+      </div>
+
+      <div class="section-label">活跃规则</div>
+      <div class="card">
+        <div class="fwd-item">
+          <div class="fwd-icon"><svg viewBox="0 0 24 24"><polyline points="15 3 21 3 21 9"/><line x1="21" y1="3" x2="14" y2="10"/><polyline points="9 21 3 21 3 15"/><line x1="3" y1="21" x2="10" y2="14"/></svg></div>
+          <div class="fwd-info">
+            <div class="fwd-name">MySQL Tunnel</div>
+            <div class="fwd-detail">L 3306 → staging-db:3306</div>
+          </div>
+          <div class="fwd-toggle on" onclick="this.classList.toggle('on')"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="fwd-item">
+          <div class="fwd-icon"><svg viewBox="0 0 24 24"><polyline points="15 3 21 3 21 9"/><line x1="21" y1="3" x2="14" y2="10"/><polyline points="9 21 3 21 3 15"/><line x1="3" y1="21" x2="10" y2="14"/></svg></div>
+          <div class="fwd-info">
+            <div class="fwd-name">Redis Local</div>
+            <div class="fwd-detail">L 6379 → redis.internal:6379</div>
+          </div>
+          <div class="fwd-toggle on" onclick="this.classList.toggle('on')"></div>
+        </div>
+      </div>
+
+      <div class="section-label">已暂停</div>
+      <div class="card">
+        <div class="fwd-item">
+          <div class="fwd-icon" style="background: var(--input-bg)"><svg viewBox="0 0 24 24" style="stroke: var(--fg-secondary)"><polyline points="15 3 21 3 21 9"/><line x1="21" y1="3" x2="14" y2="10"/><polyline points="9 21 3 21 3 15"/><line x1="3" y1="21" x2="10" y2="14"/></svg></div>
+          <div class="fwd-info">
+            <div class="fwd-name">Dev API Proxy</div>
+            <div class="fwd-detail">L 8080 → api.dev:443</div>
+          </div>
+          <div class="fwd-toggle" onclick="this.classList.toggle('on')"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="fwd-item">
+          <div class="fwd-icon" style="background: var(--input-bg)"><svg viewBox="0 0 24 24" style="stroke: var(--fg-secondary)"><polyline points="15 3 21 3 21 9"/><line x1="21" y1="3" x2="14" y2="10"/><polyline points="9 21 3 21 3 15"/><line x1="3" y1="21" x2="10" y2="14"/></svg></div>
+          <div class="fwd-info">
+            <div class="fwd-name">Grafana</div>
+            <div class="fwd-detail">L 3000 → monitor:3000</div>
+          </div>
+          <div class="fwd-toggle" onclick="this.classList.toggle('on')"></div>
+        </div>
+      </div>
+      <div style="height:20px"></div>
+    </div>
+
+    <!-- Screen 6: Settings -->
+    <div class="screen" id="screen-settings">
+      <div class="nav-header">
+        <div class="nav-title">设置</div>
+      </div>
+
+      <div class="section-label">通用</div>
+      <div class="card">
+        <div class="settings-item">
+          <div class="settings-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg></div>
+          <div class="settings-info">
+            <div class="settings-label">外观主题</div>
+            <div class="settings-value">深色模式</div>
+          </div>
+          <div class="settings-arrow">›</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="settings-item">
+          <div class="settings-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg></div>
+          <div class="settings-info">
+            <div class="settings-label">语言</div>
+            <div class="settings-value">简体中文</div>
+          </div>
+          <div class="settings-arrow">›</div>
+        </div>
+      </div>
+
+      <div class="section-label">终端</div>
+      <div class="card">
+        <div class="settings-item">
+          <div class="settings-icon"><svg viewBox="0 0 24 24"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg></div>
+          <div class="settings-info">
+            <div class="settings-label">字体大小</div>
+            <div class="settings-value">13 pt</div>
+          </div>
+        </div>
+        <div class="slider-track" style="margin-top:12px">
+          <div class="slider-fill"></div>
+          <div class="slider-thumb"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="settings-item">
+          <div class="settings-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+          <div class="settings-info">
+            <div class="settings-label">终端配色方案</div>
+            <div class="settings-value">Catppuccin Mocha</div>
+          </div>
+          <div class="settings-arrow">›</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="settings-item">
+          <div class="settings-icon"><svg viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="16" rx="1"/><line x1="10" y1="8" x2="14" y2="8"/></svg></div>
+          <div class="settings-info">
+            <div class="settings-label">光标样式</div>
+            <div class="settings-value">块状</div>
+          </div>
+          <div class="settings-arrow">›</div>
+        </div>
+      </div>
+
+      <div class="section-label">安全</div>
+      <div class="card">
+        <div class="settings-item">
+          <div class="settings-icon"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></div>
+          <div class="settings-info">
+            <div class="settings-label">生物识别解锁</div>
+          </div>
+          <div class="fwd-toggle on" onclick="this.classList.toggle('on')"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="settings-item">
+          <div class="settings-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          <div class="settings-info">
+            <div class="settings-label">剪贴板自动清除</div>
+            <div class="settings-value">30 秒后清除</div>
+          </div>
+          <div class="settings-arrow">›</div>
+        </div>
+      </div>
+
+      <div class="section-label">反馈</div>
+      <div class="card">
+        <div class="settings-item">
+          <div class="settings-icon"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+          <div class="settings-info">
+            <div class="settings-label">触觉反馈</div>
+          </div>
+          <div class="fwd-toggle on" onclick="this.classList.toggle('on')"></div>
+        </div>
+      </div>
+
+      <div style="text-align:center; padding: 24px 0 20px;">
+        <div style="font-size:12px; color:var(--fg-tertiary)">Terminal Pro v2.1.0</div>
+      </div>
+    </div>
+
+    <!-- Screen 7: Add Host -->
+    <div class="screen" id="screen-add-host">
+      <div class="nav-header" style="position:relative">
+        <div class="nav-title-sm">添加主机</div>
+        <div style="position:absolute;left:16px;top:50%;transform:translateY(-50%);font-size:16px;color:var(--accent);cursor:pointer" onclick="showScreen('hosts')">取消</div>
+        <div style="position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:16px;color:var(--accent);font-weight:600;cursor:pointer">保存</div>
+      </div>
+
+      <div style="padding-top:16px">
+        <div class="section-label">连接信息</div>
+        <div class="card" style="padding:16px">
+          <div class="form-group">
+            <div class="form-label">别名</div>
+            <input class="form-input" placeholder="My Server" value="">
+          </div>
+          <div class="form-group">
+            <div class="form-label">主机地址</div>
+            <input class="form-input form-input-mono" placeholder="192.168.1.1 或 hostname.com">
+          </div>
+          <div class="form-group">
+            <div class="form-label">端口</div>
+            <input class="form-input form-input-mono" placeholder="22" value="22">
+          </div>
+          <div class="form-group" style="margin-bottom:0">
+            <div class="form-label">用户名</div>
+            <input class="form-input form-input-mono" placeholder="root">
+          </div>
+        </div>
+
+        <div class="section-label">认证方式</div>
+        <div class="btn-row">
+          <div class="btn-secondary active">密钥认证</div>
+          <div class="btn-secondary">密码认证</div>
+        </div>
+        <div class="card" style="padding:16px; margin-top:10px">
+          <div class="form-group" style="margin-bottom:0">
+            <div class="form-label">选择密钥</div>
+            <div class="form-input" style="display:flex;justify-content:space-between;align-items:center;cursor:pointer">
+              <span style="color:var(--fg)">id_ed25519</span>
+              <span style="color:var(--fg-tertiary)">›</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-label">选项</div>
+        <div class="card" style="padding:16px">
+          <div class="form-group">
+            <div class="form-label">分组</div>
+            <input class="form-input" placeholder="例如：开发环境" value="开发环境">
+          </div>
+          <div class="form-group">
+            <div class="form-label">标签</div>
+            <input class="form-input" placeholder="用逗号分隔" value="linux, wsl">
+          </div>
+          <div class="form-group" style="margin-bottom:0">
+            <div class="form-label">启动命令</div>
+            <input class="form-input form-input-mono" placeholder="可选，连接后自动执行">
+          </div>
+        </div>
+
+        <button class="btn-primary" style="margin-top:20px">测试连接</button>
+        <div style="height:30px"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab Bar -->
+  <div class="tab-bar">
+    <div class="tab-item active" onclick="switchTab(0)">
+      <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+      <span>主机</span>
+    </div>
+    <div class="tab-item" onclick="switchTab(1)">
+      <svg viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+      <span>终端</span>
+    </div>
+    <div class="tab-item" onclick="switchTab(2)">
+      <svg viewBox="0 0 24 24"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+      <span>密钥</span>
+    </div>
+    <div class="tab-item" onclick="switchTab(3)">
+      <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      <span>片段</span>
+    </div>
+    <div class="tab-item" onclick="switchTab(4)">
+      <svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+      <span>转发</span>
+    </div>
+    <div class="tab-item" onclick="switchTab(5)">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68 1.65 1.65 0 0010 3.17V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.32 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      <span>设置</span>
+    </div>
+  </div>
+
+  <div class="home-indicator"></div>
+</div>
+
+<script>
+const frame = document.querySelector('.phone-frame');
+const screens = ['hosts', 'terminal', 'keys', 'snippets', 'forwarding', 'settings'];
+const tabs = document.querySelectorAll('.tab-item');
+let currentTab = 0;
+
+function switchTab(index) {
+  tabs[currentTab].classList.remove('active');
+  tabs[index].classList.add('active');
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + screens[index]).classList.add('active');
+  currentTab = index;
+  localStorage.setItem('terminal-pro-tab', index);
+}
+
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + name).classList.add('active');
+  if (name === 'add-host') {
+    tabs[currentTab].classList.remove('active');
+  }
+}
+
+function toggleTheme() {
+  const current = frame.getAttribute('data-theme');
+  const next = current === 'dark' ? 'light' : 'dark';
+  frame.setAttribute('data-theme', next);
+  const sunIcon = document.querySelector('.sun-icon');
+  const moonIcon = document.querySelector('.moon-icon');
+  if (next === 'light') {
+    sunIcon.style.display = 'none';
+    moonIcon.style.display = 'block';
+  } else {
+    sunIcon.style.display = 'block';
+    moonIcon.style.display = 'none';
+  }
+  localStorage.setItem('terminal-pro-theme', next);
+}
+
+const savedTab = localStorage.getItem('terminal-pro-tab');
+if (savedTab !== null) switchTab(parseInt(savedTab));
+const savedTheme = localStorage.getItem('terminal-pro-theme');
+if (savedTheme) {
+  frame.setAttribute('data-theme', savedTheme);
+  if (savedTheme === 'light') {
+    document.querySelector('.sun-icon').style.display = 'none';
+    document.querySelector('.moon-icon').style.display = 'block';
+  }
+}
+
+document.querySelectorAll('.btn-secondary').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.btn-secondary').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
