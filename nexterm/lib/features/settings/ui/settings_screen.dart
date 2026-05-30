@@ -35,6 +35,7 @@ class SettingsScreen extends ConsumerWidget {
       body: SafeArea(
         child: ListTileTheme(
           dense: true,
+          minVerticalPadding: 2,
           child: ListView(
         children: [
           Padding(
@@ -881,7 +882,7 @@ class _NavTitle extends StatelessWidget {
         Text(
           title,
           style: TextStyle(
-            fontSize: 20,
+            fontSize: 24,
             fontWeight: FontWeight.w700,
             letterSpacing: -0.3,
             color: Theme.of(context).colorScheme.onSurface,
