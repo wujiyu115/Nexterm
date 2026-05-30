@@ -10,7 +10,7 @@ class SectionLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: padding ?? const EdgeInsets.fromLTRB(16, 20, 16, 8),
+      padding: padding ?? const EdgeInsets.fromLTRB(16, 14, 16, 4),
       child: Row(
         children: [
           Container(
@@ -32,7 +32,7 @@ class SectionLabel extends StatelessWidget {
           Text(
             title.toUpperCase(),
             style: const TextStyle(
-              fontSize: 15,
+              fontSize: 13,
               fontWeight: FontWeight.w700,
               color: OutdoorColors.accent,
               letterSpacing: 0.5,

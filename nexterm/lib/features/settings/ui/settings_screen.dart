@@ -33,10 +33,12 @@ class SettingsScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: SafeArea(
-        child: ListView(
+        child: ListTileTheme(
+          dense: true,
+          child: ListView(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
             child: _NavTitle(title: l.settings_title),
           ),
           SectionLabel(title: l.settings_sectionGeneral),
@@ -161,7 +163,7 @@ class SettingsScreen extends ConsumerWidget {
           ),
 
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 24),
+            padding: const EdgeInsets.symmetric(vertical: 16),
             child: Center(
               child: Text(
                 'v0.1.0',
@@ -173,6 +175,7 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ),
         ],
+      ),
       ),
       ),
     );
@@ -878,7 +881,7 @@ class _NavTitle extends StatelessWidget {
         Text(
           title,
           style: TextStyle(
-            fontSize: 24,
+            fontSize: 20,
             fontWeight: FontWeight.w700,
             letterSpacing: -0.3,
             color: Theme.of(context).colorScheme.onSurface,
