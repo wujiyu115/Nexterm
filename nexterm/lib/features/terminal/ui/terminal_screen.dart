@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:nexterm/core/theme/app_theme.dart';
 import 'package:nexterm/core/theme/outdoor_colors.dart';
 import 'package:nexterm/domain/entities/host_entity.dart';
 import 'package:nexterm/features/hosts/providers/hosts_provider.dart';
@@ -170,19 +169,16 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
         children: [
           SizedBox(height: MediaQuery.of(context).padding.top),
 
-          Theme(
-            data: hasTabs ? AppTheme.dark() : Theme.of(context),
-            child: TerminalTabBar(
-              onAddTab: _showHostPickerDialog,
-              isFunctionMode: _isFunctionMode,
-              onToggleMode: activeTab != null ? _toggleKeyboardMode : null,
-              onCustomizeTap: activeTab != null
-                  ? () => context.push('/terminal/customize-keyboard')
-                  : null,
-              onHideKeyboard: activeTab != null ? _toggleKeyboard : null,
-              onShowHelp: activeTab != null ? _showHelpDialog : null,
-              onGoToHosts: () => context.go('/vaults/hosts'),
-            ),
+          TerminalTabBar(
+            onAddTab: _showHostPickerDialog,
+            isFunctionMode: _isFunctionMode,
+            onToggleMode: activeTab != null ? _toggleKeyboardMode : null,
+            onCustomizeTap: activeTab != null
+                ? () => context.push('/terminal/customize-keyboard')
+                : null,
+            onHideKeyboard: activeTab != null ? _toggleKeyboard : null,
+            onShowHelp: activeTab != null ? _showHelpDialog : null,
+            onGoToHosts: () => context.go('/vaults/hosts'),
           ),
 
           Expanded(

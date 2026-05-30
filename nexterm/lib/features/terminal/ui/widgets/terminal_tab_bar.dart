@@ -40,13 +40,17 @@ class TerminalTabBar extends ConsumerWidget {
     final tabManager = ref.watch(tabManagerProvider);
     final tabs = tabManager.tabs;
     final activeIndex = tabManager.activeTabIndex;
+    final hasTabs = tabs.isNotEmpty;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final barBg = hasTabs ? OutdoorColors.darkSurfaceSolid : (isDark ? OutdoorColors.darkBgElevated : OutdoorColors.lightBgElevated);
+    final barFg = hasTabs ? OutdoorColors.darkFg : (isDark ? OutdoorColors.darkFg : OutdoorColors.lightFg);
+    final menuBg = hasTabs ? OutdoorColors.darkBgElevated : (isDark ? OutdoorColors.darkBgElevated : OutdoorColors.lightBgElevated);
 
     return Container(
       height: 40,
-      color: Theme.of(context).colorScheme.surface,
+      color: barBg,
       child: Row(
         children: [
-          // Scrollable tab list.
           Expanded(
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
@@ -71,11 +75,11 @@ class TerminalTabBar extends ConsumerWidget {
             icon: Icon(
               Icons.more_horiz,
               size: 18,
-              color: Theme.of(context).colorScheme.onSurface,
+              color: barFg,
             ),
             padding: EdgeInsets.zero,
-            color: Theme.of(context).colorScheme.surface,
-            surfaceTintColor: Theme.of(context).colorScheme.surfaceTint,
+            color: menuBg,
+            surfaceTintColor: Colors.transparent,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
             ),
@@ -97,10 +101,10 @@ class TerminalTabBar extends ConsumerWidget {
             itemBuilder: (ctx) {
               final l = AppLocalizations.of(ctx)!;
               final theme = Theme.of(ctx);
-              final isDark = theme.brightness == Brightness.dark;
-              final iconColor = isDark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary;
-              final textColor = isDark ? OutdoorColors.darkFg : OutdoorColors.lightFg;
-              final dividerColor = isDark ? OutdoorColors.darkBorder : OutdoorColors.lightBorder;
+              final menuDark = hasTabs || theme.brightness == Brightness.dark;
+              final iconColor = menuDark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary;
+              final textColor = menuDark ? OutdoorColors.darkFg : OutdoorColors.lightFg;
+              final dividerColor = menuDark ? OutdoorColors.darkBorder : OutdoorColors.lightBorder;
 
               PopupMenuItem<String> menuItem({
                 required String value,
@@ -134,6 +138,7 @@ class TerminalTabBar extends ConsumerWidget {
                     child: DashedDivider(color: dividerColor),
                   );
 
+              final hasTerminalItems = onToggleMode != null || onCustomizeTap != null;
               return <PopupMenuEntry<String>>[
                 if (onToggleMode != null)
                   menuItem(
@@ -151,7 +156,7 @@ class TerminalTabBar extends ConsumerWidget {
                     icon: Icons.settings,
                     label: l.toolbar_customize,
                   ),
-                divider(),
+                if (hasTerminalItems) divider(),
                 menuItem(
                   value: 'add',
                   icon: Icons.add,
