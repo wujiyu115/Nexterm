@@ -70,7 +70,7 @@ class SettingsScreen extends ConsumerWidget {
           ListTile(
             leading: const Icon(Icons.history_outlined),
             title: Text(l.settings_scrollbackLines),
-            subtitle: Text(_scrollbackLabel(ref.watch(terminalScrollbackProvider))),
+            subtitle: Text('${ref.watch(terminalScrollbackProvider)} ${l.settings_scrollbackLinesSuffix}'),
             onTap: () => _showScrollbackPicker(context, ref),
           ),
           ListTile(
@@ -209,11 +209,6 @@ class SettingsScreen extends ConsumerWidget {
     return l.settings_autoLockMinutes(m);
   }
 
-  static String _scrollbackLabel(int lines) {
-    if (lines >= 1000) return '${lines ~/ 1000}k';
-    return lines.toString();
-  }
-
   static String _languageLabel(WidgetRef ref, AppLocalizations l) {
     final locale = ref.watch(localeProvider);
     if (locale == null) return l.settings_languageSystem;
@@ -246,9 +241,13 @@ class SettingsScreen extends ConsumerWidget {
   }
 
   void _showScrollbackPicker(BuildContext context, WidgetRef ref) {
+    final current = ref.read(terminalScrollbackProvider);
     showDialog<void>(
       context: context,
-      builder: (ctx) => _ScrollbackPickerDialog(ref: ref),
+      builder: (ctx) => _ScrollbackInputDialog(
+        current: current,
+        onConfirm: (v) => ref.read(terminalScrollbackProvider.notifier).setLines(v),
+      ),
     );
   }
 
@@ -659,40 +658,67 @@ class _FontFamilyPickerDialog extends ConsumerWidget {
   }
 }
 
-// ---------- Scrollback lines picker dialog ----------
+// ---------- Scrollback lines input dialog ----------
 
-class _ScrollbackPickerDialog extends ConsumerWidget {
-  final WidgetRef ref;
-  const _ScrollbackPickerDialog({required this.ref});
+class _ScrollbackInputDialog extends StatefulWidget {
+  final int current;
+  final void Function(int) onConfirm;
+  const _ScrollbackInputDialog({required this.current, required this.onConfirm});
 
-  static String _label(int lines) {
-    if (lines >= 1000) return '${lines ~/ 1000}k';
-    return lines.toString();
+  @override
+  State<_ScrollbackInputDialog> createState() => _ScrollbackInputDialogState();
+}
+
+class _ScrollbackInputDialogState extends State<_ScrollbackInputDialog> {
+  late final TextEditingController _controller;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.current.toString());
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    final current = ref.watch(terminalScrollbackProvider);
-    return SimpleDialog(
+    return AlertDialog(
       title: Text(l.settings_selectScrollbackLines),
-      children: [
-        RadioGroup<int>(
-          groupValue: current,
-          onChanged: (v) {
-            if (v != null) {
-              ref.read(terminalScrollbackProvider.notifier).setLines(v);
-              Navigator.of(context).pop();
+      content: TextField(
+        controller: _controller,
+        keyboardType: TextInputType.number,
+        autofocus: true,
+        decoration: InputDecoration(
+          labelText: l.settings_scrollbackLines,
+          suffixText: l.settings_scrollbackLinesSuffix,
+          errorText: _error,
+        ),
+        onChanged: (_) {
+          if (_error != null) setState(() => _error = null);
+        },
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(l.common_cancel),
+        ),
+        FilledButton(
+          onPressed: () {
+            final value = int.tryParse(_controller.text.trim());
+            if (value == null || value < 100 || value > 1000000) {
+              setState(() => _error = '100 ~ 1,000,000');
+              return;
             }
+            widget.onConfirm(value);
+            Navigator.of(context).pop();
           },
-          child: Column(
-            children: scrollbackOptions.map((lines) {
-              return RadioListTile<int>(
-                title: Text('${_label(lines)} ${l.settings_scrollbackLinesSuffix}'),
-                value: lines,
-              );
-            }).toList(),
-          ),
+          child: Text(l.common_confirm),
         ),
       ],
     );
