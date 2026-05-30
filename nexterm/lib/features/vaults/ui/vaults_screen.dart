@@ -109,7 +109,6 @@ class _VaultItem extends StatelessWidget {
             title,
             style: TextStyle(
               fontSize: 16,
-              fontWeight: FontWeight.w600,
               color: colorScheme.onSurface,
             ),
           ),
