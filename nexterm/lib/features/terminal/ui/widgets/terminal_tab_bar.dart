@@ -24,6 +24,7 @@ class TerminalTabBar extends ConsumerWidget {
   final VoidCallback? onShowHelp;
   final VoidCallback? onGoToHosts;
   final VoidCallback? onUploadFile;
+  final VoidCallback? onDetectPorts;
 
   const TerminalTabBar({
     super.key,
@@ -35,6 +36,7 @@ class TerminalTabBar extends ConsumerWidget {
     this.onShowHelp,
     this.onGoToHosts,
     this.onUploadFile,
+    this.onDetectPorts,
   });
 
   @override
@@ -99,6 +101,8 @@ class TerminalTabBar extends ConsumerWidget {
                   onShowHelp?.call();
                 case 'upload':
                   onUploadFile?.call();
+                case 'detect_ports':
+                  onDetectPorts?.call();
               }
             },
             itemBuilder: (ctx) {
@@ -170,6 +174,12 @@ class TerminalTabBar extends ConsumerWidget {
                     value: 'upload',
                     icon: Icons.upload_file_outlined,
                     label: l.terminal_uploadFile,
+                  ),
+                if (onDetectPorts != null)
+                  menuItem(
+                    value: 'detect_ports',
+                    icon: Icons.radar,
+                    label: l.portDetect_tooltip,
                   ),
                 if (onGoToHosts != null)
                   menuItem(

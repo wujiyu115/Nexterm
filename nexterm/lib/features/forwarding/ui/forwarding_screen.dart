@@ -7,6 +7,7 @@ import 'package:nexterm/domain/entities/enums.dart';
 import 'package:nexterm/domain/entities/port_forward_entity.dart';
 import 'package:nexterm/features/forwarding/providers/forwarding_provider.dart';
 import 'package:nexterm/features/forwarding/services/port_forward_service.dart';
+import 'package:nexterm/features/forwarding/ui/port_detection_sheet.dart';
 import 'package:nexterm/features/forwarding/ui/widgets/forward_list_tile.dart';
 import 'package:nexterm/shared/widgets/decorative_background.dart';
 import 'package:nexterm/shared/widgets/section_label.dart';
@@ -47,6 +48,19 @@ class ForwardingScreen extends ConsumerWidget {
         ),
         title: Text(l.forwarding_title),
         actions: [
+          IconButton(
+            tooltip: l.portDetect_tooltip,
+            onPressed: () => _showDetectionSheet(context),
+            icon: Container(
+              width: 32,
+              height: 32,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: OutdoorColors.accentDim,
+              ),
+              child: const Icon(Icons.radar, size: 16, color: OutdoorColors.accent),
+            ),
+          ),
           IconButton(
             tooltip: l.forwarding_addTooltip,
             onPressed: () => context.push('/vaults/forwarding/add'),
@@ -127,6 +141,15 @@ class ForwardingScreen extends ConsumerWidget {
           );
         }
       },
+    );
+  }
+
+  void _showDetectionSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => const PortDetectionSheet(),
     );
   }
 

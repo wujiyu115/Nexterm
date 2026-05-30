@@ -412,7 +412,7 @@ class _SftpScreenState extends ConsumerState<SftpScreen> {
             tooltip: state.showHidden ? l.sftp_hideHidden : l.sftp_showHidden,
             onPressed: notifier.toggleHidden,
           ),
-          if (state.visibleFiles.any((f) => f.isDirectory && f.name == '.git'))
+          if (state.files.any((f) => f.isDirectory && f.name == '.git'))
             IconButton(
               icon: const Icon(Icons.source_outlined),
               tooltip: l.git_openGit,

@@ -15,6 +15,7 @@ import 'package:nexterm/features/terminal/ui/widgets/function_panel.dart';
 import 'package:nexterm/features/terminal/ui/widgets/keyboard_toolbar.dart';
 import 'package:nexterm/features/terminal/ui/widgets/terminal_tab_bar.dart';
 import 'package:nexterm/features/terminal/ui/widgets/terminal_view.dart';
+import 'package:nexterm/features/forwarding/ui/port_detection_sheet.dart';
 import 'package:nexterm/shared/widgets/dashed_divider.dart';
 
 class TerminalScreen extends ConsumerStatefulWidget {
@@ -241,6 +242,15 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
     );
   }
 
+  void _showPortDetection() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => const PortDetectionSheet(),
+    );
+  }
+
   Future<void> _showHostPickerDialog() async {
     final selectedHostId = await showDialog<String>(
       context: context,
@@ -285,6 +295,7 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
             onHideKeyboard: activeTab != null ? _toggleKeyboard : null,
             onShowHelp: activeTab != null ? _showHelpDialog : null,
             onUploadFile: activeTab != null ? _uploadFile : null,
+            onDetectPorts: activeTab != null ? _showPortDetection : null,
             onGoToHosts: () {
               if (context.canPop()) context.pop();
             },

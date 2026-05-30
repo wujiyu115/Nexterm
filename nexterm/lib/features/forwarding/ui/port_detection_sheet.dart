@@ -1,0 +1,298 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:nexterm/core/theme/outdoor_colors.dart';
+import 'package:nexterm/features/forwarding/models/detected_port.dart';
+import 'package:nexterm/features/forwarding/providers/forwarding_provider.dart';
+import 'package:nexterm/features/forwarding/providers/port_detection_provider.dart';
+import 'package:nexterm/features/forwarding/ui/widgets/detected_port_tile.dart';
+import 'package:nexterm/l10n/app_localizations.dart';
+import 'package:nexterm/shared/widgets/section_label.dart';
+
+class PortDetectionSheet extends ConsumerStatefulWidget {
+  const PortDetectionSheet({super.key});
+
+  @override
+  ConsumerState<PortDetectionSheet> createState() => _PortDetectionSheetState();
+}
+
+class _PortDetectionSheetState extends ConsumerState<PortDetectionSheet> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final sessions = ref.read(activeSessionsForDetectionProvider);
+      if (sessions.length == 1) {
+        ref.read(portDetectionNotifierProvider.notifier).scan(sessions.first.sessionId);
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final sessions = ref.watch(activeSessionsForDetectionProvider);
+    final detectionState = ref.watch(portDetectionNotifierProvider);
+    final forwardsAsync = ref.watch(forwardsStreamProvider);
+
+    final forwardedPorts = <int>{};
+    forwardsAsync.whenData((forwards) {
+      for (final f in forwards) {
+        forwardedPorts.add(f.remotePort ?? f.localPort);
+      }
+    });
+
+    return DraggableScrollableSheet(
+      initialChildSize: 0.65,
+      minChildSize: 0.4,
+      maxChildSize: 0.9,
+      expand: false,
+      builder: (context, scrollController) {
+        return Container(
+          decoration: BoxDecoration(
+            color: isDark ? OutdoorColors.darkBgElevated : OutdoorColors.lightBgElevated,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(14)),
+          ),
+          child: Column(
+            children: [
+              // Drag handle
+              Padding(
+                padding: const EdgeInsets.only(top: 10, bottom: 6),
+                child: Container(
+                  width: 36,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: (isDark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary)
+                        .withValues(alpha: 0.4),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              // Title row
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                child: Row(
+                  children: [
+                    Text(
+                      l.portDetect_title,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const Spacer(),
+                    if (detectionState.activeSessionId != null)
+                      IconButton(
+                        icon: const Icon(Icons.refresh, size: 20),
+                        tooltip: l.portDetect_rescanButton,
+                        onPressed: () {
+                          ref.read(portDetectionNotifierProvider.notifier)
+                              .scan(detectionState.activeSessionId!);
+                        },
+                        visualDensity: VisualDensity.compact,
+                      ),
+                    IconButton(
+                      icon: const Icon(Icons.close, size: 20),
+                      onPressed: () => Navigator.of(context).pop(),
+                      visualDensity: VisualDensity.compact,
+                    ),
+                  ],
+                ),
+              ),
+              // Session picker (if multiple)
+              if (sessions.length > 1) ...[
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  child: SizedBox(
+                    height: 36,
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: sessions.length,
+                      separatorBuilder: (_, __) => const SizedBox(width: 8),
+                      itemBuilder: (context, index) {
+                        final session = sessions[index];
+                        final isSelected = detectionState.activeSessionId == session.sessionId;
+                        return ChoiceChip(
+                          label: Text(session.hostName),
+                          selected: isSelected,
+                          onSelected: (_) {
+                            ref.read(portDetectionNotifierProvider.notifier)
+                                .scan(session.sessionId);
+                          },
+                          visualDensity: VisualDensity.compact,
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ],
+              const SizedBox(height: 4),
+              // Content
+              Expanded(
+                child: _buildContent(
+                  context,
+                  detectionState,
+                  sessions,
+                  forwardedPorts,
+                  scrollController,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildContent(
+    BuildContext context,
+    PortDetectionState state,
+    List<SessionInfo> sessions,
+    Set<int> forwardedPorts,
+    ScrollController scrollController,
+  ) {
+    final l = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final secondaryColor =
+        isDark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary;
+
+    if (sessions.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Text(
+            l.portDetect_noSessions,
+            style: theme.textTheme.bodyMedium?.copyWith(color: secondaryColor),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+    }
+
+    if (state.activeSessionId == null && sessions.length > 1) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Text(
+            l.portDetect_selectSession,
+            style: theme.textTheme.bodyMedium?.copyWith(color: secondaryColor),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+    }
+
+    return state.ports.when(
+      loading: () => Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const CircularProgressIndicator(),
+            const SizedBox(height: 16),
+            Text(l.portDetect_scanning, style: theme.textTheme.bodySmall),
+          ],
+        ),
+      ),
+      error: (e, _) => Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.error_outline, size: 48, color: theme.colorScheme.error),
+              const SizedBox(height: 12),
+              Text(
+                l.portDetect_error(e.toString()),
+                style: theme.textTheme.bodyMedium,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              FilledButton.icon(
+                onPressed: () {
+                  ref.read(portDetectionNotifierProvider.notifier)
+                      .scan(state.activeSessionId!);
+                },
+                icon: const Icon(Icons.refresh, size: 16),
+                label: Text(l.portDetect_rescanButton),
+              ),
+            ],
+          ),
+        ),
+      ),
+      data: (ports) {
+        if (ports.isEmpty) {
+          return Center(
+            child: Text(
+              l.portDetect_noPorts,
+              style: theme.textTheme.bodyMedium?.copyWith(color: secondaryColor),
+            ),
+          );
+        }
+
+        final userPorts = ports.where((p) => p.category == PortCategory.user).toList();
+        final systemPorts = ports.where((p) => p.category == PortCategory.system).toList();
+
+        return ListView(
+          controller: scrollController,
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              child: Text(
+                l.portDetect_portsFound(ports.length),
+                style: theme.textTheme.bodySmall?.copyWith(color: secondaryColor),
+              ),
+            ),
+            if (userPorts.isNotEmpty) ...[
+              SectionLabel(title: l.portDetect_userPorts),
+              ...userPorts.map((p) => _buildPortTile(p, forwardedPorts)),
+            ],
+            if (systemPorts.isNotEmpty) ...[
+              SectionLabel(title: l.portDetect_systemPorts),
+              ...systemPorts.map((p) => _buildPortTile(p, forwardedPorts)),
+            ],
+            // Permission hint if any ports lack process name
+            if (ports.any((p) => p.processName == null))
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8, 12, 8, 0),
+                child: Text(
+                  l.portDetect_permissionHint,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: isDark
+                        ? OutdoorColors.darkFgTertiary
+                        : OutdoorColors.lightFgTertiary,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              ),
+            const SizedBox(height: 32),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildPortTile(DetectedPort port, Set<int> forwardedPorts) {
+    final isForwarded = forwardedPorts.contains(port.port);
+    final sessions = ref.read(activeSessionsForDetectionProvider);
+    final activeSessionId = ref.read(portDetectionNotifierProvider).activeSessionId;
+    final session = sessions.firstWhere((s) => s.sessionId == activeSessionId);
+
+    return DetectedPortTile(
+      port: port,
+      isForwarded: isForwarded,
+      onTap: () {
+        Navigator.of(context).pop();
+        context.push('/vaults/forwarding/add', extra: <String, dynamic>{
+          'name': '${port.processName ?? port.protocolGuess}:${port.port}',
+          'hostId': session.hostId,
+          'localPort': port.port,
+          'remoteHost': 'localhost',
+          'remotePort': port.port,
+        });
+      },
+    );
+  }
+}

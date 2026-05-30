@@ -74,9 +74,9 @@ class GitNotifier extends ChangeNotifier {
   Future<void> loadAll() async {
     _update(_state.copyWith(isLoading: true, error: () => null));
     try {
-      final isRepo = await _service.isGitRepo();
-      if (!isRepo) {
-        _update(_state.copyWith(isLoading: false, isRepo: false));
+      final check = await _service.isGitRepo();
+      if (!check.isRepo) {
+        _update(_state.copyWith(isLoading: false, isRepo: false, error: () => check.error));
         return;
       }
       final results = await Future.wait([
@@ -95,7 +95,7 @@ class GitNotifier extends ChangeNotifier {
         currentBranch: (results[3] as GitStatus).currentBranch,
       ));
     } catch (e) {
-      _update(_state.copyWith(isLoading: false, error: () => e.toString()));
+      _update(_state.copyWith(isLoading: false, isRepo: true, error: () => e.toString()));
     }
   }
 
@@ -161,6 +161,14 @@ class GitNotifier extends ChangeNotifier {
 
   Future<List<GitCommit>> getFileHistory(String filePath) async {
     return await _service.log(filePath: filePath);
+  }
+
+  Future<List<GitCommit>> getBranchLog(String branch) async {
+    return await _service.log(branch: branch);
+  }
+
+  Future<List<GitFileDiff>> getCommitFileDiff(String sha, String filePath) async {
+    return DiffParser.parse(await _service.diffCommitFile(sha, filePath));
   }
 
   Future<void> deleteBranch(String name) async {

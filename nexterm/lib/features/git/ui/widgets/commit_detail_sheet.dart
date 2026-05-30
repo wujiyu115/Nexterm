@@ -44,6 +44,17 @@ class _CommitDetailSheetState extends State<CommitDetailSheet> {
     }
   }
 
+  void _openFileDiff(CommitFileChange file) async {
+    final diffs = await widget.gitNotifier.getCommitFileDiff(widget.commit.sha, file.path);
+    if (!mounted) return;
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (_) => Scaffold(
+        appBar: AppBar(title: Text(file.path.split('/').last)),
+        body: DiffView(diffs: diffs),
+      ),
+    ));
+  }
+
   Future<void> _loadDiffs() async {
     setState(() {
       _isLoading = true;
@@ -74,12 +85,11 @@ class _CommitDetailSheetState extends State<CommitDetailSheet> {
       minChildSize: 0.4,
       maxChildSize: 0.95,
       builder: (context, scrollController) {
-        return Container(
-          decoration: BoxDecoration(
-            color: isDark ? OutdoorColors.darkBg : OutdoorColors.lightBg,
-            borderRadius:
-                const BorderRadius.vertical(top: Radius.circular(16)),
-          ),
+        return Material(
+          color: isDark ? OutdoorColors.darkBg : OutdoorColors.lightBg,
+          borderRadius:
+              const BorderRadius.vertical(top: Radius.circular(16)),
+          clipBehavior: Clip.antiAlias,
           child: ListView(controller: scrollController, children: [
             Center(
                 child: Container(
@@ -171,7 +181,9 @@ class _CommitDetailSheetState extends State<CommitDetailSheet> {
                   title: Text(f.path,
                       style: const TextStyle(
                           fontSize: 13,
-                          fontFamily: 'JetBrains Mono'))))),
+                          fontFamily: 'JetBrains Mono')),
+                  trailing: const Icon(Icons.chevron_right, size: 18),
+                  onTap: () => _openFileDiff(f)))),
             const SizedBox(height: 32),
           ]),
         );

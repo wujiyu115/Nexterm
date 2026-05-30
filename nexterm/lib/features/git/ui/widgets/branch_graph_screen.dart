@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:nexterm/core/theme/outdoor_colors.dart';
 import 'package:nexterm/features/git/models/git_graph.dart';
+import 'package:nexterm/features/git/providers/git_provider.dart';
 import 'package:nexterm/features/git/ui/widgets/branch_graph_painter.dart';
+import 'package:nexterm/features/git/ui/widgets/commit_detail_sheet.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 
 class BranchGraphScreen extends StatefulWidget {
   final List<GraphRow> rows;
-  const BranchGraphScreen({super.key, required this.rows});
+  final GitNotifier gitNotifier;
+  const BranchGraphScreen({super.key, required this.rows, required this.gitNotifier});
   @override
   State<BranchGraphScreen> createState() => _BranchGraphScreenState();
 }
@@ -65,7 +68,15 @@ class _BranchGraphScreenState extends State<BranchGraphScreen> {
                     final refs = commit.refs
                         .where((r) => r.isNotEmpty)
                         .toList();
-                    return SizedBox(
+                    return GestureDetector(
+                      onTap: () => showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        backgroundColor: Colors.transparent,
+                        builder: (_) => CommitDetailSheet(commit: commit, gitNotifier: widget.gitNotifier),
+                      ),
+                      behavior: HitTestBehavior.opaque,
+                      child: SizedBox(
                       height: _rowHeight,
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -98,28 +109,32 @@ class _BranchGraphScreenState extends State<BranchGraphScreen> {
                                 if (refs.isNotEmpty) ...[
                                   const SizedBox(width: 4),
                                   ...refs.take(2).map(
-                                    (ref) => Container(
-                                      margin: const EdgeInsets.only(right: 4),
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 4,
-                                        vertical: 1,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                          color: graphLaneColors[
-                                              row.colorIndex %
-                                                  graphLaneColors.length],
-                                          width: 1,
+                                    (ref) => Flexible(
+                                      child: Container(
+                                        margin: const EdgeInsets.only(right: 4),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 4,
+                                          vertical: 1,
                                         ),
-                                        borderRadius: BorderRadius.circular(3),
-                                      ),
-                                      child: Text(
-                                        ref.replaceFirst('HEAD -> ', ''),
-                                        style: TextStyle(
-                                          fontSize: 10,
-                                          color: graphLaneColors[
-                                              row.colorIndex %
-                                                  graphLaneColors.length],
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                            color: graphLaneColors[
+                                                row.colorIndex %
+                                                    graphLaneColors.length],
+                                            width: 1,
+                                          ),
+                                          borderRadius: BorderRadius.circular(3),
+                                        ),
+                                        child: Text(
+                                          ref.replaceFirst('HEAD -> ', ''),
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            color: graphLaneColors[
+                                                row.colorIndex %
+                                                    graphLaneColors.length],
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
                                         ),
                                       ),
                                     ),
@@ -140,7 +155,7 @@ class _BranchGraphScreenState extends State<BranchGraphScreen> {
                           ],
                         ),
                       ),
-                    );
+                    ));
                   }).toList(),
                 ),
               ),

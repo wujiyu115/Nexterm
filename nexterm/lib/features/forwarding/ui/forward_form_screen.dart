@@ -11,7 +11,8 @@ import 'package:nexterm/shared/widgets/decorative_background.dart';
 
 class ForwardFormScreen extends ConsumerStatefulWidget {
   final String? forwardId;
-  const ForwardFormScreen({super.key, this.forwardId});
+  final Map<String, dynamic>? initialData;
+  const ForwardFormScreen({super.key, this.forwardId, this.initialData});
 
   @override
   ConsumerState<ForwardFormScreen> createState() => _ForwardFormScreenState();
@@ -46,8 +47,23 @@ class _ForwardFormScreenState extends ConsumerState<ForwardFormScreen> {
   }
 
   Future<void> _loadForward() async {
-    if (_isInitialized || !_isEditMode) {
+    if (_isInitialized) return;
+    if (!_isEditMode) {
       _isInitialized = true;
+      final data = widget.initialData;
+      if (data != null) {
+        _nameController.text = data['name'] as String? ?? '';
+        _selectedHostId = data['hostId'] as String?;
+        if (data['localPort'] != null) {
+          _localPortController.text = '${data['localPort']}';
+        }
+        if (data['remoteHost'] != null) {
+          _remoteHostController.text = data['remoteHost'] as String;
+        }
+        if (data['remotePort'] != null) {
+          _remotePortController.text = '${data['remotePort']}';
+        }
+      }
       return;
     }
     _isInitialized = true;

@@ -6,7 +6,9 @@ import 'package:nexterm/features/git/models/git_tag.dart';
 import 'package:nexterm/features/git/providers/git_provider.dart';
 import 'package:nexterm/features/git/services/git_command_service.dart';
 import 'package:nexterm/features/git/ui/widgets/branch_graph_screen.dart';
+import 'package:nexterm/features/git/models/git_branch.dart';
 import 'package:nexterm/features/git/ui/widgets/branch_list.dart';
+import 'package:nexterm/features/git/ui/widgets/branch_log_screen.dart';
 import 'package:nexterm/features/git/ui/widgets/diff_view.dart';
 import 'package:nexterm/features/git/ui/widgets/git_init_prompt.dart';
 import 'package:nexterm/features/git/ui/widgets/status_file_list.dart';
@@ -61,11 +63,16 @@ class _GitScreenState extends ConsumerState<GitScreen> with SingleTickerProvider
       builder: (_) => Scaffold(appBar: AppBar(title: Text(entry.path.split('/').last)), body: DiffView(diffs: diffs))));
   }
 
+  void _openBranchLog(GitBranch branch) {
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (_) => BranchLogScreen(branchName: branch.name, gitNotifier: _gitNotifier!)));
+  }
+
   void _openBranchGraph() async {
     await _gitNotifier!.loadGraph();
     if (!mounted) return;
     Navigator.of(context).push(MaterialPageRoute(
-      builder: (_) => BranchGraphScreen(rows: _gitNotifier!.state.graphRows)));
+      builder: (_) => BranchGraphScreen(rows: _gitNotifier!.state.graphRows, gitNotifier: _gitNotifier!)));
   }
 
   Future<void> _handleCheckoutTag(GitTag tag) async {
@@ -90,7 +97,14 @@ class _GitScreenState extends ConsumerState<GitScreen> with SingleTickerProvider
     if (_isInitializing) return const Scaffold(body: Center(child: CircularProgressIndicator()));
     if (_initError != null) return Scaffold(appBar: AppBar(title: const Text('Git')), body: Center(child: Text(_initError!)));
     if (_gitState.isLoading && !_gitState.isRepo) return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    if (!_gitState.isRepo) return Scaffold(appBar: AppBar(title: const Text('Git')), body: GitInitPrompt(onInit: () => _gitNotifier!.initRepo()));
+    if (!_gitState.isRepo) return Scaffold(
+      appBar: AppBar(title: const Text('Git')),
+      body: GitInitPrompt(
+        onInit: () => _gitNotifier!.initRepo(),
+        errorDetail: _gitState.error,
+        remotePath: widget.remotePath,
+      ),
+    );
     return _buildMain(context);
   }
 
@@ -108,11 +122,29 @@ class _GitScreenState extends ConsumerState<GitScreen> with SingleTickerProvider
       ),
       body: _gitState.isLoading
           ? const Center(child: CircularProgressIndicator())
-          : TabBarView(controller: _tabController, children: [
-              _gitState.status != null ? StatusFileList(status: _gitState.status!, onFileTap: _showFileDiff) : const SizedBox.shrink(),
-              BranchList(branches: _gitState.branches, onBranchGraphTap: _openBranchGraph, onDeleteBranch: (branch) => _gitNotifier!.deleteBranch(branch.name)),
-              TagList(tags: _gitState.tags, onDeleteTag: (tag) => _gitNotifier!.deleteTag(tag.name), onCheckoutTag: _handleCheckoutTag),
-            ]),
+          : _gitState.error != null
+              ? Center(child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(mainAxisSize: MainAxisSize.min, children: [
+                    Icon(Icons.error_outline, size: 48, color: OutdoorColors.darkStatusError),
+                    const SizedBox(height: 12),
+                    Text(_gitState.error!, textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 13, fontFamily: 'JetBrains Mono',
+                            color: isDark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary)),
+                    const SizedBox(height: 16),
+                    FilledButton(onPressed: () => _gitNotifier!.loadAll(), child: Text(l.common_retry)),
+                  ]),
+                ))
+              : TabBarView(controller: _tabController, children: [
+                  _gitState.status != null ? StatusFileList(status: _gitState.status!, onFileTap: _showFileDiff) : const SizedBox.shrink(),
+                  BranchList(
+                    branches: _gitState.branches,
+                    onBranchGraphTap: _openBranchGraph,
+                    onDeleteBranch: (branch) => _gitNotifier!.deleteBranch(branch.name),
+                    onBranchTap: _openBranchLog,
+                  ),
+                  TagList(tags: _gitState.tags, onDeleteTag: (tag) => _gitNotifier!.deleteTag(tag.name), onCheckoutTag: _handleCheckoutTag),
+                ]),
     );
   }
 }

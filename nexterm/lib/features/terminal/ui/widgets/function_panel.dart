@@ -493,36 +493,108 @@ class _EmptyTab extends StatelessWidget {
   }
 }
 
-class _GitTab extends ConsumerWidget {
+class _GitTab extends ConsumerStatefulWidget {
   final String sessionId;
   const _GitTab({required this.sessionId});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_GitTab> createState() => _GitTabState();
+}
+
+class _GitTabState extends ConsumerState<_GitTab> {
+  late TextEditingController _pathController;
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _pathController = TextEditingController();
+    _fetchHomePath();
+  }
+
+  @override
+  void dispose() {
+    _pathController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _fetchHomePath() async {
+    final sshService = ref.read(sshServiceProvider);
+    final client = sshService.getClient(widget.sessionId);
+    if (client == null) {
+      if (mounted) setState(() => _loading = false);
+      return;
+    }
+    try {
+      final session = await client.execute('echo \$HOME');
+      final stdoutBytes = await session.stdout.toList();
+      final home = String.fromCharCodes(stdoutBytes.expand((b) => b)).trim();
+      await session.done;
+      if (mounted) {
+        _pathController.text = home;
+        setState(() => _loading = false);
+      }
+    } catch (_) {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  void _openGit() {
+    final path = _pathController.text.trim();
+    if (path.isEmpty) return;
+    GoRouter.of(context).push(
+        '/git/${widget.sessionId}?path=${Uri.encodeComponent(path)}');
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
-      Icon(Icons.source_outlined, size: 40, color: isDark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary),
-      const SizedBox(height: 12),
-      FilledButton.icon(
-        onPressed: () async {
-          final sshService = ref.read(sshServiceProvider);
-          final client = sshService.getClient(sessionId);
-          if (client == null) return;
-          try {
-            final session = await client.execute('pwd');
-            final stdoutBytes = await session.stdout.toList();
-            final pwd = String.fromCharCodes(stdoutBytes.expand((b) => b)).trim();
-            await session.done;
-            if (context.mounted) GoRouter.of(context).push('/git/$sessionId?path=${Uri.encodeComponent(pwd)}');
-          } catch (e) {
-            if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
-          }
-        },
-        icon: const Icon(Icons.folder_open),
-        label: Text(l.git_openGit),
+
+    if (_loading) {
+      return const Center(
+        child: SizedBox(height: 20, width: 20,
+            child: CircularProgressIndicator(strokeWidth: 2)),
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            controller: _pathController,
+            style: TextStyle(
+              fontSize: 13,
+              fontFamily: 'JetBrains Mono',
+              color: isDark ? OutdoorColors.darkFg : OutdoorColors.lightFg,
+            ),
+            decoration: InputDecoration(
+              labelText: l.git_repoPath,
+              hintText: '/home/user/project',
+              isDense: true,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+              suffixIcon: IconButton(
+                icon: const Icon(Icons.clear, size: 18),
+                onPressed: () => _pathController.clear(),
+              ),
+            ),
+            onSubmitted: (_) => _openGit(),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton.icon(
+              onPressed: _openGit,
+              icon: const Icon(Icons.source_outlined),
+              label: Text(l.git_openGit),
+            ),
+          ),
+        ],
       ),
-    ]));
+    );
   }
 }
 

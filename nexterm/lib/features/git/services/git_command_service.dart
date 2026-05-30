@@ -32,7 +32,7 @@ class GitCommandService {
       : _client = client,
         _repoPath = repoPath;
 
-  Future<GitCommandResult> _exec(String command) async {
+  Future<GitCommandResult> _exec(String command, {int retries = 1}) async {
     final fullCommand = 'git -C ${_shellEscape(_repoPath)} $command';
     final session = await _client.execute(fullCommand);
     final stdoutBytes = await session.stdout.toList();
@@ -41,6 +41,9 @@ class GitCommandService {
     final stderr = utf8.decode(stderrBytes.expand((b) => b).toList(), allowMalformed: true);
     await session.done;
     final exitCode = session.exitCode ?? -1;
+    if (exitCode == -1 && retries > 0) {
+      return _exec(command, retries: retries - 1);
+    }
     return GitCommandResult(stdout: stdout, stderr: stderr, exitCode: exitCode);
   }
 
@@ -55,9 +58,30 @@ class GitCommandService {
   String _shellEscape(String s) => "'${s.replaceAll("'", "'\\''")}'";
 
   // Repo detection & init
-  Future<bool> isGitRepo() async {
+  Future<({bool isRepo, String? error})> isGitRepo() async {
+    // First check if git is available (with retry for flaky SSH exit codes)
+    for (var attempt = 0; attempt < 2; attempt++) {
+      final gitCheck = await _client.execute('which git');
+      final gitCheckOut = utf8.decode(
+          (await gitCheck.stdout.toList()).expand((b) => b).toList(),
+          allowMalformed: true);
+      await gitCheck.stderr.drain();
+      await gitCheck.done;
+      final exitCode = gitCheck.exitCode ?? -1;
+      if (exitCode == -1 && attempt == 0) continue;
+      if (exitCode != 0 || gitCheckOut.trim().isEmpty) {
+        return (isRepo: false, error: 'git is not installed on remote server');
+      }
+      break;
+    }
+
     final result = await _exec('rev-parse --git-dir');
-    return result.exitCode == 0;
+    if (result.exitCode == 0) {
+      return (isRepo: true, error: null);
+    }
+    return (isRepo: false, error: result.stderr.trim().isNotEmpty
+        ? result.stderr.trim()
+        : 'exit code ${result.exitCode}');
   }
 
   Future<void> init() async => await _run('init');
@@ -70,8 +94,9 @@ class GitCommandService {
   // Commit history
   static const _commitFormat = '%H%x00%an%x00%ae%x00%at%x00%s%x00%b%x1e';
 
-  Future<List<GitCommit>> log({int limit = 100, String? filePath}) async {
-    var cmd = 'log --format=$_commitFormat -n $limit';
+  Future<List<GitCommit>> log({int limit = 100, String? filePath, String? branch}) async {
+    var cmd = "log --format='$_commitFormat' -n $limit";
+    if (branch != null) cmd = "log ${_shellEscape(branch)} --format='$_commitFormat' -n $limit";
     if (filePath != null) cmd += ' --follow -- ${_shellEscape(filePath)}';
     final output = await _run(cmd);
     return _parseCommits(output);
@@ -80,7 +105,7 @@ class GitCommandService {
   static const _graphFormat = '%H%x00%P%x00%an%x00%at%x00%D%x00%s%x1e';
 
   Future<List<GitCommit>> logAll({int limit = 200}) async {
-    final output = await _run('log --all --format=$_graphFormat -n $limit');
+    final output = await _run("log --all --format='$_graphFormat' -n $limit");
     return _parseGraphCommits(output);
   }
 
@@ -122,39 +147,50 @@ class GitCommandService {
     }).whereType<GitCommit>().toList();
   }
 
-  // Branches
+  // Branches — parse default `git branch -a` output for maximum compatibility
+  //   * main            abc1234
+  //     remotes/origin/main abc1234
   Future<List<GitBranch>> branches() async {
-    final output = await _run("branch -a --format=%(refname:short)%x00%(objectname:short)%x00%(HEAD)");
+    final output = await _run('branch -a -v --no-abbrev');
     final lines = output.trim().split('\n').where((l) => l.isNotEmpty);
     return lines.map((line) {
-      final parts = line.split('\x00');
-      if (parts.length < 3) return null;
+      final isCurrent = line.startsWith('*');
+      final trimmed = line.substring(2).trim();
+      // skip detached HEAD marker
+      if (trimmed.startsWith('(')) return null;
+      // format: "name   sha  subject..." or "remotes/origin/name sha subject..."
+      final match = RegExp(r'^(\S+)\s+([a-f0-9]+)').firstMatch(trimmed);
+      if (match == null) return null;
+      var name = match.group(1)!;
+      final sha = match.group(2)!;
+      final isRemote = name.startsWith('remotes/');
+      if (isRemote) name = name.replaceFirst('remotes/', '');
       return GitBranch(
-        name: parts[0],
-        shortSha: parts[1],
-        isCurrent: parts[2].trim() == '*',
-        isRemote: parts[0].startsWith('origin/'),
+        name: name,
+        shortSha: sha.length >= 7 ? sha.substring(0, 7) : sha,
+        isCurrent: isCurrent,
+        isRemote: isRemote,
       );
     }).whereType<GitBranch>().toList();
   }
 
   Future<void> deleteBranch(String name) async => await _run('branch -d ${_shellEscape(name)}');
 
-  // Tags
+  // Tags — use `git tag -l` + `git rev-parse --short` for compatibility
   Future<List<GitTag>> tags() async {
-    final output = await _run("tag -l --format=%(refname:short)%x00%(objectname:short)%x00%(creatordate:unix)");
+    final output = await _run('tag -l');
     if (output.trim().isEmpty) return [];
-    final lines = output.trim().split('\n').where((l) => l.isNotEmpty);
-    return lines.map((line) {
-      final parts = line.split('\x00');
-      if (parts.length < 3) return null;
-      final ts = int.tryParse(parts[2].trim());
-      return GitTag(
-        name: parts[0],
-        shortSha: parts[1],
-        timestamp: ts != null && ts > 0 ? DateTime.fromMillisecondsSinceEpoch(ts * 1000, isUtc: true) : null,
-      );
-    }).whereType<GitTag>().toList();
+    final names = output.trim().split('\n').where((l) => l.isNotEmpty).toList();
+    final tags = <GitTag>[];
+    for (final name in names) {
+      try {
+        final shaOut = await _run('rev-parse --short ${_shellEscape(name.trim())}');
+        tags.add(GitTag(name: name.trim(), shortSha: shaOut.trim()));
+      } catch (_) {
+        tags.add(GitTag(name: name.trim(), shortSha: ''));
+      }
+    }
+    return tags;
   }
 
   Future<void> deleteTag(String name) async => await _run('tag -d ${_shellEscape(name)}');
@@ -218,6 +254,9 @@ class GitCommandService {
   Future<String> diffUnstaged() async => await _run('diff');
   Future<String> diffStaged() async => await _run('diff --cached');
   Future<String> diffCommit(String sha) async => await _run('diff-tree -p $sha');
+
+  Future<String> diffCommitFile(String sha, String filePath) async =>
+      await _run('diff-tree -p $sha -- ${_shellEscape(filePath)}');
 
   Future<String> diffFile(String filePath, {bool staged = false}) async {
     final flag = staged ? '--cached' : '';
