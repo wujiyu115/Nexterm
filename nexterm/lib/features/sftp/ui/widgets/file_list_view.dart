@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nexterm/core/theme/outdoor_colors.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:nexterm/features/sftp/services/sftp_service.dart';
 import 'package:nexterm/features/sftp/ui/utils/file_icon.dart';
@@ -38,7 +39,7 @@ class FileListView extends StatelessWidget {
       return Center(
         child: Text(
           AppLocalizations.of(context)!.sftp_noFiles,
-          style: const TextStyle(color: Colors.grey),
+          style: TextStyle(color: Theme.of(context).brightness == Brightness.dark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary),
         ),
       );
     }
@@ -128,7 +129,7 @@ class _FileListItem extends StatelessWidget {
           : (file.isDirectory
               ? Icon(
                   Icons.chevron_right,
-                  color: Colors.grey.shade400,
+                  color: Theme.of(context).brightness == Brightness.dark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary,
                   size: 20,
                 )
               : null),

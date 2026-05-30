@@ -1,5 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:nexterm/core/theme/outdoor_colors.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -162,12 +163,12 @@ class _KeyImportScreenState extends ConsumerState<KeyImportScreen>
                   child: TabBar(
                     controller: _tabController,
                     indicator: BoxDecoration(
-                      color: colorScheme.primaryContainer,
+                      color: OutdoorColors.accentDim,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     indicatorSize: TabBarIndicatorSize.tab,
-                    labelColor: colorScheme.onPrimaryContainer,
-                    unselectedLabelColor: colorScheme.onSurfaceVariant,
+                    labelColor: OutdoorColors.accent,
+                    unselectedLabelColor: Theme.of(context).brightness == Brightness.dark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary,
                     dividerColor: Colors.transparent,
                     tabs: [
                       Tab(
@@ -289,7 +290,7 @@ class _KeyImportScreenState extends ConsumerState<KeyImportScreen>
             child: Row(
               children: [
                 Icon(Icons.insert_drive_file,
-                    size: 20, color: colorScheme.primary),
+                    size: 20, color: OutdoorColors.accent),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -348,7 +349,7 @@ class _FormSection extends StatelessWidget {
         Text(
           title,
           style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                color: Theme.of(context).colorScheme.primary,
+                color: OutdoorColors.accent,
                 fontWeight: FontWeight.w600,
               ),
         ),

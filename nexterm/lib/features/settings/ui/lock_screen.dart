@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nexterm/core/theme/outdoor_colors.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:nexterm/features/settings/services/biometric_service.dart';
 
@@ -41,7 +42,7 @@ class _LockScreenState extends State<LockScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.lock, size: 64, color: Theme.of(context).colorScheme.primary),
+            Icon(Icons.lock, size: 64, color: OutdoorColors.accent),
             const SizedBox(height: 24),
             Text('Nexterm', style: Theme.of(context).textTheme.headlineMedium),
             const SizedBox(height: 8),

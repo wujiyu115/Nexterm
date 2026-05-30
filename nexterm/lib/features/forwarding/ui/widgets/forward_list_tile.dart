@@ -104,7 +104,7 @@ class ForwardListTile extends StatelessWidget {
                 Text(
                   forward.summary,
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
+                    color: Theme.of(context).brightness == Brightness.dark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary,
                     fontFamily: 'monospace',
                   ),
                   maxLines: 1,

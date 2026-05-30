@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nexterm/core/theme/outdoor_colors.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -198,7 +199,7 @@ class _ForwardFormScreenState extends ConsumerState<ForwardFormScreen> {
                   Text(
                     _forwardType.localizedName(l),
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          color: Theme.of(context).brightness == Brightness.dark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary,
                         ),
                   ),
                 ]),
@@ -343,7 +344,7 @@ class _FormSection extends StatelessWidget {
         Text(
           title,
           style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                color: Theme.of(context).colorScheme.primary,
+                color: OutdoorColors.accent,
                 fontWeight: FontWeight.w600,
               ),
         ),

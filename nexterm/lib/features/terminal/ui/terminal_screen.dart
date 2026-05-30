@@ -70,8 +70,8 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
   void _showHelpDialog() {
     final l = AppLocalizations.of(context)!;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textColor = isDark ? Colors.white70 : Colors.black87;
-    final dimColor = isDark ? Colors.white38 : Colors.black45;
+    final textColor = isDark ? OutdoorColors.darkFg : OutdoorColors.lightFg;
+    final dimColor = isDark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary;
 
     final shortcuts = [
       ('Ctrl+C', l.function_helpCtrlC),
@@ -99,7 +99,7 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: isDark ? Colors.white10 : Colors.black.withValues(alpha: 0.06),
+                      color: isDark ? OutdoorColors.darkInputBg : OutdoorColors.lightInputBg,
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
@@ -304,7 +304,7 @@ class _HostPickerDialog extends ConsumerWidget {
               ),
             ),
             DashedDivider(
-              color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+              color: Theme.of(context).brightness == Brightness.dark ? OutdoorColors.darkBorder : OutdoorColors.lightBorder,
               padding: const EdgeInsets.symmetric(horizontal: 16),
             ),
             Flexible(
@@ -319,7 +319,7 @@ class _HostPickerDialog extends ConsumerWidget {
                           Icon(
                             Icons.dns_outlined,
                             size: 48,
-                            color: theme.colorScheme.onSurfaceVariant,
+                            color: Theme.of(context).brightness == Brightness.dark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary,
                           ),
                           const SizedBox(height: 12),
                           Text(
@@ -365,8 +365,8 @@ class _HostPickerList extends ConsumerWidget {
       activeCounts[tab.hostId] = (activeCounts[tab.hostId] ?? 0) + 1;
     }
 
-    final dividerColor =
-        theme.colorScheme.outlineVariant.withValues(alpha: 0.4);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final dividerColor = isDark ? OutdoorColors.darkBorder : OutdoorColors.lightBorder;
     return ListView.separated(
       shrinkWrap: true,
       itemCount: hosts.length,
@@ -380,9 +380,7 @@ class _HostPickerList extends ConsumerWidget {
         return ListTile(
           leading: Icon(
             host.isFavorite ? Icons.star : Icons.dns_outlined,
-            color: host.isFavorite
-                ? Colors.amber
-                : theme.colorScheme.primary,
+            color: OutdoorColors.accent,
           ),
           title: Text(
             host.name,
@@ -393,7 +391,7 @@ class _HostPickerList extends ConsumerWidget {
             '${host.username}@${host.hostname}:${host.port}',
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
+            style: TextStyle(color: Theme.of(context).brightness == Brightness.dark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary),
           ),
           trailing: activeCount > 0
               ? Container(
@@ -402,13 +400,13 @@ class _HostPickerList extends ConsumerWidget {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.primaryContainer,
+                    color: OutdoorColors.accentDim,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
                     l.hosts_activeConnections(activeCount),
                     style: theme.textTheme.labelSmall?.copyWith(
-                      color: theme.colorScheme.onPrimaryContainer,
+                      color: OutdoorColors.accent,
                       fontWeight: FontWeight.w600,
                     ),
                   ),

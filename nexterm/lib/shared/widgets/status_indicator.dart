@@ -52,8 +52,8 @@ class _StatusIndicatorState extends State<StatusIndicator> with SingleTickerProv
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final color = switch (widget.status) {
       ConnectionStatus.connected => isDark ? OutdoorColors.darkStatusOnline : OutdoorColors.lightStatusOnline,
-      ConnectionStatus.connecting => const Color(0xFFF9E2AF),
-      ConnectionStatus.error => const Color(0xFFF38BA8),
+      ConnectionStatus.connecting => isDark ? OutdoorColors.darkStatusConnecting : OutdoorColors.lightStatusConnecting,
+      ConnectionStatus.error => isDark ? OutdoorColors.darkStatusError : OutdoorColors.lightStatusError,
       ConnectionStatus.disconnected => isDark ? OutdoorColors.darkStatusOffline : OutdoorColors.lightStatusOffline,
     };
 

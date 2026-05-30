@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:nexterm/core/theme/outdoor_colors.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_highlight/flutter_highlight.dart';
 import 'package:flutter_highlight/themes/monokai-sublime.dart';
@@ -203,7 +204,7 @@ class _FileEditorScreenState extends ConsumerState<FileEditorScreen> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.error_outline, size: 48, color: Colors.red),
+          Icon(Icons.error_outline, size: 48, color: Theme.of(context).brightness == Brightness.dark ? OutdoorColors.darkStatusError : OutdoorColors.lightStatusError),
           const SizedBox(height: 16),
           Text(AppLocalizations.of(context)!.fileEditor_loadFailed(_loadError!)),
           const SizedBox(height: 16),
@@ -284,7 +285,7 @@ class _FileEditorScreenState extends ConsumerState<FileEditorScreen> {
           if (_isModified)
             Text(
               AppLocalizations.of(context)!.fileEditor_modified,
-              style: const TextStyle(fontSize: 11, color: Colors.orange),
+              style: TextStyle(fontSize: 11, color: Theme.of(context).brightness == Brightness.dark ? OutdoorColors.darkStatusConnecting : OutdoorColors.lightStatusConnecting),
             ),
         ],
       ),

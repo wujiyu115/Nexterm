@@ -395,7 +395,7 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
                   child: Text(
                     l.hostForm_noKeys,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      color: Theme.of(context).brightness == Brightness.dark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary,
                     ),
                   ),
                 ),
@@ -454,7 +454,7 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
                   child: Text(
                     l.hostForm_noJumpHostConfigured,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      color: Theme.of(context).brightness == Brightness.dark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary,
                     ),
                   ),
                 )
@@ -573,7 +573,7 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
                       child: Text(
                         l.hostForm_noSnippets,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          color: Theme.of(context).brightness == Brightness.dark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary,
                         ),
                       ),
                     );

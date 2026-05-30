@@ -139,7 +139,7 @@ class ForwardingScreen extends ConsumerWidget {
           Icon(
             Icons.swap_horiz_outlined,
             size: 64,
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
+            color: Theme.of(context).brightness == Brightness.dark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary,
           ),
           const SizedBox(height: 16),
           Text(l.forwarding_noForwards, style: Theme.of(context).textTheme.titleMedium),

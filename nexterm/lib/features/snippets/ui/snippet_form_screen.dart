@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nexterm/core/theme/outdoor_colors.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -233,7 +234,7 @@ class _SnippetFormScreenState extends ConsumerState<SnippetFormScreen> {
                   _FormSection(title: l.snippetForm_sectionVariables, children: [
                     Text(
                       l.snippetForm_variablesHint,
-                      style: const TextStyle(fontSize: 12, color: Colors.grey),
+                      style: TextStyle(fontSize: 12, color: Theme.of(context).brightness == Brightness.dark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary),
                     ),
                     const SizedBox(height: 8),
                     ..._detectedVariables.map((name) => Padding(
@@ -307,7 +308,7 @@ class _FormSection extends StatelessWidget {
         Text(
           title,
           style: Theme.of(context).textTheme.labelLarge?.copyWith(
-            color: Theme.of(context).colorScheme.primary,
+            color: OutdoorColors.accent,
             fontWeight: FontWeight.w600,
           ),
         ),

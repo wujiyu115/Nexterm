@@ -363,7 +363,7 @@ class _HostsScreenState extends ConsumerState<HostsScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.dns_outlined, size: 64, color: Theme.of(context).colorScheme.onSurfaceVariant),
+          Icon(Icons.dns_outlined, size: 64, color: Theme.of(context).brightness == Brightness.dark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary),
           const SizedBox(height: 16),
           Text(l.hosts_noHosts, style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 8),

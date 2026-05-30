@@ -97,10 +97,10 @@ class TerminalTabBar extends ConsumerWidget {
             itemBuilder: (ctx) {
               final l = AppLocalizations.of(ctx)!;
               final theme = Theme.of(ctx);
-              final iconColor = theme.colorScheme.onSurfaceVariant;
-              final textColor = theme.colorScheme.onSurface;
-              final dividerColor =
-                  theme.colorScheme.outlineVariant.withValues(alpha: 0.4);
+              final isDark = theme.brightness == Brightness.dark;
+              final iconColor = isDark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary;
+              final textColor = isDark ? OutdoorColors.darkFg : OutdoorColors.lightFg;
+              final dividerColor = isDark ? OutdoorColors.darkBorder : OutdoorColors.lightBorder;
 
               PopupMenuItem<String> menuItem({
                 required String value,
@@ -262,7 +262,7 @@ class _StatusDot extends StatelessWidget {
       ConnectionStatus.connected => isDark ? OutdoorColors.darkStatusOnline : OutdoorColors.lightStatusOnline,
       ConnectionStatus.connecting => OutdoorColors.accent,
       ConnectionStatus.disconnected => isDark ? OutdoorColors.darkStatusOffline : OutdoorColors.lightStatusOffline,
-      ConnectionStatus.error => const Color(0xFFF85149),
+      ConnectionStatus.error => isDark ? OutdoorColors.darkStatusError : OutdoorColors.lightStatusError,
     };
     return Container(
       width: 8,

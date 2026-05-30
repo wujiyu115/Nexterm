@@ -22,7 +22,9 @@ class OutdoorColors {
   static const Color darkInputBg = Color(0xCC1E242C);
   static const Color darkTabInactive = Color(0xFF484F58);
   static const Color darkStatusOnline = Color(0xFF3FB950);
+  static const Color darkStatusConnecting = Color(0xFFD29922);
   static const Color darkStatusOffline = Color(0xFF484F58);
+  static const Color darkStatusError = Color(0xFFF85149);
   static const Color darkTerminalBg = Color(0xFF0D1117);
   static const Color darkGlassBorder = Color(0x145CB85C);
 
@@ -40,7 +42,9 @@ class OutdoorColors {
   static const Color lightInputBg = Color(0x0A000000);
   static const Color lightTabInactive = Color(0xFF9CA3AF);
   static const Color lightStatusOnline = Color(0xFF5CB85C);
+  static const Color lightStatusConnecting = Color(0xFFD29922);
   static const Color lightStatusOffline = Color(0xFFD1D5DB);
+  static const Color lightStatusError = Color(0xFFF85149);
   static const Color lightTerminalBg = Color(0xFF1E1E2E);
   static const Color lightGlassBorder = Color(0x1F5CB85C);
 

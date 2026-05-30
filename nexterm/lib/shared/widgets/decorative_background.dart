@@ -68,11 +68,11 @@ class DecorativeBackground extends StatelessWidget {
           width: 180,
           height: 180,
           child: Container(
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               shape: BoxShape.circle,
               gradient: RadialGradient(
                 colors: [
-                  Color(0x0F89B4FA),
+                  OutdoorColors.accent.withValues(alpha: 0.06),
                   Colors.transparent,
                 ],
               ),

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:nexterm/core/theme/outdoor_colors.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nexterm/features/sftp/providers/sftp_provider.dart';
@@ -363,7 +364,7 @@ class _SftpScreenState extends ConsumerState<SftpScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.error_outline, size: 48, color: Colors.red),
+              const Icon(Icons.error_outline, size: 48, color: OutdoorColors.darkStatusError),
               const SizedBox(height: 16),
               Text(l.sftp_connectionFailed(_initError!)),
               const SizedBox(height: 16),
@@ -484,7 +485,7 @@ class _SftpScreenState extends ConsumerState<SftpScreen> {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.error_outline, color: Colors.red),
+                            const Icon(Icons.error_outline, color: OutdoorColors.darkStatusError),
                             const SizedBox(height: 8),
                             Text(state.error!),
                             TextButton(

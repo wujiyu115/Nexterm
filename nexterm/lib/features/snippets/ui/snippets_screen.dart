@@ -99,7 +99,7 @@ class SnippetsScreen extends ConsumerWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.bolt_outlined, size: 64, color: Theme.of(context).colorScheme.onSurfaceVariant),
+          Icon(Icons.bolt_outlined, size: 64, color: Theme.of(context).brightness == Brightness.dark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary),
           const SizedBox(height: 16),
           Text(l.snippets_noSnippets, style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 8),

@@ -175,7 +175,7 @@ class _VisibleCountSetting extends StatelessWidget {
                 Text(
                   l.toolbar_visibleGroupsHint(value),
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
+                    color: theme.brightness == Brightness.dark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary,
                   ),
                 ),
               ],
@@ -293,7 +293,7 @@ class _GroupTile extends StatelessWidget {
         child: Row(
           children: [
             IconButton(
-              icon: Icon(Icons.remove_circle, color: const Color(0xFFF85149), size: 22),
+              icon: Icon(Icons.remove_circle, color: isDark ? OutdoorColors.darkStatusError : OutdoorColors.lightStatusError, size: 22),
               onPressed: onRemove,
               visualDensity: VisualDensity.compact,
             ),

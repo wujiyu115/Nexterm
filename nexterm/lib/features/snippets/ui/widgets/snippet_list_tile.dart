@@ -20,7 +20,6 @@ class SnippetListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -52,7 +51,7 @@ class SnippetListTile extends StatelessWidget {
                   child: Text(
                     snippet.command,
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
+                      color: isDark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary,
                       fontFamily: 'monospace',
                     ),
                     maxLines: 1,
@@ -76,7 +75,7 @@ class SnippetListTile extends StatelessWidget {
             icon: Icon(
               snippet.isFavorite ? Icons.star : Icons.star_border,
               size: 20,
-              color: snippet.isFavorite ? Colors.amber : colorScheme.onSurfaceVariant,
+              color: snippet.isFavorite ? OutdoorColors.accent : (isDark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary),
             ),
             onPressed: onToggleFavorite,
             visualDensity: VisualDensity.compact,

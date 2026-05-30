@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:nexterm/core/theme/outdoor_colors.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -186,13 +187,13 @@ class _KeyGenerateScreenState extends ConsumerState<KeyGenerateScreen> {
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                 decoration: BoxDecoration(
-                                  color: colorScheme.primaryContainer,
+                                  color: OutdoorColors.accentDim,
                                   borderRadius: BorderRadius.circular(4),
                                 ),
                                 child: Text(
                                   l.keyGenerate_recommended,
                                   style: theme.textTheme.labelSmall?.copyWith(
-                                    color: colorScheme.onPrimaryContainer,
+                                    color: OutdoorColors.accent,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
@@ -207,7 +208,7 @@ class _KeyGenerateScreenState extends ConsumerState<KeyGenerateScreen> {
                             KeyType.rsa4096 => l.keyGenerate_rsa4096Desc,
                             _ => '',
                           },
-                          style: theme.textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
+                          style: theme.textTheme.bodySmall?.copyWith(color: Theme.of(context).brightness == Brightness.dark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary),
                         ),
                         value: type,
                       );
@@ -270,7 +271,7 @@ class _FormSection extends StatelessWidget {
         Text(
           title,
           style: Theme.of(context).textTheme.labelLarge?.copyWith(
-            color: Theme.of(context).colorScheme.primary,
+            color: OutdoorColors.accent,
             fontWeight: FontWeight.w600,
           ),
         ),

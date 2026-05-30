@@ -94,7 +94,7 @@ class KeysScreen extends ConsumerWidget {
           Icon(
             Icons.vpn_key_outlined,
             size: 64,
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
+            color: Theme.of(context).brightness == Brightness.dark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary,
           ),
           const SizedBox(height: 16),
           Text(l.keys_noKeys, style: Theme.of(context).textTheme.titleMedium),
@@ -102,7 +102,7 @@ class KeysScreen extends ConsumerWidget {
           Text(
             l.keys_noKeysHint,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              color: Theme.of(context).brightness == Brightness.dark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary,
             ),
           ),
           const SizedBox(height: 24),
