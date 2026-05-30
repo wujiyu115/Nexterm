@@ -23,6 +23,7 @@ class KeysScreen extends ConsumerWidget {
       backgroundColor: Colors.transparent,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
+        centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.chevron_left),
           onPressed: () => Navigator.of(context).pop(),

@@ -231,6 +231,10 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
           backgroundColor: Colors.transparent,
           appBar: AppBar(
             backgroundColor: Colors.transparent,
+            leading: IconButton(
+              icon: const Icon(Icons.chevron_left),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
             title: Text(_isEditMode ? l.hostForm_editTitle : l.hostForm_addTitle),
             actions: [
               if (_isEditMode)

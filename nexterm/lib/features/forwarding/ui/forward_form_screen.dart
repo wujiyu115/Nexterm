@@ -7,6 +7,7 @@ import 'package:nexterm/domain/entities/enums.dart';
 import 'package:nexterm/domain/entities/port_forward_entity.dart';
 import 'package:nexterm/features/forwarding/providers/forwarding_provider.dart';
 import 'package:nexterm/features/hosts/providers/hosts_provider.dart';
+import 'package:nexterm/shared/widgets/decorative_background.dart';
 
 class ForwardFormScreen extends ConsumerStatefulWidget {
   final String? forwardId;
@@ -150,8 +151,16 @@ class _ForwardFormScreenState extends ConsumerState<ForwardFormScreen> {
       future: _loadForward(),
       builder: (context, _) {
         final l = AppLocalizations.of(context)!;
-        return Scaffold(
+        return DecorativeBackground(
+          showRidge: false,
+          child: Scaffold(
+          backgroundColor: Colors.transparent,
           appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            leading: IconButton(
+              icon: const Icon(Icons.chevron_left),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
             title: Text(_isEditMode ? l.forwardForm_editTitle : l.forwardForm_addTitle),
             actions: [
               if (_isEditMode)
@@ -275,6 +284,7 @@ class _ForwardFormScreenState extends ConsumerState<ForwardFormScreen> {
               ],
             ),
           ),
+        ),
         );
       },
     );

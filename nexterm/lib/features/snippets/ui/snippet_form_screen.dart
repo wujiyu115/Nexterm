@@ -7,6 +7,7 @@ import 'package:nexterm/domain/entities/snippet_entity.dart';
 import 'package:nexterm/features/snippets/providers/snippets_provider.dart';
 import 'package:nexterm/features/snippets/utils/variable_parser.dart';
 import 'package:uuid/uuid.dart';
+import 'package:nexterm/shared/widgets/decorative_background.dart';
 
 class SnippetFormScreen extends ConsumerStatefulWidget {
   final String? snippetId;
@@ -189,8 +190,16 @@ class _SnippetFormScreenState extends ConsumerState<SnippetFormScreen> {
       future: _loadSnippet(),
       builder: (context, _) {
         final l = AppLocalizations.of(context)!;
-        return Scaffold(
+        return DecorativeBackground(
+          showRidge: false,
+          child: Scaffold(
+          backgroundColor: Colors.transparent,
           appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            leading: IconButton(
+              icon: const Icon(Icons.chevron_left),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
             title: Text(_isEditMode ? l.snippetForm_editTitle : l.snippetForm_addTitle),
             actions: [
               if (_isEditMode)
@@ -289,6 +298,7 @@ class _SnippetFormScreenState extends ConsumerState<SnippetFormScreen> {
               ],
             ),
           ),
+        ),
         );
       },
     );

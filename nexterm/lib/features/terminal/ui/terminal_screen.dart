@@ -11,6 +11,7 @@ import 'package:nexterm/features/terminal/ui/widgets/keyboard_toolbar.dart';
 import 'package:nexterm/features/terminal/ui/widgets/terminal_tab_bar.dart';
 import 'package:nexterm/features/terminal/ui/widgets/terminal_view.dart';
 import 'package:nexterm/shared/widgets/dashed_divider.dart';
+import 'package:nexterm/shared/widgets/decorative_background.dart';
 
 class TerminalScreen extends ConsumerStatefulWidget {
   final String? hostId;
@@ -160,11 +161,8 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
     }
     _hadTabs = hasTabs;
 
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final scaffoldBg = hasTabs ? OutdoorColors.darkTerminalBg : (isDark ? OutdoorColors.darkBg : OutdoorColors.lightBg);
-
-    return Scaffold(
-      backgroundColor: scaffoldBg,
+    final scaffold = Scaffold(
+      backgroundColor: hasTabs ? OutdoorColors.darkTerminalBg : Colors.transparent,
       body: Column(
         children: [
           SizedBox(height: MediaQuery.of(context).padding.top),
@@ -225,6 +223,9 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
         ],
       ),
     );
+
+    if (hasTabs) return scaffold;
+    return DecorativeBackground(showRidge: false, child: scaffold);
   }
 }
 

@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:nexterm/domain/entities/enums.dart';
 import 'package:nexterm/domain/entities/ssh_key_entity.dart';
 import 'package:nexterm/features/keys/providers/keys_provider.dart';
+import 'package:nexterm/shared/widgets/decorative_background.dart';
 
 class KeyGenerateScreen extends ConsumerStatefulWidget {
   const KeyGenerateScreen({super.key});
@@ -127,8 +128,18 @@ class _KeyGenerateScreenState extends ConsumerState<KeyGenerateScreen> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Scaffold(
-      appBar: AppBar(title: Text(l.keyGenerate_title)),
+    return DecorativeBackground(
+      showRidge: false,
+      child: Scaffold(
+      backgroundColor: Colors.transparent,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        leading: IconButton(
+          icon: const Icon(Icons.chevron_left),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: Text(l.keyGenerate_title),
+      ),
       body: Form(
         key: _formKey,
         child: ListView(
@@ -254,6 +265,7 @@ class _KeyGenerateScreenState extends ConsumerState<KeyGenerateScreen> {
           ],
         ),
       ),
+    ),
     );
   }
 }

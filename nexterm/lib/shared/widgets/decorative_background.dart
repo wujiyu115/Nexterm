@@ -42,7 +42,7 @@ class DecorativeBackground extends StatelessWidget {
       final size = 160.0 + rng.nextDouble() * 120;
       final x = col * cellW + rng.nextDouble() * (cellW - size * 0.4);
       final y = row * cellH + rng.nextDouble() * (cellH - size * 0.4);
-      final alpha = 0.04 + rng.nextDouble() * 0.06;
+      final alpha = 0.08 + rng.nextDouble() * 0.08;
       return _GlowSpec(x: x, y: y, size: size, alpha: alpha);
     }).toList();
 
