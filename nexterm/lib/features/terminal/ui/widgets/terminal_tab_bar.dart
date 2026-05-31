@@ -25,6 +25,7 @@ class TerminalTabBar extends ConsumerWidget {
   final VoidCallback? onGoToHosts;
   final VoidCallback? onUploadFile;
   final VoidCallback? onDetectPorts;
+  final VoidCallback? onOpenSftp;
 
   const TerminalTabBar({
     super.key,
@@ -37,6 +38,7 @@ class TerminalTabBar extends ConsumerWidget {
     this.onGoToHosts,
     this.onUploadFile,
     this.onDetectPorts,
+    this.onOpenSftp,
   });
 
   @override
@@ -103,6 +105,8 @@ class TerminalTabBar extends ConsumerWidget {
                   onUploadFile?.call();
                 case 'detect_ports':
                   onDetectPorts?.call();
+                case 'open_sftp':
+                  onOpenSftp?.call();
               }
             },
             itemBuilder: (ctx) {
@@ -169,6 +173,12 @@ class TerminalTabBar extends ConsumerWidget {
                   icon: Icons.add,
                   label: l.terminal_newTab,
                 ),
+                if (onOpenSftp != null)
+                  menuItem(
+                    value: 'open_sftp',
+                    icon: Icons.folder_outlined,
+                    label: l.terminal_openSftp,
+                  ),
                 if (onUploadFile != null)
                   menuItem(
                     value: 'upload',
@@ -242,10 +252,16 @@ class _TabItem extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Status indicator.
+            Icon(
+              tab.connectionType == ConnectionType.sftp
+                  ? Icons.folder_outlined
+                  : Icons.terminal,
+              size: 14,
+              color: isActive ? OutdoorColors.accent : null,
+            ),
+            const SizedBox(width: 4),
             _StatusDot(status: tab.status),
             const SizedBox(width: 6),
-            // Title — truncated if too long.
             Flexible(
               child: Text(
                 tab.title,

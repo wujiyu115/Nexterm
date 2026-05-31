@@ -15,7 +15,9 @@ import 'package:nexterm/features/terminal/ui/widgets/function_panel.dart';
 import 'package:nexterm/features/terminal/ui/widgets/keyboard_toolbar.dart';
 import 'package:nexterm/features/terminal/ui/widgets/terminal_tab_bar.dart';
 import 'package:nexterm/features/terminal/ui/widgets/terminal_view.dart';
+import 'package:nexterm/features/sftp/ui/widgets/sftp_content.dart';
 import 'package:nexterm/features/forwarding/ui/port_detection_sheet.dart';
+import 'package:nexterm/domain/entities/enums.dart';
 import 'package:nexterm/shared/widgets/dashed_divider.dart';
 
 class TerminalScreen extends ConsumerStatefulWidget {
@@ -260,6 +262,16 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
     await ref.read(terminalActionsProvider).connectHost(selectedHostId);
   }
 
+  Future<void> _openSftpTab() async {
+    final tabManager = ref.read(tabManagerProvider);
+    final activeTab = tabManager.activeTab;
+    if (activeTab == null) return;
+    await ref.read(terminalActionsProvider).connectHost(
+      activeTab.hostId,
+      connectionType: ConnectionType.sftp,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final tabManager = ref.watch(tabManagerProvider);
@@ -288,14 +300,15 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
           TerminalTabBar(
             onAddTab: _showHostPickerDialog,
             isFunctionMode: _isFunctionMode,
-            onToggleMode: activeTab != null ? _toggleKeyboardMode : null,
-            onCustomizeTap: activeTab != null
+            onToggleMode: activeTab != null && activeTab.connectionType != ConnectionType.sftp ? _toggleKeyboardMode : null,
+            onCustomizeTap: activeTab != null && activeTab.connectionType != ConnectionType.sftp
                 ? () => context.push('/terminal/customize-keyboard')
                 : null,
-            onHideKeyboard: activeTab != null ? _toggleKeyboard : null,
-            onShowHelp: activeTab != null ? _showHelpDialog : null,
-            onUploadFile: activeTab != null ? _uploadFile : null,
-            onDetectPorts: activeTab != null ? _showPortDetection : null,
+            onHideKeyboard: activeTab != null && activeTab.connectionType != ConnectionType.sftp ? _toggleKeyboard : null,
+            onShowHelp: activeTab != null && activeTab.connectionType != ConnectionType.sftp ? _showHelpDialog : null,
+            onUploadFile: activeTab != null && activeTab.connectionType != ConnectionType.sftp ? _uploadFile : null,
+            onDetectPorts: activeTab != null && activeTab.connectionType != ConnectionType.sftp ? _showPortDetection : null,
+            onOpenSftp: activeTab != null && activeTab.connectionType != ConnectionType.sftp ? _openSftpTab : null,
             onGoToHosts: () {
               if (context.canPop()) context.pop();
             },
@@ -314,14 +327,16 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
                         ],
                       ),
                     )
-                  : TerminalViewWidget(
-                      tab: activeTab,
-                      hardwareKeyboardOnly: _isFunctionMode,
-                    ),
+                  : activeTab.connectionType == ConnectionType.sftp && activeTab.sessionId != null
+                      ? SftpContentWidget(sessionId: activeTab.sessionId!)
+                      : TerminalViewWidget(
+                          tab: activeTab,
+                          hardwareKeyboardOnly: _isFunctionMode,
+                        ),
             ),
           ),
 
-          if (activeTab != null) ...[
+          if (activeTab != null && activeTab.connectionType != ConnectionType.sftp) ...[
             if (_isFunctionMode)
               FunctionPanel(
                 sessionId: activeTab.sessionId,

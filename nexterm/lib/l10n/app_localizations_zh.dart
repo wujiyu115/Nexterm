@@ -321,6 +321,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get terminal_newTab => '新建终端';
 
   @override
+  String get terminal_openSftp => '打开 SFTP';
+
+  @override
   String get terminal_toggleKeyboard => '切换键盘';
 
   @override

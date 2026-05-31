@@ -137,11 +137,7 @@ class _ActiveSessionCard extends ConsumerWidget {
         final tabManager = ref.read(tabManagerProvider);
         final index = tabManager.tabs.indexWhere((t) => t.id == tab.id);
         if (index >= 0) tabManager.setActiveTab(index);
-        if (tab.connectionType == ConnectionType.sftp && tab.sessionId != null) {
-          context.push('/sftp/${tab.sessionId}');
-        } else {
-          context.push('/terminal/session/${tab.id}');
-        }
+        context.push('/terminal/session/${tab.id}');
       },
       child: Row(
         children: [

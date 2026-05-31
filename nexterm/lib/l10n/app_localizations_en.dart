@@ -331,6 +331,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get terminal_newTab => 'New Terminal';
 
   @override
+  String get terminal_openSftp => 'Open SFTP';
+
+  @override
   String get terminal_toggleKeyboard => 'Toggle Keyboard';
 
   @override

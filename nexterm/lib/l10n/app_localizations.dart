@@ -698,6 +698,12 @@ abstract class AppLocalizations {
   /// **'新建终端'**
   String get terminal_newTab;
 
+  /// No description provided for @terminal_openSftp.
+  ///
+  /// In zh, this message translates to:
+  /// **'打开 SFTP'**
+  String get terminal_openSftp;
+
   /// No description provided for @terminal_toggleKeyboard.
   ///
   /// In zh, this message translates to:
