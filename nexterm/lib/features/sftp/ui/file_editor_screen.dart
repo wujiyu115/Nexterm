@@ -43,6 +43,7 @@ class _FileEditorScreenState extends ConsumerState<FileEditorScreen> {
   int _lineNumber = 1;
   int _columnNumber = 1;
   bool _showMarkdownSource = false;
+  final _markdownScrollController = ScrollController();
 
   String get _fileName => p.basename(widget.filePath);
   String get _language => detectLanguage(_fileName);
@@ -62,6 +63,7 @@ class _FileEditorScreenState extends ConsumerState<FileEditorScreen> {
   void dispose() {
     _textController.removeListener(_onTextChanged);
     _textController.dispose();
+    _markdownScrollController.dispose();
     _sftpService?.disconnect();
     super.dispose();
   }
@@ -174,6 +176,12 @@ class _FileEditorScreenState extends ConsumerState<FileEditorScreen> {
       appBar: AppBar(
         title: Text(title, style: const TextStyle(fontFamily: 'monospace')),
         actions: [
+          if (_isMarkdown && _isPreviewMode && !_showMarkdownSource)
+            IconButton(
+              icon: const Icon(Icons.toc),
+              tooltip: l.fileEditor_toc,
+              onPressed: _showToc,
+            ),
           if (_isMarkdown && _isPreviewMode)
             IconButton(
               icon: Icon(_showMarkdownSource ? Icons.article_outlined : Icons.code),
@@ -255,6 +263,65 @@ class _FileEditorScreenState extends ConsumerState<FileEditorScreen> {
     );
   }
 
+  List<({int level, String title, int charOffset})> _parseHeadings(String text) {
+    final headings = <({int level, String title, int charOffset})>[];
+    final lines = text.split('\n');
+    int offset = 0;
+    for (final line in lines) {
+      final match = RegExp(r'^(#{1,6})\s+(.+)$').firstMatch(line);
+      if (match != null) {
+        headings.add((level: match.group(1)!.length, title: match.group(2)!.trim(), charOffset: offset));
+      }
+      offset += line.length + 1;
+    }
+    return headings;
+  }
+
+  void _showToc() {
+    final code = _textController.text;
+    final headings = _parseHeadings(code);
+    if (headings.isEmpty) return;
+
+    showModalBottomSheet(
+      context: context,
+      builder: (ctx) => SafeArea(
+        child: ListView.builder(
+          shrinkWrap: true,
+          itemCount: headings.length,
+          itemBuilder: (_, index) {
+            final h = headings[index];
+            return ListTile(
+              contentPadding: EdgeInsets.only(left: 16.0 + (h.level - 1) * 16.0, right: 16),
+              dense: true,
+              title: Text(
+                h.title,
+                style: TextStyle(
+                  fontSize: h.level <= 2 ? 15 : 13,
+                  fontWeight: h.level <= 2 ? FontWeight.w600 : FontWeight.normal,
+                ),
+              ),
+              onTap: () {
+                Navigator.pop(ctx);
+                _scrollToHeading(h.charOffset, code.length);
+              },
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  void _scrollToHeading(int charOffset, int totalChars) {
+    if (!_markdownScrollController.hasClients) return;
+    final maxScroll = _markdownScrollController.position.maxScrollExtent;
+    final fraction = totalChars > 0 ? charOffset / totalChars : 0.0;
+    _markdownScrollController.animateTo(
+      (fraction * maxScroll).clamp(0.0, maxScroll),
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+
   Widget _buildPreview() {
     final code = _textController.text;
 
@@ -262,6 +329,7 @@ class _FileEditorScreenState extends ConsumerState<FileEditorScreen> {
       return Markdown(
         data: code,
         selectable: true,
+        controller: _markdownScrollController,
         padding: const EdgeInsets.all(12),
       );
     }

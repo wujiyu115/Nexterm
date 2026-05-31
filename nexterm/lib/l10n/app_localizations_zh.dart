@@ -1111,6 +1111,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get fileEditor_markdownSource => '查看源码';
 
   @override
+  String get fileEditor_toc => '目录';
+
+  @override
   String transfer_title(int count) {
     return '传输 ($count)';
   }

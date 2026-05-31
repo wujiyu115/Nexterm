@@ -2186,6 +2186,12 @@ abstract class AppLocalizations {
   /// **'查看源码'**
   String get fileEditor_markdownSource;
 
+  /// No description provided for @fileEditor_toc.
+  ///
+  /// In zh, this message translates to:
+  /// **'目录'**
+  String get fileEditor_toc;
+
   /// No description provided for @transfer_title.
   ///
   /// In zh, this message translates to:

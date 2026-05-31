@@ -1139,6 +1139,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fileEditor_markdownSource => 'View Source';
 
   @override
+  String get fileEditor_toc => 'Table of Contents';
+
+  @override
   String transfer_title(int count) {
     return 'Transfers ($count)';
   }

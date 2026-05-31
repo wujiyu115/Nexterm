@@ -400,6 +400,7 @@
   "fileEditor_modified": "已修改",
   "fileEditor_renderMarkdown": "渲染 Markdown",
   "fileEditor_markdownSource": "查看源码",
+  "fileEditor_toc": "目录",
 
   "transfer_title": "传输 ({count})",
   "@transfer_title": { "placeholders": { "count": { "type": "int" } } },

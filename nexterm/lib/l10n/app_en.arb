@@ -378,6 +378,7 @@
   "fileEditor_modified": "Modified",
   "fileEditor_renderMarkdown": "Render Markdown",
   "fileEditor_markdownSource": "View Source",
+  "fileEditor_toc": "Table of Contents",
 
   "transfer_title": "Transfers ({count})",
   "transfer_clearDone": "Clear done",
