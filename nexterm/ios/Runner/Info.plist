@@ -53,6 +53,10 @@
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Voice input is used to dictate commands into the terminal.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Microphone access is needed for voice input to the terminal.</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

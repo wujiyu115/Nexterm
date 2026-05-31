@@ -8,6 +8,7 @@ import 'package:nexterm/features/terminal/models/toolbar_key_definition.dart';
 import 'package:nexterm/features/terminal/providers/toolbar_config_provider.dart';
 import 'package:nexterm/features/terminal/providers/toolbar_modifier_provider.dart';
 import 'package:nexterm/features/terminal/providers/toolbar_usage_provider.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 
 /// A scrollable, grouped toolbar that sits above the soft keyboard.
 ///
@@ -32,6 +33,59 @@ class KeyboardToolbar extends ConsumerStatefulWidget {
 }
 
 class _KeyboardToolbarState extends ConsumerState<KeyboardToolbar> {
+  final SpeechToText _speech = SpeechToText();
+  bool _isListening = false;
+  bool _speechAvailable = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initSpeech();
+  }
+
+  @override
+  void dispose() {
+    _speech.stop();
+    super.dispose();
+  }
+
+  Future<void> _initSpeech() async {
+    _speechAvailable = await _speech.initialize(
+      onStatus: (status) {
+        if (status == 'done' || status == 'notListening') {
+          if (mounted) setState(() => _isListening = false);
+        }
+      },
+    );
+    if (mounted) setState(() {});
+  }
+
+  void _toggleSpeech() {
+    HapticFeedback.lightImpact();
+    if (_isListening) {
+      _speech.stop();
+      setState(() => _isListening = false);
+    } else {
+      _startListening();
+    }
+  }
+
+  void _startListening() {
+    if (!_speechAvailable) return;
+    setState(() => _isListening = true);
+    _speech.listen(
+      onResult: (result) {
+        if (result.finalResult && result.recognizedWords.isNotEmpty) {
+          widget.onKeyInput(Uint8List.fromList(utf8.encode(result.recognizedWords)));
+        }
+      },
+      listenOptions: SpeechListenOptions(
+        listenMode: ListenMode.dictation,
+        cancelOnError: true,
+      ),
+    );
+  }
+
   // -------------------------------------------------------------------------
   // Send helpers
   // -------------------------------------------------------------------------
@@ -186,6 +240,20 @@ class _KeyboardToolbarState extends ConsumerState<KeyboardToolbar> {
               ),
             ),
           ),
+          if (_speechAvailable)
+            GestureDetector(
+              onTap: _toggleSpeech,
+              child: Container(
+                width: 44,
+                height: double.infinity,
+                alignment: Alignment.center,
+                child: Icon(
+                  _isListening ? Icons.mic : Icons.mic_none,
+                  size: 20,
+                  color: _isListening ? OutdoorColors.accent : textColor,
+                ),
+              ),
+            ),
           if (widget.onHideKeyboard != null)
             GestureDetector(
               onTap: widget.onHideKeyboard,
