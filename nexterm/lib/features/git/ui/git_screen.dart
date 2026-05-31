@@ -136,7 +136,7 @@ class _GitScreenState extends ConsumerState<GitScreen> with SingleTickerProvider
                   ]),
                 ))
               : TabBarView(controller: _tabController, children: [
-                  _gitState.status != null ? StatusFileList(status: _gitState.status!, onFileTap: _showFileDiff) : const SizedBox.shrink(),
+                  _gitState.status != null ? StatusFileList(status: _gitState.status!, onFileTap: _showFileDiff) : const Center(child: CircularProgressIndicator()),
                   BranchList(
                     branches: _gitState.branches,
                     onBranchGraphTap: _openBranchGraph,

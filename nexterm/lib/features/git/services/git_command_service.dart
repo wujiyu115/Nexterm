@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:dartssh2/dartssh2.dart';
+import 'package:flutter/foundation.dart';
 import 'package:nexterm/features/git/models/git_commit.dart';
 import 'package:nexterm/features/git/models/git_branch.dart';
 import 'package:nexterm/features/git/models/git_tag.dart';
@@ -33,15 +34,19 @@ class GitCommandService {
         _repoPath = repoPath;
 
   Future<GitCommandResult> _exec(String command, {int retries = 1}) async {
+    final sw = Stopwatch()..start();
     final fullCommand = 'git -C ${_shellEscape(_repoPath)} $command';
     final session = await _client.execute(fullCommand);
+    final sshMs = sw.elapsedMilliseconds;
     final stdoutBytes = await session.stdout.toList();
     final stderrBytes = await session.stderr.toList();
     final stdout = utf8.decode(stdoutBytes.expand((b) => b).toList(), allowMalformed: true);
     final stderr = utf8.decode(stderrBytes.expand((b) => b).toList(), allowMalformed: true);
     await session.done;
     final exitCode = session.exitCode ?? -1;
+    assert(() { debugPrint('[Git] exec ${sw.elapsedMilliseconds}ms (ssh:${sshMs}ms) exit=$exitCode cmd=$command'); return true; }());
     if (exitCode == -1 && retries > 0) {
+      assert(() { debugPrint('[Git] retrying cmd=$command'); return true; }());
       return _exec(command, retries: retries - 1);
     }
     return GitCommandResult(stdout: stdout, stderr: stderr, exitCode: exitCode);
@@ -59,29 +64,29 @@ class GitCommandService {
 
   // Repo detection & init
   Future<({bool isRepo, String? error})> isGitRepo() async {
-    // First check if git is available (with retry for flaky SSH exit codes)
+    final sw = Stopwatch()..start();
     for (var attempt = 0; attempt < 2; attempt++) {
-      final gitCheck = await _client.execute('which git');
-      final gitCheckOut = utf8.decode(
-          (await gitCheck.stdout.toList()).expand((b) => b).toList(),
-          allowMalformed: true);
-      await gitCheck.stderr.drain();
-      await gitCheck.done;
-      final exitCode = gitCheck.exitCode ?? -1;
+      final session = await _client.execute(
+          'which git && git -C ${_shellEscape(_repoPath)} rev-parse --git-dir');
+      final stdoutBytes = await session.stdout.toList();
+      final stderrBytes = await session.stderr.toList();
+      final stdout = utf8.decode(stdoutBytes.expand((b) => b).toList(), allowMalformed: true);
+      final stderr = utf8.decode(stderrBytes.expand((b) => b).toList(), allowMalformed: true);
+      await session.done;
+      final exitCode = session.exitCode ?? -1;
       if (exitCode == -1 && attempt == 0) continue;
-      if (exitCode != 0 || gitCheckOut.trim().isEmpty) {
+      if (exitCode == 0) {
+        assert(() { debugPrint('[Git] isGitRepo ${sw.elapsedMilliseconds}ms'); return true; }());
+        return (isRepo: true, error: null);
+      }
+      if (stdout.trim().isEmpty) {
         return (isRepo: false, error: 'git is not installed on remote server');
       }
-      break;
+      return (isRepo: false, error: stderr.trim().isNotEmpty
+          ? stderr.trim()
+          : 'exit code $exitCode');
     }
-
-    final result = await _exec('rev-parse --git-dir');
-    if (result.exitCode == 0) {
-      return (isRepo: true, error: null);
-    }
-    return (isRepo: false, error: result.stderr.trim().isNotEmpty
-        ? result.stderr.trim()
-        : 'exit code ${result.exitCode}');
+    return (isRepo: false, error: 'SSH session error');
   }
 
   Future<void> init() async => await _run('init');
@@ -104,8 +109,10 @@ class GitCommandService {
 
   static const _graphFormat = '%H%x00%P%x00%an%x00%at%x00%D%x00%s%x1e';
 
-  Future<List<GitCommit>> logAll({int limit = 200}) async {
-    final output = await _run("log --all --format='$_graphFormat' -n $limit");
+  Future<List<GitCommit>> logAll({int limit = 200, int skip = 0}) async {
+    var cmd = "log --all --format='$_graphFormat' -n $limit";
+    if (skip > 0) cmd += ' --skip=$skip';
+    final output = await _run(cmd);
     return _parseGraphCommits(output);
   }
 
@@ -176,21 +183,16 @@ class GitCommandService {
 
   Future<void> deleteBranch(String name) async => await _run('branch -d ${_shellEscape(name)}');
 
-  // Tags — use `git tag -l` + `git rev-parse --short` for compatibility
   Future<List<GitTag>> tags() async {
-    final output = await _run('tag -l');
+    final output = await _run("tag -l --format='%(refname:short)%x00%(objectname:short)'");
     if (output.trim().isEmpty) return [];
-    final names = output.trim().split('\n').where((l) => l.isNotEmpty).toList();
-    final tags = <GitTag>[];
-    for (final name in names) {
-      try {
-        final shaOut = await _run('rev-parse --short ${_shellEscape(name.trim())}');
-        tags.add(GitTag(name: name.trim(), shortSha: shaOut.trim()));
-      } catch (_) {
-        tags.add(GitTag(name: name.trim(), shortSha: ''));
-      }
-    }
-    return tags;
+    return output.trim().split('\n').where((l) => l.isNotEmpty).map((line) {
+      final parts = line.split('\x00');
+      return GitTag(
+        name: parts[0].trim(),
+        shortSha: parts.length > 1 ? parts[1].trim() : '',
+      );
+    }).toList();
   }
 
   Future<void> deleteTag(String name) async => await _run('tag -d ${_shellEscape(name)}');
@@ -199,11 +201,16 @@ class GitCommandService {
 
   // Status
   Future<GitStatus> status() async {
-    final branchName = await currentBranch();
-    final output = await _run('status --porcelain=v2');
+    final output = await _run('status --porcelain=v2 -b');
     final entries = <GitStatusEntry>[];
+    var branchName = '';
 
     for (final line in output.split('\n').where((l) => l.isNotEmpty)) {
+      if (line.startsWith('# branch.head ')) {
+        branchName = line.substring('# branch.head '.length).trim();
+        continue;
+      }
+      if (line.startsWith('#')) continue;
       if (line.startsWith('1 ')) {
         final parts = line.split(' ');
         if (parts.length >= 9) {

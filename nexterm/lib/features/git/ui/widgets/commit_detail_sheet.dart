@@ -47,7 +47,9 @@ class _CommitDetailSheetState extends State<CommitDetailSheet> {
   void _openFileDiff(CommitFileChange file) async {
     final diffs = await widget.gitNotifier.getCommitFileDiff(widget.commit.sha, file.path);
     if (!mounted) return;
-    Navigator.of(context).push(MaterialPageRoute(
+    final nav = Navigator.of(context, rootNavigator: true);
+    nav.pop();
+    nav.push(MaterialPageRoute(
       builder: (_) => Scaffold(
         appBar: AppBar(title: Text(file.path.split('/').last)),
         body: DiffView(diffs: diffs),
@@ -82,15 +84,16 @@ class _CommitDetailSheetState extends State<CommitDetailSheet> {
 
     return DraggableScrollableSheet(
       initialChildSize: 0.7,
-      minChildSize: 0.4,
+      minChildSize: 0.25,
       maxChildSize: 0.95,
+      snap: true,
+      snapSizes: const [0.4, 0.7],
       builder: (context, scrollController) {
-        return Material(
-          color: isDark ? OutdoorColors.darkBg : OutdoorColors.lightBg,
-          borderRadius:
-              const BorderRadius.vertical(top: Radius.circular(16)),
-          clipBehavior: Clip.antiAlias,
-          child: ListView(controller: scrollController, children: [
+        return ClipRRect(
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+          child: Material(
+            color: isDark ? OutdoorColors.darkBg : OutdoorColors.lightBg,
+            child: ListView(controller: scrollController, children: [
             Center(
                 child: Container(
                     margin: const EdgeInsets.only(top: 8, bottom: 12),
@@ -186,7 +189,7 @@ class _CommitDetailSheetState extends State<CommitDetailSheet> {
                   onTap: () => _openFileDiff(f)))),
             const SizedBox(height: 32),
           ]),
-        );
+        ));
       },
     );
   }

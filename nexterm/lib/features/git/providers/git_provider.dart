@@ -72,68 +72,92 @@ class GitNotifier extends ChangeNotifier {
   }
 
   Future<void> loadAll() async {
+    final sw = Stopwatch()..start();
     _update(_state.copyWith(isLoading: true, error: () => null));
     try {
-      final check = await _service.isGitRepo();
-      if (!check.isRepo) {
-        _update(_state.copyWith(isLoading: false, isRepo: false, error: () => check.error));
-        return;
-      }
-      final results = await Future.wait([
-        _service.log(),
-        _service.branches(),
-        _service.tags(),
-        _service.status(),
-      ]);
+      final status = await _service.status();
+      assert(() { debugPrint('[Git] loadAll: status done ${sw.elapsedMilliseconds}ms'); return true; }());
       _update(_state.copyWith(
         isLoading: false,
         isRepo: true,
-        commits: results[0] as List<GitCommit>,
-        branches: results[1] as List<GitBranch>,
-        tags: results[2] as List<GitTag>,
-        status: () => results[3] as GitStatus,
-        currentBranch: (results[3] as GitStatus).currentBranch,
+        status: () => status,
+        currentBranch: status.currentBranch,
       ));
+      await Future.wait([
+        refreshBranches(),
+        refreshTags(),
+      ]);
+      assert(() { debugPrint('[Git] loadAll: all done ${sw.elapsedMilliseconds}ms'); return true; }());
+    } on GitCommandException catch (e) {
+      assert(() { debugPrint('[Git] loadAll: status failed ${sw.elapsedMilliseconds}ms, checking repo'); return true; }());
+      final check = await _service.isGitRepo();
+      if (!check.isRepo) {
+        _update(_state.copyWith(isLoading: false, isRepo: false, error: () => check.error));
+      } else {
+        _update(_state.copyWith(isLoading: false, isRepo: true, error: () => e.toString()));
+      }
     } catch (e) {
       _update(_state.copyWith(isLoading: false, isRepo: true, error: () => e.toString()));
     }
   }
 
+  List<GitCommit> _graphCommits = [];
+
   Future<void> loadGraph() async {
     try {
-      final commits = await _service.logAll();
-      final rows = GraphLayoutService.computeLayout(commits);
+      _graphCommits = await _service.logAll();
+      final rows = GraphLayoutService.computeLayout(_graphCommits);
       _update(_state.copyWith(graphRows: rows));
     } catch (e) {
-      debugPrint('loadGraph error: $e');
+      assert(() { debugPrint('[Git] loadGraph error: $e'); return true; }());
     }
   }
 
+  Future<List<GraphRow>> loadMoreGraph({
+    required int skip,
+    required List<GraphRow> existingRows,
+  }) async {
+    final moreCommits = await _service.logAll(skip: skip);
+    if (moreCommits.isEmpty) return existingRows;
+    _graphCommits = [..._graphCommits, ...moreCommits];
+    final rows = GraphLayoutService.computeLayout(_graphCommits);
+    _update(_state.copyWith(graphRows: rows));
+    return rows;
+  }
+
   Future<void> refreshStatus() async {
+    final sw = Stopwatch()..start();
     try {
       final status = await _service.status();
+      assert(() { debugPrint('[Git] refreshStatus ${sw.elapsedMilliseconds}ms'); return true; }());
       _update(_state.copyWith(
         status: () => status,
         currentBranch: status.currentBranch,
       ));
     } catch (e) {
-      debugPrint('refreshStatus error: $e');
+      assert(() { debugPrint('[Git] refreshStatus error ${sw.elapsedMilliseconds}ms: $e'); return true; }());
     }
   }
 
   Future<void> refreshBranches() async {
+    final sw = Stopwatch()..start();
     try {
-      _update(_state.copyWith(branches: await _service.branches()));
+      final branches = await _service.branches();
+      assert(() { debugPrint('[Git] refreshBranches ${sw.elapsedMilliseconds}ms count=${branches.length}'); return true; }());
+      _update(_state.copyWith(branches: branches));
     } catch (e) {
-      debugPrint('refreshBranches error: $e');
+      assert(() { debugPrint('[Git] refreshBranches error ${sw.elapsedMilliseconds}ms: $e'); return true; }());
     }
   }
 
   Future<void> refreshTags() async {
+    final sw = Stopwatch()..start();
     try {
-      _update(_state.copyWith(tags: await _service.tags()));
+      final tags = await _service.tags();
+      assert(() { debugPrint('[Git] refreshTags ${sw.elapsedMilliseconds}ms count=${tags.length}'); return true; }());
+      _update(_state.copyWith(tags: tags));
     } catch (e) {
-      debugPrint('refreshTags error: $e');
+      assert(() { debugPrint('[Git] refreshTags error ${sw.elapsedMilliseconds}ms: $e'); return true; }());
     }
   }
 
