@@ -16,6 +16,7 @@ class HostEntity {
   final String? startupSnippetId;
   final String? startupCommand;
   final DateTime? lastConnected;
+  final ConnectionType? lastConnectionType;
   final int sortOrder;
 
   const HostEntity({
@@ -34,6 +35,7 @@ class HostEntity {
     this.startupSnippetId,
     this.startupCommand,
     this.lastConnected,
+    this.lastConnectionType,
     this.sortOrder = 0,
   });
 
@@ -53,6 +55,7 @@ class HostEntity {
     String? Function()? startupSnippetId,
     String? Function()? startupCommand,
     DateTime? Function()? lastConnected,
+    ConnectionType? Function()? lastConnectionType,
     int? sortOrder,
   }) {
     return HostEntity(
@@ -71,6 +74,7 @@ class HostEntity {
       startupSnippetId: startupSnippetId != null ? startupSnippetId() : this.startupSnippetId,
       startupCommand: startupCommand != null ? startupCommand() : this.startupCommand,
       lastConnected: lastConnected != null ? lastConnected() : this.lastConnected,
+      lastConnectionType: lastConnectionType != null ? lastConnectionType() : this.lastConnectionType,
       sortOrder: sortOrder ?? this.sortOrder,
     );
   }

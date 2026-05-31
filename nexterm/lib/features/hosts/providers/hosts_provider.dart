@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nexterm/data/repositories/host_repository_impl.dart';
+import 'package:nexterm/domain/entities/enums.dart';
 import 'package:nexterm/domain/entities/host_entity.dart';
 import 'package:nexterm/domain/repositories/host_repository.dart';
 import 'package:nexterm/main.dart';
@@ -54,10 +55,13 @@ class HostsNotifier extends StateNotifier<AsyncValue<void>> {
     await _repo.update(host.copyWith(isFavorite: !host.isFavorite));
   }
 
-  Future<void> updateLastConnected(String hostId) async {
+  Future<void> updateLastConnected(String hostId, {ConnectionType? connectionType}) async {
     final host = await _repo.getById(hostId);
     if (host != null) {
-      await _repo.update(host.copyWith(lastConnected: () => DateTime.now()));
+      await _repo.update(host.copyWith(
+        lastConnected: () => DateTime.now(),
+        lastConnectionType: connectionType != null ? () => connectionType : null,
+      ));
     }
   }
 

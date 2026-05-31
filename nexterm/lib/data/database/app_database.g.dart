@@ -181,6 +181,17 @@ class $HostsTable extends Hosts with TableInfo<$HostsTable, Host> {
         type: DriftSqlType.dateTime,
         requiredDuringInsert: false,
       );
+  static const VerificationMeta _lastConnectionTypeMeta =
+      const VerificationMeta('lastConnectionType');
+  @override
+  late final GeneratedColumn<String> lastConnectionType =
+      GeneratedColumn<String>(
+        'last_connection_type',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
   static const VerificationMeta _sortOrderMeta = const VerificationMeta(
     'sortOrder',
   );
@@ -234,6 +245,7 @@ class $HostsTable extends Hosts with TableInfo<$HostsTable, Host> {
     startupSnippetId,
     startupCommand,
     lastConnected,
+    lastConnectionType,
     sortOrder,
     createdAt,
     updatedAt,
@@ -356,6 +368,15 @@ class $HostsTable extends Hosts with TableInfo<$HostsTable, Host> {
         ),
       );
     }
+    if (data.containsKey('last_connection_type')) {
+      context.handle(
+        _lastConnectionTypeMeta,
+        lastConnectionType.isAcceptableOrUnknown(
+          data['last_connection_type']!,
+          _lastConnectionTypeMeta,
+        ),
+      );
+    }
     if (data.containsKey('sort_order')) {
       context.handle(
         _sortOrderMeta,
@@ -452,6 +473,10 @@ class $HostsTable extends Hosts with TableInfo<$HostsTable, Host> {
         DriftSqlType.dateTime,
         data['${effectivePrefix}last_connected'],
       ),
+      lastConnectionType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_connection_type'],
+      ),
       sortOrder:
           attachedDatabase.typeMapping.read(
             DriftSqlType.int,
@@ -492,6 +517,7 @@ class Host extends DataClass implements Insertable<Host> {
   final String? startupSnippetId;
   final String? startupCommand;
   final DateTime? lastConnected;
+  final String? lastConnectionType;
   final int sortOrder;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -511,6 +537,7 @@ class Host extends DataClass implements Insertable<Host> {
     this.startupSnippetId,
     this.startupCommand,
     this.lastConnected,
+    this.lastConnectionType,
     required this.sortOrder,
     required this.createdAt,
     required this.updatedAt,
@@ -544,6 +571,9 @@ class Host extends DataClass implements Insertable<Host> {
     }
     if (!nullToAbsent || lastConnected != null) {
       map['last_connected'] = Variable<DateTime>(lastConnected);
+    }
+    if (!nullToAbsent || lastConnectionType != null) {
+      map['last_connection_type'] = Variable<String>(lastConnectionType);
     }
     map['sort_order'] = Variable<int>(sortOrder);
     map['created_at'] = Variable<DateTime>(createdAt);
@@ -582,6 +612,10 @@ class Host extends DataClass implements Insertable<Host> {
           lastConnected == null && nullToAbsent
               ? const Value.absent()
               : Value(lastConnected),
+      lastConnectionType:
+          lastConnectionType == null && nullToAbsent
+              ? const Value.absent()
+              : Value(lastConnectionType),
       sortOrder: Value(sortOrder),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
@@ -609,6 +643,9 @@ class Host extends DataClass implements Insertable<Host> {
       startupSnippetId: serializer.fromJson<String?>(json['startupSnippetId']),
       startupCommand: serializer.fromJson<String?>(json['startupCommand']),
       lastConnected: serializer.fromJson<DateTime?>(json['lastConnected']),
+      lastConnectionType: serializer.fromJson<String?>(
+        json['lastConnectionType'],
+      ),
       sortOrder: serializer.fromJson<int>(json['sortOrder']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
@@ -633,6 +670,7 @@ class Host extends DataClass implements Insertable<Host> {
       'startupSnippetId': serializer.toJson<String?>(startupSnippetId),
       'startupCommand': serializer.toJson<String?>(startupCommand),
       'lastConnected': serializer.toJson<DateTime?>(lastConnected),
+      'lastConnectionType': serializer.toJson<String?>(lastConnectionType),
       'sortOrder': serializer.toJson<int>(sortOrder),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
@@ -655,6 +693,7 @@ class Host extends DataClass implements Insertable<Host> {
     Value<String?> startupSnippetId = const Value.absent(),
     Value<String?> startupCommand = const Value.absent(),
     Value<DateTime?> lastConnected = const Value.absent(),
+    Value<String?> lastConnectionType = const Value.absent(),
     int? sortOrder,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -679,6 +718,10 @@ class Host extends DataClass implements Insertable<Host> {
         startupCommand.present ? startupCommand.value : this.startupCommand,
     lastConnected:
         lastConnected.present ? lastConnected.value : this.lastConnected,
+    lastConnectionType:
+        lastConnectionType.present
+            ? lastConnectionType.value
+            : this.lastConnectionType,
     sortOrder: sortOrder ?? this.sortOrder,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
@@ -711,6 +754,10 @@ class Host extends DataClass implements Insertable<Host> {
           data.lastConnected.present
               ? data.lastConnected.value
               : this.lastConnected,
+      lastConnectionType:
+          data.lastConnectionType.present
+              ? data.lastConnectionType.value
+              : this.lastConnectionType,
       sortOrder: data.sortOrder.present ? data.sortOrder.value : this.sortOrder,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
@@ -735,6 +782,7 @@ class Host extends DataClass implements Insertable<Host> {
           ..write('startupSnippetId: $startupSnippetId, ')
           ..write('startupCommand: $startupCommand, ')
           ..write('lastConnected: $lastConnected, ')
+          ..write('lastConnectionType: $lastConnectionType, ')
           ..write('sortOrder: $sortOrder, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
@@ -759,6 +807,7 @@ class Host extends DataClass implements Insertable<Host> {
     startupSnippetId,
     startupCommand,
     lastConnected,
+    lastConnectionType,
     sortOrder,
     createdAt,
     updatedAt,
@@ -782,6 +831,7 @@ class Host extends DataClass implements Insertable<Host> {
           other.startupSnippetId == this.startupSnippetId &&
           other.startupCommand == this.startupCommand &&
           other.lastConnected == this.lastConnected &&
+          other.lastConnectionType == this.lastConnectionType &&
           other.sortOrder == this.sortOrder &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
@@ -803,6 +853,7 @@ class HostsCompanion extends UpdateCompanion<Host> {
   final Value<String?> startupSnippetId;
   final Value<String?> startupCommand;
   final Value<DateTime?> lastConnected;
+  final Value<String?> lastConnectionType;
   final Value<int> sortOrder;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
@@ -823,6 +874,7 @@ class HostsCompanion extends UpdateCompanion<Host> {
     this.startupSnippetId = const Value.absent(),
     this.startupCommand = const Value.absent(),
     this.lastConnected = const Value.absent(),
+    this.lastConnectionType = const Value.absent(),
     this.sortOrder = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
@@ -844,6 +896,7 @@ class HostsCompanion extends UpdateCompanion<Host> {
     this.startupSnippetId = const Value.absent(),
     this.startupCommand = const Value.absent(),
     this.lastConnected = const Value.absent(),
+    this.lastConnectionType = const Value.absent(),
     this.sortOrder = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
@@ -869,6 +922,7 @@ class HostsCompanion extends UpdateCompanion<Host> {
     Expression<String>? startupSnippetId,
     Expression<String>? startupCommand,
     Expression<DateTime>? lastConnected,
+    Expression<String>? lastConnectionType,
     Expression<int>? sortOrder,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
@@ -890,6 +944,8 @@ class HostsCompanion extends UpdateCompanion<Host> {
       if (startupSnippetId != null) 'startup_snippet_id': startupSnippetId,
       if (startupCommand != null) 'startup_command': startupCommand,
       if (lastConnected != null) 'last_connected': lastConnected,
+      if (lastConnectionType != null)
+        'last_connection_type': lastConnectionType,
       if (sortOrder != null) 'sort_order': sortOrder,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
@@ -913,6 +969,7 @@ class HostsCompanion extends UpdateCompanion<Host> {
     Value<String?>? startupSnippetId,
     Value<String?>? startupCommand,
     Value<DateTime?>? lastConnected,
+    Value<String?>? lastConnectionType,
     Value<int>? sortOrder,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
@@ -934,6 +991,7 @@ class HostsCompanion extends UpdateCompanion<Host> {
       startupSnippetId: startupSnippetId ?? this.startupSnippetId,
       startupCommand: startupCommand ?? this.startupCommand,
       lastConnected: lastConnected ?? this.lastConnected,
+      lastConnectionType: lastConnectionType ?? this.lastConnectionType,
       sortOrder: sortOrder ?? this.sortOrder,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
@@ -989,6 +1047,9 @@ class HostsCompanion extends UpdateCompanion<Host> {
     if (lastConnected.present) {
       map['last_connected'] = Variable<DateTime>(lastConnected.value);
     }
+    if (lastConnectionType.present) {
+      map['last_connection_type'] = Variable<String>(lastConnectionType.value);
+    }
     if (sortOrder.present) {
       map['sort_order'] = Variable<int>(sortOrder.value);
     }
@@ -1022,6 +1083,7 @@ class HostsCompanion extends UpdateCompanion<Host> {
           ..write('startupSnippetId: $startupSnippetId, ')
           ..write('startupCommand: $startupCommand, ')
           ..write('lastConnected: $lastConnected, ')
+          ..write('lastConnectionType: $lastConnectionType, ')
           ..write('sortOrder: $sortOrder, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
@@ -3403,6 +3465,7 @@ typedef $$HostsTableCreateCompanionBuilder =
       Value<String?> startupSnippetId,
       Value<String?> startupCommand,
       Value<DateTime?> lastConnected,
+      Value<String?> lastConnectionType,
       Value<int> sortOrder,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
@@ -3425,6 +3488,7 @@ typedef $$HostsTableUpdateCompanionBuilder =
       Value<String?> startupSnippetId,
       Value<String?> startupCommand,
       Value<DateTime?> lastConnected,
+      Value<String?> lastConnectionType,
       Value<int> sortOrder,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
@@ -3535,6 +3599,11 @@ class $$HostsTableFilterComposer extends Composer<_$AppDatabase, $HostsTable> {
 
   ColumnFilters<DateTime> get lastConnected => $composableBuilder(
     column: $table.lastConnected,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastConnectionType => $composableBuilder(
+    column: $table.lastConnectionType,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3663,6 +3732,11 @@ class $$HostsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get lastConnectionType => $composableBuilder(
+    column: $table.lastConnectionType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get sortOrder => $composableBuilder(
     column: $table.sortOrder,
     builder: (column) => ColumnOrderings(column),
@@ -3740,6 +3814,11 @@ class $$HostsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get lastConnected => $composableBuilder(
     column: $table.lastConnected,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lastConnectionType => $composableBuilder(
+    column: $table.lastConnectionType,
     builder: (column) => column,
   );
 
@@ -3821,6 +3900,7 @@ class $$HostsTableTableManager
                 Value<String?> startupSnippetId = const Value.absent(),
                 Value<String?> startupCommand = const Value.absent(),
                 Value<DateTime?> lastConnected = const Value.absent(),
+                Value<String?> lastConnectionType = const Value.absent(),
                 Value<int> sortOrder = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
@@ -3841,6 +3921,7 @@ class $$HostsTableTableManager
                 startupSnippetId: startupSnippetId,
                 startupCommand: startupCommand,
                 lastConnected: lastConnected,
+                lastConnectionType: lastConnectionType,
                 sortOrder: sortOrder,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
@@ -3863,6 +3944,7 @@ class $$HostsTableTableManager
                 Value<String?> startupSnippetId = const Value.absent(),
                 Value<String?> startupCommand = const Value.absent(),
                 Value<DateTime?> lastConnected = const Value.absent(),
+                Value<String?> lastConnectionType = const Value.absent(),
                 Value<int> sortOrder = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
@@ -3883,6 +3965,7 @@ class $$HostsTableTableManager
                 startupSnippetId: startupSnippetId,
                 startupCommand: startupCommand,
                 lastConnected: lastConnected,
+                lastConnectionType: lastConnectionType,
                 sortOrder: sortOrder,
                 createdAt: createdAt,
                 updatedAt: updatedAt,

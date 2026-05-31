@@ -28,6 +28,9 @@ class HostsDao extends DatabaseAccessor<AppDatabase> with _$HostsDaoMixin {
       startupSnippetId: row.startupSnippetId,
       startupCommand: row.startupCommand,
       lastConnected: row.lastConnected,
+      lastConnectionType: row.lastConnectionType != null
+          ? ConnectionType.values.byName(row.lastConnectionType!)
+          : null,
       sortOrder: row.sortOrder,
     );
   }
@@ -49,6 +52,7 @@ class HostsDao extends DatabaseAccessor<AppDatabase> with _$HostsDaoMixin {
       startupSnippetId: Value(entity.startupSnippetId),
       startupCommand: Value(entity.startupCommand),
       lastConnected: Value(entity.lastConnected),
+      lastConnectionType: Value(entity.lastConnectionType?.name),
       sortOrder: Value(entity.sortOrder),
       updatedAt: Value(DateTime.now()),
     );

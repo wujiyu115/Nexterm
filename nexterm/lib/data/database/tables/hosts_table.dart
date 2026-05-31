@@ -16,6 +16,7 @@ class Hosts extends Table {
   TextColumn get startupSnippetId => text().nullable()();
   TextColumn get startupCommand => text().nullable()();
   DateTimeColumn get lastConnected => dateTime().nullable()();
+  TextColumn get lastConnectionType => text().nullable()();
   IntColumn get sortOrder => integer().withDefault(const Constant(0))();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();

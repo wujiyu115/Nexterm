@@ -96,7 +96,7 @@ class TerminalActions {
   ///
   /// Looks up the host (and key if needed) from providers.
   /// Returns the SSH session ID on success, or null on failure.
-  Future<String?> connectHost(String hostId) async {
+  Future<String?> connectHost(String hostId, {ConnectionType connectionType = ConnectionType.ssh}) async {
     // Look up host entity.
     final hostAsync = await _ref.read(hostByIdProvider(hostId).future);
     if (hostAsync == null) {
@@ -108,6 +108,7 @@ class TerminalActions {
     // Create tab.
     final tab = _tabManager.addTab(hostId: hostId, title: host.name);
     _tabManager.updateTabStatus(tab.id, ConnectionStatus.connecting);
+    _tabManager.updateTabConnectionType(tab.id, connectionType);
 
     // Create a Terminal instance for this tab.
     final scrollback = _ref.read(terminalScrollbackProvider);
@@ -128,7 +129,7 @@ class TerminalActions {
       _tabManager.updateTabSessionId(tab.id, sessionId);
 
       // --- Gap 1: update lastConnected timestamp ---
-      _ref.read(hostsNotifierProvider.notifier).updateLastConnected(hostId);
+      _ref.read(hostsNotifierProvider.notifier).updateLastConnected(hostId, connectionType: connectionType);
 
       // Wire terminal output and resize BEFORE listening to stdout, so that
       // any autoResize triggered by TerminalView is forwarded to the remote

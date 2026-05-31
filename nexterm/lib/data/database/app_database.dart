@@ -27,7 +27,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration {
@@ -41,6 +41,7 @@ class AppDatabase extends _$AppDatabase {
         if (from < 4) await m.createTable(appSettings);
         if (from < 5) await m.addColumn(hosts, hosts.startupCommand);
         if (from < 6) await m.createTable(gitRepos);
+        if (from < 7) await m.addColumn(hosts, hosts.lastConnectionType);
       },
     );
   }

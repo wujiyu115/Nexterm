@@ -8,6 +8,7 @@ class TerminalTab {
   final String hostId;
   String title;
   ConnectionStatus status;
+  ConnectionType connectionType;
   String? sessionId;
 
   TerminalTab({
@@ -15,6 +16,7 @@ class TerminalTab {
     required this.hostId,
     required this.title,
     this.status = ConnectionStatus.disconnected,
+    this.connectionType = ConnectionType.ssh,
     this.sessionId,
   });
 
@@ -23,6 +25,7 @@ class TerminalTab {
     String? hostId,
     String? title,
     ConnectionStatus? status,
+    ConnectionType? connectionType,
     String? Function()? sessionId,
   }) {
     return TerminalTab(
@@ -30,6 +33,7 @@ class TerminalTab {
       hostId: hostId ?? this.hostId,
       title: title ?? this.title,
       status: status ?? this.status,
+      connectionType: connectionType ?? this.connectionType,
       sessionId: sessionId != null ? sessionId() : this.sessionId,
     );
   }
@@ -100,6 +104,14 @@ class TabManager extends ChangeNotifier {
     final index = _tabs.indexWhere((t) => t.id == tabId);
     if (index == -1) return;
     _tabs[index].status = status;
+    notifyListeners();
+  }
+
+  /// Updates the connection type of the tab identified by [tabId].
+  void updateTabConnectionType(String tabId, ConnectionType type) {
+    final index = _tabs.indexWhere((t) => t.id == tabId);
+    if (index == -1) return;
+    _tabs[index].connectionType = type;
     notifyListeners();
   }
 

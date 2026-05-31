@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nexterm/domain/entities/enums.dart';
 import 'package:nexterm/domain/entities/host_entity.dart';
 import 'package:nexterm/core/theme/outdoor_colors.dart';
 import 'package:nexterm/shared/widgets/section_label.dart';
@@ -91,7 +92,7 @@ class _HostsScreenState extends ConsumerState<HostsScreen> {
     final l = AppLocalizations.of(context)!;
     final sessionId = await ref
         .read(terminalActionsProvider)
-        .connectHost(host.id);
+        .connectHost(host.id, connectionType: ConnectionType.sftp);
     if (!mounted) return;
     if (sessionId == null) {
       ScaffoldMessenger.of(context).showSnackBar(

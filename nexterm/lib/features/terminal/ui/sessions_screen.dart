@@ -127,8 +127,9 @@ class _ActiveSessionCard extends ConsumerWidget {
       ConnectionStatus.error => const Color(0xFFF38BA8),
     };
 
+    final typeLabel = tab.connectionType == ConnectionType.sftp ? 'sftp' : 'ssh';
     final subtitle = host != null
-        ? 'ssh · ${host.username} · ${host.hostname}:${host.port}'
+        ? '$typeLabel · ${host.username} · ${host.hostname}:${host.port}'
         : tab.title;
 
     return GlassCard(
@@ -136,7 +137,11 @@ class _ActiveSessionCard extends ConsumerWidget {
         final tabManager = ref.read(tabManagerProvider);
         final index = tabManager.tabs.indexWhere((t) => t.id == tab.id);
         if (index >= 0) tabManager.setActiveTab(index);
-        context.push('/terminal/session/${tab.id}');
+        if (tab.connectionType == ConnectionType.sftp && tab.sessionId != null) {
+          context.push('/sftp/${tab.sessionId}');
+        } else {
+          context.push('/terminal/session/${tab.id}');
+        }
       },
       child: Row(
         children: [
@@ -191,16 +196,32 @@ class _ActiveSessionCard extends ConsumerWidget {
   }
 }
 
-class _HostCard extends StatelessWidget {
+class _HostCard extends ConsumerWidget {
   final HostEntity host;
   const _HostCard({required this.host});
 
+  Future<void> _connectSftp(BuildContext context, WidgetRef ref) async {
+    final sessionId = await ref.read(terminalActionsProvider).connectHost(host.id, connectionType: ConnectionType.sftp);
+    if (!context.mounted) return;
+    if (sessionId != null) {
+      context.push('/sftp/$sessionId');
+    }
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isSftp = host.lastConnectionType == ConnectionType.sftp;
+    final typeLabel = isSftp ? 'sftp' : 'ssh';
 
     return GlassCard(
-      onTap: () => context.push('/terminal/connect/${host.id}'),
+      onTap: () {
+        if (isSftp) {
+          _connectSftp(context, ref);
+        } else {
+          context.push('/terminal/connect/${host.id}');
+        }
+      },
       child: Row(
         children: [
           Container(
@@ -210,7 +231,7 @@ class _HostCard extends StatelessWidget {
               color: OutdoorColors.accentDim,
               borderRadius: BorderRadius.circular(10),
             ),
-            child: const Icon(Icons.dns_outlined, size: 18, color: OutdoorColors.accent),
+            child: Icon(isSftp ? Icons.folder_outlined : Icons.dns_outlined, size: 18, color: OutdoorColors.accent),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -228,7 +249,7 @@ class _HostCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  '${host.username}@${host.hostname}:${host.port}',
+                  '$typeLabel · ${host.username}@${host.hostname}:${host.port}',
                   style: TextStyle(
                     fontSize: 12,
                     color: isDark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary,

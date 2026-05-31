@@ -66,3 +66,8 @@ enum ForwardStatus {
   inactive,
   error;
 }
+
+enum ConnectionType {
+  ssh,
+  sftp;
+}
