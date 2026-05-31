@@ -1087,6 +1087,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sftp_view => 'View';
 
   @override
+  String get sftp_viewImage => 'View Image';
+
+  @override
   String get sftp_edit => 'Edit';
 
   @override
@@ -1125,6 +1128,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get fileEditor_modified => 'Modified';
+
+  @override
+  String get fileEditor_renderMarkdown => 'Render Markdown';
+
+  @override
+  String get fileEditor_markdownSource => 'View Source';
 
   @override
   String transfer_title(int count) {

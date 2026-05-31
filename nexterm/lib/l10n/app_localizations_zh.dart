@@ -1059,6 +1059,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get sftp_view => '查看';
 
   @override
+  String get sftp_viewImage => '查看图片';
+
+  @override
   String get sftp_edit => '编辑';
 
   @override
@@ -1097,6 +1100,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get fileEditor_modified => '已修改';
+
+  @override
+  String get fileEditor_renderMarkdown => '渲染 Markdown';
+
+  @override
+  String get fileEditor_markdownSource => '查看源码';
 
   @override
   String transfer_title(int count) {

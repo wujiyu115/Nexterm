@@ -361,6 +361,7 @@
   "sftp_sort": "Sort",
   "sftp_refresh": "Refresh",
   "sftp_view": "View",
+  "sftp_viewImage": "View Image",
   "sftp_edit": "Edit",
   "sftp_permissions": "Permissions",
   "sftp_goToPath": "Go to Path",
@@ -374,6 +375,8 @@
   "fileEditor_save": "Save",
   "fileEditor_loadFailed": "Failed to load file: {error}",
   "fileEditor_modified": "Modified",
+  "fileEditor_renderMarkdown": "Render Markdown",
+  "fileEditor_markdownSource": "View Source",
 
   "transfer_title": "Transfers ({count})",
   "transfer_clearDone": "Clear done",

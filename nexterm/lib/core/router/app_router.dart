@@ -15,6 +15,7 @@ import 'package:nexterm/features/terminal/ui/terminal_screen.dart';
 import 'package:nexterm/features/terminal/ui/sessions_screen.dart';
 import 'package:nexterm/features/sftp/ui/sftp_screen.dart';
 import 'package:nexterm/features/sftp/ui/file_editor_screen.dart';
+import 'package:nexterm/features/sftp/ui/image_viewer_screen.dart';
 import 'package:nexterm/features/settings/ui/settings_screen.dart';
 import 'package:nexterm/features/terminal/ui/toolbar_customize_screen.dart';
 import 'package:nexterm/features/git/ui/git_screen.dart';
@@ -125,6 +126,17 @@ final appRouter = GoRouter(
           sessionId: extra['sessionId']!,
           filePath: extra['path']!,
           viewOnly: extra['viewOnly'] == 'true',
+        );
+      },
+    ),
+    GoRoute(
+      path: '/sftp/image',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) {
+        final extra = state.extra as Map<String, String>;
+        return ImageViewerScreen(
+          sessionId: extra['sessionId']!,
+          filePath: extra['path']!,
         );
       },
     ),

@@ -10,6 +10,7 @@ import 'package:nexterm/features/sftp/services/sftp_service.dart';
 import 'package:nexterm/features/sftp/ui/widgets/file_breadcrumb.dart';
 import 'package:nexterm/features/sftp/ui/widgets/file_list_view.dart';
 import 'package:nexterm/features/sftp/ui/widgets/permission_dialog.dart';
+import 'package:nexterm/features/sftp/ui/utils/file_icon.dart';
 import 'package:nexterm/features/sftp/ui/widgets/transfer_queue_bar.dart';
 import 'package:nexterm/features/terminal/providers/terminal_provider.dart';
 import 'package:go_router/go_router.dart';
@@ -129,7 +130,22 @@ class _SftpScreenState extends ConsumerState<SftpScreen> {
       builder: (ctx) => CupertinoActionSheet(
         title: Text(file.name),
         actions: [
-          if (!file.isDirectory) ...[
+          if (!file.isDirectory && isImageFile(file.name))
+            CupertinoActionSheetAction(
+              onPressed: () {
+                Navigator.pop(ctx);
+                context.push('/sftp/image', extra: {'sessionId': widget.sessionId, 'path': file.path});
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(CupertinoIcons.photo, size: 20),
+                  const SizedBox(width: 8),
+                  Text(l.sftp_viewImage),
+                ],
+              ),
+            ),
+          if (!file.isDirectory && isEditableFile(file.name)) ...[
             CupertinoActionSheetAction(
               onPressed: () {
                 Navigator.pop(ctx);

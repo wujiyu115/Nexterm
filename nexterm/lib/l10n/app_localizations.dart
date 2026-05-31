@@ -2090,6 +2090,12 @@ abstract class AppLocalizations {
   /// **'查看'**
   String get sftp_view;
 
+  /// No description provided for @sftp_viewImage.
+  ///
+  /// In zh, this message translates to:
+  /// **'查看图片'**
+  String get sftp_viewImage;
+
   /// No description provided for @sftp_edit.
   ///
   /// In zh, this message translates to:
@@ -2161,6 +2167,18 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'已修改'**
   String get fileEditor_modified;
+
+  /// No description provided for @fileEditor_renderMarkdown.
+  ///
+  /// In zh, this message translates to:
+  /// **'渲染 Markdown'**
+  String get fileEditor_renderMarkdown;
+
+  /// No description provided for @fileEditor_markdownSource.
+  ///
+  /// In zh, this message translates to:
+  /// **'查看源码'**
+  String get fileEditor_markdownSource;
 
   /// No description provided for @transfer_title.
   ///

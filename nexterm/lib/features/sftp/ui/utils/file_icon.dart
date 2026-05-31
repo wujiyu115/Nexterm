@@ -531,6 +531,45 @@ String detectLanguage(String filename) {
   }
 }
 
+const _imageExtensions = {
+  'png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp', 'ico',
+  'tiff', 'tif', 'heic', 'heif', 'avif', 'svg',
+};
+
+const _binaryExtensions = {
+  // Audio
+  'mp3', 'wav', 'ogg', 'flac', 'aac', 'm4a', 'wma',
+  // Video
+  'mp4', 'mkv', 'avi', 'mov', 'wmv', 'flv', 'webm', 'm4v',
+  // Archives
+  'zip', 'gz', 'bz2', 'xz', 'tar', 'rar', '7z', 'zst',
+  'lz', 'lzma', 'tgz', 'tbz2', 'txz',
+  // Executables / binaries
+  'exe', 'msi', 'app', 'deb', 'rpm', 'apk', 'dmg', 'iso', 'img',
+  // Fonts
+  'ttf', 'otf', 'woff', 'woff2', 'eot',
+  // Databases
+  'db', 'sqlite', 'sqlite3',
+  // Office / PDF
+  'doc', 'docx', 'odt', 'xls', 'xlsx', 'ods',
+  'ppt', 'pptx', 'odp', 'pdf',
+  // Compiled objects
+  'o', 'so', 'dylib', 'dll', 'a', 'lib', 'class', 'pyc',
+};
+
+bool isImageFile(String filename) =>
+    _imageExtensions.contains(_extension(filename));
+
+bool isBinaryFile(String filename) {
+  final ext = _extension(filename);
+  return _binaryExtensions.contains(ext) || _imageExtensions.contains(ext);
+}
+
+bool isViewableFile(String filename) => !isBinaryFile(filename) || isImageFile(filename);
+
+bool isEditableFile(String filename) =>
+    !isBinaryFile(filename) && !isImageFile(filename);
+
 /// Extracts the lowercase file extension (without leading dot) from [filename].
 /// Returns the full lowercase filename for files without a dot (e.g. "Makefile").
 String _extension(String filename) {

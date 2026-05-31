@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:nexterm/core/theme/outdoor_colors.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_highlight/flutter_highlight.dart';
@@ -41,9 +42,12 @@ class _FileEditorScreenState extends ConsumerState<FileEditorScreen> {
   // Cursor / line tracking
   int _lineNumber = 1;
   int _columnNumber = 1;
+  bool _showMarkdownSource = false;
 
   String get _fileName => p.basename(widget.filePath);
   String get _language => detectLanguage(_fileName);
+  bool get _isMarkdown => const {'md', 'mdx', 'markdown'}
+      .contains(p.extension(_fileName).toLowerCase().replaceFirst('.', ''));
 
   @override
   void initState() {
@@ -170,6 +174,12 @@ class _FileEditorScreenState extends ConsumerState<FileEditorScreen> {
       appBar: AppBar(
         title: Text(title, style: const TextStyle(fontFamily: 'monospace')),
         actions: [
+          if (_isMarkdown && _isPreviewMode)
+            IconButton(
+              icon: Icon(_showMarkdownSource ? Icons.article_outlined : Icons.code),
+              tooltip: _showMarkdownSource ? l.fileEditor_renderMarkdown : l.fileEditor_markdownSource,
+              onPressed: () => setState(() => _showMarkdownSource = !_showMarkdownSource),
+            ),
           if (!widget.viewOnly)
             IconButton(
               icon: Icon(_isPreviewMode ? Icons.edit_outlined : Icons.preview),
@@ -247,8 +257,16 @@ class _FileEditorScreenState extends ConsumerState<FileEditorScreen> {
 
   Widget _buildPreview() {
     final code = _textController.text;
-    final lang = _language.isNotEmpty ? _language : 'plaintext';
 
+    if (_isMarkdown && !_showMarkdownSource) {
+      return Markdown(
+        data: code,
+        selectable: true,
+        padding: const EdgeInsets.all(12),
+      );
+    }
+
+    final lang = _language.isNotEmpty ? _language : 'plaintext';
     return SingleChildScrollView(
       child: HighlightView(
         code,

@@ -381,6 +381,7 @@
   "sftp_sort": "排序",
   "sftp_refresh": "刷新",
   "sftp_view": "查看",
+  "sftp_viewImage": "查看图片",
   "sftp_edit": "编辑",
   "sftp_permissions": "权限",
   "sftp_goToPath": "跳转路径",
@@ -396,6 +397,8 @@
   "fileEditor_loadFailed": "加载文件失败: {error}",
   "@fileEditor_loadFailed": { "placeholders": { "error": { "type": "String" } } },
   "fileEditor_modified": "已修改",
+  "fileEditor_renderMarkdown": "渲染 Markdown",
+  "fileEditor_markdownSource": "查看源码",
 
   "transfer_title": "传输 ({count})",
   "@transfer_title": { "placeholders": { "count": { "type": "int" } } },
