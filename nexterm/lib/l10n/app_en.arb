@@ -360,6 +360,11 @@
   "sftp_newFolder": "New Folder",
   "sftp_sort": "Sort",
   "sftp_refresh": "Refresh",
+  "sftp_view": "View",
+  "sftp_edit": "Edit",
+  "sftp_permissions": "Permissions",
+  "sftp_goToPath": "Go to Path",
+  "sftp_goToPathHint": "Enter remote path",
   "sftp_noFiles": "No files",
 
   "fileEditor_fileSaved": "File saved",

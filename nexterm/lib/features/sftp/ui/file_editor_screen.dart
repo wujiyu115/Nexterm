@@ -14,11 +14,13 @@ import 'package:path/path.dart' as p;
 class FileEditorScreen extends ConsumerStatefulWidget {
   final String sessionId;
   final String filePath;
+  final bool viewOnly;
 
   const FileEditorScreen({
     super.key,
     required this.sessionId,
     required this.filePath,
+    this.viewOnly = false,
   });
 
   @override
@@ -34,7 +36,7 @@ class _FileEditorScreenState extends ConsumerState<FileEditorScreen> {
   bool _isSaving = false;
   String? _loadError;
   bool _isModified = false;
-  bool _isPreviewMode = false;
+  late bool _isPreviewMode;
 
   // Cursor / line tracking
   int _lineNumber = 1;
@@ -46,6 +48,7 @@ class _FileEditorScreenState extends ConsumerState<FileEditorScreen> {
   @override
   void initState() {
     super.initState();
+    _isPreviewMode = widget.viewOnly;
     _textController = TextEditingController();
     _textController.addListener(_onTextChanged);
     _loadFile();
@@ -167,12 +170,13 @@ class _FileEditorScreenState extends ConsumerState<FileEditorScreen> {
       appBar: AppBar(
         title: Text(title, style: const TextStyle(fontFamily: 'monospace')),
         actions: [
-          IconButton(
-            icon: Icon(_isPreviewMode ? Icons.edit_outlined : Icons.preview),
-            tooltip: _isPreviewMode ? l.fileEditor_editMode : l.fileEditor_previewMode,
-            onPressed: () => setState(() => _isPreviewMode = !_isPreviewMode),
-          ),
-          if (!_isPreviewMode)
+          if (!widget.viewOnly)
+            IconButton(
+              icon: Icon(_isPreviewMode ? Icons.edit_outlined : Icons.preview),
+              tooltip: _isPreviewMode ? l.fileEditor_editMode : l.fileEditor_previewMode,
+              onPressed: () => setState(() => _isPreviewMode = !_isPreviewMode),
+            ),
+          if (!_isPreviewMode && !widget.viewOnly)
             IconButton(
               icon: _isSaving
                   ? const SizedBox(

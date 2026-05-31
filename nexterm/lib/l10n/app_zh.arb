@@ -380,6 +380,11 @@
   "sftp_newFolder": "新建文件夹",
   "sftp_sort": "排序",
   "sftp_refresh": "刷新",
+  "sftp_view": "查看",
+  "sftp_edit": "编辑",
+  "sftp_permissions": "权限",
+  "sftp_goToPath": "跳转路径",
+  "sftp_goToPathHint": "输入远程路径",
   "sftp_noFiles": "无文件",
 
   "fileEditor_fileSaved": "文件已保存",

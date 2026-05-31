@@ -1056,6 +1056,21 @@ class AppLocalizationsZh extends AppLocalizations {
   String get sftp_refresh => '刷新';
 
   @override
+  String get sftp_view => '查看';
+
+  @override
+  String get sftp_edit => '编辑';
+
+  @override
+  String get sftp_permissions => '权限';
+
+  @override
+  String get sftp_goToPath => '跳转路径';
+
+  @override
+  String get sftp_goToPathHint => '输入远程路径';
+
+  @override
   String get sftp_noFiles => '无文件';
 
   @override

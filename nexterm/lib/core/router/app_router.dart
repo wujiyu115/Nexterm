@@ -121,7 +121,11 @@ final appRouter = GoRouter(
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) {
         final extra = state.extra as Map<String, String>;
-        return FileEditorScreen(sessionId: extra['sessionId']!, filePath: extra['path']!);
+        return FileEditorScreen(
+          sessionId: extra['sessionId']!,
+          filePath: extra['path']!,
+          viewOnly: extra['viewOnly'] == 'true',
+        );
       },
     ),
     GoRoute(

@@ -1084,6 +1084,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sftp_refresh => 'Refresh';
 
   @override
+  String get sftp_view => 'View';
+
+  @override
+  String get sftp_edit => 'Edit';
+
+  @override
+  String get sftp_permissions => 'Permissions';
+
+  @override
+  String get sftp_goToPath => 'Go to Path';
+
+  @override
+  String get sftp_goToPathHint => 'Enter remote path';
+
+  @override
   String get sftp_noFiles => 'No files';
 
   @override

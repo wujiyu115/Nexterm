@@ -2084,6 +2084,36 @@ abstract class AppLocalizations {
   /// **'刷新'**
   String get sftp_refresh;
 
+  /// No description provided for @sftp_view.
+  ///
+  /// In zh, this message translates to:
+  /// **'查看'**
+  String get sftp_view;
+
+  /// No description provided for @sftp_edit.
+  ///
+  /// In zh, this message translates to:
+  /// **'编辑'**
+  String get sftp_edit;
+
+  /// No description provided for @sftp_permissions.
+  ///
+  /// In zh, this message translates to:
+  /// **'权限'**
+  String get sftp_permissions;
+
+  /// No description provided for @sftp_goToPath.
+  ///
+  /// In zh, this message translates to:
+  /// **'跳转路径'**
+  String get sftp_goToPath;
+
+  /// No description provided for @sftp_goToPathHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'输入远程路径'**
+  String get sftp_goToPathHint;
+
   /// No description provided for @sftp_noFiles.
   ///
   /// In zh, this message translates to:
