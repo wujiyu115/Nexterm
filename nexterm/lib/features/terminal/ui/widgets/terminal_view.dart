@@ -1,6 +1,7 @@
 import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nexterm/core/theme/terminal_themes.dart' as app_themes;
 import 'package:nexterm/core/theme/theme_provider.dart';
@@ -27,12 +28,41 @@ class TerminalViewWidget extends ConsumerStatefulWidget {
 
 class _TerminalViewWidgetState extends ConsumerState<TerminalViewWidget> {
   final _scrollController = ScrollController();
+  final _terminalController = TerminalController();
   double _pinchBaseSize = 0;
+  bool _hasSelection = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _terminalController.addListener(_onSelectionChanged);
+  }
 
   @override
   void dispose() {
+    _terminalController.removeListener(_onSelectionChanged);
+    _terminalController.dispose();
     _scrollController.dispose();
     super.dispose();
+  }
+
+  void _onSelectionChanged() {
+    final hasSelection = _terminalController.selection != null;
+    if (hasSelection != _hasSelection) {
+      setState(() => _hasSelection = hasSelection);
+    }
+  }
+
+  void _copySelection() {
+    final controllers = ref.read(terminalControllersProvider);
+    final terminal = controllers[widget.tab.id];
+    final selection = _terminalController.selection;
+    if (terminal == null || selection == null) return;
+
+    final text = terminal.buffer.getText(selection);
+    Clipboard.setData(ClipboardData(text: text));
+    _terminalController.clearSelection();
+    HapticFeedback.lightImpact();
   }
 
   @override
@@ -46,7 +76,7 @@ class _TerminalViewWidgetState extends ConsumerState<TerminalViewWidget> {
 
     final fontSize = ref.watch(terminalFontSizeProvider);
     final fontFamily = ref.watch(terminalFontFamilyProvider);
-final terminalThemeName =
+    final terminalThemeName =
         ref.watch(themeProvider.select((s) => s.terminalThemeName));
     final terminalTheme =
         app_themes.TerminalThemes.byName(terminalThemeName);
@@ -54,6 +84,7 @@ final terminalThemeName =
 
     Widget child = TerminalView(
       terminal,
+      controller: _terminalController,
       theme: terminalTheme,
       textStyle: TerminalStyle(
         fontFamily: fontFamily,
@@ -79,6 +110,47 @@ final terminalThemeName =
         },
         child: child,
       );
+
+      if (_hasSelection) {
+        child = Stack(
+          children: [
+            child,
+            Positioned(
+              top: 8,
+              right: 8,
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: _copySelection,
+                  borderRadius: BorderRadius.circular(20),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primaryContainer,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.copy, size: 16, color: Theme.of(context).colorScheme.onPrimaryContainer),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Copy',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: Theme.of(context).colorScheme.onPrimaryContainer,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      }
     }
 
     return child;
