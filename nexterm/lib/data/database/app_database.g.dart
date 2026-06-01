@@ -3992,6 +3992,720 @@ class WebdavConnectionsCompanion extends UpdateCompanion<WebdavConnection> {
   }
 }
 
+class $SmbConnectionsTable extends SmbConnections
+    with TableInfo<$SmbConnectionsTable, SmbConnection> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SmbConnectionsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 255,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _hostMeta = const VerificationMeta('host');
+  @override
+  late final GeneratedColumn<String> host = GeneratedColumn<String>(
+    'host',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _portMeta = const VerificationMeta('port');
+  @override
+  late final GeneratedColumn<int> port = GeneratedColumn<int>(
+    'port',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(445),
+  );
+  static const VerificationMeta _shareNameMeta = const VerificationMeta(
+    'shareName',
+  );
+  @override
+  late final GeneratedColumn<String> shareName = GeneratedColumn<String>(
+    'share_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _usernameMeta = const VerificationMeta(
+    'username',
+  );
+  @override
+  late final GeneratedColumn<String> username = GeneratedColumn<String>(
+    'username',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _passwordMeta = const VerificationMeta(
+    'password',
+  );
+  @override
+  late final GeneratedColumn<String> password = GeneratedColumn<String>(
+    'password',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _domainMeta = const VerificationMeta('domain');
+  @override
+  late final GeneratedColumn<String> domain = GeneratedColumn<String>(
+    'domain',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lastConnectedMeta = const VerificationMeta(
+    'lastConnected',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastConnected =
+      GeneratedColumn<DateTime>(
+        'last_connected',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _sortOrderMeta = const VerificationMeta(
+    'sortOrder',
+  );
+  @override
+  late final GeneratedColumn<int> sortOrder = GeneratedColumn<int>(
+    'sort_order',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    name,
+    host,
+    port,
+    shareName,
+    username,
+    password,
+    domain,
+    lastConnected,
+    sortOrder,
+    createdAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'smb_connections';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SmbConnection> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('host')) {
+      context.handle(
+        _hostMeta,
+        host.isAcceptableOrUnknown(data['host']!, _hostMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_hostMeta);
+    }
+    if (data.containsKey('port')) {
+      context.handle(
+        _portMeta,
+        port.isAcceptableOrUnknown(data['port']!, _portMeta),
+      );
+    }
+    if (data.containsKey('share_name')) {
+      context.handle(
+        _shareNameMeta,
+        shareName.isAcceptableOrUnknown(data['share_name']!, _shareNameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_shareNameMeta);
+    }
+    if (data.containsKey('username')) {
+      context.handle(
+        _usernameMeta,
+        username.isAcceptableOrUnknown(data['username']!, _usernameMeta),
+      );
+    }
+    if (data.containsKey('password')) {
+      context.handle(
+        _passwordMeta,
+        password.isAcceptableOrUnknown(data['password']!, _passwordMeta),
+      );
+    }
+    if (data.containsKey('domain')) {
+      context.handle(
+        _domainMeta,
+        domain.isAcceptableOrUnknown(data['domain']!, _domainMeta),
+      );
+    }
+    if (data.containsKey('last_connected')) {
+      context.handle(
+        _lastConnectedMeta,
+        lastConnected.isAcceptableOrUnknown(
+          data['last_connected']!,
+          _lastConnectedMeta,
+        ),
+      );
+    }
+    if (data.containsKey('sort_order')) {
+      context.handle(
+        _sortOrderMeta,
+        sortOrder.isAcceptableOrUnknown(data['sort_order']!, _sortOrderMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  SmbConnection map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SmbConnection(
+      id:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}id'],
+          )!,
+      name:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}name'],
+          )!,
+      host:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}host'],
+          )!,
+      port:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}port'],
+          )!,
+      shareName:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}share_name'],
+          )!,
+      username: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}username'],
+      ),
+      password: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}password'],
+      ),
+      domain: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}domain'],
+      ),
+      lastConnected: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_connected'],
+      ),
+      sortOrder:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}sort_order'],
+          )!,
+      createdAt:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.dateTime,
+            data['${effectivePrefix}created_at'],
+          )!,
+      updatedAt:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.dateTime,
+            data['${effectivePrefix}updated_at'],
+          )!,
+    );
+  }
+
+  @override
+  $SmbConnectionsTable createAlias(String alias) {
+    return $SmbConnectionsTable(attachedDatabase, alias);
+  }
+}
+
+class SmbConnection extends DataClass implements Insertable<SmbConnection> {
+  final String id;
+  final String name;
+  final String host;
+  final int port;
+  final String shareName;
+  final String? username;
+  final String? password;
+  final String? domain;
+  final DateTime? lastConnected;
+  final int sortOrder;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  const SmbConnection({
+    required this.id,
+    required this.name,
+    required this.host,
+    required this.port,
+    required this.shareName,
+    this.username,
+    this.password,
+    this.domain,
+    this.lastConnected,
+    required this.sortOrder,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['name'] = Variable<String>(name);
+    map['host'] = Variable<String>(host);
+    map['port'] = Variable<int>(port);
+    map['share_name'] = Variable<String>(shareName);
+    if (!nullToAbsent || username != null) {
+      map['username'] = Variable<String>(username);
+    }
+    if (!nullToAbsent || password != null) {
+      map['password'] = Variable<String>(password);
+    }
+    if (!nullToAbsent || domain != null) {
+      map['domain'] = Variable<String>(domain);
+    }
+    if (!nullToAbsent || lastConnected != null) {
+      map['last_connected'] = Variable<DateTime>(lastConnected);
+    }
+    map['sort_order'] = Variable<int>(sortOrder);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  SmbConnectionsCompanion toCompanion(bool nullToAbsent) {
+    return SmbConnectionsCompanion(
+      id: Value(id),
+      name: Value(name),
+      host: Value(host),
+      port: Value(port),
+      shareName: Value(shareName),
+      username:
+          username == null && nullToAbsent
+              ? const Value.absent()
+              : Value(username),
+      password:
+          password == null && nullToAbsent
+              ? const Value.absent()
+              : Value(password),
+      domain:
+          domain == null && nullToAbsent ? const Value.absent() : Value(domain),
+      lastConnected:
+          lastConnected == null && nullToAbsent
+              ? const Value.absent()
+              : Value(lastConnected),
+      sortOrder: Value(sortOrder),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory SmbConnection.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SmbConnection(
+      id: serializer.fromJson<String>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      host: serializer.fromJson<String>(json['host']),
+      port: serializer.fromJson<int>(json['port']),
+      shareName: serializer.fromJson<String>(json['shareName']),
+      username: serializer.fromJson<String?>(json['username']),
+      password: serializer.fromJson<String?>(json['password']),
+      domain: serializer.fromJson<String?>(json['domain']),
+      lastConnected: serializer.fromJson<DateTime?>(json['lastConnected']),
+      sortOrder: serializer.fromJson<int>(json['sortOrder']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'name': serializer.toJson<String>(name),
+      'host': serializer.toJson<String>(host),
+      'port': serializer.toJson<int>(port),
+      'shareName': serializer.toJson<String>(shareName),
+      'username': serializer.toJson<String?>(username),
+      'password': serializer.toJson<String?>(password),
+      'domain': serializer.toJson<String?>(domain),
+      'lastConnected': serializer.toJson<DateTime?>(lastConnected),
+      'sortOrder': serializer.toJson<int>(sortOrder),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  SmbConnection copyWith({
+    String? id,
+    String? name,
+    String? host,
+    int? port,
+    String? shareName,
+    Value<String?> username = const Value.absent(),
+    Value<String?> password = const Value.absent(),
+    Value<String?> domain = const Value.absent(),
+    Value<DateTime?> lastConnected = const Value.absent(),
+    int? sortOrder,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) => SmbConnection(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    host: host ?? this.host,
+    port: port ?? this.port,
+    shareName: shareName ?? this.shareName,
+    username: username.present ? username.value : this.username,
+    password: password.present ? password.value : this.password,
+    domain: domain.present ? domain.value : this.domain,
+    lastConnected:
+        lastConnected.present ? lastConnected.value : this.lastConnected,
+    sortOrder: sortOrder ?? this.sortOrder,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  SmbConnection copyWithCompanion(SmbConnectionsCompanion data) {
+    return SmbConnection(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      host: data.host.present ? data.host.value : this.host,
+      port: data.port.present ? data.port.value : this.port,
+      shareName: data.shareName.present ? data.shareName.value : this.shareName,
+      username: data.username.present ? data.username.value : this.username,
+      password: data.password.present ? data.password.value : this.password,
+      domain: data.domain.present ? data.domain.value : this.domain,
+      lastConnected:
+          data.lastConnected.present
+              ? data.lastConnected.value
+              : this.lastConnected,
+      sortOrder: data.sortOrder.present ? data.sortOrder.value : this.sortOrder,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SmbConnection(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('host: $host, ')
+          ..write('port: $port, ')
+          ..write('shareName: $shareName, ')
+          ..write('username: $username, ')
+          ..write('password: $password, ')
+          ..write('domain: $domain, ')
+          ..write('lastConnected: $lastConnected, ')
+          ..write('sortOrder: $sortOrder, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    name,
+    host,
+    port,
+    shareName,
+    username,
+    password,
+    domain,
+    lastConnected,
+    sortOrder,
+    createdAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SmbConnection &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.host == this.host &&
+          other.port == this.port &&
+          other.shareName == this.shareName &&
+          other.username == this.username &&
+          other.password == this.password &&
+          other.domain == this.domain &&
+          other.lastConnected == this.lastConnected &&
+          other.sortOrder == this.sortOrder &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class SmbConnectionsCompanion extends UpdateCompanion<SmbConnection> {
+  final Value<String> id;
+  final Value<String> name;
+  final Value<String> host;
+  final Value<int> port;
+  final Value<String> shareName;
+  final Value<String?> username;
+  final Value<String?> password;
+  final Value<String?> domain;
+  final Value<DateTime?> lastConnected;
+  final Value<int> sortOrder;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const SmbConnectionsCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.host = const Value.absent(),
+    this.port = const Value.absent(),
+    this.shareName = const Value.absent(),
+    this.username = const Value.absent(),
+    this.password = const Value.absent(),
+    this.domain = const Value.absent(),
+    this.lastConnected = const Value.absent(),
+    this.sortOrder = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SmbConnectionsCompanion.insert({
+    required String id,
+    required String name,
+    required String host,
+    this.port = const Value.absent(),
+    required String shareName,
+    this.username = const Value.absent(),
+    this.password = const Value.absent(),
+    this.domain = const Value.absent(),
+    this.lastConnected = const Value.absent(),
+    this.sortOrder = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       name = Value(name),
+       host = Value(host),
+       shareName = Value(shareName);
+  static Insertable<SmbConnection> custom({
+    Expression<String>? id,
+    Expression<String>? name,
+    Expression<String>? host,
+    Expression<int>? port,
+    Expression<String>? shareName,
+    Expression<String>? username,
+    Expression<String>? password,
+    Expression<String>? domain,
+    Expression<DateTime>? lastConnected,
+    Expression<int>? sortOrder,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (host != null) 'host': host,
+      if (port != null) 'port': port,
+      if (shareName != null) 'share_name': shareName,
+      if (username != null) 'username': username,
+      if (password != null) 'password': password,
+      if (domain != null) 'domain': domain,
+      if (lastConnected != null) 'last_connected': lastConnected,
+      if (sortOrder != null) 'sort_order': sortOrder,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SmbConnectionsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? name,
+    Value<String>? host,
+    Value<int>? port,
+    Value<String>? shareName,
+    Value<String?>? username,
+    Value<String?>? password,
+    Value<String?>? domain,
+    Value<DateTime?>? lastConnected,
+    Value<int>? sortOrder,
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return SmbConnectionsCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      host: host ?? this.host,
+      port: port ?? this.port,
+      shareName: shareName ?? this.shareName,
+      username: username ?? this.username,
+      password: password ?? this.password,
+      domain: domain ?? this.domain,
+      lastConnected: lastConnected ?? this.lastConnected,
+      sortOrder: sortOrder ?? this.sortOrder,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (host.present) {
+      map['host'] = Variable<String>(host.value);
+    }
+    if (port.present) {
+      map['port'] = Variable<int>(port.value);
+    }
+    if (shareName.present) {
+      map['share_name'] = Variable<String>(shareName.value);
+    }
+    if (username.present) {
+      map['username'] = Variable<String>(username.value);
+    }
+    if (password.present) {
+      map['password'] = Variable<String>(password.value);
+    }
+    if (domain.present) {
+      map['domain'] = Variable<String>(domain.value);
+    }
+    if (lastConnected.present) {
+      map['last_connected'] = Variable<DateTime>(lastConnected.value);
+    }
+    if (sortOrder.present) {
+      map['sort_order'] = Variable<int>(sortOrder.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SmbConnectionsCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('host: $host, ')
+          ..write('port: $port, ')
+          ..write('shareName: $shareName, ')
+          ..write('username: $username, ')
+          ..write('password: $password, ')
+          ..write('domain: $domain, ')
+          ..write('lastConnected: $lastConnected, ')
+          ..write('sortOrder: $sortOrder, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -4003,6 +4717,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $GitReposTable gitRepos = $GitReposTable(this);
   late final $WebdavConnectionsTable webdavConnections =
       $WebdavConnectionsTable(this);
+  late final $SmbConnectionsTable smbConnections = $SmbConnectionsTable(this);
   late final HostsDao hostsDao = HostsDao(this as AppDatabase);
   late final SshKeysDao sshKeysDao = SshKeysDao(this as AppDatabase);
   late final SnippetsDao snippetsDao = SnippetsDao(this as AppDatabase);
@@ -4012,6 +4727,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final SettingsDao settingsDao = SettingsDao(this as AppDatabase);
   late final GitReposDao gitReposDao = GitReposDao(this as AppDatabase);
   late final WebdavConnectionsDao webdavConnectionsDao = WebdavConnectionsDao(
+    this as AppDatabase,
+  );
+  late final SmbConnectionsDao smbConnectionsDao = SmbConnectionsDao(
     this as AppDatabase,
   );
   @override
@@ -4026,6 +4744,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     appSettings,
     gitRepos,
     webdavConnections,
+    smbConnections,
   ];
 }
 
@@ -6250,6 +6969,354 @@ typedef $$WebdavConnectionsTableProcessedTableManager =
       WebdavConnection,
       PrefetchHooks Function()
     >;
+typedef $$SmbConnectionsTableCreateCompanionBuilder =
+    SmbConnectionsCompanion Function({
+      required String id,
+      required String name,
+      required String host,
+      Value<int> port,
+      required String shareName,
+      Value<String?> username,
+      Value<String?> password,
+      Value<String?> domain,
+      Value<DateTime?> lastConnected,
+      Value<int> sortOrder,
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+      Value<int> rowid,
+    });
+typedef $$SmbConnectionsTableUpdateCompanionBuilder =
+    SmbConnectionsCompanion Function({
+      Value<String> id,
+      Value<String> name,
+      Value<String> host,
+      Value<int> port,
+      Value<String> shareName,
+      Value<String?> username,
+      Value<String?> password,
+      Value<String?> domain,
+      Value<DateTime?> lastConnected,
+      Value<int> sortOrder,
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+      Value<int> rowid,
+    });
+
+class $$SmbConnectionsTableFilterComposer
+    extends Composer<_$AppDatabase, $SmbConnectionsTable> {
+  $$SmbConnectionsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get host => $composableBuilder(
+    column: $table.host,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get port => $composableBuilder(
+    column: $table.port,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get shareName => $composableBuilder(
+    column: $table.shareName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get username => $composableBuilder(
+    column: $table.username,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get password => $composableBuilder(
+    column: $table.password,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get domain => $composableBuilder(
+    column: $table.domain,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastConnected => $composableBuilder(
+    column: $table.lastConnected,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get sortOrder => $composableBuilder(
+    column: $table.sortOrder,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$SmbConnectionsTableOrderingComposer
+    extends Composer<_$AppDatabase, $SmbConnectionsTable> {
+  $$SmbConnectionsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get host => $composableBuilder(
+    column: $table.host,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get port => $composableBuilder(
+    column: $table.port,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get shareName => $composableBuilder(
+    column: $table.shareName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get username => $composableBuilder(
+    column: $table.username,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get password => $composableBuilder(
+    column: $table.password,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get domain => $composableBuilder(
+    column: $table.domain,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastConnected => $composableBuilder(
+    column: $table.lastConnected,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get sortOrder => $composableBuilder(
+    column: $table.sortOrder,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$SmbConnectionsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SmbConnectionsTable> {
+  $$SmbConnectionsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get host =>
+      $composableBuilder(column: $table.host, builder: (column) => column);
+
+  GeneratedColumn<int> get port =>
+      $composableBuilder(column: $table.port, builder: (column) => column);
+
+  GeneratedColumn<String> get shareName =>
+      $composableBuilder(column: $table.shareName, builder: (column) => column);
+
+  GeneratedColumn<String> get username =>
+      $composableBuilder(column: $table.username, builder: (column) => column);
+
+  GeneratedColumn<String> get password =>
+      $composableBuilder(column: $table.password, builder: (column) => column);
+
+  GeneratedColumn<String> get domain =>
+      $composableBuilder(column: $table.domain, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastConnected => $composableBuilder(
+    column: $table.lastConnected,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get sortOrder =>
+      $composableBuilder(column: $table.sortOrder, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$SmbConnectionsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SmbConnectionsTable,
+          SmbConnection,
+          $$SmbConnectionsTableFilterComposer,
+          $$SmbConnectionsTableOrderingComposer,
+          $$SmbConnectionsTableAnnotationComposer,
+          $$SmbConnectionsTableCreateCompanionBuilder,
+          $$SmbConnectionsTableUpdateCompanionBuilder,
+          (
+            SmbConnection,
+            BaseReferences<_$AppDatabase, $SmbConnectionsTable, SmbConnection>,
+          ),
+          SmbConnection,
+          PrefetchHooks Function()
+        > {
+  $$SmbConnectionsTableTableManager(
+    _$AppDatabase db,
+    $SmbConnectionsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer:
+              () => $$SmbConnectionsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer:
+              () =>
+                  $$SmbConnectionsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer:
+              () => $$SmbConnectionsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String> host = const Value.absent(),
+                Value<int> port = const Value.absent(),
+                Value<String> shareName = const Value.absent(),
+                Value<String?> username = const Value.absent(),
+                Value<String?> password = const Value.absent(),
+                Value<String?> domain = const Value.absent(),
+                Value<DateTime?> lastConnected = const Value.absent(),
+                Value<int> sortOrder = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => SmbConnectionsCompanion(
+                id: id,
+                name: name,
+                host: host,
+                port: port,
+                shareName: shareName,
+                username: username,
+                password: password,
+                domain: domain,
+                lastConnected: lastConnected,
+                sortOrder: sortOrder,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String name,
+                required String host,
+                Value<int> port = const Value.absent(),
+                required String shareName,
+                Value<String?> username = const Value.absent(),
+                Value<String?> password = const Value.absent(),
+                Value<String?> domain = const Value.absent(),
+                Value<DateTime?> lastConnected = const Value.absent(),
+                Value<int> sortOrder = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => SmbConnectionsCompanion.insert(
+                id: id,
+                name: name,
+                host: host,
+                port: port,
+                shareName: shareName,
+                username: username,
+                password: password,
+                domain: domain,
+                lastConnected: lastConnected,
+                sortOrder: sortOrder,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper:
+              (p0) =>
+                  p0
+                      .map(
+                        (e) => (
+                          e.readTable(table),
+                          BaseReferences(db, table, e),
+                        ),
+                      )
+                      .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$SmbConnectionsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SmbConnectionsTable,
+      SmbConnection,
+      $$SmbConnectionsTableFilterComposer,
+      $$SmbConnectionsTableOrderingComposer,
+      $$SmbConnectionsTableAnnotationComposer,
+      $$SmbConnectionsTableCreateCompanionBuilder,
+      $$SmbConnectionsTableUpdateCompanionBuilder,
+      (
+        SmbConnection,
+        BaseReferences<_$AppDatabase, $SmbConnectionsTable, SmbConnection>,
+      ),
+      SmbConnection,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -6268,4 +7335,6 @@ class $AppDatabaseManager {
       $$GitReposTableTableManager(_db, _db.gitRepos);
   $$WebdavConnectionsTableTableManager get webdavConnections =>
       $$WebdavConnectionsTableTableManager(_db, _db.webdavConnections);
+  $$SmbConnectionsTableTableManager get smbConnections =>
+      $$SmbConnectionsTableTableManager(_db, _db.smbConnections);
 }

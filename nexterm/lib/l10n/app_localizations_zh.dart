@@ -1629,4 +1629,80 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get webdav_addTitle => '添加连接';
+
+  @override
+  String get smb_title => 'SMB';
+
+  @override
+  String get smb_add => '添加连接';
+
+  @override
+  String get smb_noConnections => '暂无 SMB 连接';
+
+  @override
+  String get smb_noConnectionsHint => '添加 SMB/CIFS 服务器以浏览共享文件';
+
+  @override
+  String get smb_name => '名称';
+
+  @override
+  String get smb_nameHint => '我的 NAS';
+
+  @override
+  String get smb_nameRequired => '请输入名称';
+
+  @override
+  String get smb_host => '服务器地址';
+
+  @override
+  String get smb_hostHint => '192.168.1.100 或 nas.local';
+
+  @override
+  String get smb_hostRequired => '请输入服务器地址';
+
+  @override
+  String get smb_port => '端口';
+
+  @override
+  String get smb_shareName => '共享名';
+
+  @override
+  String get smb_shareNameHint => 'public';
+
+  @override
+  String get smb_shareNameRequired => '请输入共享名';
+
+  @override
+  String get smb_username => '用户名';
+
+  @override
+  String get smb_password => '密码';
+
+  @override
+  String get smb_domain => '域';
+
+  @override
+  String get smb_domainHint => 'WORKGROUP';
+
+  @override
+  String get smb_connect => '连接';
+
+  @override
+  String smb_connectFailed(String error) {
+    return '连接失败: $error';
+  }
+
+  @override
+  String get smb_deleteTitle => '删除连接';
+
+  @override
+  String smb_deleteConfirm(String name) {
+    return '确定要删除「$name」吗？';
+  }
+
+  @override
+  String get smb_editTitle => '编辑连接';
+
+  @override
+  String get smb_addTitle => '添加连接';
 }

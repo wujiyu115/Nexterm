@@ -137,6 +137,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.4.0"
+  charset:
+    dependency: transitive
+    description:
+      name: charset
+      sha256: "27802032a581e01ac565904ece8c8962564b1070690794f0072f6865958ce8b9"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.0.1"
   checked_yaml:
     dependency: transitive
     description:
@@ -225,6 +233,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "3.0.7"
+  cryptography:
+    dependency: transitive
+    description:
+      name: cryptography
+      sha256: "3eda3029d34ec9095a27a198ac9785630fe525c0eb6a49f3d575272f8e792ef0"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.9.0"
   cupertino_icons:
     dependency: "direct main"
     description:
@@ -717,6 +733,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "5.4.6"
+  mutex:
+    dependency: transitive
+    description:
+      name: mutex
+      sha256: "8827da25de792088eb33e572115a5eb0d61d61a3c01acbc8bcbe76ed78f1a1f2"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "3.1.0"
   nm:
     dependency: transitive
     description:
@@ -1018,6 +1042,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  smb_connect:
+    dependency: "direct main"
+    description:
+      name: smb_connect
+      sha256: "8d82b701f8ff8a736070f6eb5393fe983da1a0f4747a56c3a04bda68765b5e66"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.0.9"
   source_gen:
     dependency: transitive
     description:

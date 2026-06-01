@@ -25,6 +25,9 @@ import 'package:nexterm/features/git/ui/git_repo_form_screen.dart';
 import 'package:nexterm/features/webdav/ui/webdav_connections_screen.dart';
 import 'package:nexterm/features/webdav/ui/webdav_form_screen.dart';
 import 'package:nexterm/features/webdav/ui/webdav_screen.dart';
+import 'package:nexterm/features/smb/ui/smb_connections_screen.dart';
+import 'package:nexterm/features/smb/ui/smb_form_screen.dart';
+import 'package:nexterm/features/smb/ui/smb_screen.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -95,6 +98,15 @@ final appRouter = GoRouter(
                 routes: [
                   GoRoute(path: 'add', parentNavigatorKey: _rootNavigatorKey, builder: (context, state) => const WebDavFormScreen()),
                   GoRoute(path: 'edit/:id', parentNavigatorKey: _rootNavigatorKey, builder: (context, state) => WebDavFormScreen(connectionId: state.pathParameters['id'])),
+                ],
+              ),
+              GoRoute(
+                path: 'smb',
+                parentNavigatorKey: _rootNavigatorKey,
+                builder: (context, state) => const SmbConnectionsScreen(),
+                routes: [
+                  GoRoute(path: 'add', parentNavigatorKey: _rootNavigatorKey, builder: (context, state) => const SmbFormScreen()),
+                  GoRoute(path: 'edit/:id', parentNavigatorKey: _rootNavigatorKey, builder: (context, state) => SmbFormScreen(connectionId: state.pathParameters['id'])),
                 ],
               ),
             ],
@@ -171,6 +183,17 @@ final appRouter = GoRouter(
         return WebDavBrowserScreen(
           service: extra['service'] as RemoteFileService,
           title: extra['name'] as String? ?? 'WebDAV',
+        );
+      },
+    ),
+    GoRoute(
+      path: '/smb/browse',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>;
+        return SmbBrowserScreen(
+          service: extra['service'] as RemoteFileService,
+          title: extra['name'] as String? ?? 'SMB',
         );
       },
     ),

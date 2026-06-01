@@ -3175,6 +3175,150 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'添加连接'**
   String get webdav_addTitle;
+
+  /// No description provided for @smb_title.
+  ///
+  /// In zh, this message translates to:
+  /// **'SMB'**
+  String get smb_title;
+
+  /// No description provided for @smb_add.
+  ///
+  /// In zh, this message translates to:
+  /// **'添加连接'**
+  String get smb_add;
+
+  /// No description provided for @smb_noConnections.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂无 SMB 连接'**
+  String get smb_noConnections;
+
+  /// No description provided for @smb_noConnectionsHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'添加 SMB/CIFS 服务器以浏览共享文件'**
+  String get smb_noConnectionsHint;
+
+  /// No description provided for @smb_name.
+  ///
+  /// In zh, this message translates to:
+  /// **'名称'**
+  String get smb_name;
+
+  /// No description provided for @smb_nameHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'我的 NAS'**
+  String get smb_nameHint;
+
+  /// No description provided for @smb_nameRequired.
+  ///
+  /// In zh, this message translates to:
+  /// **'请输入名称'**
+  String get smb_nameRequired;
+
+  /// No description provided for @smb_host.
+  ///
+  /// In zh, this message translates to:
+  /// **'服务器地址'**
+  String get smb_host;
+
+  /// No description provided for @smb_hostHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'192.168.1.100 或 nas.local'**
+  String get smb_hostHint;
+
+  /// No description provided for @smb_hostRequired.
+  ///
+  /// In zh, this message translates to:
+  /// **'请输入服务器地址'**
+  String get smb_hostRequired;
+
+  /// No description provided for @smb_port.
+  ///
+  /// In zh, this message translates to:
+  /// **'端口'**
+  String get smb_port;
+
+  /// No description provided for @smb_shareName.
+  ///
+  /// In zh, this message translates to:
+  /// **'共享名'**
+  String get smb_shareName;
+
+  /// No description provided for @smb_shareNameHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'public'**
+  String get smb_shareNameHint;
+
+  /// No description provided for @smb_shareNameRequired.
+  ///
+  /// In zh, this message translates to:
+  /// **'请输入共享名'**
+  String get smb_shareNameRequired;
+
+  /// No description provided for @smb_username.
+  ///
+  /// In zh, this message translates to:
+  /// **'用户名'**
+  String get smb_username;
+
+  /// No description provided for @smb_password.
+  ///
+  /// In zh, this message translates to:
+  /// **'密码'**
+  String get smb_password;
+
+  /// No description provided for @smb_domain.
+  ///
+  /// In zh, this message translates to:
+  /// **'域'**
+  String get smb_domain;
+
+  /// No description provided for @smb_domainHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'WORKGROUP'**
+  String get smb_domainHint;
+
+  /// No description provided for @smb_connect.
+  ///
+  /// In zh, this message translates to:
+  /// **'连接'**
+  String get smb_connect;
+
+  /// No description provided for @smb_connectFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'连接失败: {error}'**
+  String smb_connectFailed(String error);
+
+  /// No description provided for @smb_deleteTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除连接'**
+  String get smb_deleteTitle;
+
+  /// No description provided for @smb_deleteConfirm.
+  ///
+  /// In zh, this message translates to:
+  /// **'确定要删除「{name}」吗？'**
+  String smb_deleteConfirm(String name);
+
+  /// No description provided for @smb_editTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'编辑连接'**
+  String get smb_editTitle;
+
+  /// No description provided for @smb_addTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'添加连接'**
+  String get smb_addTitle;
 }
 
 class _AppLocalizationsDelegate

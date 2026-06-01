@@ -70,5 +70,6 @@ enum ForwardStatus {
 enum ConnectionType {
   ssh,
   sftp,
-  webdav;
+  webdav,
+  smb;
 }

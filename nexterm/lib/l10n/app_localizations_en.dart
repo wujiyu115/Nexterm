@@ -1668,4 +1668,81 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get webdav_addTitle => 'Add Connection';
+
+  @override
+  String get smb_title => 'SMB';
+
+  @override
+  String get smb_add => 'Add Connection';
+
+  @override
+  String get smb_noConnections => 'No SMB connections';
+
+  @override
+  String get smb_noConnectionsHint =>
+      'Add an SMB/CIFS server to browse shared files';
+
+  @override
+  String get smb_name => 'Name';
+
+  @override
+  String get smb_nameHint => 'My NAS';
+
+  @override
+  String get smb_nameRequired => 'Please enter a name';
+
+  @override
+  String get smb_host => 'Server Address';
+
+  @override
+  String get smb_hostHint => '192.168.1.100 or nas.local';
+
+  @override
+  String get smb_hostRequired => 'Please enter a server address';
+
+  @override
+  String get smb_port => 'Port';
+
+  @override
+  String get smb_shareName => 'Share Name';
+
+  @override
+  String get smb_shareNameHint => 'public';
+
+  @override
+  String get smb_shareNameRequired => 'Please enter a share name';
+
+  @override
+  String get smb_username => 'Username';
+
+  @override
+  String get smb_password => 'Password';
+
+  @override
+  String get smb_domain => 'Domain';
+
+  @override
+  String get smb_domainHint => 'WORKGROUP';
+
+  @override
+  String get smb_connect => 'Connect';
+
+  @override
+  String smb_connectFailed(String error) {
+    return 'Connection failed: $error';
+  }
+
+  @override
+  String get smb_deleteTitle => 'Delete Connection';
+
+  @override
+  String smb_deleteConfirm(String name) {
+    return 'Are you sure you want to delete \"$name\"?';
+  }
+
+  @override
+  String get smb_editTitle => 'Edit Connection';
+
+  @override
+  String get smb_addTitle => 'Add Connection';
 }
