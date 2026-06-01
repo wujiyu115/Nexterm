@@ -46,7 +46,7 @@ class FileListView extends StatelessWidget {
       itemCount: itemCount,
       itemBuilder: (context, index) {
         if (index >= files.length) {
-          onLoadMore?.call();
+          WidgetsBinding.instance.addPostFrameCallback((_) => onLoadMore?.call());
           return const Padding(
             padding: EdgeInsets.all(16),
             child: Center(child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))),
