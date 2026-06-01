@@ -69,6 +69,9 @@ class SftpState {
   final SortField sortField;
   final bool sortAscending;
   final List<String> copiedPaths;
+  final int displayLimit;
+
+  static const int _pageSize = 100;
 
   const SftpState({
     this.currentPath = '/',
@@ -80,6 +83,7 @@ class SftpState {
     this.sortField = SortField.name,
     this.sortAscending = true,
     this.copiedPaths = const [],
+    this.displayLimit = _pageSize,
   });
 
   SftpState copyWith({
@@ -92,6 +96,7 @@ class SftpState {
     SortField? sortField,
     bool? sortAscending,
     List<String>? copiedPaths,
+    int? displayLimit,
   }) {
     return SftpState(
       currentPath: currentPath ?? this.currentPath,
@@ -103,19 +108,26 @@ class SftpState {
       sortField: sortField ?? this.sortField,
       sortAscending: sortAscending ?? this.sortAscending,
       copiedPaths: copiedPaths ?? this.copiedPaths,
+      displayLimit: displayLimit ?? this.displayLimit,
     );
   }
 
-  /// Visible files — hides dot-files when [showHidden] is false, then sorts.
   List<RemoteFileInfo> get visibleFiles {
     var result = showHidden ? files : files.where((f) => !f.name.startsWith('.')).toList();
     return _sorted(result);
   }
 
+  List<RemoteFileInfo> get displayFiles {
+    final visible = visibleFiles;
+    if (displayLimit >= visible.length) return visible;
+    return visible.sublist(0, displayLimit);
+  }
+
+  bool get hasMoreFiles => displayLimit < visibleFiles.length;
+
   List<RemoteFileInfo> _sorted(List<RemoteFileInfo> input) {
     final sorted = List<RemoteFileInfo>.from(input);
     sorted.sort((a, b) {
-      // Directories always first.
       if (a.isDirectory != b.isDirectory) {
         return a.isDirectory ? -1 : 1;
       }
@@ -160,7 +172,7 @@ class SftpNotifier extends StateNotifier<SftpState> {
   // ---------------------------------------------------------------------------
 
   Future<void> navigateTo(String path) async {
-    state = state.copyWith(isLoading: true, error: null, selectedPaths: {});
+    state = state.copyWith(isLoading: true, error: null, selectedPaths: {}, displayLimit: SftpState._pageSize);
     try {
       final files = await _service.listDirectory(path);
       state = state.copyWith(
@@ -174,6 +186,10 @@ class SftpNotifier extends StateNotifier<SftpState> {
   }
 
   Future<void> refresh() => navigateTo(state.currentPath);
+
+  void loadMore() {
+    state = state.copyWith(displayLimit: state.displayLimit + SftpState._pageSize);
+  }
 
   Future<void> navigateUp() {
     final parent = p.dirname(state.currentPath);

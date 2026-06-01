@@ -9,18 +9,12 @@ import 'package:nexterm/features/sftp/ui/utils/file_size_format.dart';
 /// optional multi-select checkboxes.
 class FileListView extends StatelessWidget {
   final List<RemoteFileInfo> files;
-
-  /// Paths currently selected (non-empty → multi-select mode).
   final Set<String> selectedPaths;
-
-  /// Called when the user taps a file/directory.
   final void Function(RemoteFileInfo file) onTap;
-
-  /// Called when the user long-presses a file/directory (start selection).
   final void Function(RemoteFileInfo file) onLongPress;
-
-  /// Called when the user toggles a checkbox in multi-select mode.
   final void Function(RemoteFileInfo file) onToggleSelect;
+  final bool hasMore;
+  final VoidCallback? onLoadMore;
 
   const FileListView({
     super.key,
@@ -29,6 +23,8 @@ class FileListView extends StatelessWidget {
     required this.onTap,
     required this.onLongPress,
     required this.onToggleSelect,
+    this.hasMore = false,
+    this.onLoadMore,
   });
 
   bool get _isMultiSelect => selectedPaths.isNotEmpty;
@@ -44,9 +40,18 @@ class FileListView extends StatelessWidget {
       );
     }
 
+    final itemCount = files.length + (hasMore ? 1 : 0);
+
     return ListView.builder(
-      itemCount: files.length,
+      itemCount: itemCount,
       itemBuilder: (context, index) {
+        if (index >= files.length) {
+          onLoadMore?.call();
+          return const Padding(
+            padding: EdgeInsets.all(16),
+            child: Center(child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))),
+          );
+        }
         final file = files[index];
         return _FileListItem(
           file: file,

@@ -97,10 +97,11 @@ class _SftpContentWidgetState extends ConsumerState<SftpContentWidget> {
   }
 
   List<RemoteFileInfo> get _filteredFiles {
-    final files = _sftpState.visibleFiles;
-    if (_searchQuery.isEmpty) return files;
-    final lower = _searchQuery.toLowerCase();
-    return files.where((f) => f.name.toLowerCase().contains(lower)).toList();
+    if (_searchQuery.isNotEmpty) {
+      final lower = _searchQuery.toLowerCase();
+      return _sftpState.visibleFiles.where((f) => f.name.toLowerCase().contains(lower)).toList();
+    }
+    return _sftpState.displayFiles;
   }
 
   void _onFileTap(RemoteFileInfo file) {
@@ -562,6 +563,8 @@ class _SftpContentWidgetState extends ConsumerState<SftpContentWidget> {
                       onTap: _onFileTap,
                       onLongPress: _onLongPress,
                       onToggleSelect: (file) => notifier.toggleSelection(file.path),
+                      hasMore: _searchQuery.isEmpty && state.hasMoreFiles,
+                      onLoadMore: notifier.loadMore,
                     ),
         ),
         const TransferQueueBar(),
