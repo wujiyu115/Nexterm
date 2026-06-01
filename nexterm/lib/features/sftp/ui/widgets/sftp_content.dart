@@ -77,7 +77,8 @@ class _SftpContentWidgetState extends ConsumerState<SftpContentWidget> {
         _isInitializing = false;
       });
 
-      await notifier.navigateTo('/home');
+      final home = await fileService.homePath();
+      await notifier.navigateTo(home);
     } catch (e) {
       if (mounted) {
         setState(() {
