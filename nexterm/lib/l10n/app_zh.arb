@@ -564,5 +564,26 @@
   "git_noTags": "暂无标签",
   "git_noCommits": "暂无提交",
   "git_openGit": "打开 Git",
-  "git_connecting": "连接中..."
+  "git_connecting": "连接中...",
+
+  "webdav_title": "WebDAV",
+  "webdav_add": "添加连接",
+  "webdav_noConnections": "暂无 WebDAV 连接",
+  "webdav_noConnectionsHint": "添加 WebDAV 服务器以浏览远程文件",
+  "webdav_name": "名称",
+  "webdav_nameHint": "我的 WebDAV 服务器",
+  "webdav_nameRequired": "请输入名称",
+  "webdav_url": "URL",
+  "webdav_urlHint": "https://dav.example.com/remote.php/dav/files/user",
+  "webdav_urlRequired": "请输入 URL",
+  "webdav_username": "用户名",
+  "webdav_password": "密码",
+  "webdav_connect": "连接",
+  "webdav_connectFailed": "连接失败: {error}",
+  "@webdav_connectFailed": { "placeholders": { "error": { "type": "String" } } },
+  "webdav_deleteTitle": "删除连接",
+  "webdav_deleteConfirm": "确定要删除「{name}」吗？",
+  "@webdav_deleteConfirm": { "placeholders": { "name": { "type": "String" } } },
+  "webdav_editTitle": "编辑连接",
+  "webdav_addTitle": "添加连接"
   }

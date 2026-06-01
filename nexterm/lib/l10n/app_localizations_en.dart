@@ -1608,4 +1608,64 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get git_connecting => 'Connecting...';
+
+  @override
+  String get webdav_title => 'WebDAV';
+
+  @override
+  String get webdav_add => 'Add Connection';
+
+  @override
+  String get webdav_noConnections => 'No WebDAV connections';
+
+  @override
+  String get webdav_noConnectionsHint =>
+      'Add a WebDAV server to browse remote files';
+
+  @override
+  String get webdav_name => 'Name';
+
+  @override
+  String get webdav_nameHint => 'My WebDAV Server';
+
+  @override
+  String get webdav_nameRequired => 'Please enter a name';
+
+  @override
+  String get webdav_url => 'URL';
+
+  @override
+  String get webdav_urlHint =>
+      'https://dav.example.com/remote.php/dav/files/user';
+
+  @override
+  String get webdav_urlRequired => 'Please enter a URL';
+
+  @override
+  String get webdav_username => 'Username';
+
+  @override
+  String get webdav_password => 'Password';
+
+  @override
+  String get webdav_connect => 'Connect';
+
+  @override
+  String webdav_connectFailed(String error) {
+    return 'Connection failed: $error';
+  }
+
+  @override
+  String get webdav_deleteTitle => 'Delete Connection';
+
+  @override
+  String webdav_deleteConfirm(String name) {
+    return 'Are you sure you want to delete \"$name\"?';
+  }
+
+  @override
+  String get webdav_editTitle => 'Edit Connection';
+
+  @override
+  String get webdav_addTitle => 'Add Connection';
 }

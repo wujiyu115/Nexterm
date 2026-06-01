@@ -535,5 +535,26 @@
   "git_noTags": "No tags",
   "git_noCommits": "No commits yet",
   "git_openGit": "Open Git",
-  "git_connecting": "Connecting..."
+  "git_connecting": "Connecting...",
+
+  "webdav_title": "WebDAV",
+  "webdav_add": "Add Connection",
+  "webdav_noConnections": "No WebDAV connections",
+  "webdav_noConnectionsHint": "Add a WebDAV server to browse remote files",
+  "webdav_name": "Name",
+  "webdav_nameHint": "My WebDAV Server",
+  "webdav_nameRequired": "Please enter a name",
+  "webdav_url": "URL",
+  "webdav_urlHint": "https://dav.example.com/remote.php/dav/files/user",
+  "webdav_urlRequired": "Please enter a URL",
+  "webdav_username": "Username",
+  "webdav_password": "Password",
+  "webdav_connect": "Connect",
+  "webdav_connectFailed": "Connection failed: {error}",
+  "@webdav_connectFailed": { "placeholders": { "error": { "type": "String" } } },
+  "webdav_deleteTitle": "Delete Connection",
+  "webdav_deleteConfirm": "Are you sure you want to delete \"{name}\"?",
+  "@webdav_deleteConfirm": { "placeholders": { "name": { "type": "String" } } },
+  "webdav_editTitle": "Edit Connection",
+  "webdav_addTitle": "Add Connection"
   }

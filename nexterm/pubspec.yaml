@@ -38,6 +38,7 @@ dependencies:
   share_plus: ^12.0.2
   flutter_markdown: ^0.7.7+1
   speech_to_text: ^7.0.0
+  webdav_client: ^1.2.2
 
 dev_dependencies:
   flutter_test:

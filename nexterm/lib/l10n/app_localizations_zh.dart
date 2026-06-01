@@ -1570,4 +1570,63 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get git_connecting => '连接中...';
+
+  @override
+  String get webdav_title => 'WebDAV';
+
+  @override
+  String get webdav_add => '添加连接';
+
+  @override
+  String get webdav_noConnections => '暂无 WebDAV 连接';
+
+  @override
+  String get webdav_noConnectionsHint => '添加 WebDAV 服务器以浏览远程文件';
+
+  @override
+  String get webdav_name => '名称';
+
+  @override
+  String get webdav_nameHint => '我的 WebDAV 服务器';
+
+  @override
+  String get webdav_nameRequired => '请输入名称';
+
+  @override
+  String get webdav_url => 'URL';
+
+  @override
+  String get webdav_urlHint =>
+      'https://dav.example.com/remote.php/dav/files/user';
+
+  @override
+  String get webdav_urlRequired => '请输入 URL';
+
+  @override
+  String get webdav_username => '用户名';
+
+  @override
+  String get webdav_password => '密码';
+
+  @override
+  String get webdav_connect => '连接';
+
+  @override
+  String webdav_connectFailed(String error) {
+    return '连接失败: $error';
+  }
+
+  @override
+  String get webdav_deleteTitle => '删除连接';
+
+  @override
+  String webdav_deleteConfirm(String name) {
+    return '确定要删除「$name」吗？';
+  }
+
+  @override
+  String get webdav_editTitle => '编辑连接';
+
+  @override
+  String get webdav_addTitle => '添加连接';
 }

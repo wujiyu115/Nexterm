@@ -22,6 +22,9 @@ import 'package:nexterm/features/terminal/ui/toolbar_customize_screen.dart';
 import 'package:nexterm/features/git/ui/git_screen.dart';
 import 'package:nexterm/features/git/ui/git_repos_screen.dart';
 import 'package:nexterm/features/git/ui/git_repo_form_screen.dart';
+import 'package:nexterm/features/webdav/ui/webdav_connections_screen.dart';
+import 'package:nexterm/features/webdav/ui/webdav_form_screen.dart';
+import 'package:nexterm/features/webdav/ui/webdav_screen.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -83,6 +86,15 @@ final appRouter = GoRouter(
                 routes: [
                   GoRoute(path: 'add', parentNavigatorKey: _rootNavigatorKey, builder: (context, state) => const GitRepoFormScreen()),
                   GoRoute(path: 'edit/:id', parentNavigatorKey: _rootNavigatorKey, builder: (context, state) => GitRepoFormScreen(repoId: state.pathParameters['id'])),
+                ],
+              ),
+              GoRoute(
+                path: 'webdav',
+                parentNavigatorKey: _rootNavigatorKey,
+                builder: (context, state) => const WebDavConnectionsScreen(),
+                routes: [
+                  GoRoute(path: 'add', parentNavigatorKey: _rootNavigatorKey, builder: (context, state) => const WebDavFormScreen()),
+                  GoRoute(path: 'edit/:id', parentNavigatorKey: _rootNavigatorKey, builder: (context, state) => WebDavFormScreen(connectionId: state.pathParameters['id'])),
                 ],
               ),
             ],
@@ -150,6 +162,17 @@ final appRouter = GoRouter(
         sessionId: state.pathParameters['sessionId']!,
         remotePath: state.uri.queryParameters['path'] ?? '.',
       ),
+    ),
+    GoRoute(
+      path: '/webdav/browse',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>;
+        return WebDavBrowserScreen(
+          service: extra['service'] as RemoteFileService,
+          title: extra['name'] as String? ?? 'WebDAV',
+        );
+      },
     ),
   ],
 );

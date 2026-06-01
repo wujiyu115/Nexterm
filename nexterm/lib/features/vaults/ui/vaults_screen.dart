@@ -39,6 +39,10 @@ class VaultsScreen extends StatelessWidget {
               onTap: () => context.push('/vaults/git'),
               child: _VaultItem(icon: Icons.source_outlined, title: l.git_repos),
             ),
+            GlassCard(
+              onTap: () => context.push('/vaults/webdav'),
+              child: _VaultItem(icon: Icons.cloud_outlined, title: l.webdav_title),
+            ),
 
             SectionLabel(title: l.vaults_keychain),
             GlassCard(

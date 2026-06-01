@@ -3067,6 +3067,114 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'连接中...'**
   String get git_connecting;
+
+  /// No description provided for @webdav_title.
+  ///
+  /// In zh, this message translates to:
+  /// **'WebDAV'**
+  String get webdav_title;
+
+  /// No description provided for @webdav_add.
+  ///
+  /// In zh, this message translates to:
+  /// **'添加连接'**
+  String get webdav_add;
+
+  /// No description provided for @webdav_noConnections.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂无 WebDAV 连接'**
+  String get webdav_noConnections;
+
+  /// No description provided for @webdav_noConnectionsHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'添加 WebDAV 服务器以浏览远程文件'**
+  String get webdav_noConnectionsHint;
+
+  /// No description provided for @webdav_name.
+  ///
+  /// In zh, this message translates to:
+  /// **'名称'**
+  String get webdav_name;
+
+  /// No description provided for @webdav_nameHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'我的 WebDAV 服务器'**
+  String get webdav_nameHint;
+
+  /// No description provided for @webdav_nameRequired.
+  ///
+  /// In zh, this message translates to:
+  /// **'请输入名称'**
+  String get webdav_nameRequired;
+
+  /// No description provided for @webdav_url.
+  ///
+  /// In zh, this message translates to:
+  /// **'URL'**
+  String get webdav_url;
+
+  /// No description provided for @webdav_urlHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'https://dav.example.com/remote.php/dav/files/user'**
+  String get webdav_urlHint;
+
+  /// No description provided for @webdav_urlRequired.
+  ///
+  /// In zh, this message translates to:
+  /// **'请输入 URL'**
+  String get webdav_urlRequired;
+
+  /// No description provided for @webdav_username.
+  ///
+  /// In zh, this message translates to:
+  /// **'用户名'**
+  String get webdav_username;
+
+  /// No description provided for @webdav_password.
+  ///
+  /// In zh, this message translates to:
+  /// **'密码'**
+  String get webdav_password;
+
+  /// No description provided for @webdav_connect.
+  ///
+  /// In zh, this message translates to:
+  /// **'连接'**
+  String get webdav_connect;
+
+  /// No description provided for @webdav_connectFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'连接失败: {error}'**
+  String webdav_connectFailed(String error);
+
+  /// No description provided for @webdav_deleteTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除连接'**
+  String get webdav_deleteTitle;
+
+  /// No description provided for @webdav_deleteConfirm.
+  ///
+  /// In zh, this message translates to:
+  /// **'确定要删除「{name}」吗？'**
+  String webdav_deleteConfirm(String name);
+
+  /// No description provided for @webdav_editTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'编辑连接'**
+  String get webdav_editTitle;
+
+  /// No description provided for @webdav_addTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'添加连接'**
+  String get webdav_addTitle;
 }
 
 class _AppLocalizationsDelegate

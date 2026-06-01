@@ -9,25 +9,27 @@ import 'package:nexterm/data/database/tables/snippets_table.dart';
 import 'package:nexterm/data/database/tables/port_forwards_table.dart';
 import 'package:nexterm/data/database/tables/settings_table.dart';
 import 'package:nexterm/data/database/tables/git_repos_table.dart';
+import 'package:nexterm/data/database/tables/webdav_connections_table.dart';
 import 'package:nexterm/data/database/daos/hosts_dao.dart';
 import 'package:nexterm/data/database/daos/ssh_keys_dao.dart';
 import 'package:nexterm/data/database/daos/snippets_dao.dart';
 import 'package:nexterm/data/database/daos/port_forwards_dao.dart';
 import 'package:nexterm/data/database/daos/settings_dao.dart';
 import 'package:nexterm/data/database/daos/git_repos_dao.dart';
+import 'package:nexterm/data/database/daos/webdav_connections_dao.dart';
 
 part 'app_database.g.dart';
 
 @DriftDatabase(
-  tables: [Hosts, SshKeys, Snippets, PortForwards, AppSettings, GitRepos],
-  daos: [HostsDao, SshKeysDao, SnippetsDao, PortForwardsDao, SettingsDao, GitReposDao],
+  tables: [Hosts, SshKeys, Snippets, PortForwards, AppSettings, GitRepos, WebdavConnections],
+  daos: [HostsDao, SshKeysDao, SnippetsDao, PortForwardsDao, SettingsDao, GitReposDao, WebdavConnectionsDao],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 8;
 
   @override
   MigrationStrategy get migration {
@@ -42,6 +44,7 @@ class AppDatabase extends _$AppDatabase {
         if (from < 5) await m.addColumn(hosts, hosts.startupCommand);
         if (from < 6) await m.createTable(gitRepos);
         if (from < 7) await m.addColumn(hosts, hosts.lastConnectionType);
+        if (from < 8) await m.createTable(webdavConnections);
       },
     );
   }
