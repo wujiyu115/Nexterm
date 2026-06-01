@@ -5,7 +5,13 @@ import 'package:go_router/go_router.dart';
 import 'package:nexterm/core/theme/outdoor_colors.dart';
 import 'package:nexterm/domain/entities/enums.dart';
 import 'package:nexterm/domain/entities/host_entity.dart';
+import 'package:nexterm/domain/entities/webdav_connection_entity.dart';
+import 'package:nexterm/domain/entities/smb_connection_entity.dart';
 import 'package:nexterm/features/hosts/providers/hosts_provider.dart';
+import 'package:nexterm/features/webdav/providers/webdav_provider.dart';
+import 'package:nexterm/features/webdav/services/webdav_service.dart';
+import 'package:nexterm/features/smb/providers/smb_provider.dart';
+import 'package:nexterm/features/smb/services/smb_service.dart';
 import 'package:nexterm/features/terminal/providers/terminal_provider.dart';
 import 'package:nexterm/features/terminal/ui/tab_manager.dart';
 import 'package:nexterm/shared/widgets/glass_card.dart';
@@ -19,7 +25,6 @@ class SessionsScreen extends ConsumerWidget {
     final l = AppLocalizations.of(context)!;
     final tabManager = ref.watch(tabManagerProvider);
     final tabs = tabManager.tabs;
-    final hostsAsync = ref.watch(hostsStreamProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
@@ -37,36 +42,7 @@ class SessionsScreen extends ConsumerWidget {
               ...tabs.map((tab) => _ActiveSessionCard(tab: tab)),
             ],
 
-            hostsAsync.when(
-              data: (hosts) {
-                final recent = hosts
-                    .where((h) => h.lastConnected != null)
-                    .toList()
-                  ..sort((a, b) => b.lastConnected!.compareTo(a.lastConnected!));
-
-                if (recent.isEmpty && tabs.isEmpty) {
-                  return _EmptyState(isDark: isDark);
-                }
-                if (recent.isEmpty) {
-                  return const SizedBox.shrink();
-                }
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SectionLabel(title: l.sessions_recentConnections),
-                    ...recent.map((host) => _HostCard(host: host)),
-                  ],
-                );
-              },
-              loading: () => const Padding(
-                padding: EdgeInsets.all(32),
-                child: Center(child: CircularProgressIndicator()),
-              ),
-              error: (e, _) => Padding(
-                padding: const EdgeInsets.all(16),
-                child: Text(e.toString()),
-              ),
-            ),
+            _RecentConnectionsList(tabs: tabs, isDark: isDark),
 
             const SizedBox(height: 100),
           ],
@@ -192,32 +168,143 @@ class _ActiveSessionCard extends ConsumerWidget {
   }
 }
 
-class _HostCard extends ConsumerWidget {
-  final HostEntity host;
-  const _HostCard({required this.host});
+class _RecentItem {
+  final String name;
+  final String subtitle;
+  final IconData icon;
+  final ConnectionType type;
+  final DateTime lastConnected;
+  final dynamic source;
 
-  Future<void> _connectSftp(BuildContext context, WidgetRef ref) async {
-    final sessionId = await ref.read(terminalActionsProvider).connectHost(host.id, connectionType: ConnectionType.sftp);
-    if (!context.mounted) return;
-    if (sessionId != null) {
-      context.push('/sftp/$sessionId');
+  const _RecentItem({
+    required this.name,
+    required this.subtitle,
+    required this.icon,
+    required this.type,
+    required this.lastConnected,
+    required this.source,
+  });
+}
+
+class _RecentConnectionsList extends ConsumerWidget {
+  final List<TerminalTab> tabs;
+  final bool isDark;
+  const _RecentConnectionsList({required this.tabs, required this.isDark});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
+    final hostsAsync = ref.watch(hostsStreamProvider);
+    final webdavAsync = ref.watch(webdavConnectionsStreamProvider);
+    final smbAsync = ref.watch(smbConnectionsStreamProvider);
+
+    final hosts = hostsAsync.valueOrNull ?? [];
+    final webdavConns = webdavAsync.valueOrNull ?? [];
+    final smbConns = smbAsync.valueOrNull ?? [];
+
+    final items = <_RecentItem>[];
+
+    for (final h in hosts) {
+      if (h.lastConnected == null) continue;
+      final isSftp = h.lastConnectionType == ConnectionType.sftp;
+      items.add(_RecentItem(
+        name: h.name,
+        subtitle: '${isSftp ? "sftp" : "ssh"} · ${h.username}@${h.hostname}:${h.port}',
+        icon: isSftp ? Icons.folder_outlined : Icons.dns_outlined,
+        type: h.lastConnectionType ?? ConnectionType.ssh,
+        lastConnected: h.lastConnected!,
+        source: h,
+      ));
+    }
+
+    for (final w in webdavConns) {
+      if (w.lastConnected == null) continue;
+      items.add(_RecentItem(
+        name: w.name,
+        subtitle: 'webdav · ${w.url}',
+        icon: Icons.cloud_outlined,
+        type: ConnectionType.webdav,
+        lastConnected: w.lastConnected!,
+        source: w,
+      ));
+    }
+
+    for (final s in smbConns) {
+      if (s.lastConnected == null) continue;
+      items.add(_RecentItem(
+        name: s.name,
+        subtitle: 'smb · \\\\${s.host}\\${s.shareName}',
+        icon: Icons.folder_shared_outlined,
+        type: ConnectionType.smb,
+        lastConnected: s.lastConnected!,
+        source: s,
+      ));
+    }
+
+    items.sort((a, b) => b.lastConnected.compareTo(a.lastConnected));
+
+    if (items.isEmpty && tabs.isEmpty) {
+      return _EmptyState(isDark: isDark);
+    }
+    if (items.isEmpty) return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SectionLabel(title: l.sessions_recentConnections),
+        ...items.map((item) => _RecentCard(item: item)),
+      ],
+    );
+  }
+}
+
+class _RecentCard extends ConsumerWidget {
+  final _RecentItem item;
+  const _RecentCard({required this.item});
+
+  Future<void> _connect(BuildContext context, WidgetRef ref) async {
+    switch (item.type) {
+      case ConnectionType.ssh:
+        final host = item.source as HostEntity;
+        context.push('/terminal/connect/${host.id}');
+      case ConnectionType.sftp:
+        final host = item.source as HostEntity;
+        final sessionId = await ref.read(terminalActionsProvider).connectHost(host.id, connectionType: ConnectionType.sftp);
+        if (!context.mounted || sessionId == null) return;
+        context.push('/sftp/$sessionId');
+      case ConnectionType.webdav:
+        final conn = item.source as WebdavConnectionEntity;
+        try {
+          final service = WebDavService();
+          service.connect(conn.url, username: conn.username, password: conn.password);
+          if (!context.mounted) return;
+          context.push('/webdav/browse', extra: {'service': service, 'name': conn.name});
+        } catch (e) {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+          }
+        }
+      case ConnectionType.smb:
+        final conn = item.source as SmbConnectionEntity;
+        try {
+          final service = SmbService();
+          await service.connect(conn.host, conn.shareName, port: conn.port, username: conn.username, password: conn.password, domain: conn.domain);
+          if (!context.mounted) return;
+          context.push('/smb/browse', extra: {'service': service, 'name': conn.name});
+        } catch (e) {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+          }
+        }
     }
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final isSftp = host.lastConnectionType == ConnectionType.sftp;
-    final typeLabel = isSftp ? 'sftp' : 'ssh';
 
     return GlassCard(
-      onTap: () {
-        if (isSftp) {
-          _connectSftp(context, ref);
-        } else {
-          context.push('/terminal/connect/${host.id}');
-        }
-      },
+      onTap: () => _connect(context, ref),
       child: Row(
         children: [
           Container(
@@ -227,7 +314,7 @@ class _HostCard extends ConsumerWidget {
               color: OutdoorColors.accentDim,
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(isSftp ? Icons.folder_outlined : Icons.dns_outlined, size: 18, color: OutdoorColors.accent),
+            child: Icon(item.icon, size: 18, color: OutdoorColors.accent),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -235,7 +322,7 @@ class _HostCard extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  host.name,
+                  item.name,
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
@@ -245,7 +332,7 @@ class _HostCard extends ConsumerWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  '$typeLabel · ${host.username}@${host.hostname}:${host.port}',
+                  item.subtitle,
                   style: TextStyle(
                     fontSize: 12,
                     color: isDark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary,
