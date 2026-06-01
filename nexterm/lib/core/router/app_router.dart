@@ -138,11 +138,6 @@ final appRouter = GoRouter(
       builder: (context, state) => const ToolbarCustomizeScreen(),
     ),
     GoRoute(
-      path: '/sftp/:sessionId',
-      parentNavigatorKey: _rootNavigatorKey,
-      builder: (context, state) => SftpScreen(sessionId: state.pathParameters['sessionId']!),
-    ),
-    GoRoute(
       path: '/sftp/edit',
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) {
@@ -166,6 +161,11 @@ final appRouter = GoRouter(
           service: extra['service'] as RemoteFileService?,
         );
       },
+    ),
+    GoRoute(
+      path: '/sftp/:sessionId',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => SftpScreen(sessionId: state.pathParameters['sessionId']!),
     ),
     GoRoute(
       path: '/git/:sessionId',
