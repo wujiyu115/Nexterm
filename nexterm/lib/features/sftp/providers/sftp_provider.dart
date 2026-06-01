@@ -148,9 +148,9 @@ const Object _sentinel = Object();
 // ---------------------------------------------------------------------------
 
 class SftpNotifier extends StateNotifier<SftpState> {
-  SftpNotifier(this._sftp, this._transferQueue) : super(const SftpState());
+  SftpNotifier(this._service, this._transferQueue) : super(const SftpState());
 
-  final SftpService _sftp;
+  final RemoteFileService _service;
   final TransferQueueNotifier _transferQueue;
 
   static const _uuid = Uuid();
@@ -162,7 +162,7 @@ class SftpNotifier extends StateNotifier<SftpState> {
   Future<void> navigateTo(String path) async {
     state = state.copyWith(isLoading: true, error: null, selectedPaths: {});
     try {
-      final files = await _sftp.listDirectory(path);
+      final files = await _service.listDirectory(path);
       state = state.copyWith(
         currentPath: path,
         files: files,
@@ -222,22 +222,22 @@ class SftpNotifier extends StateNotifier<SftpState> {
 
   Future<void> createDirectory(String name) async {
     final newPath = _joinPath(state.currentPath, name);
-    await _sftp.mkdir(newPath);
+    await _service.mkdir(newPath);
     await refresh();
   }
 
   Future<void> rename(String oldPath, String newName) async {
     final parent = p.dirname(oldPath);
     final newPath = _joinPath(parent, newName);
-    await _sftp.rename(oldPath, newPath);
+    await _service.rename(oldPath, newPath);
     await refresh();
   }
 
   Future<void> delete(String path, {bool isDirectory = false}) async {
     if (isDirectory) {
-      await _sftp.removeRecursive(path);
+      await _service.removeRecursive(path);
     } else {
-      await _sftp.remove(path);
+      await _service.remove(path);
     }
     await refresh();
   }
@@ -278,11 +278,11 @@ class SftpNotifier extends StateNotifier<SftpState> {
       for (final srcPath in state.copiedPaths) {
         final name = p.basename(srcPath);
         final destPath = _joinPath(state.currentPath, name);
-        final info = await _sftp.stat(srcPath);
+        final info = await _service.stat(srcPath);
         if (info.isDirectory) {
-          await _sftp.copyRecursive(srcPath, destPath);
+          await _service.copyRecursive(srcPath, destPath);
         } else {
-          await _sftp.copyFile(srcPath, destPath);
+          await _service.copyFile(srcPath, destPath);
         }
       }
       state = state.copyWith(copiedPaths: []);
@@ -319,7 +319,7 @@ class SftpNotifier extends StateNotifier<SftpState> {
       _transferQueue.updateStatus(transferId, TransferStatus.active);
 
       try {
-        await _sftp.uploadFile(
+        await _service.uploadFile(
           localPath,
           remotePath,
           onProgress: (transferred, total) {
@@ -360,7 +360,7 @@ class SftpNotifier extends StateNotifier<SftpState> {
     _transferQueue.updateStatus(transferId, TransferStatus.active);
 
     try {
-      await _sftp.downloadFile(
+      await _service.downloadFile(
         file.path,
         localPath,
         onProgress: (transferred, total) {
@@ -383,13 +383,13 @@ class SftpNotifier extends StateNotifier<SftpState> {
   // ---------------------------------------------------------------------------
 
   Future<String> readFileContent(String path) async {
-    final bytes = await _sftp.readFile(path);
+    final bytes = await _service.readFile(path);
     return utf8.decode(bytes, allowMalformed: true);
   }
 
   Future<void> writeFileContent(String path, String content) async {
     final bytes = utf8.encode(content);
-    await _sftp.writeFile(path, bytes);
+    await _service.writeFile(path, bytes);
   }
 
   // ---------------------------------------------------------------------------
@@ -397,7 +397,7 @@ class SftpNotifier extends StateNotifier<SftpState> {
   // ---------------------------------------------------------------------------
 
   Future<void> chmod(String path, int permissions) async {
-    await _sftp.chmod(path, permissions);
+    await _service.chmod(path, permissions);
     await refresh();
   }
 

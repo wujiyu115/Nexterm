@@ -8,13 +8,15 @@ import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:path/path.dart' as p;
 
 class ImageViewerScreen extends ConsumerStatefulWidget {
-  final String sessionId;
+  final String? sessionId;
   final String filePath;
+  final RemoteFileService? service;
 
   const ImageViewerScreen({
     super.key,
-    required this.sessionId,
+    this.sessionId,
     required this.filePath,
+    this.service,
   });
 
   @override
@@ -22,7 +24,8 @@ class ImageViewerScreen extends ConsumerStatefulWidget {
 }
 
 class _ImageViewerScreenState extends ConsumerState<ImageViewerScreen> {
-  SftpService? _sftpService;
+  RemoteFileService? _fileService;
+  bool _ownsService = false;
   Uint8List? _imageBytes;
   bool _isLoading = true;
   String? _error;
@@ -37,7 +40,7 @@ class _ImageViewerScreenState extends ConsumerState<ImageViewerScreen> {
 
   @override
   void dispose() {
-    _sftpService?.disconnect();
+    if (_ownsService) _fileService?.disconnect();
     super.dispose();
   }
 
@@ -48,17 +51,25 @@ class _ImageViewerScreenState extends ConsumerState<ImageViewerScreen> {
     });
 
     try {
-      final sshService = ref.read(sshServiceProvider);
-      final client = sshService.getClient(widget.sessionId);
-      if (client == null) {
-        throw StateError('No active SSH session for id: ${widget.sessionId}');
+      final RemoteFileService fileService;
+      if (widget.service != null) {
+        fileService = widget.service!;
+        _ownsService = false;
+      } else {
+        final sshService = ref.read(sshServiceProvider);
+        final client = sshService.getClient(widget.sessionId!);
+        if (client == null) {
+          throw StateError('No active SSH session for id: ${widget.sessionId}');
+        }
+
+        final sftpService = SftpService();
+        await sftpService.connect(client);
+        fileService = sftpService;
+        _ownsService = true;
       }
+      _fileService = fileService;
 
-      final sftpService = SftpService();
-      await sftpService.connect(client);
-      _sftpService = sftpService;
-
-      final bytes = await sftpService.readFile(widget.filePath);
+      final bytes = await fileService.readFile(widget.filePath);
 
       if (mounted) {
         setState(() {

@@ -3,55 +3,16 @@ import 'dart:typed_data';
 
 import 'package:dartssh2/dartssh2.dart';
 
-/// Typedef for reporting transfer progress.
-typedef TransferProgress = void Function(int transferred, int total);
-
-/// Represents metadata about a remote file or directory.
-class RemoteFileInfo {
-  final String name;
-  final String path;
-  final bool isDirectory;
-  final int size;
-  final DateTime? modified;
-  final int? permissions;
-  final String? owner;
-  final String? group;
-
-  const RemoteFileInfo({
-    required this.name,
-    required this.path,
-    required this.isDirectory,
-    required this.size,
-    this.modified,
-    this.permissions,
-    this.owner,
-    this.group,
-  });
-
-  /// Returns the permissions formatted as a 9-character rwxrwxrwx string.
-  String get permissionsString {
-    final p = permissions;
-    if (p == null) return '---------';
-
-    String bit(int mask, String char) => (p & mask) != 0 ? char : '-';
-
-    return '${bit(0x100, 'r')}${bit(0x080, 'w')}${bit(0x040, 'x')}'
-        '${bit(0x020, 'r')}${bit(0x010, 'w')}${bit(0x008, 'x')}'
-        '${bit(0x004, 'r')}${bit(0x002, 'w')}${bit(0x001, 'x')}';
-  }
-
-  @override
-  String toString() =>
-      'RemoteFileInfo(name: $name, path: $path, isDirectory: $isDirectory, '
-      'size: $size, modified: $modified, permissions: $permissions)';
-}
+import 'remote_file_service.dart';
+export 'remote_file_service.dart';
 
 /// Service wrapping dartssh2's [SftpClient] to provide high-level SFTP
 /// operations: directory listing, file read/write, upload/download with
 /// progress, recursive delete, chmod, and stat.
-class SftpService {
+class SftpService implements RemoteFileService {
   SftpClient? _client;
 
+  @override
   bool get isConnected => _client != null;
 
   // ---------------------------------------------------------------------------
@@ -64,12 +25,14 @@ class SftpService {
   }
 
   /// Returns the absolute path of the SFTP home directory.
+  @override
   Future<String> homePath() async {
     _requireConnected();
     return await _client!.absolute('.');
   }
 
   /// Closes the SFTP session.
+  @override
   void disconnect() {
     _client?.close();
     _client = null;
@@ -81,6 +44,7 @@ class SftpService {
 
   /// Lists the contents of [path].  Entries are sorted with directories first,
   /// then alphabetically by name.  The `.` and `..` entries are omitted.
+  @override
   Future<List<RemoteFileInfo>> listDirectory(String path) async {
     _requireConnected();
 
@@ -107,6 +71,7 @@ class SftpService {
   // ---------------------------------------------------------------------------
 
   /// Reads [remotePath] entirely into memory and returns the bytes.
+  @override
   Future<Uint8List> readFile(String remotePath) async {
     _requireConnected();
 
@@ -119,6 +84,7 @@ class SftpService {
   }
 
   /// Writes [data] to [remotePath], creating or truncating the file.
+  @override
   Future<void> writeFile(String remotePath, Uint8List data) async {
     _requireConnected();
 
@@ -141,6 +107,7 @@ class SftpService {
 
   /// Downloads [remotePath] to [localPath].  [onProgress] receives
   /// (bytesTransferred, totalBytes) updates.
+  @override
   Future<void> downloadFile(
     String remotePath,
     String localPath, {
@@ -183,6 +150,7 @@ class SftpService {
 
   /// Uploads [localPath] to [remotePath].  [onProgress] receives
   /// (bytesTransferred, totalBytes) updates.
+  @override
   Future<void> uploadFile(
     String localPath,
     String remotePath, {
@@ -222,18 +190,21 @@ class SftpService {
   // ---------------------------------------------------------------------------
 
   /// Creates the directory at [path].
+  @override
   Future<void> mkdir(String path) async {
     _requireConnected();
     await _client!.mkdir(path);
   }
 
   /// Renames / moves [oldPath] to [newPath].
+  @override
   Future<void> rename(String oldPath, String newPath) async {
     _requireConnected();
     await _client!.rename(oldPath, newPath);
   }
 
   /// Removes the file at [path].
+  @override
   Future<void> remove(String path) async {
     _requireConnected();
     await _client!.remove(path);
@@ -246,6 +217,7 @@ class SftpService {
   }
 
   /// Recursively deletes [path] and all its contents.
+  @override
   Future<void> removeRecursive(String path) async {
     _requireConnected();
 
@@ -274,6 +246,7 @@ class SftpService {
 
   /// Sets the Unix permission bits of [path] to [permissions]
   /// (e.g. `0o755` or `0x1ED`).
+  @override
   Future<void> chmod(String path, int permissions) async {
     _requireConnected();
     final attrs = SftpFileAttrs(mode: SftpFileMode.value(permissions));
@@ -281,6 +254,7 @@ class SftpService {
   }
 
   /// Returns a [RemoteFileInfo] describing [remotePath].
+  @override
   Future<RemoteFileInfo> stat(String remotePath) async {
     _requireConnected();
     final attrs = await _client!.stat(remotePath);
@@ -290,12 +264,14 @@ class SftpService {
 
   /// Copies a remote file from [sourcePath] to [destPath] by reading and
   /// re-writing through the SFTP channel.
+  @override
   Future<void> copyFile(String sourcePath, String destPath) async {
     final data = await readFile(sourcePath);
     await writeFile(destPath, data);
   }
 
   /// Recursively copies a directory from [sourcePath] to [destPath].
+  @override
   Future<void> copyRecursive(String sourcePath, String destPath) async {
     _requireConnected();
     final attrs = await _client!.stat(sourcePath);

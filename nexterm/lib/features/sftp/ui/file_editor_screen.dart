@@ -13,15 +13,17 @@ import 'package:nexterm/features/terminal/providers/terminal_provider.dart';
 import 'package:path/path.dart' as p;
 
 class FileEditorScreen extends ConsumerStatefulWidget {
-  final String sessionId;
+  final String? sessionId;
   final String filePath;
   final bool viewOnly;
+  final RemoteFileService? service;
 
   const FileEditorScreen({
     super.key,
-    required this.sessionId,
+    this.sessionId,
     required this.filePath,
     this.viewOnly = false,
+    this.service,
   });
 
   @override
@@ -29,7 +31,8 @@ class FileEditorScreen extends ConsumerStatefulWidget {
 }
 
 class _FileEditorScreenState extends ConsumerState<FileEditorScreen> {
-  SftpService? _sftpService;
+  RemoteFileService? _fileService;
+  bool _ownsService = false;
 
   // Editor state
   late final TextEditingController _textController;
@@ -64,7 +67,7 @@ class _FileEditorScreenState extends ConsumerState<FileEditorScreen> {
     _textController.removeListener(_onTextChanged);
     _textController.dispose();
     _markdownScrollController.dispose();
-    _sftpService?.disconnect();
+    if (_ownsService) _fileService?.disconnect();
     super.dispose();
   }
 
@@ -79,17 +82,25 @@ class _FileEditorScreenState extends ConsumerState<FileEditorScreen> {
     });
 
     try {
-      final sshService = ref.read(sshServiceProvider);
-      final client = sshService.getClient(widget.sessionId);
-      if (client == null) {
-        throw StateError('No active SSH session for id: ${widget.sessionId}');
+      final RemoteFileService fileService;
+      if (widget.service != null) {
+        fileService = widget.service!;
+        _ownsService = false;
+      } else {
+        final sshService = ref.read(sshServiceProvider);
+        final client = sshService.getClient(widget.sessionId!);
+        if (client == null) {
+          throw StateError('No active SSH session for id: ${widget.sessionId}');
+        }
+
+        final sftpService = SftpService();
+        await sftpService.connect(client);
+        fileService = sftpService;
+        _ownsService = true;
       }
+      _fileService = fileService;
 
-      final sftpService = SftpService();
-      await sftpService.connect(client);
-      _sftpService = sftpService;
-
-      final bytes = await sftpService.readFile(widget.filePath);
+      final bytes = await fileService.readFile(widget.filePath);
       final content = utf8.decode(bytes, allowMalformed: true);
 
       if (mounted) {
@@ -112,14 +123,14 @@ class _FileEditorScreenState extends ConsumerState<FileEditorScreen> {
   }
 
   Future<void> _saveFile() async {
-    final sftpService = _sftpService;
-    if (sftpService == null) return;
+    final fileService = _fileService;
+    if (fileService == null) return;
 
     setState(() => _isSaving = true);
 
     try {
       final bytes = utf8.encode(_textController.text);
-      await sftpService.writeFile(widget.filePath, bytes);
+      await fileService.writeFile(widget.filePath, bytes);
       if (mounted) {
         setState(() {
           _isSaving = false;

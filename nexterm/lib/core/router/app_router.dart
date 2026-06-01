@@ -16,6 +16,7 @@ import 'package:nexterm/features/terminal/ui/sessions_screen.dart';
 import 'package:nexterm/features/sftp/ui/sftp_screen.dart';
 import 'package:nexterm/features/sftp/ui/file_editor_screen.dart';
 import 'package:nexterm/features/sftp/ui/image_viewer_screen.dart';
+import 'package:nexterm/features/sftp/services/remote_file_service.dart';
 import 'package:nexterm/features/settings/ui/settings_screen.dart';
 import 'package:nexterm/features/terminal/ui/toolbar_customize_screen.dart';
 import 'package:nexterm/features/git/ui/git_screen.dart';
@@ -121,11 +122,12 @@ final appRouter = GoRouter(
       path: '/sftp/edit',
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) {
-        final extra = state.extra as Map<String, String>;
+        final extra = state.extra as Map<String, dynamic>;
         return FileEditorScreen(
-          sessionId: extra['sessionId']!,
-          filePath: extra['path']!,
+          sessionId: extra['sessionId'] as String?,
+          filePath: extra['path'] as String,
           viewOnly: extra['viewOnly'] == 'true',
+          service: extra['service'] as RemoteFileService?,
         );
       },
     ),
@@ -133,10 +135,11 @@ final appRouter = GoRouter(
       path: '/sftp/image',
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) {
-        final extra = state.extra as Map<String, String>;
+        final extra = state.extra as Map<String, dynamic>;
         return ImageViewerScreen(
-          sessionId: extra['sessionId']!,
-          filePath: extra['path']!,
+          sessionId: extra['sessionId'] as String?,
+          filePath: extra['path'] as String,
+          service: extra['service'] as RemoteFileService?,
         );
       },
     ),

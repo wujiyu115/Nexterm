@@ -16,9 +16,12 @@ import 'package:nexterm/features/terminal/providers/terminal_provider.dart';
 import 'package:go_router/go_router.dart';
 
 class SftpContentWidget extends ConsumerStatefulWidget {
-  final String sessionId;
+  final String? sessionId;
+  final RemoteFileService? service;
 
-  const SftpContentWidget({super.key, required this.sessionId});
+  const SftpContentWidget({super.key, this.sessionId, this.service})
+      : assert(sessionId != null || service != null,
+            'Either sessionId or service must be provided');
 
   @override
   ConsumerState<SftpContentWidget> createState() => _SftpContentWidgetState();
@@ -42,20 +45,26 @@ class _SftpContentWidgetState extends ConsumerState<SftpContentWidget> {
 
   Future<void> _initialize() async {
     try {
-      final sshService = ref.read(sshServiceProvider);
-      final client = sshService.getClient(widget.sessionId);
-      if (client == null) {
-        throw StateError('No active SSH session for id: ${widget.sessionId}');
+      final RemoteFileService fileService;
+      if (widget.service != null) {
+        fileService = widget.service!;
+      } else {
+        final sshService = ref.read(sshServiceProvider);
+        final client = sshService.getClient(widget.sessionId!);
+        if (client == null) {
+          throw StateError('No active SSH session for id: ${widget.sessionId}');
+        }
+
+        final sftpService = SftpService();
+        await sftpService.connect(client);
+        fileService = sftpService;
       }
 
-      final sftpService = SftpService();
-      await sftpService.connect(client);
-
       final transferQueue = ref.read(transferQueueProvider.notifier);
-      final notifier = SftpNotifier(sftpService, transferQueue);
+      final notifier = SftpNotifier(fileService, transferQueue);
 
       if (!mounted) {
-        sftpService.disconnect();
+        fileService.disconnect();
         return;
       }
 
@@ -122,7 +131,7 @@ class _SftpContentWidgetState extends ConsumerState<SftpContentWidget> {
             CupertinoActionSheetAction(
               onPressed: () {
                 Navigator.pop(ctx);
-                context.push('/sftp/image', extra: {'sessionId': widget.sessionId, 'path': file.path});
+                context.push('/sftp/image', extra: <String, dynamic>{'sessionId': widget.sessionId, 'path': file.path, 'service': widget.service});
               },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -137,7 +146,7 @@ class _SftpContentWidgetState extends ConsumerState<SftpContentWidget> {
             CupertinoActionSheetAction(
               onPressed: () {
                 Navigator.pop(ctx);
-                context.push('/sftp/edit', extra: {'sessionId': widget.sessionId, 'path': file.path, 'viewOnly': 'true'});
+                context.push('/sftp/edit', extra: <String, dynamic>{'sessionId': widget.sessionId, 'path': file.path, 'viewOnly': 'true', 'service': widget.service});
               },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -151,7 +160,7 @@ class _SftpContentWidgetState extends ConsumerState<SftpContentWidget> {
             CupertinoActionSheetAction(
               onPressed: () {
                 Navigator.pop(ctx);
-                context.push('/sftp/edit', extra: {'sessionId': widget.sessionId, 'path': file.path, 'viewOnly': 'false'});
+                context.push('/sftp/edit', extra: <String, dynamic>{'sessionId': widget.sessionId, 'path': file.path, 'viewOnly': 'false', 'service': widget.service});
               },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -492,7 +501,7 @@ class _SftpContentWidgetState extends ConsumerState<SftpContentWidget> {
               _toolbarIcon(icon: Icons.drive_file_move_outline, color: iconColor, onTap: _showGoToPathDialog),
               _toolbarIcon(icon: Icons.sort, color: iconColor, onTap: _showSortMenu),
               _toolbarIcon(icon: Icons.refresh, color: iconColor, onTap: notifier.refresh),
-              if (state.files.any((f) => f.isDirectory && f.name == '.git'))
+              if (widget.sessionId != null && state.files.any((f) => f.isDirectory && f.name == '.git'))
                 _toolbarIcon(
                   icon: Icons.source_outlined,
                   color: iconColor,
