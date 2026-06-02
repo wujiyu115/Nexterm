@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:nexterm/core/theme/outdoor_colors.dart';
+import 'package:nexterm/core/theme/theme_palette.dart';
 
 class GlassCard extends StatelessWidget {
   final Widget child;
@@ -20,7 +21,7 @@ class GlassCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final p = Theme.of(context).extension<ThemePalette>()!;
 
     return Padding(
       padding: margin ?? const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
@@ -34,24 +35,24 @@ class GlassCard extends StatelessWidget {
               onTap: onTap,
               onLongPress: onLongPress,
               borderRadius: BorderRadius.circular(OutdoorColors.radiusLg),
-              splashColor: OutdoorColors.accentDim,
+              splashColor: p.accentDim,
               child: Container(
                 padding: padding ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 decoration: BoxDecoration(
-                  color: isDark ? OutdoorColors.darkCardBg : OutdoorColors.lightCardBg,
+                  color: p.cardBg,
                   borderRadius: BorderRadius.circular(OutdoorColors.radiusLg),
                   border: Border.all(
-                    color: isDark ? OutdoorColors.darkGlassBorder : OutdoorColors.lightGlassBorder,
+                    color: p.glassBorder,
                     width: 0.5,
                   ),
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      OutdoorColors.accent.withValues(alpha: 0.08),
+                      p.accent.withValues(alpha: 0.08),
                       Colors.transparent,
                       Colors.transparent,
-                      OutdoorColors.accent.withValues(alpha: 0.04),
+                      p.accent.withValues(alpha: 0.04),
                     ],
                     stops: const [0.0, 0.4, 0.6, 1.0],
                   ),

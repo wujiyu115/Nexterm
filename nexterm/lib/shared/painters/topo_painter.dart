@@ -1,15 +1,16 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:nexterm/core/theme/outdoor_colors.dart';
+import 'package:nexterm/core/theme/theme_palette.dart';
 
 class TopoPainter extends CustomPainter {
-  final bool isDark;
-  TopoPainter({required this.isDark});
+  final ThemePalette palette;
+  const TopoPainter(this.palette);
 
   @override
   void paint(Canvas canvas, Size size) {
+    final isDark = palette.brightness == Brightness.dark;
     final paint = Paint()
-      ..color = OutdoorColors.accent.withValues(alpha: isDark ? 0.035 : 0.06)
+      ..color = palette.accent.withValues(alpha: isDark ? 0.035 : 0.06)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 0.8;
 
@@ -64,5 +65,5 @@ class TopoPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(TopoPainter oldDelegate) => oldDelegate.isDark != isDark;
+  bool shouldRepaint(covariant TopoPainter oldDelegate) => oldDelegate.palette != palette;
 }

@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:nexterm/core/theme/outdoor_colors.dart';
+import 'package:nexterm/core/theme/theme_palette.dart';
 
 class RidgePainter extends CustomPainter {
-  final bool isDark;
-  RidgePainter({required this.isDark});
+  final ThemePalette palette;
+  const RidgePainter(this.palette);
 
   @override
   void paint(Canvas canvas, Size size) {
+    final isDark = palette.brightness == Brightness.dark;
     final opacity = isDark ? 0.04 : 0.06;
 
     final frontPaint = Paint()
-      ..color = OutdoorColors.accent.withValues(alpha: opacity * 0.5)
+      ..color = palette.accent.withValues(alpha: opacity * 0.5)
       ..style = PaintingStyle.fill;
 
     final frontPath = Path();
@@ -29,7 +30,7 @@ class RidgePainter extends CustomPainter {
     canvas.drawPath(frontPath, frontPaint);
 
     final backPaint = Paint()
-      ..color = OutdoorColors.accent.withValues(alpha: opacity * 0.3)
+      ..color = palette.accent.withValues(alpha: opacity * 0.3)
       ..style = PaintingStyle.fill;
 
     final backPath = Path();
@@ -49,5 +50,5 @@ class RidgePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(RidgePainter oldDelegate) => oldDelegate.isDark != isDark;
+  bool shouldRepaint(covariant RidgePainter oldDelegate) => oldDelegate.palette != palette;
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nexterm/core/theme/outdoor_colors.dart';
+import 'package:nexterm/core/theme/theme_palette.dart';
 
 class OutdoorSearchBar extends StatelessWidget {
   final TextEditingController? controller;
@@ -15,7 +16,7 @@ class OutdoorSearchBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final p = Theme.of(context).extension<ThemePalette>()!;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -24,21 +25,21 @@ class OutdoorSearchBar extends StatelessWidget {
         onChanged: onChanged,
         style: TextStyle(
           fontSize: 16,
-          color: isDark ? OutdoorColors.darkFg : OutdoorColors.lightFg,
+          color: p.fg,
         ),
         decoration: InputDecoration(
           hintText: hintText,
           hintStyle: TextStyle(
             fontSize: 16,
-            color: isDark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary,
+            color: p.fgTertiary,
           ),
           prefixIcon: Icon(
             Icons.search,
             size: 20,
-            color: isDark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary,
+            color: p.fgTertiary,
           ),
           filled: true,
-          fillColor: isDark ? OutdoorColors.darkInputBg : OutdoorColors.lightInputBg,
+          fillColor: p.inputBg,
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(OutdoorColors.radiusMd),
