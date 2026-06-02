@@ -3,7 +3,6 @@ import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:nexterm/core/theme/terminal_themes.dart' as app_themes;
 import 'package:nexterm/core/theme/theme_provider.dart';
 import 'package:nexterm/features/terminal/providers/terminal_font_family_provider.dart';
 import 'package:nexterm/features/terminal/providers/terminal_font_size_provider.dart';
@@ -76,10 +75,7 @@ class _TerminalViewWidgetState extends ConsumerState<TerminalViewWidget> {
 
     final fontSize = ref.watch(terminalFontSizeProvider);
     final fontFamily = ref.watch(terminalFontFamilyProvider);
-    final terminalThemeName =
-        ref.watch(themeProvider.select((s) => s.terminalThemeName));
-    final terminalTheme =
-        app_themes.TerminalThemes.byName(terminalThemeName);
+    final terminalTheme = ref.watch(paletteProvider).terminal;
     final isMobile = Platform.isIOS || Platform.isAndroid;
 
     Widget child = TerminalView(

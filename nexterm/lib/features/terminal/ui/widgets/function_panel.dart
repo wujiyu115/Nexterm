@@ -49,7 +49,7 @@ class _FunctionPanelState extends ConsumerState<FunctionPanel>
 
   Future<void> _showTerminalThemePicker(BuildContext context) async {
     HapticFeedback.lightImpact();
-    final current = ref.read(themeProvider).terminalThemeName;
+    final current = ref.read(themeProvider);
     await showDialog<void>(
       context: context,
       builder: (ctx) => _TerminalThemeSheet(current: current),
@@ -616,7 +616,7 @@ class _TerminalThemeSheet extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
-    final selected = ref.watch(themeProvider).terminalThemeName;
+    final selected = ref.watch(themeProvider);
     return SimpleDialog(
       title: Text(l.settings_selectTerminalTheme),
       children: [
@@ -624,7 +624,7 @@ class _TerminalThemeSheet extends ConsumerWidget {
           groupValue: selected,
           onChanged: (v) {
             if (v != null) {
-              ref.read(themeProvider.notifier).setTerminalTheme(v);
+              ref.read(themeProvider.notifier).setTheme(v);
               Navigator.of(context).pop();
             }
           },

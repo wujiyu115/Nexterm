@@ -1,8 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:nexterm/main.dart';
+import 'package:nexterm/data/database/database_provider.dart';
 
 class SettingsKeys {
   static const theme = 'theme';
+  static const themeName = 'theme_name';
   static const language = 'language';
   static const startupPage = 'startup_page';
   static const terminalFontSize = 'terminal_font_size';

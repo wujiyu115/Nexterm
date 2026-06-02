@@ -6,7 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nexterm/core/theme/outdoor_colors.dart';
 import 'package:nexterm/features/sftp/services/sftp_service.dart';
-import 'package:nexterm/core/theme/terminal_themes.dart';
 import 'package:nexterm/core/theme/theme_provider.dart';
 import 'package:nexterm/domain/entities/host_entity.dart';
 import 'package:nexterm/features/hosts/providers/hosts_provider.dart';
@@ -288,8 +287,7 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
     _hadTabs = hasTabs;
 
     final l = AppLocalizations.of(context)!;
-    final terminalThemeName = ref.watch(themeProvider.select((s) => s.terminalThemeName));
-    final terminalBg = TerminalThemes.byName(terminalThemeName).background;
+    final terminalBg = ref.watch(paletteProvider).terminal.background;
 
     return Scaffold(
       backgroundColor: terminalBg,
