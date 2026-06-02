@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:nexterm/core/theme/outdoor_colors.dart';
-import 'package:nexterm/core/theme/terminal_themes.dart';
+import 'package:nexterm/core/theme/theme_catalog.dart';
+import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/core/theme/theme_provider.dart';
 import 'package:nexterm/domain/entities/snippet_entity.dart';
 import 'package:nexterm/features/snippets/providers/snippets_provider.dart';
@@ -49,19 +49,18 @@ class _FunctionPanelState extends ConsumerState<FunctionPanel>
 
   Future<void> _showTerminalThemePicker(BuildContext context) async {
     HapticFeedback.lightImpact();
-    final current = ref.read(themeProvider);
     await showDialog<void>(
       context: context,
-      builder: (ctx) => _TerminalThemeSheet(current: current),
+      builder: (ctx) => const _TerminalThemeSheet(),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bgColor = isDark ? OutdoorColors.darkBgElevated : OutdoorColors.lightBgElevated;
-    final headerColor = isDark ? OutdoorColors.darkBg : OutdoorColors.lightBg;
+    final p = Theme.of(context).extension<ThemePalette>()!;
+    final bgColor = p.bgElevated;
+    final headerColor = p.bg;
 
     return Container(
       height: 260,
@@ -75,10 +74,9 @@ class _FunctionPanelState extends ConsumerState<FunctionPanel>
                 Expanded(
                   child: TabBar(
                     controller: _tabController,
-                    labelColor: isDark ? OutdoorColors.darkFg : OutdoorColors.lightFg,
-                    unselectedLabelColor:
-                        isDark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary,
-                    indicatorColor: OutdoorColors.accent,
+                    labelColor: p.fg,
+                    unselectedLabelColor: p.fgTertiary,
+                    indicatorColor: p.accent,
                     indicatorSize: TabBarIndicatorSize.label,
                     labelStyle: const TextStyle(
                         fontSize: 13, fontWeight: FontWeight.w600),
@@ -101,7 +99,7 @@ class _FunctionPanelState extends ConsumerState<FunctionPanel>
                   icon: Icon(
                     Icons.palette_outlined,
                     size: 18,
-                    color: isDark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary,
+                    color: p.fgSecondary,
                   ),
                   onPressed: () => _showTerminalThemePicker(context),
                 ),
@@ -202,7 +200,7 @@ class _AllShortcutsOverlayInline extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final p = Theme.of(context).extension<ThemePalette>()!;
     final usage = ref.watch(toolbarUsageProvider);
     final modifier = ref.watch(toolbarModifierProvider);
 
@@ -216,10 +214,10 @@ class _AllShortcutsOverlayInline extends ConsumerWidget {
       return aIdx - bIdx;
     });
 
-    final buttonColor = isDark ? OutdoorColors.darkSurfaceSolid : OutdoorColors.lightSurface;
-    final activeColor = OutdoorColors.accent;
-    final textColor = isDark ? OutdoorColors.darkFg : OutdoorColors.lightFg;
-    final activeTextColor = isDark ? OutdoorColors.darkBg : Colors.white;
+    final buttonColor = p.surfaceSolid;
+    final activeColor = p.accent;
+    final textColor = p.fg;
+    final activeTextColor = p.brightness == Brightness.dark ? p.bg : Colors.white;
 
     return Column(
       children: [
@@ -321,7 +319,7 @@ class _SnippetsTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
     final snippetsAsync = ref.watch(snippetsStreamProvider);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final p = Theme.of(context).extension<ThemePalette>()!;
 
     return snippetsAsync.when(
       data: (snippets) {
@@ -330,12 +328,12 @@ class _SnippetsTab extends ConsumerWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.code, size: 40, color: isDark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary),
+                Icon(Icons.code, size: 40, color: p.fgTertiary),
                 const SizedBox(height: 8),
                 Text(
                   l.function_noSnippets,
                   style: TextStyle(
-                    color: isDark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary,
+                    color: p.fgSecondary,
                     fontSize: 14,
                   ),
                 ),
@@ -343,7 +341,7 @@ class _SnippetsTab extends ConsumerWidget {
                 Text(
                   l.function_noSnippetsHint,
                   style: TextStyle(
-                    color: isDark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary,
+                    color: p.fgTertiary,
                     fontSize: 12,
                   ),
                 ),
@@ -357,7 +355,7 @@ class _SnippetsTab extends ConsumerWidget {
           itemCount: snippets.length,
           separatorBuilder: (_, __) => Divider(
             height: 1,
-            color: isDark ? OutdoorColors.darkBorder : OutdoorColors.lightBorder,
+            color: p.border,
           ),
           itemBuilder: (context, index) {
             final snippet = snippets[index];
@@ -366,7 +364,7 @@ class _SnippetsTab extends ConsumerWidget {
               visualDensity: VisualDensity.compact,
               leading: Icon(
                 snippet.variables.isEmpty ? Icons.terminal : Icons.edit_note,
-                color: OutdoorColors.accent,
+                color: p.accent,
                 size: 20,
               ),
               title: Text(
@@ -382,11 +380,11 @@ class _SnippetsTab extends ConsumerWidget {
                 style: TextStyle(
                   fontFamily: 'monospace',
                   fontSize: 11,
-                  color: isDark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary,
+                  color: p.fgSecondary,
                 ),
               ),
               trailing: snippet.isFavorite
-                  ? const Icon(Icons.star, size: 14, color: OutdoorColors.accent)
+                  ? Icon(Icons.star, size: 14, color: p.accent)
                   : null,
               onTap: () => _execute(context, snippet),
             );
@@ -397,7 +395,7 @@ class _SnippetsTab extends ConsumerWidget {
       error: (e, _) => Center(
         child: Text(
           e.toString(),
-          style: TextStyle(color: isDark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary),
+          style: TextStyle(color: p.fgSecondary),
         ),
       ),
     );
@@ -480,12 +478,12 @@ class _EmptyTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final p = Theme.of(context).extension<ThemePalette>()!;
     return Center(
       child: Text(
         message,
         style: TextStyle(
-          color: isDark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary,
+          color: p.fgSecondary,
           fontSize: 14,
         ),
       ),
@@ -549,7 +547,7 @@ class _GitTabState extends ConsumerState<_GitTab> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final p = Theme.of(context).extension<ThemePalette>()!;
 
     if (_loading) {
       return const Center(
@@ -568,7 +566,7 @@ class _GitTabState extends ConsumerState<_GitTab> {
             style: TextStyle(
               fontSize: 13,
               fontFamily: 'JetBrains Mono',
-              color: isDark ? OutdoorColors.darkFg : OutdoorColors.lightFg,
+              color: p.fg,
             ),
             decoration: InputDecoration(
               labelText: l.git_repoPath,
@@ -601,17 +599,7 @@ class _GitTabState extends ConsumerState<_GitTab> {
 // ---------- Inline terminal theme picker (shares state with Settings) ----------
 
 class _TerminalThemeSheet extends ConsumerWidget {
-  final String current;
-  const _TerminalThemeSheet({required this.current});
-
-  static String _label(String name) => switch (name) {
-        'catppuccin' => 'Catppuccin Mocha',
-        'dracula' => 'Dracula',
-        'monokai' => 'Monokai',
-        'solarized-dark' => 'Solarized Dark',
-        'solarized-light' => 'Solarized Light',
-        _ => name,
-      };
+  const _TerminalThemeSheet();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -630,12 +618,19 @@ class _TerminalThemeSheet extends ConsumerWidget {
           },
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            children: TerminalThemes.all.keys.map((name) {
-              return RadioListTile<String>(
-                title: Text(_label(name)),
-                value: name,
-              );
-            }).toList(),
+            children: [
+              for (final key in ThemeCatalog.darkKeys)
+                RadioListTile<String>(
+                  title: Text(ThemeCatalog.displayName(key)),
+                  value: key,
+                ),
+              const Divider(),
+              for (final key in ThemeCatalog.lightKeys)
+                RadioListTile<String>(
+                  title: Text(ThemeCatalog.displayName(key)),
+                  value: key,
+                ),
+            ],
           ),
         ),
       ],

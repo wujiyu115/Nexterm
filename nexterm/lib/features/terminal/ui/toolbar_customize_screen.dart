@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:nexterm/core/theme/outdoor_colors.dart';
+import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nexterm/features/terminal/models/toolbar_key_definition.dart';
@@ -19,13 +19,13 @@ class ToolbarCustomizeScreen extends ConsumerWidget {
     final visibleCount = ref.watch(visibleGroupCountProvider);
     final visibleCountNotifier = ref.read(visibleGroupCountProvider.notifier);
 
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final p = Theme.of(context).extension<ThemePalette>()!;
 
     return Scaffold(
-      backgroundColor: isDark ? OutdoorColors.darkBg : OutdoorColors.lightBg,
+      backgroundColor: p.bg,
       appBar: AppBar(
-        backgroundColor: isDark ? OutdoorColors.darkBg : OutdoorColors.lightBg,
-        foregroundColor: isDark ? OutdoorColors.darkFg : OutdoorColors.lightFg,
+        backgroundColor: p.bg,
+        foregroundColor: p.fg,
         title: Text(l.toolbar_customize),
         actions: [
           if (removedGroups.isNotEmpty)
@@ -157,6 +157,7 @@ class _VisibleCountSetting extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final p = theme.extension<ThemePalette>()!;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
@@ -175,7 +176,7 @@ class _VisibleCountSetting extends StatelessWidget {
                 Text(
                   l.toolbar_visibleGroupsHint(value),
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.brightness == Brightness.dark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary,
+                    color: p.fgSecondary,
                   ),
                 ),
               ],
@@ -214,11 +215,11 @@ class _ToolbarPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bg = isDark ? OutdoorColors.darkBgElevated : OutdoorColors.lightBgElevated;
-    final btnColor = isDark ? OutdoorColors.darkSurfaceSolid : OutdoorColors.lightSurface;
-    final txtColor = isDark ? OutdoorColors.darkFg : OutdoorColors.lightFg;
-    final divColor = isDark ? OutdoorColors.darkBorder : OutdoorColors.lightBorder;
+    final p = Theme.of(context).extension<ThemePalette>()!;
+    final bg = p.bgElevated;
+    final btnColor = p.surfaceSolid;
+    final txtColor = p.fg;
+    final divColor = p.border;
 
     final visible = groups.take(visibleCount).toList();
 
@@ -280,10 +281,9 @@ class _GroupTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final p = theme.extension<ThemePalette>()!;
     final keysPreview = group.keys.map((k) => k.label).join('  ');
     final groupName = toolbarGroupName(group.id, l);
-
-    final isDark = theme.brightness == Brightness.dark;
 
     return Opacity(
       opacity: isVisible ? 1.0 : 0.45,
@@ -293,7 +293,7 @@ class _GroupTile extends StatelessWidget {
         child: Row(
           children: [
             IconButton(
-              icon: Icon(Icons.remove_circle, color: isDark ? OutdoorColors.darkStatusError : OutdoorColors.lightStatusError, size: 22),
+              icon: Icon(Icons.remove_circle, color: p.statusError, size: 22),
               onPressed: onRemove,
               visualDensity: VisualDensity.compact,
             ),
@@ -308,7 +308,7 @@ class _GroupTile extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: isDark ? OutdoorColors.darkFg : OutdoorColors.lightFg,
+                          color: p.fg,
                         ),
                       ),
                       if (!isVisible) ...[
@@ -317,7 +317,7 @@ class _GroupTile extends StatelessWidget {
                           l.toolbar_hidden,
                           style: TextStyle(
                             fontSize: 11,
-                            color: isDark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary,
+                            color: p.fgTertiary,
                           ),
                         ),
                       ],
@@ -328,7 +328,7 @@ class _GroupTile extends StatelessWidget {
                     keysPreview,
                     style: TextStyle(
                       fontSize: 12,
-                      color: isDark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary,
+                      color: p.fgSecondary,
                       letterSpacing: 1.2,
                     ),
                     maxLines: 1,
@@ -342,7 +342,7 @@ class _GroupTile extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.all(8),
                 child: Icon(Icons.drag_handle, size: 22,
-                  color: isDark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary),
+                  color: p.fgTertiary),
               ),
             ),
           ],

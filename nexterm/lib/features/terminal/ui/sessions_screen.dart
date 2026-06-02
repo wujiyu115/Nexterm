@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:nexterm/core/theme/outdoor_colors.dart';
+import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/domain/entities/enums.dart';
 import 'package:nexterm/domain/entities/host_entity.dart';
 import 'package:nexterm/domain/entities/webdav_connection_entity.dart';
@@ -25,7 +25,6 @@ class SessionsScreen extends ConsumerWidget {
     final l = AppLocalizations.of(context)!;
     final tabManager = ref.watch(tabManagerProvider);
     final tabs = tabManager.tabs;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -42,7 +41,7 @@ class SessionsScreen extends ConsumerWidget {
               ...tabs.map((tab) => _ActiveSessionCard(tab: tab)),
             ],
 
-            _RecentConnectionsList(tabs: tabs, isDark: isDark),
+            _RecentConnectionsList(tabs: tabs),
 
             const SizedBox(height: 100),
           ],
@@ -58,6 +57,7 @@ class _NavTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final p = Theme.of(context).extension<ThemePalette>()!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -76,8 +76,8 @@ class _NavTitle extends StatelessWidget {
           height: 2,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(1),
-            gradient: const LinearGradient(
-              colors: [OutdoorColors.accent, Colors.transparent],
+            gradient: LinearGradient(
+              colors: [p.accent, Colors.transparent],
             ),
           ),
         ),
@@ -129,13 +129,13 @@ class _ActiveSessionCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final p = Theme.of(context).extension<ThemePalette>()!;
 
     final statusColor = switch (tab.status) {
-      ConnectionStatus.connected => OutdoorColors.accent,
-      ConnectionStatus.connecting => const Color(0xFFF9E2AF),
-      ConnectionStatus.disconnected => isDark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary,
-      ConnectionStatus.error => const Color(0xFFF38BA8),
+      ConnectionStatus.connected => p.accent,
+      ConnectionStatus.connecting => p.statusConnecting,
+      ConnectionStatus.disconnected => p.fgTertiary,
+      ConnectionStatus.error => p.statusError,
     };
 
     final subtitle = _subtitle(ref);
@@ -151,7 +151,7 @@ class _ActiveSessionCard extends ConsumerWidget {
               color: statusColor,
               shape: BoxShape.circle,
               boxShadow: tab.status == ConnectionStatus.connected
-                  ? [BoxShadow(color: OutdoorColors.accentGlow, blurRadius: 6)]
+                  ? [BoxShadow(color: p.accentGlow, blurRadius: 6)]
                   : null,
             ),
           ),
@@ -165,7 +165,7 @@ class _ActiveSessionCard extends ConsumerWidget {
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
-                    color: isDark ? OutdoorColors.darkFg : OutdoorColors.lightFg,
+                    color: p.fg,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -174,7 +174,7 @@ class _ActiveSessionCard extends ConsumerWidget {
                   subtitle,
                   style: TextStyle(
                     fontSize: 12,
-                    color: isDark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary,
+                    color: p.fgTertiary,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -185,7 +185,7 @@ class _ActiveSessionCard extends ConsumerWidget {
             icon: Icon(
               Icons.close,
               size: 18,
-              color: isDark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary,
+              color: p.fgTertiary,
             ),
             onPressed: () => ref.read(terminalActionsProvider).disconnectTab(tab.id),
           ),
@@ -215,8 +215,7 @@ class _RecentItem {
 
 class _RecentConnectionsList extends ConsumerWidget {
   final List<TerminalTab> tabs;
-  final bool isDark;
-  const _RecentConnectionsList({required this.tabs, required this.isDark});
+  const _RecentConnectionsList({required this.tabs});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -271,7 +270,7 @@ class _RecentConnectionsList extends ConsumerWidget {
     items.sort((a, b) => b.lastConnected.compareTo(a.lastConnected));
 
     if (items.isEmpty && tabs.isEmpty) {
-      return _EmptyState(isDark: isDark);
+      return const _EmptyState();
     }
     if (items.isEmpty) return const SizedBox.shrink();
 
@@ -340,7 +339,7 @@ class _RecentCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final p = Theme.of(context).extension<ThemePalette>()!;
 
     return GlassCard(
       onTap: () => _connect(context, ref),
@@ -350,10 +349,10 @@ class _RecentCard extends ConsumerWidget {
             width: 36,
             height: 36,
             decoration: BoxDecoration(
-              color: OutdoorColors.accentDim,
+              color: p.accentDim,
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(item.icon, size: 18, color: OutdoorColors.accent),
+            child: Icon(item.icon, size: 18, color: p.accent),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -365,7 +364,7 @@ class _RecentCard extends ConsumerWidget {
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
-                    color: isDark ? OutdoorColors.darkFg : OutdoorColors.lightFg,
+                    color: p.fg,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -374,7 +373,7 @@ class _RecentCard extends ConsumerWidget {
                   item.subtitle,
                   style: TextStyle(
                     fontSize: 12,
-                    color: isDark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary,
+                    color: p.fgTertiary,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -384,7 +383,7 @@ class _RecentCard extends ConsumerWidget {
           Icon(
             Icons.chevron_right,
             size: 18,
-            color: isDark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary,
+            color: p.fgTertiary,
           ),
         ],
       ),
@@ -393,25 +392,23 @@ class _RecentCard extends ConsumerWidget {
 }
 
 class _EmptyState extends StatelessWidget {
-  final bool isDark;
-  const _EmptyState({required this.isDark});
+  const _EmptyState();
 
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    final fgSecondary = isDark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary;
-    final fgTertiary = isDark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary;
+    final p = Theme.of(context).extension<ThemePalette>()!;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 48),
       child: Center(
         child: Column(
           children: [
-            Icon(Icons.link_off, size: 56, color: fgTertiary),
+            Icon(Icons.link_off, size: 56, color: p.fgTertiary),
             const SizedBox(height: 16),
-            Text(l.sessions_noActive, style: TextStyle(fontSize: 16, color: fgSecondary)),
+            Text(l.sessions_noActive, style: TextStyle(fontSize: 16, color: p.fgSecondary)),
             const SizedBox(height: 8),
-            Text(l.sessions_noActiveHint, style: TextStyle(fontSize: 13, color: fgTertiary)),
+            Text(l.sessions_noActiveHint, style: TextStyle(fontSize: 13, color: p.fgTertiary)),
             const SizedBox(height: 20),
             FilledButton.icon(
               onPressed: () => context.push('/vaults/hosts/add'),

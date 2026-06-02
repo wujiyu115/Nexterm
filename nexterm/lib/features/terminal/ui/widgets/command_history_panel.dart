@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nexterm/core/theme/outdoor_colors.dart';
+import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nexterm/features/terminal/providers/command_history_provider.dart';
@@ -43,8 +44,7 @@ class _CommandHistoryPanelState extends ConsumerState<CommandHistoryPanel> {
     // Show most recent first.
     final reversed = commands.reversed.toList();
 
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final p = Theme.of(context).extension<ThemePalette>()!;
 
     return Column(
       children: [
@@ -54,21 +54,21 @@ class _CommandHistoryPanelState extends ConsumerState<CommandHistoryPanel> {
           child: TextField(
             controller: _searchController,
             style: TextStyle(
-              color: isDark ? OutdoorColors.darkFg : OutdoorColors.lightFg,
+              color: p.fg,
               fontSize: 14,
             ),
             decoration: InputDecoration(
               hintText: AppLocalizations.of(context)!.commandHistory_searchHint,
               hintStyle: TextStyle(
-                color: isDark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary,
+                color: p.fgTertiary,
               ),
               prefixIcon: Icon(
                 Icons.search,
                 size: 20,
-                color: isDark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary,
+                color: p.fgTertiary,
               ),
               filled: true,
-              fillColor: isDark ? OutdoorColors.darkInputBg : OutdoorColors.lightInputBg,
+              fillColor: p.inputBg,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(OutdoorColors.radiusMd),
                 borderSide: BorderSide.none,
@@ -86,7 +86,7 @@ class _CommandHistoryPanelState extends ConsumerState<CommandHistoryPanel> {
                   child: Text(
                     _query.isEmpty ? AppLocalizations.of(context)!.commandHistory_empty : AppLocalizations.of(context)!.commandHistory_noMatch,
                     style: TextStyle(
-                      color: isDark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary,
+                      color: p.fgSecondary,
                       fontSize: 14,
                     ),
                   ),
@@ -96,7 +96,7 @@ class _CommandHistoryPanelState extends ConsumerState<CommandHistoryPanel> {
                   itemCount: reversed.length,
                   separatorBuilder: (_, __) => Divider(
                     height: 1,
-                    color: isDark ? OutdoorColors.darkBorder : OutdoorColors.lightBorder,
+                    color: p.border,
                   ),
                   itemBuilder: (context, index) {
                     final cmd = reversed[index];
@@ -111,7 +111,7 @@ class _CommandHistoryPanelState extends ConsumerState<CommandHistoryPanel> {
                             Icon(
                               Icons.chevron_right,
                               size: 16,
-                              color: isDark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary,
+                              color: p.fgTertiary,
                             ),
                             const SizedBox(width: 8),
                             Expanded(
@@ -120,7 +120,7 @@ class _CommandHistoryPanelState extends ConsumerState<CommandHistoryPanel> {
                                 style: TextStyle(
                                   fontFamily: 'monospace',
                                   fontSize: 13,
-                                  color: isDark ? OutdoorColors.darkFg : OutdoorColors.lightFg,
+                                  color: p.fg,
                                 ),
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,

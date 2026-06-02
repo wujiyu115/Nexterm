@@ -4,9 +4,9 @@ import 'package:flutter/services.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:nexterm/core/theme/outdoor_colors.dart';
-import 'package:nexterm/features/sftp/services/sftp_service.dart';
+import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/core/theme/theme_provider.dart';
+import 'package:nexterm/features/sftp/services/sftp_service.dart';
 import 'package:nexterm/domain/entities/host_entity.dart';
 import 'package:nexterm/features/hosts/providers/hosts_provider.dart';
 import 'package:nexterm/features/terminal/providers/terminal_provider.dart';
@@ -85,9 +85,9 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
 
   void _showHelpDialog() {
     final l = AppLocalizations.of(context)!;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textColor = isDark ? OutdoorColors.darkFg : OutdoorColors.lightFg;
-    final dimColor = isDark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary;
+    final p = Theme.of(context).extension<ThemePalette>()!;
+    final textColor = p.fg;
+    final dimColor = p.fgSecondary;
 
     final shortcuts = [
       ('Ctrl+C', l.function_helpCtrlC),
@@ -118,7 +118,7 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: isDark ? OutdoorColors.darkInputBg : OutdoorColors.lightInputBg,
+                      color: p.inputBg,
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
@@ -287,6 +287,7 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
     _hadTabs = hasTabs;
 
     final l = AppLocalizations.of(context)!;
+    final p = Theme.of(context).extension<ThemePalette>()!;
     final terminalBg = ref.watch(paletteProvider).terminal.background;
 
     return Scaffold(
@@ -321,7 +322,7 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
                         children: [
                           const CircularProgressIndicator(),
                           const SizedBox(height: 16),
-                          Text(l.terminal_connecting, style: const TextStyle(color: OutdoorColors.darkFg)),
+                          Text(l.terminal_connecting, style: TextStyle(color: p.fg)),
                         ],
                       ),
                     )
@@ -378,6 +379,7 @@ class _HostPickerDialog extends ConsumerWidget {
     final l = AppLocalizations.of(context)!;
     final hostsAsync = ref.watch(hostsStreamProvider);
     final theme = Theme.of(context);
+    final p = theme.extension<ThemePalette>()!;
 
     return Dialog(
       insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 48),
@@ -406,7 +408,7 @@ class _HostPickerDialog extends ConsumerWidget {
               ),
             ),
             DashedDivider(
-              color: Theme.of(context).brightness == Brightness.dark ? OutdoorColors.darkBorder : OutdoorColors.lightBorder,
+              color: p.border,
               padding: const EdgeInsets.symmetric(horizontal: 16),
             ),
             Flexible(
@@ -421,7 +423,7 @@ class _HostPickerDialog extends ConsumerWidget {
                           Icon(
                             Icons.dns_outlined,
                             size: 48,
-                            color: Theme.of(context).brightness == Brightness.dark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary,
+                            color: p.fgTertiary,
                           ),
                           const SizedBox(height: 12),
                           Text(
@@ -460,6 +462,7 @@ class _HostPickerList extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final p = theme.extension<ThemePalette>()!;
     final tabManager = ref.watch(tabManagerProvider);
 
     final activeCounts = <String, int>{};
@@ -467,13 +470,11 @@ class _HostPickerList extends ConsumerWidget {
       activeCounts[tab.hostId] = (activeCounts[tab.hostId] ?? 0) + 1;
     }
 
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final dividerColor = isDark ? OutdoorColors.darkBorder : OutdoorColors.lightBorder;
     return ListView.separated(
       shrinkWrap: true,
       itemCount: hosts.length,
       separatorBuilder: (_, __) => DashedDivider(
-        color: dividerColor,
+        color: p.border,
         padding: const EdgeInsets.symmetric(horizontal: 16),
       ),
       itemBuilder: (context, index) {
@@ -482,7 +483,7 @@ class _HostPickerList extends ConsumerWidget {
         return ListTile(
           leading: Icon(
             host.isFavorite ? Icons.star : Icons.dns_outlined,
-            color: OutdoorColors.accent,
+            color: p.accent,
           ),
           title: Text(
             host.name,
@@ -493,7 +494,7 @@ class _HostPickerList extends ConsumerWidget {
             '${host.username}@${host.hostname}:${host.port}',
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(color: isDark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary),
+            style: TextStyle(color: p.fgSecondary),
           ),
           trailing: activeCount > 0
               ? Container(
@@ -502,13 +503,13 @@ class _HostPickerList extends ConsumerWidget {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: OutdoorColors.accentDim,
+                    color: p.accentDim,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
                     l.hosts_activeConnections(activeCount),
                     style: theme.textTheme.labelSmall?.copyWith(
-                      color: OutdoorColors.accent,
+                      color: p.accent,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
