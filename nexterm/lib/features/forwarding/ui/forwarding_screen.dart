@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:nexterm/core/theme/outdoor_colors.dart';
+import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/domain/entities/enums.dart';
 import 'package:nexterm/domain/entities/port_forward_entity.dart';
 import 'package:nexterm/features/forwarding/providers/forwarding_provider.dart';
@@ -32,6 +32,7 @@ class ForwardingScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
+    final p = Theme.of(context).extension<ThemePalette>()!;
     final forwardsAsync = ref.watch(forwardsStreamProvider);
     final service = ref.watch(portForwardServiceProvider);
     final notifier = ref.read(forwardingNotifierProvider.notifier);
@@ -54,11 +55,11 @@ class ForwardingScreen extends ConsumerWidget {
             icon: Container(
               width: 32,
               height: 32,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: OutdoorColors.accentDim,
+                color: p.accentDim,
               ),
-              child: const Icon(Icons.radar, size: 16, color: OutdoorColors.accent),
+              child: Icon(Icons.radar, size: 16, color: p.accent),
             ),
           ),
           IconButton(
@@ -67,11 +68,11 @@ class ForwardingScreen extends ConsumerWidget {
             icon: Container(
               width: 32,
               height: 32,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: OutdoorColors.accentDim,
+                color: p.accentDim,
               ),
-              child: const Icon(Icons.add, size: 16, color: OutdoorColors.accent),
+              child: Icon(Icons.add, size: 16, color: p.accent),
             ),
           ),
         ],
@@ -155,6 +156,7 @@ class ForwardingScreen extends ConsumerWidget {
 
   Widget _buildEmptyState(BuildContext context) {
     final l = AppLocalizations.of(context)!;
+    final p = Theme.of(context).extension<ThemePalette>()!;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -162,7 +164,7 @@ class ForwardingScreen extends ConsumerWidget {
           Icon(
             Icons.swap_horiz_outlined,
             size: 64,
-            color: Theme.of(context).brightness == Brightness.dark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary,
+            color: p.fgTertiary,
           ),
           const SizedBox(height: 16),
           Text(l.forwarding_noForwards, style: Theme.of(context).textTheme.titleMedium),

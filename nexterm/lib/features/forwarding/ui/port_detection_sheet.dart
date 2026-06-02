@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:nexterm/core/theme/outdoor_colors.dart';
+import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/features/forwarding/models/detected_port.dart';
 import 'package:nexterm/features/forwarding/providers/forwarding_provider.dart';
 import 'package:nexterm/features/forwarding/providers/port_detection_provider.dart';
@@ -32,7 +32,7 @@ class _PortDetectionSheetState extends ConsumerState<PortDetectionSheet> {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final p = theme.extension<ThemePalette>()!;
     final sessions = ref.watch(activeSessionsForDetectionProvider);
     final detectionState = ref.watch(portDetectionNotifierProvider);
     final forwardsAsync = ref.watch(forwardsStreamProvider);
@@ -52,7 +52,7 @@ class _PortDetectionSheetState extends ConsumerState<PortDetectionSheet> {
       builder: (context, scrollController) {
         return Container(
           decoration: BoxDecoration(
-            color: isDark ? OutdoorColors.darkBgElevated : OutdoorColors.lightBgElevated,
+            color: p.bgElevated,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(14)),
           ),
           child: Column(
@@ -64,8 +64,7 @@ class _PortDetectionSheetState extends ConsumerState<PortDetectionSheet> {
                   width: 36,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: (isDark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary)
-                        .withValues(alpha: 0.4),
+                    color: p.fgTertiary.withValues(alpha: 0.4),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -154,9 +153,8 @@ class _PortDetectionSheetState extends ConsumerState<PortDetectionSheet> {
   ) {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final secondaryColor =
-        isDark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary;
+    final p = theme.extension<ThemePalette>()!;
+    final secondaryColor = p.fgSecondary;
 
     if (sessions.isEmpty) {
       return Center(
@@ -260,9 +258,7 @@ class _PortDetectionSheetState extends ConsumerState<PortDetectionSheet> {
                 child: Text(
                   l.portDetect_permissionHint,
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: isDark
-                        ? OutdoorColors.darkFgTertiary
-                        : OutdoorColors.lightFgTertiary,
+                    color: p.fgTertiary,
                     fontStyle: FontStyle.italic,
                   ),
                 ),
