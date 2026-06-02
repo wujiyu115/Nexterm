@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nexterm/core/theme/outdoor_colors.dart';
+import 'package:nexterm/domain/entities/enums.dart';
 import 'package:nexterm/domain/entities/webdav_connection_entity.dart';
+import 'package:nexterm/features/terminal/providers/terminal_provider.dart';
 import 'package:nexterm/features/webdav/providers/webdav_provider.dart';
 import 'package:nexterm/features/webdav/services/webdav_service.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
@@ -67,6 +69,12 @@ class _ConnectionTile extends ConsumerWidget {
           connection.copyWith(lastConnected: DateTime.now()));
 
       if (context.mounted) {
+        ref.read(terminalActionsProvider).connectFileService(
+          connectionId: connection.id,
+          name: connection.name,
+          connectionType: ConnectionType.webdav,
+          service: service,
+        );
         context.push('/webdav/browse',
             extra: {'service': service, 'name': connection.name});
       }

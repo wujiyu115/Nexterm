@@ -90,11 +90,46 @@ class _ActiveSessionCard extends ConsumerWidget {
   final TerminalTab tab;
   const _ActiveSessionCard({required this.tab});
 
+  String _subtitle(WidgetRef ref) {
+    switch (tab.connectionType) {
+      case ConnectionType.ssh:
+      case ConnectionType.sftp:
+        final host = ref.watch(hostByIdProvider(tab.hostId)).valueOrNull;
+        final typeLabel = tab.connectionType == ConnectionType.sftp ? 'sftp' : 'ssh';
+        return host != null
+            ? '$typeLabel · ${host.username} · ${host.hostname}:${host.port}'
+            : tab.title;
+      case ConnectionType.webdav:
+        final conn = ref.watch(webdavConnectionByIdProvider(tab.hostId)).valueOrNull;
+        return conn != null ? 'webdav · ${conn.url}' : tab.title;
+      case ConnectionType.smb:
+        final conn = ref.watch(smbConnectionByIdProvider(tab.hostId)).valueOrNull;
+        return conn != null ? 'smb · \\\\${conn.host}\\${conn.shareName}' : tab.title;
+    }
+  }
+
+  void _onTap(BuildContext context, WidgetRef ref) {
+    switch (tab.connectionType) {
+      case ConnectionType.ssh:
+      case ConnectionType.sftp:
+        final tabManager = ref.read(tabManagerProvider);
+        final index = tabManager.tabs.indexWhere((t) => t.id == tab.id);
+        if (index >= 0) tabManager.setActiveTab(index);
+        context.push('/terminal/session/${tab.id}');
+      case ConnectionType.webdav:
+      case ConnectionType.smb:
+        final service = ref.read(fileServicesProvider)[tab.id];
+        if (service == null) return;
+        final route = tab.connectionType == ConnectionType.webdav
+            ? '/webdav/browse'
+            : '/smb/browse';
+        context.push(route, extra: {'service': service, 'name': tab.title});
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final hostAsync = ref.watch(hostByIdProvider(tab.hostId));
-    final host = hostAsync.valueOrNull;
 
     final statusColor = switch (tab.status) {
       ConnectionStatus.connected => OutdoorColors.accent,
@@ -103,18 +138,10 @@ class _ActiveSessionCard extends ConsumerWidget {
       ConnectionStatus.error => const Color(0xFFF38BA8),
     };
 
-    final typeLabel = tab.connectionType == ConnectionType.sftp ? 'sftp' : 'ssh';
-    final subtitle = host != null
-        ? '$typeLabel · ${host.username} · ${host.hostname}:${host.port}'
-        : tab.title;
+    final subtitle = _subtitle(ref);
 
     return GlassCard(
-      onTap: () {
-        final tabManager = ref.read(tabManagerProvider);
-        final index = tabManager.tabs.indexWhere((t) => t.id == tab.id);
-        if (index >= 0) tabManager.setActiveTab(index);
-        context.push('/terminal/session/${tab.id}');
-      },
+      onTap: () => _onTap(context, ref),
       child: Row(
         children: [
           Container(
@@ -278,6 +305,12 @@ class _RecentCard extends ConsumerWidget {
           final service = WebDavService();
           service.connect(conn.url, username: conn.username, password: conn.password);
           if (!context.mounted) return;
+          ref.read(terminalActionsProvider).connectFileService(
+            connectionId: conn.id,
+            name: conn.name,
+            connectionType: ConnectionType.webdav,
+            service: service,
+          );
           context.push('/webdav/browse', extra: {'service': service, 'name': conn.name});
         } catch (e) {
           if (context.mounted) {
@@ -290,6 +323,12 @@ class _RecentCard extends ConsumerWidget {
           final service = SmbService();
           await service.connect(conn.host, conn.shareName, port: conn.port, username: conn.username, password: conn.password, domain: conn.domain);
           if (!context.mounted) return;
+          ref.read(terminalActionsProvider).connectFileService(
+            connectionId: conn.id,
+            name: conn.name,
+            connectionType: ConnectionType.smb,
+            service: service,
+          );
           context.push('/smb/browse', extra: {'service': service, 'name': conn.name});
         } catch (e) {
           if (context.mounted) {

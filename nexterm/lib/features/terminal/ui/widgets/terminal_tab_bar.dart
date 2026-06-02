@@ -253,9 +253,12 @@ class _TabItem extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
-              tab.connectionType == ConnectionType.sftp
-                  ? Icons.folder_outlined
-                  : Icons.terminal,
+              switch (tab.connectionType) {
+                ConnectionType.sftp => Icons.folder_outlined,
+                ConnectionType.webdav => Icons.cloud_outlined,
+                ConnectionType.smb => Icons.folder_shared_outlined,
+                _ => Icons.terminal,
+              },
               size: 14,
               color: isActive ? OutdoorColors.accent : null,
             ),

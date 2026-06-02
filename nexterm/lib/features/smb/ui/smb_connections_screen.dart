@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nexterm/core/theme/outdoor_colors.dart';
+import 'package:nexterm/domain/entities/enums.dart';
 import 'package:nexterm/domain/entities/smb_connection_entity.dart';
 import 'package:nexterm/features/smb/providers/smb_provider.dart';
 import 'package:nexterm/features/smb/services/smb_service.dart';
+import 'package:nexterm/features/terminal/providers/terminal_provider.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 
 class SmbConnectionsScreen extends ConsumerWidget {
@@ -70,6 +72,12 @@ class _ConnectionTile extends ConsumerWidget {
           connection.copyWith(lastConnected: DateTime.now()));
 
       if (context.mounted) {
+        ref.read(terminalActionsProvider).connectFileService(
+          connectionId: connection.id,
+          name: connection.name,
+          connectionType: ConnectionType.smb,
+          service: service,
+        );
         context.push('/smb/browse',
             extra: {'service': service, 'name': connection.name});
       }

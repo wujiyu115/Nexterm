@@ -300,15 +300,15 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
           TerminalTabBar(
             onAddTab: _showHostPickerDialog,
             isFunctionMode: _isFunctionMode,
-            onToggleMode: activeTab != null && activeTab.connectionType != ConnectionType.sftp ? _toggleKeyboardMode : null,
-            onCustomizeTap: activeTab != null && activeTab.connectionType != ConnectionType.sftp
+            onToggleMode: activeTab != null && activeTab.connectionType == ConnectionType.ssh ? _toggleKeyboardMode : null,
+            onCustomizeTap: activeTab != null && activeTab.connectionType == ConnectionType.ssh
                 ? () => context.push('/terminal/customize-keyboard')
                 : null,
-            onHideKeyboard: activeTab != null && activeTab.connectionType != ConnectionType.sftp ? _toggleKeyboard : null,
-            onShowHelp: activeTab != null && activeTab.connectionType != ConnectionType.sftp ? _showHelpDialog : null,
-            onUploadFile: activeTab != null && activeTab.connectionType != ConnectionType.sftp ? _uploadFile : null,
-            onDetectPorts: activeTab != null && activeTab.connectionType != ConnectionType.sftp ? _showPortDetection : null,
-            onOpenSftp: activeTab != null && activeTab.connectionType != ConnectionType.sftp ? _openSftpTab : null,
+            onHideKeyboard: activeTab != null && activeTab.connectionType == ConnectionType.ssh ? _toggleKeyboard : null,
+            onShowHelp: activeTab != null && activeTab.connectionType == ConnectionType.ssh ? _showHelpDialog : null,
+            onUploadFile: activeTab != null && activeTab.connectionType == ConnectionType.ssh ? _uploadFile : null,
+            onDetectPorts: activeTab != null && activeTab.connectionType == ConnectionType.ssh ? _showPortDetection : null,
+            onOpenSftp: activeTab != null && activeTab.connectionType == ConnectionType.ssh ? _openSftpTab : null,
             onGoToHosts: () {
               if (context.canPop()) context.pop();
             },
@@ -329,14 +329,16 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
                     )
                   : activeTab.connectionType == ConnectionType.sftp && activeTab.sessionId != null
                       ? SftpContentWidget(sessionId: activeTab.sessionId!)
-                      : TerminalViewWidget(
-                          tab: activeTab,
-                          hardwareKeyboardOnly: _isFunctionMode,
-                        ),
+                      : (activeTab.connectionType == ConnectionType.webdav || activeTab.connectionType == ConnectionType.smb)
+                          ? SftpContentWidget(service: ref.read(fileServicesProvider)[activeTab.id])
+                          : TerminalViewWidget(
+                              tab: activeTab,
+                              hardwareKeyboardOnly: _isFunctionMode,
+                            ),
             ),
           ),
 
-          if (activeTab != null && activeTab.connectionType != ConnectionType.sftp) ...[
+          if (activeTab != null && activeTab.connectionType == ConnectionType.ssh) ...[
             if (_isFunctionMode)
               FunctionPanel(
                 sessionId: activeTab.sessionId,

@@ -8,6 +8,7 @@ import 'package:nexterm/features/forwarding/providers/forwarding_provider.dart';
 import 'package:nexterm/features/forwarding/services/port_forward_service.dart';
 import 'package:nexterm/features/hosts/providers/hosts_provider.dart';
 import 'package:nexterm/features/keys/providers/keys_provider.dart';
+import 'package:nexterm/features/sftp/services/remote_file_service.dart';
 import 'package:nexterm/features/snippets/providers/snippets_provider.dart';
 import 'package:nexterm/features/snippets/utils/variable_parser.dart';
 import 'package:nexterm/features/terminal/providers/command_history_provider.dart';
@@ -52,6 +53,10 @@ final tabManagerProvider = ChangeNotifierProvider<TabManager>((ref) {
 /// Map of terminal instances keyed by tab ID.
 final terminalControllersProvider =
     StateProvider<Map<String, Terminal>>((ref) => {});
+
+/// Map of file-browsing service instances (WebDAV/SMB) keyed by tab ID.
+final fileServicesProvider =
+    StateProvider<Map<String, RemoteFileService>>((ref) => {});
 
 // ---------------------------------------------------------------------------
 // TerminalActions
@@ -299,26 +304,52 @@ class TerminalActions {
     return '${error.runtimeType}: $message';
   }
 
-  /// Disconnects the SSH session for [tabId] and removes the tab.
+  /// Registers an already-connected [RemoteFileService] (WebDAV/SMB) as an
+  /// active tab and returns the tab ID.
+  String connectFileService({
+    required String connectionId,
+    required String name,
+    required ConnectionType connectionType,
+    required RemoteFileService service,
+  }) {
+    final tab = _tabManager.addTab(hostId: connectionId, title: name);
+    _tabManager.updateTabConnectionType(tab.id, connectionType);
+    _tabManager.updateTabStatus(tab.id, ConnectionStatus.connected);
+    _ref.read(fileServicesProvider.notifier).update(
+          (state) => Map.unmodifiable({...state, tab.id: service}),
+        );
+    return tab.id;
+  }
+
+  /// Disconnects the session for [tabId] and removes the tab.
   Future<void> disconnectTab(String tabId) async {
     final tab = _tabManager.tabs.firstWhere(
       (t) => t.id == tabId,
       orElse: () => throw StateError('Tab $tabId not found'),
     );
 
-    if (tab.sessionId != null) {
-      await _sshService.disconnect(tab.sessionId!);
+    if (tab.connectionType == ConnectionType.webdav ||
+        tab.connectionType == ConnectionType.smb) {
+      final services = _ref.read(fileServicesProvider);
+      services[tabId]?.disconnect();
+      _ref.read(fileServicesProvider.notifier).update(
+            (state) => Map.unmodifiable(
+              Map.fromEntries(state.entries.where((e) => e.key != tabId)),
+            ),
+          );
+    } else {
+      if (tab.sessionId != null) {
+        await _sshService.disconnect(tab.sessionId!);
+      }
+      _ref.read(terminalControllersProvider.notifier).update(
+            (state) => Map.unmodifiable(
+              Map.fromEntries(state.entries.where((e) => e.key != tabId)),
+            ),
+          );
     }
 
     _tabManager.updateTabStatus(tabId, ConnectionStatus.disconnected);
     _tabManager.removeTab(tabId);
-
-    // Remove the Terminal instance.
-    _ref.read(terminalControllersProvider.notifier).update(
-          (state) => Map.unmodifiable(
-            Map.fromEntries(state.entries.where((e) => e.key != tabId)),
-          ),
-        );
   }
 
   Future<SSHConnectionConfig> _buildConfig(
