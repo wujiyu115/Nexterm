@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:nexterm/core/theme/outdoor_colors.dart';
+import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/features/git/models/git_tag.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 
@@ -13,6 +13,7 @@ class TagList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
+    final p = Theme.of(context).extension<ThemePalette>()!;
     if (tags.isEmpty) return Center(child: Text(l.git_noTags));
     return ListView.separated(
       itemCount: tags.length, separatorBuilder: (_, __) => const Divider(height: 1),
@@ -34,12 +35,12 @@ class TagList extends StatelessWidget {
           child: ListTile(
             dense: true, visualDensity: VisualDensity.compact,
             leading: Icon(Icons.local_offer_outlined, size: 18,
-                color: Theme.of(context).brightness == Brightness.dark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary),
+                color: p.fgSecondary),
             title: Text(tag.name, style: TextStyle(fontSize: 14,
-                color: Theme.of(context).brightness == Brightness.dark ? OutdoorColors.darkFg : OutdoorColors.lightFg)),
+                color: p.fg)),
             subtitle: tag.timestamp != null ? Text(
               '${tag.timestamp!.year}-${tag.timestamp!.month.toString().padLeft(2, '0')}-${tag.timestamp!.day.toString().padLeft(2, '0')}',
-              style: TextStyle(fontSize: 11, color: Theme.of(context).brightness == Brightness.dark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary)) : null,
+              style: TextStyle(fontSize: 11, color: p.fgTertiary)) : null,
             trailing: TextButton(onPressed: () => onCheckoutTag(tag), child: Text(l.git_checkoutTag, style: const TextStyle(fontSize: 12))),
           ),
         );

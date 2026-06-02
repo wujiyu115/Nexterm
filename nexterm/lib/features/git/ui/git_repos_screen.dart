@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:nexterm/core/theme/outdoor_colors.dart';
+import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/domain/entities/git_repo_entity.dart';
 import 'package:nexterm/features/git/providers/git_repos_provider.dart';
 import 'package:nexterm/features/hosts/providers/hosts_provider.dart';
@@ -62,14 +62,12 @@ class _RepoTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final p = Theme.of(context).extension<ThemePalette>()!;
     final hostAsync = ref.watch(hostByIdProvider(repo.hostId));
     return ListTile(
       leading: Icon(Icons.source_outlined,
           size: 24,
-          color: isDark
-              ? OutdoorColors.darkFgSecondary
-              : OutdoorColors.lightFgSecondary),
+          color: p.fgSecondary),
       title: Text(repo.displayName),
       subtitle: hostAsync.when(
         data: (host) => Text(
@@ -80,9 +78,7 @@ class _RepoTile extends ConsumerWidget {
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
                 fontSize: 12,
-                color: isDark
-                    ? OutdoorColors.darkFgTertiary
-                    : OutdoorColors.lightFgTertiary)),
+                color: p.fgTertiary)),
         loading: () => Text(repo.remotePath),
         error: (_, __) => Text(repo.remotePath),
       ),

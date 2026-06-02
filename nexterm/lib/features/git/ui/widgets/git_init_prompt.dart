@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:nexterm/core/theme/outdoor_colors.dart';
+import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 
 class GitInitPrompt extends StatelessWidget {
@@ -33,7 +33,7 @@ class GitInitPrompt extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final p = Theme.of(context).extension<ThemePalette>()!;
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -41,29 +41,28 @@ class GitInitPrompt extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(Icons.source_outlined, size: 64,
-                color: isDark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary),
+                color: p.fgTertiary),
             const SizedBox(height: 16),
             Text(l.git_initTitle, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600,
-                color: isDark ? OutdoorColors.darkFg : OutdoorColors.lightFg)),
+                color: p.fg)),
             const SizedBox(height: 8),
             if (remotePath != null)
               Text(remotePath!, style: TextStyle(fontSize: 12, fontFamily: 'JetBrains Mono',
-                  color: isDark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary)),
+                  color: p.fgTertiary)),
             if (remotePath != null) const SizedBox(height: 8),
             Text(l.git_initMessage, style: TextStyle(fontSize: 14,
-                color: isDark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary),
+                color: p.fgSecondary),
                 textAlign: TextAlign.center),
             if (errorDetail != null) ...[
               const SizedBox(height: 12),
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: (isDark ? OutdoorColors.darkStatusError : OutdoorColors.lightStatusError)
-                      .withValues(alpha: 0.15),
+                  color: p.statusError.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(errorDetail!, style: TextStyle(fontSize: 12, fontFamily: 'JetBrains Mono',
-                    color: isDark ? OutdoorColors.darkStatusError : OutdoorColors.lightStatusError),
+                    color: p.statusError),
                     textAlign: TextAlign.center),
               ),
             ],

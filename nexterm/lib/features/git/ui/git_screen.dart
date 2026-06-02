@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:nexterm/core/theme/outdoor_colors.dart';
+import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/features/git/models/git_tag.dart';
 import 'package:nexterm/features/git/providers/git_provider.dart';
 import 'package:nexterm/features/git/services/git_command_service.dart';
@@ -110,12 +110,12 @@ class _GitScreenState extends ConsumerState<GitScreen> with SingleTickerProvider
 
   Widget _buildMain(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final p = Theme.of(context).extension<ThemePalette>()!;
     return Scaffold(
       appBar: AppBar(
         title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           const Text('Git', style: TextStyle(fontSize: 17)),
-          Text(_gitState.currentBranch, style: TextStyle(fontSize: 12, color: isDark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary)),
+          Text(_gitState.currentBranch, style: TextStyle(fontSize: 12, color: p.fgSecondary)),
         ]),
         actions: [IconButton(icon: const Icon(Icons.refresh), onPressed: () => _gitNotifier!.loadAll())],
         bottom: TabBar(controller: _tabController, tabs: [Tab(text: l.git_tabWorkTree), Tab(text: l.git_tabBranches), Tab(text: l.git_tabTags)]),
@@ -126,11 +126,11 @@ class _GitScreenState extends ConsumerState<GitScreen> with SingleTickerProvider
               ? Center(child: Padding(
                   padding: const EdgeInsets.all(24),
                   child: Column(mainAxisSize: MainAxisSize.min, children: [
-                    Icon(Icons.error_outline, size: 48, color: OutdoorColors.darkStatusError),
+                    Icon(Icons.error_outline, size: 48, color: p.statusError),
                     const SizedBox(height: 12),
                     Text(_gitState.error!, textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 13, fontFamily: 'JetBrains Mono',
-                            color: isDark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary)),
+                            color: p.fgSecondary)),
                     const SizedBox(height: 16),
                     FilledButton(onPressed: () => _gitNotifier!.loadAll(), child: Text(l.common_retry)),
                   ]),

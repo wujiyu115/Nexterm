@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nexterm/core/theme/outdoor_colors.dart';
+import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/features/git/models/git_commit.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 
@@ -41,7 +41,7 @@ class _CommitRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final p = Theme.of(context).extension<ThemePalette>()!;
     return ListTile(
       dense: true,
       visualDensity: VisualDensity.compact,
@@ -51,28 +51,23 @@ class _CommitRow extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
               fontSize: 14,
-              color:
-                  isDark ? OutdoorColors.darkFg : OutdoorColors.lightFg)),
+              color: p.fg)),
       subtitle: Row(children: [
         Text(commit.shortSha,
             style: TextStyle(
                 fontSize: 12,
                 fontFamily: 'JetBrains Mono',
-                color: OutdoorColors.accent)),
+                color: p.accent)),
         const SizedBox(width: 8),
         Text(commit.authorName,
             style: TextStyle(
                 fontSize: 12,
-                color: isDark
-                    ? OutdoorColors.darkFgSecondary
-                    : OutdoorColors.lightFgSecondary)),
+                color: p.fgSecondary)),
         const Spacer(),
         Text(_timeAgo(commit.timestamp),
             style: TextStyle(
                 fontSize: 11,
-                color: isDark
-                    ? OutdoorColors.darkFgTertiary
-                    : OutdoorColors.lightFgTertiary)),
+                color: p.fgTertiary)),
       ]),
     );
   }
