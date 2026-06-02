@@ -1436,7 +1436,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get vaults_title => 'Personal Vault';
 
   @override
+  String get vaults_connections => 'Connections';
+
+  @override
   String get vaults_hosts => 'Hosts';
+
+  @override
+  String get vaults_tools => 'Tools';
 
   @override
   String get vaults_portForwarding => 'Port Forwarding';

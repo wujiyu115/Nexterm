@@ -2738,11 +2738,23 @@ abstract class AppLocalizations {
   /// **'个人保险库'**
   String get vaults_title;
 
+  /// No description provided for @vaults_connections.
+  ///
+  /// In zh, this message translates to:
+  /// **'连接'**
+  String get vaults_connections;
+
   /// No description provided for @vaults_hosts.
   ///
   /// In zh, this message translates to:
   /// **'主机'**
   String get vaults_hosts;
+
+  /// No description provided for @vaults_tools.
+  ///
+  /// In zh, this message translates to:
+  /// **'工具'**
+  String get vaults_tools;
 
   /// No description provided for @vaults_portForwarding.
   ///

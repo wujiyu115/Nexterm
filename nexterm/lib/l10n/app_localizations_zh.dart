@@ -1401,7 +1401,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get vaults_title => '个人保险库';
 
   @override
+  String get vaults_connections => '连接';
+
+  @override
   String get vaults_hosts => '主机';
+
+  @override
+  String get vaults_tools => '工具';
 
   @override
   String get vaults_portForwarding => '端口转发';

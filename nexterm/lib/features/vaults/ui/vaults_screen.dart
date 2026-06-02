@@ -22,11 +22,21 @@ class VaultsScreen extends StatelessWidget {
               child: _NavTitle(title: l.vaults_title),
             ),
 
-            SectionLabel(title: l.vaults_hosts),
+            SectionLabel(title: l.vaults_connections),
             GlassCard(
               onTap: () => context.push('/vaults/hosts'),
               child: _VaultItem(icon: Icons.dns_outlined, title: l.vaults_hosts),
             ),
+            GlassCard(
+              onTap: () => context.push('/vaults/webdav'),
+              child: _VaultItem(icon: Icons.cloud_outlined, title: l.webdav_title),
+            ),
+            GlassCard(
+              onTap: () => context.push('/vaults/smb'),
+              child: _VaultItem(icon: Icons.folder_shared_outlined, title: l.smb_title),
+            ),
+
+            SectionLabel(title: l.vaults_tools),
             GlassCard(
               onTap: () => context.push('/vaults/forwarding'),
               child: _VaultItem(icon: Icons.swap_horiz_outlined, title: l.vaults_portForwarding),
@@ -38,14 +48,6 @@ class VaultsScreen extends StatelessWidget {
             GlassCard(
               onTap: () => context.push('/vaults/git'),
               child: _VaultItem(icon: Icons.source_outlined, title: l.git_repos),
-            ),
-            GlassCard(
-              onTap: () => context.push('/vaults/webdav'),
-              child: _VaultItem(icon: Icons.cloud_outlined, title: l.webdav_title),
-            ),
-            GlassCard(
-              onTap: () => context.push('/vaults/smb'),
-              child: _VaultItem(icon: Icons.folder_shared_outlined, title: l.smb_title),
             ),
 
             SectionLabel(title: l.vaults_keychain),
