@@ -63,6 +63,7 @@ class ThemeCatalog {
       case 'rose-pine-dawn':
         return 'Rosé Pine Dawn';
       default:
+        assert(false, 'displayName missing for theme key: $key');
         return key;
     }
   }
