@@ -12,25 +12,7 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: p.brightness,
-      colorScheme: isDark
-          ? ColorScheme.dark(
-              primary: p.accent,
-              surface: p.surfaceSolid,
-              onSurface: p.fg,
-              onSurfaceVariant: p.fgSecondary,
-              outline: p.border,
-              primaryContainer: p.accentDim,
-              onPrimaryContainer: p.accent,
-            )
-          : ColorScheme.light(
-              primary: p.accent,
-              surface: p.surfaceSolid,
-              onSurface: p.fg,
-              onSurfaceVariant: p.fgSecondary,
-              outline: p.border,
-              primaryContainer: p.accentDim,
-              onPrimaryContainer: p.accent,
-            ),
+      colorScheme: _buildColorScheme(p),
       scaffoldBackgroundColor: p.bg,
       extensions: [p],
       appBarTheme: AppBarTheme(
@@ -114,6 +96,24 @@ class AppTheme {
           return p.fgTertiary;
         }),
       ),
+    );
+  }
+
+  static ColorScheme _buildColorScheme(ThemePalette p) {
+    final base = p.brightness == Brightness.dark
+        ? const ColorScheme.dark()
+        : const ColorScheme.light();
+    return base.copyWith(
+      primary: p.accent,
+      surface: p.surfaceSolid,
+      surfaceContainer: p.cardBg,
+      surfaceContainerHigh: p.bgElevated,
+      onSurface: p.fg,
+      onSurfaceVariant: p.fgSecondary,
+      outline: p.border,
+      primaryContainer: p.accentDim,
+      onPrimaryContainer: p.accent,
+      error: p.statusError,
     );
   }
 }
