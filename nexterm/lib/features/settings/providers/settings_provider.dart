@@ -14,6 +14,7 @@ class SettingsKeys {
   static const biometricEnabled = 'biometric_enabled';
   static const clipboardAutoClear = 'clipboard_auto_clear';
   static const terminalFontFamily = 'terminal_font_family';
+  static const voiceInputLocale = 'voice_input_locale';
 }
 
 final settingsStreamProvider = StreamProvider<Map<String, String>>((ref) {

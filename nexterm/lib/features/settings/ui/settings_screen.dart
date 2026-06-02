@@ -11,6 +11,7 @@ import 'package:nexterm/features/hosts/providers/hosts_provider.dart';
 import 'package:nexterm/features/settings/providers/settings_provider.dart';
 import 'package:nexterm/features/terminal/providers/terminal_font_family_provider.dart';
 import 'package:nexterm/features/terminal/providers/terminal_scrollback_provider.dart';
+import 'package:nexterm/features/terminal/providers/voice_locale_provider.dart';
 import 'package:nexterm/features/settings/utils/ssh_config_parser.dart';
 import 'package:nexterm/features/sync/providers/auth_provider.dart';
 import 'package:nexterm/shared/widgets/section_label.dart';
@@ -93,6 +94,12 @@ class SettingsScreen extends ConsumerWidget {
             title: Text(l.settings_hapticFeedback),
             value: settings[SettingsKeys.hapticFeedback] == 'true',
             onChanged: (v) => settingsNotifier.set(SettingsKeys.hapticFeedback, v.toString()),
+          ),
+          ListTile(
+            leading: const Icon(Icons.mic_outlined),
+            title: Text(l.settings_voiceLocale),
+            subtitle: Text(_voiceLocaleLabel(ref, settings[SettingsKeys.voiceInputLocale] ?? '', l)),
+            onTap: () => _showVoiceLocalePicker(context),
           ),
 
           SectionLabel(title: l.settings_sectionSecurity),
@@ -211,6 +218,18 @@ class SettingsScreen extends ConsumerWidget {
     if (m == null || m <= 0) return l.settings_autoLockNever;
     if (m == 1) return l.settings_autoLockOneMinute;
     return l.settings_autoLockMinutes(m);
+  }
+
+  static String _voiceLocaleLabel(WidgetRef ref, String localeId, AppLocalizations l) {
+    if (localeId.isEmpty) return l.settings_voiceLocaleSystem;
+    final async = ref.watch(availableSpeechLocalesProvider);
+    final list = async.asData?.value;
+    if (list != null) {
+      for (final loc in list) {
+        if (loc.localeId == localeId) return loc.name;
+      }
+    }
+    return localeId;
   }
 
   static String _languageLabel(WidgetRef ref, AppLocalizations l) {
@@ -378,6 +397,13 @@ class SettingsScreen extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+
+  void _showVoiceLocalePicker(BuildContext context) {
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => const _VoiceLocalePickerDialog(),
     );
   }
 
@@ -780,6 +806,75 @@ class _AutoLockPickerDialogState extends State<_AutoLockPickerDialog> {
           ),
         ),
       ],
+    );
+  }
+}
+
+// ---------- Voice locale picker dialog ----------
+
+class _VoiceLocalePickerDialog extends ConsumerWidget {
+  const _VoiceLocalePickerDialog();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
+    final settings = ref.watch(settingsNotifierProvider);
+    final notifier = ref.read(settingsNotifierProvider.notifier);
+    final current = settings[SettingsKeys.voiceInputLocale] ?? '';
+    final asyncLocales = ref.watch(availableSpeechLocalesProvider);
+
+    return SimpleDialog(
+      title: Text(l.settings_selectVoiceLocale),
+      children: [
+        ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.6,
+          ),
+          child: asyncLocales.when(
+            loading: () => const Padding(
+              padding: EdgeInsets.symmetric(vertical: 24),
+              child: Center(child: CircularProgressIndicator()),
+            ),
+            error: (_, __) => _buildList(context, current, const [], notifier, l),
+            data: (locales) => _buildList(context, current, locales, notifier, l),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildList(
+    BuildContext context,
+    String current,
+    List<dynamic> locales,
+    SettingsNotifier notifier,
+    AppLocalizations l,
+  ) {
+    return SingleChildScrollView(
+      child: RadioGroup<String>(
+        groupValue: current,
+        onChanged: (v) {
+          if (v != null) {
+            notifier.set(SettingsKeys.voiceInputLocale, v);
+            Navigator.of(context).pop();
+          }
+        },
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            RadioListTile<String>(
+              title: Text(l.settings_voiceLocaleSystem),
+              value: '',
+            ),
+            for (final loc in locales)
+              RadioListTile<String>(
+                title: Text(loc.name),
+                subtitle: Text(loc.localeId),
+                value: loc.localeId as String,
+              ),
+          ],
+        ),
+      ),
     );
   }
 }

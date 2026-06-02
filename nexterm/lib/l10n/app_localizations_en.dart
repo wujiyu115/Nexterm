@@ -1200,6 +1200,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings_hapticFeedback => 'Haptic Feedback';
 
   @override
+  String get settings_voiceLocale => 'Voice Input Language';
+
+  @override
+  String get settings_voiceLocaleSystem => 'Follow System';
+
+  @override
+  String get settings_selectVoiceLocale => 'Select Voice Input Language';
+
+  @override
   String get settings_sectionSecurity => 'Security';
 
   @override

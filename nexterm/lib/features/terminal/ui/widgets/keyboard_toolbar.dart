@@ -8,6 +8,7 @@ import 'package:nexterm/features/terminal/models/toolbar_key_definition.dart';
 import 'package:nexterm/features/terminal/providers/toolbar_config_provider.dart';
 import 'package:nexterm/features/terminal/providers/toolbar_modifier_provider.dart';
 import 'package:nexterm/features/terminal/providers/toolbar_usage_provider.dart';
+import 'package:nexterm/features/terminal/providers/voice_locale_provider.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
 /// A scrollable, grouped toolbar that sits above the soft keyboard.
@@ -73,6 +74,7 @@ class _KeyboardToolbarState extends ConsumerState<KeyboardToolbar> {
   void _startListening() {
     if (!_speechAvailable) return;
     setState(() => _isListening = true);
+    final localeId = ref.read(voiceLocaleIdProvider);
     _speech.listen(
       onResult: (result) {
         if (result.finalResult && result.recognizedWords.isNotEmpty) {
@@ -82,6 +84,7 @@ class _KeyboardToolbarState extends ConsumerState<KeyboardToolbar> {
       listenOptions: SpeechListenOptions(
         listenMode: ListenMode.dictation,
         cancelOnError: true,
+        localeId: localeId.isEmpty ? null : localeId,
       ),
     );
   }

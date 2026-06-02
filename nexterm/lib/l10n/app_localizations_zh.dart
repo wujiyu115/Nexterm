@@ -1172,6 +1172,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_hapticFeedback => '触觉反馈';
 
   @override
+  String get settings_voiceLocale => '语音输入语言';
+
+  @override
+  String get settings_voiceLocaleSystem => '跟随系统';
+
+  @override
+  String get settings_selectVoiceLocale => '选择语音输入语言';
+
+  @override
   String get settings_sectionSecurity => '安全';
 
   @override

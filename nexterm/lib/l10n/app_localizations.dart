@@ -2300,6 +2300,24 @@ abstract class AppLocalizations {
   /// **'触觉反馈'**
   String get settings_hapticFeedback;
 
+  /// No description provided for @settings_voiceLocale.
+  ///
+  /// In zh, this message translates to:
+  /// **'语音输入语言'**
+  String get settings_voiceLocale;
+
+  /// No description provided for @settings_voiceLocaleSystem.
+  ///
+  /// In zh, this message translates to:
+  /// **'跟随系统'**
+  String get settings_voiceLocaleSystem;
+
+  /// No description provided for @settings_selectVoiceLocale.
+  ///
+  /// In zh, this message translates to:
+  /// **'选择语音输入语言'**
+  String get settings_selectVoiceLocale;
+
   /// No description provided for @settings_sectionSecurity.
   ///
   /// In zh, this message translates to:
