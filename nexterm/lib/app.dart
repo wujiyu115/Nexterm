@@ -11,14 +11,15 @@ class NextermApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final themeState = ref.watch(themeProvider);
+    final palette = ref.watch(paletteProvider);
     final locale = ref.watch(localeProvider);
+    final theme = AppTheme.fromPalette(palette);
     return MaterialApp.router(
       title: 'Nexterm',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.light(),
-      darkTheme: AppTheme.dark(),
-      themeMode: themeState.themeMode,
+      theme: theme,
+      darkTheme: theme,
+      themeMode: ThemeMode.light, // ignored when theme==darkTheme
       locale: locale,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
