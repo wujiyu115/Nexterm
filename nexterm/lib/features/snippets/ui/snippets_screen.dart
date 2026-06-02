@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:nexterm/core/theme/outdoor_colors.dart';
+import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/domain/entities/snippet_entity.dart';
 import 'package:nexterm/features/snippets/providers/snippets_provider.dart';
 import 'package:nexterm/features/snippets/ui/widgets/snippet_list_tile.dart';
@@ -15,6 +15,7 @@ class SnippetsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
+    final p = Theme.of(context).extension<ThemePalette>()!;
     final notifier = ref.read(snippetsNotifierProvider.notifier);
     final snippetsAsync = ref.watch(snippetsStreamProvider);
 
@@ -36,11 +37,11 @@ class SnippetsScreen extends ConsumerWidget {
             icon: Container(
               width: 32,
               height: 32,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: OutdoorColors.accentDim,
+                color: p.accentDim,
               ),
-              child: const Icon(Icons.add, size: 16, color: OutdoorColors.accent),
+              child: Icon(Icons.add, size: 16, color: p.accent),
             ),
           ),
         ],
@@ -95,11 +96,12 @@ class SnippetsScreen extends ConsumerWidget {
 
   Widget _buildEmptyState(BuildContext context) {
     final l = AppLocalizations.of(context)!;
+    final p = Theme.of(context).extension<ThemePalette>()!;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.bolt_outlined, size: 64, color: Theme.of(context).brightness == Brightness.dark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary),
+          Icon(Icons.bolt_outlined, size: 64, color: p.fgTertiary),
           const SizedBox(height: 16),
           Text(l.snippets_noSnippets, style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 8),

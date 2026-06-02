@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nexterm/core/theme/outdoor_colors.dart';
+import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nexterm/domain/entities/snippet_entity.dart';
@@ -53,6 +53,7 @@ class _SnippetExecuteSheetState extends ConsumerState<SnippetExecuteSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final p = Theme.of(context).extension<ThemePalette>()!;
     final snippetsAsync = _searchQuery.isEmpty
         ? ref.watch(snippetsStreamProvider)
         : ref.watch(snippetSearchProvider(_searchQuery)).whenData((list) => list);
@@ -71,7 +72,7 @@ class _SnippetExecuteSheetState extends ConsumerState<SnippetExecuteSheet> {
               width: 36,
               height: 4,
               decoration: BoxDecoration(
-                color: (Theme.of(context).brightness == Brightness.dark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary).withValues(alpha: 0.4),
+                color: p.fgTertiary.withValues(alpha: 0.4),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -123,14 +124,14 @@ class _SnippetExecuteSheetState extends ConsumerState<SnippetExecuteSheet> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.bolt_outlined, size: 48, color: Theme.of(context).brightness == Brightness.dark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary),
+                          Icon(Icons.bolt_outlined, size: 48, color: p.fgTertiary),
                           const SizedBox(height: 12),
                           Text(
                             _searchQuery.isEmpty
                                 ? AppLocalizations.of(context)!.snippetExecute_noSnippets
                                 : AppLocalizations.of(context)!.snippetExecute_noMatch,
                             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Theme.of(context).brightness == Brightness.dark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary,
+                              color: p.fgSecondary,
                             ),
                           ),
                         ],
@@ -169,11 +170,12 @@ class _SnippetSheetTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final p = theme.extension<ThemePalette>()!;
 
     return ListTile(
       leading: Icon(
         snippet.variables.isEmpty ? Icons.terminal : Icons.edit_note,
-        color: OutdoorColors.accent,
+        color: p.accent,
         size: 22,
       ),
       title: Text(snippet.name, maxLines: 1, overflow: TextOverflow.ellipsis),
@@ -183,11 +185,11 @@ class _SnippetSheetTile extends StatelessWidget {
         overflow: TextOverflow.ellipsis,
         style: theme.textTheme.bodySmall?.copyWith(
           fontFamily: 'monospace',
-          color: Theme.of(context).brightness == Brightness.dark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary,
+          color: p.fgSecondary,
         ),
       ),
       trailing: snippet.isFavorite
-          ? const Icon(Icons.star, size: 16, color: OutdoorColors.accent)
+          ? Icon(Icons.star, size: 16, color: p.accent)
           : null,
       onTap: onTap,
     );

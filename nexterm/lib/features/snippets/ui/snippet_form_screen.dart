@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nexterm/core/theme/outdoor_colors.dart';
+import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -190,6 +190,7 @@ class _SnippetFormScreenState extends ConsumerState<SnippetFormScreen> {
       future: _loadSnippet(),
       builder: (context, _) {
         final l = AppLocalizations.of(context)!;
+        final p = Theme.of(context).extension<ThemePalette>()!;
         return DecorativeBackground(
           showRidge: false,
           child: Scaffold(
@@ -243,7 +244,7 @@ class _SnippetFormScreenState extends ConsumerState<SnippetFormScreen> {
                   _FormSection(title: l.snippetForm_sectionVariables, children: [
                     Text(
                       l.snippetForm_variablesHint,
-                      style: TextStyle(fontSize: 12, color: Theme.of(context).brightness == Brightness.dark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary),
+                      style: TextStyle(fontSize: 12, color: p.fgSecondary),
                     ),
                     const SizedBox(height: 8),
                     ..._detectedVariables.map((name) => Padding(
@@ -312,13 +313,14 @@ class _FormSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final p = Theme.of(context).extension<ThemePalette>()!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           title,
           style: Theme.of(context).textTheme.labelLarge?.copyWith(
-            color: OutdoorColors.accent,
+            color: p.accent,
             fontWeight: FontWeight.w600,
           ),
         ),
