@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nexterm/core/theme/outdoor_colors.dart';
+import 'package:nexterm/core/theme/theme_palette.dart';
 
 /// A horizontally scrollable breadcrumb bar showing the current SFTP path.
 ///
@@ -87,10 +87,8 @@ class _BreadcrumbSegment extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final foreground = isLast
-        ? (isDark ? OutdoorColors.darkFg : OutdoorColors.lightFg)
-        : OutdoorColors.accent;
+    final p = Theme.of(context).extension<ThemePalette>()!;
+    final foreground = isLast ? p.fg : p.accent;
 
     Widget child = isRoot
         ? Icon(Icons.home, size: 18, color: foreground)

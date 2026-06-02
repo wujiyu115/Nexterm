@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nexterm/core/theme/outdoor_colors.dart';
+import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nexterm/features/sftp/providers/transfer_provider.dart';
@@ -88,6 +88,7 @@ class _TransferRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final p = theme.extension<ThemePalette>()!;
     final isUpload = item.direction == TransferDirection.upload;
     final icon = isUpload ? Icons.upload : Icons.download;
     final progress = item.progress;
@@ -97,7 +98,7 @@ class _TransferRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: Row(
         children: [
-          Icon(icon, size: 16, color: OutdoorColors.accent),
+          Icon(icon, size: 16, color: p.accent),
           const SizedBox(width: 8),
           Expanded(
             child: Column(

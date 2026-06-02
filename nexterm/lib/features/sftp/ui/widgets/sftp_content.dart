@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:nexterm/core/theme/outdoor_colors.dart';
+import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nexterm/features/sftp/providers/sftp_provider.dart';
@@ -444,12 +444,13 @@ class _SftpContentWidgetState extends ConsumerState<SftpContentWidget> {
     }
 
     if (_initError != null) {
+      final p = Theme.of(context).extension<ThemePalette>()!;
       final l = AppLocalizations.of(context)!;
       return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.error_outline, size: 48, color: OutdoorColors.darkStatusError),
+            Icon(Icons.error_outline, size: 48, color: p.statusError),
             const SizedBox(height: 16),
             Text(l.sftp_connectionFailed(_initError!)),
             const SizedBox(height: 16),
@@ -472,8 +473,8 @@ class _SftpContentWidgetState extends ConsumerState<SftpContentWidget> {
     final notifier = _notifier!;
     final state = _sftpState;
     final l = AppLocalizations.of(context)!;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final iconColor = isDark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary;
+    final p = Theme.of(context).extension<ThemePalette>()!;
+    final iconColor = p.fgSecondary;
 
     return Column(
       children: [
@@ -550,7 +551,7 @@ class _SftpContentWidgetState extends ConsumerState<SftpContentWidget> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.error_outline, color: OutdoorColors.darkStatusError),
+                          Icon(Icons.error_outline, color: p.statusError),
                           const SizedBox(height: 8),
                           Text(state.error!),
                           TextButton(onPressed: notifier.refresh, child: Text(l.common_retry)),
