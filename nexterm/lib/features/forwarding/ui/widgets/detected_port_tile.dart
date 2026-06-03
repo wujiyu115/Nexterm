@@ -9,12 +9,14 @@ class DetectedPortTile extends StatelessWidget {
   final DetectedPort port;
   final bool isForwarded;
   final VoidCallback? onTap;
+  final VoidCallback? onPreview;
 
   const DetectedPortTile({
     super.key,
     required this.port,
     required this.isForwarded,
     this.onTap,
+    this.onPreview,
   });
 
   Color _protocolColor(String protocol, Color fallback) {
@@ -94,6 +96,18 @@ class DetectedPortTile extends StatelessWidget {
               ],
             ),
           ),
+          if (onPreview != null)
+            Padding(
+              padding: const EdgeInsets.only(right: 4),
+              child: GestureDetector(
+                onTap: onPreview,
+                child: Icon(
+                  Icons.language,
+                  size: 22,
+                  color: const Color(0xFF4CAF50),
+                ),
+              ),
+            ),
           // Trailing: forwarded chip or add button
           if (isForwarded)
             Container(

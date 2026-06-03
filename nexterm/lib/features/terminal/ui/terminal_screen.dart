@@ -17,6 +17,7 @@ import 'package:nexterm/features/terminal/ui/widgets/terminal_tab_bar.dart';
 import 'package:nexterm/features/terminal/ui/widgets/terminal_view.dart';
 import 'package:nexterm/features/sftp/ui/widgets/sftp_content.dart';
 import 'package:nexterm/features/forwarding/ui/port_detection_sheet.dart';
+import 'package:nexterm/features/forwarding/ui/widgets/web_preview_content.dart';
 import 'package:nexterm/domain/entities/enums.dart';
 import 'package:nexterm/shared/widgets/dashed_divider.dart';
 
@@ -356,9 +357,11 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
                     )
                   : activeTab.connectionType == ConnectionType.sftp && activeTab.sessionId != null
                       ? SftpContentWidget(sessionId: activeTab.sessionId!)
-                      : (activeTab.connectionType == ConnectionType.webdav || activeTab.connectionType == ConnectionType.smb)
-                          ? SftpContentWidget(service: ref.read(fileServicesProvider)[activeTab.id])
-                          : TerminalViewWidget(
+                      : activeTab.connectionType == ConnectionType.webPreview && activeTab.localPort != null
+                          ? WebPreviewContent(localPort: activeTab.localPort!, title: activeTab.title)
+                          : (activeTab.connectionType == ConnectionType.webdav || activeTab.connectionType == ConnectionType.smb)
+                              ? SftpContentWidget(service: ref.read(fileServicesProvider)[activeTab.id])
+                              : TerminalViewWidget(
                               tab: activeTab,
                               hardwareKeyboardOnly: _isFunctionMode,
                             ),

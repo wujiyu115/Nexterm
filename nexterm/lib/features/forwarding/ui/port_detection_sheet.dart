@@ -6,6 +6,7 @@ import 'package:nexterm/features/forwarding/models/detected_port.dart';
 import 'package:nexterm/features/forwarding/providers/forwarding_provider.dart';
 import 'package:nexterm/features/forwarding/providers/port_detection_provider.dart';
 import 'package:nexterm/features/forwarding/ui/widgets/detected_port_tile.dart';
+import 'package:nexterm/features/terminal/providers/terminal_provider.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:nexterm/shared/widgets/section_label.dart';
 
@@ -311,6 +312,13 @@ class _PortDetectionSheetState extends ConsumerState<PortDetectionSheet> {
     );
   }
 
+  static const _httpPorts = {80, 443, 3000, 3001, 4200, 5000, 5173, 8000, 8080, 8888};
+
+  bool _isHttpLike(DetectedPort port) {
+    final proto = port.protocolGuess.toLowerCase();
+    return proto.contains('http') || _httpPorts.contains(port.port);
+  }
+
   Widget _buildPortTile(DetectedPort port, Set<int> forwardedPorts) {
     final isForwarded = forwardedPorts.contains(port.port);
     final sessions = ref.read(activeSessionsForDetectionProvider);
@@ -320,6 +328,17 @@ class _PortDetectionSheetState extends ConsumerState<PortDetectionSheet> {
     return DetectedPortTile(
       port: port,
       isForwarded: isForwarded,
+      onPreview: _isHttpLike(port)
+          ? () {
+              Navigator.of(context).pop();
+              ref.read(terminalActionsProvider).openWebPreview(
+                hostId: session.hostId,
+                remotePort: port.port,
+                sessionId: session.sessionId,
+                title: port.processName ?? ':${port.port}',
+              );
+            }
+          : null,
       onTap: () {
         Navigator.of(context).pop();
         context.push('/vaults/forwarding/add', extra: <String, dynamic>{

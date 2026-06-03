@@ -2,8 +2,12 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nexterm/core/providers/app_lifecycle_provider.dart';
+import 'package:nexterm/core/services/notification_service.dart';
 import 'package:nexterm/domain/entities/enums.dart';
+import 'package:nexterm/domain/entities/port_forward_entity.dart';
 import 'package:nexterm/features/forwarding/providers/forwarding_provider.dart';
 import 'package:nexterm/features/forwarding/services/port_forward_service.dart';
 import 'package:nexterm/features/hosts/providers/hosts_provider.dart';
@@ -73,6 +77,13 @@ class TerminalActions {
   TabManager get _tabManager => _ref.read(tabManagerProvider);
   PortForwardService get _portForwardService => _ref.read(portForwardServiceProvider);
   ReconnectService get _reconnectService => _ref.read(reconnectServiceProvider);
+
+  void _onBell(String tabTitle) {
+    final lifecycle = _ref.read(appLifecycleProvider);
+    if (lifecycle != AppLifecycleState.resumed) {
+      NotificationService.instance.showBellNotification(tabTitle);
+    }
+  }
 
   void _writeWithModifiers(String sessionId, String data) {
     final modifier = _ref.read(toolbarModifierProvider);
@@ -169,7 +180,10 @@ class TerminalActions {
 
       // Wire stdout to terminal input.
       active.stdout.listen(
-        (data) => terminal.write(utf8.decode(data, allowMalformed: true)),
+        (data) {
+          if (data.contains(0x07)) _onBell(tab.title);
+          terminal.write(utf8.decode(data, allowMalformed: true));
+        },
         onDone: () {
           _tabManager.updateTabStatus(tab.id, ConnectionStatus.disconnected);
           // --- Gap 4: schedule reconnect on disconnect ---
@@ -197,8 +211,10 @@ class TerminalActions {
                     newSessionId, terminal.viewWidth, terminal.viewHeight);
                 // Re-wire stdout.
                 newActive.stdout.listen(
-                  (data) =>
-                      terminal.write(utf8.decode(data, allowMalformed: true)),
+                  (data) {
+                    if (data.contains(0x07)) _onBell(tab.title);
+                    terminal.write(utf8.decode(data, allowMalformed: true));
+                  },
                   onDone: () => _tabManager.updateTabStatus(
                       tab.id, ConnectionStatus.disconnected),
                   onError: (_) => _tabManager.updateTabStatus(
@@ -335,6 +351,42 @@ class TerminalActions {
     return tab.id;
   }
 
+  /// Opens a web preview tab for a detected port.
+  Future<void> openWebPreview({
+    required String hostId,
+    required int remotePort,
+    required String sessionId,
+    String? title,
+  }) async {
+    final client = _sshService.getClient(sessionId);
+    if (client == null) return;
+
+    final forwardId = _uuid.v4();
+    final entity = PortForwardEntity(
+      id: forwardId,
+      name: title ?? 'preview:$remotePort',
+      type: ForwardType.local,
+      hostId: hostId,
+      localPort: remotePort,
+      remoteHost: 'localhost',
+      remotePort: remotePort,
+    );
+
+    try {
+      await _portForwardService.startLocalForward(client: client, entity: entity);
+    } catch (e) {
+      debugPrint('openWebPreview forward failed: $e');
+      return;
+    }
+
+    final tab = _tabManager.addTab(hostId: hostId, title: title ?? ':$remotePort');
+    _tabManager.updateTabConnectionType(tab.id, ConnectionType.webPreview);
+    _tabManager.updateTabStatus(tab.id, ConnectionStatus.connected);
+    _tabManager.updateTabSessionId(tab.id, sessionId);
+    tab.localPort = remotePort;
+    tab.forwardId = forwardId;
+  }
+
   /// Disconnects the session for [tabId] and removes the tab.
   Future<void> disconnectTab(String tabId) async {
     final tab = _tabManager.tabs.firstWhere(
@@ -342,7 +394,9 @@ class TerminalActions {
       orElse: () => throw StateError('Tab $tabId not found'),
     );
 
-    if (tab.connectionType == ConnectionType.webdav ||
+    if (tab.connectionType == ConnectionType.webPreview && tab.forwardId != null) {
+      _portForwardService.stop(tab.forwardId!);
+    } else if (tab.connectionType == ConnectionType.webdav ||
         tab.connectionType == ConnectionType.smb) {
       final services = _ref.read(fileServicesProvider);
       services[tabId]?.disconnect();

@@ -10,6 +10,8 @@ class TerminalTab {
   ConnectionStatus status;
   ConnectionType connectionType;
   String? sessionId;
+  int? localPort;
+  String? forwardId;
 
   TerminalTab({
     required this.id,
@@ -18,6 +20,8 @@ class TerminalTab {
     this.status = ConnectionStatus.disconnected,
     this.connectionType = ConnectionType.ssh,
     this.sessionId,
+    this.localPort,
+    this.forwardId,
   });
 
   TerminalTab copyWith({
