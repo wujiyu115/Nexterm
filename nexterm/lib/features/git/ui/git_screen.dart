@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nexterm/core/theme/app_theme.dart';
 import 'package:nexterm/core/theme/theme_palette.dart';
+import 'package:nexterm/shared/widgets/dashed_divider.dart';
 import 'package:nexterm/features/git/models/git_tag.dart';
 import 'package:nexterm/features/git/providers/git_provider.dart';
 import 'package:nexterm/features/git/services/git_command_service.dart';
@@ -120,33 +121,40 @@ class _GitScreenState extends ConsumerState<GitScreen> with SingleTickerProvider
           Text(_gitState.currentBranch, style: theme.textTheme.bodySmall!.copyWith(color: p.fgSecondary)),
         ]),
         actions: [IconButton(icon: const Icon(Icons.refresh), onPressed: () => _gitNotifier!.loadAll())],
-        bottom: TabBar(controller: _tabController, tabs: [Tab(text: l.git_tabWorkTree), Tab(text: l.git_tabBranches), Tab(text: l.git_tabTags)]),
+        bottom: TabBar(controller: _tabController, dividerColor: Colors.transparent, tabs: [Tab(text: l.git_tabWorkTree), Tab(text: l.git_tabBranches), Tab(text: l.git_tabTags)]),
       ),
-      body: _gitState.isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _gitState.error != null
-              ? Center(child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Column(mainAxisSize: MainAxisSize.min, children: [
-                    Icon(Icons.error_outline, size: 48, color: p.statusError),
-                    const SizedBox(height: 12),
-                    Text(_gitState.error!, textAlign: TextAlign.center,
-                        style: theme.textTheme.bodyMedium!.copyWith(fontFamily: AppFonts.mono,
-                            color: p.fgSecondary)),
-                    const SizedBox(height: 16),
-                    FilledButton(onPressed: () => _gitNotifier!.loadAll(), child: Text(l.common_retry)),
-                  ]),
-                ))
-              : TabBarView(controller: _tabController, children: [
-                  _gitState.status != null ? StatusFileList(status: _gitState.status!, onFileTap: _showFileDiff) : const Center(child: CircularProgressIndicator()),
-                  BranchList(
-                    branches: _gitState.branches,
-                    onBranchGraphTap: _openBranchGraph,
-                    onDeleteBranch: (branch) => _gitNotifier!.deleteBranch(branch.name),
-                    onBranchTap: _openBranchLog,
-                  ),
-                  TagList(tags: _gitState.tags, onDeleteTag: (tag) => _gitNotifier!.deleteTag(tag.name), onCheckoutTag: _handleCheckoutTag),
-                ]),
+      body: Column(
+        children: [
+          DashedDivider(color: p.border.withValues(alpha: 0.4), padding: const EdgeInsets.symmetric(horizontal: 12)),
+          Expanded(
+            child: _gitState.isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : _gitState.error != null
+                    ? Center(child: Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Column(mainAxisSize: MainAxisSize.min, children: [
+                          Icon(Icons.error_outline, size: 48, color: p.statusError),
+                          const SizedBox(height: 12),
+                          Text(_gitState.error!, textAlign: TextAlign.center,
+                              style: theme.textTheme.bodyMedium!.copyWith(fontFamily: AppFonts.mono,
+                                  color: p.fgSecondary)),
+                          const SizedBox(height: 16),
+                          FilledButton(onPressed: () => _gitNotifier!.loadAll(), child: Text(l.common_retry)),
+                        ]),
+                      ))
+                    : TabBarView(controller: _tabController, children: [
+                        _gitState.status != null ? StatusFileList(status: _gitState.status!, onFileTap: _showFileDiff) : const Center(child: CircularProgressIndicator()),
+                        BranchList(
+                          branches: _gitState.branches,
+                          onBranchGraphTap: _openBranchGraph,
+                          onDeleteBranch: (branch) => _gitNotifier!.deleteBranch(branch.name),
+                          onBranchTap: _openBranchLog,
+                        ),
+                        TagList(tags: _gitState.tags, onDeleteTag: (tag) => _gitNotifier!.deleteTag(tag.name), onCheckoutTag: _handleCheckoutTag),
+                      ]),
+          ),
+        ],
+      ),
     );
   }
 }
