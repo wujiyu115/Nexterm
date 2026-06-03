@@ -90,22 +90,35 @@ class ToolbarCustomizeScreen extends ConsumerWidget {
     ToolbarConfigNotifier notifier,
     List<ToolbarKeyGroup> removedGroups,
   ) {
-    showCupertinoModalPopup(
+    final theme = Theme.of(context);
+    final p = theme.extension<ThemePalette>()!;
+    showModalBottomSheet(
       context: context,
-      builder: (ctx) => CupertinoActionSheet(
-        title: Text(l.toolbar_addGroupTitle),
-        actions: removedGroups
-            .map((g) => CupertinoActionSheetAction(
-                  onPressed: () {
-                    notifier.addGroup(g.id);
-                    Navigator.pop(ctx);
-                  },
-                  child: Text('${toolbarGroupName(g.id, l)}  (${g.keys.map((k) => k.label).join(", ")})'),
-                ))
-            .toList(),
-        cancelButton: CupertinoActionSheetAction(
-          onPressed: () => Navigator.pop(ctx),
-          child: Text(l.common_cancel),
+      backgroundColor: p.bgElevated,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 12),
+            Center(child: Container(width: 36, height: 4, decoration: BoxDecoration(color: p.fgTertiary, borderRadius: BorderRadius.circular(2)))),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
+              child: Text(l.toolbar_addGroupTitle, style: theme.textTheme.titleLarge),
+            ),
+            const SizedBox(height: 8),
+            Divider(height: 1, color: p.border),
+            ...removedGroups.map((g) => ListTile(
+              leading: Icon(Icons.add_circle_outline, color: p.accent, size: 22),
+              title: Text(toolbarGroupName(g.id, l), style: theme.textTheme.titleMedium),
+              subtitle: Text(g.keys.map((k) => k.label).join(', '), style: theme.textTheme.bodySmall!.copyWith(color: p.fgSecondary)),
+              onTap: () { notifier.addGroup(g.id); Navigator.pop(ctx); },
+              dense: true,
+            )),
+            const SizedBox(height: 8),
+          ],
         ),
       ),
     );

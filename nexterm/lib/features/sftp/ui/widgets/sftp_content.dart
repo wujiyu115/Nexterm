@@ -126,155 +126,85 @@ class _SftpContentWidgetState extends ConsumerState<SftpContentWidget> {
 
   void _showFileContextMenu(RemoteFileInfo file) {
     final l = AppLocalizations.of(context)!;
-    showCupertinoModalPopup<void>(
+    final theme = Theme.of(context);
+    final p = theme.extension<ThemePalette>()!;
+
+    showModalBottomSheet<void>(
       context: context,
-      builder: (ctx) => CupertinoActionSheet(
-        title: Text(file.name),
-        actions: [
-          if (!file.isDirectory && isImageFile(file.name))
-            CupertinoActionSheetAction(
-              onPressed: () {
-                Navigator.pop(ctx);
-                context.push('/sftp/image', extra: <String, dynamic>{'sessionId': widget.sessionId, 'path': file.path, 'service': widget.service});
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(CupertinoIcons.photo, size: 20),
-                  const SizedBox(width: 8),
-                  Text(l.sftp_viewImage),
-                ],
+      isScrollControlled: true,
+      backgroundColor: p.bgElevated,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (ctx) => ConstrainedBox(
+        constraints: BoxConstraints(maxHeight: MediaQuery.of(ctx).size.height * 0.7),
+        child: SafeArea(
+          child: ListView(
+            shrinkWrap: true,
+            children: [
+              const SizedBox(height: 12),
+              Center(child: Container(width: 36, height: 4, decoration: BoxDecoration(color: p.fgTertiary, borderRadius: BorderRadius.circular(2)))),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
+                child: Text(file.name, style: theme.textTheme.titleLarge, textAlign: TextAlign.center),
               ),
-            ),
-          if (!file.isDirectory && isEditableFile(file.name)) ...[
-            CupertinoActionSheetAction(
-              onPressed: () {
-                Navigator.pop(ctx);
-                context.push('/sftp/edit', extra: <String, dynamic>{'sessionId': widget.sessionId, 'path': file.path, 'viewOnly': 'true', 'service': widget.service});
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(CupertinoIcons.eye, size: 20),
-                  const SizedBox(width: 8),
-                  Text(l.sftp_view),
-                ],
-              ),
-            ),
-            CupertinoActionSheetAction(
-              onPressed: () {
-                Navigator.pop(ctx);
-                context.push('/sftp/edit', extra: <String, dynamic>{'sessionId': widget.sessionId, 'path': file.path, 'viewOnly': 'false', 'service': widget.service});
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(CupertinoIcons.pencil_ellipsis_rectangle, size: 20),
-                  const SizedBox(width: 8),
-                  Text(l.sftp_edit),
-                ],
-              ),
-            ),
-          ],
-          CupertinoActionSheetAction(
-            onPressed: () {
-              Navigator.pop(ctx);
-              _notifier?.copyPaths([file.path]);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(l.sftp_copied), duration: const Duration(seconds: 2)),
-              );
-            },
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(CupertinoIcons.doc_on_doc, size: 20),
-                const SizedBox(width: 8),
-                Text(l.sftp_copy),
+              const SizedBox(height: 8),
+              Divider(height: 1, color: p.border),
+              if (!file.isDirectory && isImageFile(file.name))
+                _menuTile(ctx, Icons.image_outlined, l.sftp_viewImage, p.fg, () {
+                  context.push('/sftp/image', extra: <String, dynamic>{'sessionId': widget.sessionId, 'path': file.path, 'service': widget.service});
+                }),
+              if (!file.isDirectory && isEditableFile(file.name)) ...[
+                _menuTile(ctx, Icons.visibility_outlined, l.sftp_view, p.fg, () {
+                  context.push('/sftp/edit', extra: <String, dynamic>{'sessionId': widget.sessionId, 'path': file.path, 'viewOnly': 'true', 'service': widget.service});
+                }),
+                _menuTile(ctx, Icons.edit_outlined, l.sftp_edit, p.fg, () {
+                  context.push('/sftp/edit', extra: <String, dynamic>{'sessionId': widget.sessionId, 'path': file.path, 'viewOnly': 'false', 'service': widget.service});
+                }),
               ],
-            ),
+              _menuTile(ctx, Icons.copy_outlined, l.sftp_copy, p.fg, () {
+                _notifier?.copyPaths([file.path]);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(l.sftp_copied), duration: const Duration(seconds: 2)),
+                );
+              }),
+              _menuTile(ctx, Icons.drive_file_rename_outline, l.sftp_rename, p.fg, () {
+                _showRenameDialog(file);
+              }),
+              if (!file.isDirectory)
+                _menuTile(ctx, Icons.cloud_download_outlined, l.sftp_download, p.fg, () {
+                  _notifier?.downloadFile(file);
+                }),
+              _menuTile(ctx, Icons.link, l.sftp_copyPath, p.fg, () {
+                Clipboard.setData(ClipboardData(text: file.path));
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(l.sftp_pathCopied(file.path)), duration: const Duration(seconds: 2)),
+                );
+              }),
+              if (file.permissions != null)
+                _menuTile(ctx, Icons.lock_outlined, l.sftp_permissions, p.fg, () {
+                  _showPermissions(file);
+                }),
+              Divider(height: 1, color: p.border),
+              _menuTile(ctx, Icons.delete_outline, l.common_delete, p.statusError, () {
+                _confirmDelete(file);
+              }),
+              const SizedBox(height: 8),
+            ],
           ),
-          CupertinoActionSheetAction(
-            onPressed: () {
-              Navigator.pop(ctx);
-              _showRenameDialog(file);
-            },
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(CupertinoIcons.pencil, size: 20),
-                const SizedBox(width: 8),
-                Text(l.sftp_rename),
-              ],
-            ),
-          ),
-          if (!file.isDirectory)
-            CupertinoActionSheetAction(
-              onPressed: () {
-                Navigator.pop(ctx);
-                _notifier?.downloadFile(file);
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(CupertinoIcons.cloud_download, size: 20),
-                  const SizedBox(width: 8),
-                  Text(l.sftp_download),
-                ],
-              ),
-            ),
-          CupertinoActionSheetAction(
-            onPressed: () {
-              Navigator.pop(ctx);
-              Clipboard.setData(ClipboardData(text: file.path));
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(l.sftp_pathCopied(file.path)), duration: const Duration(seconds: 2)),
-              );
-            },
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(CupertinoIcons.link, size: 20),
-                const SizedBox(width: 8),
-                Text(l.sftp_copyPath),
-              ],
-            ),
-          ),
-          if (file.permissions != null)
-            CupertinoActionSheetAction(
-              onPressed: () {
-                Navigator.pop(ctx);
-                _showPermissions(file);
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(CupertinoIcons.lock_shield, size: 20),
-                  const SizedBox(width: 8),
-                  Text(l.sftp_permissions),
-                ],
-              ),
-            ),
-          CupertinoActionSheetAction(
-            isDestructiveAction: true,
-            onPressed: () {
-              Navigator.pop(ctx);
-              _confirmDelete(file);
-            },
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(CupertinoIcons.trash, size: 20, color: CupertinoColors.destructiveRed),
-                const SizedBox(width: 8),
-                Text(l.common_delete),
-              ],
-            ),
-          ),
-        ],
-        cancelButton: CupertinoActionSheetAction(
-          onPressed: () => Navigator.pop(ctx),
-          child: Text(l.common_cancel),
         ),
       ),
+    );
+  }
+
+  Widget _menuTile(BuildContext ctx, IconData icon, String label, Color color, VoidCallback onTap) {
+    final theme = Theme.of(ctx);
+    return ListTile(
+      leading: Icon(icon, color: color, size: 22),
+      title: Text(label, style: theme.textTheme.titleMedium!.copyWith(color: color)),
+      onTap: () { Navigator.pop(ctx); onTap(); },
+      dense: true,
+      visualDensity: const VisualDensity(vertical: -1),
     );
   }
 
@@ -290,40 +220,52 @@ class _SftpContentWidgetState extends ConsumerState<SftpContentWidget> {
     final notifier = _notifier;
     if (notifier == null) return;
     final l = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final p = theme.extension<ThemePalette>()!;
     final state = _sftpState;
 
-    showCupertinoModalPopup<void>(
+    showModalBottomSheet<void>(
       context: context,
-      builder: (ctx) => CupertinoActionSheet(
-        title: Text(l.sftp_sortTitle),
-        actions: [
-          _sortAction(ctx, l.sftp_sortByName, SortField.name, state),
-          _sortAction(ctx, l.sftp_sortBySize, SortField.size, state),
-          _sortAction(ctx, l.sftp_sortByDate, SortField.date, state),
-          _sortAction(ctx, l.sftp_sortByType, SortField.type, state),
-        ],
-        cancelButton: CupertinoActionSheetAction(
-          onPressed: () => Navigator.pop(ctx),
-          child: Text(l.common_cancel),
+      backgroundColor: p.bgElevated,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 12),
+            Center(child: Container(width: 36, height: 4, decoration: BoxDecoration(color: p.fgTertiary, borderRadius: BorderRadius.circular(2)))),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
+              child: Text(l.sftp_sortTitle, style: theme.textTheme.titleLarge),
+            ),
+            const SizedBox(height: 8),
+            Divider(height: 1, color: p.border),
+            _sortTile(ctx, l.sftp_sortByName, SortField.name, state, p),
+            _sortTile(ctx, l.sftp_sortBySize, SortField.size, state, p),
+            _sortTile(ctx, l.sftp_sortByDate, SortField.date, state, p),
+            _sortTile(ctx, l.sftp_sortByType, SortField.type, state, p),
+            const SizedBox(height: 8),
+          ],
         ),
       ),
     );
   }
 
-  CupertinoActionSheetAction _sortAction(
-    BuildContext ctx, String label, SortField field, SftpState state,
-  ) {
+  Widget _sortTile(BuildContext ctx, String label, SortField field, SftpState state, ThemePalette p) {
+    final theme = Theme.of(ctx);
     final isActive = state.sortField == field;
     final arrow = isActive ? (state.sortAscending ? ' ↑' : ' ↓') : '';
-    return CupertinoActionSheetAction(
-      onPressed: () {
-        Navigator.pop(ctx);
-        _notifier?.setSort(field);
-      },
-      child: Text(
-        '$label$arrow',
-        style: TextStyle(fontWeight: isActive ? FontWeight.w600 : FontWeight.normal),
-      ),
+    return ListTile(
+      leading: Icon(Icons.sort, color: isActive ? p.accent : p.fgSecondary, size: 22),
+      title: Text('$label$arrow', style: theme.textTheme.titleMedium!.copyWith(
+        color: isActive ? p.accent : p.fg,
+        fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+      )),
+      onTap: () { Navigator.pop(ctx); _notifier?.setSort(field); },
+      dense: true,
+      visualDensity: const VisualDensity(vertical: -1),
     );
   }
 

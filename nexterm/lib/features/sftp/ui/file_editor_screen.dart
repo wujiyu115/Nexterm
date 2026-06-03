@@ -294,8 +294,13 @@ class _FileEditorScreenState extends ConsumerState<FileEditorScreen> {
     final headings = _parseHeadings(code);
     if (headings.isEmpty) return;
 
+    final p = Theme.of(context).extension<ThemePalette>()!;
     showModalBottomSheet(
       context: context,
+      backgroundColor: p.bgElevated,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
       builder: (ctx) => SafeArea(
         child: ListView.builder(
           shrinkWrap: true,
