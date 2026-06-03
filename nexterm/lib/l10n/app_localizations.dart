@@ -704,6 +704,12 @@ abstract class AppLocalizations {
   /// **'打开 SFTP'**
   String get terminal_openSftp;
 
+  /// No description provided for @terminal_openGit.
+  ///
+  /// In zh, this message translates to:
+  /// **'打开 Git'**
+  String get terminal_openGit;
+
   /// No description provided for @terminal_toggleKeyboard.
   ///
   /// In zh, this message translates to:
@@ -3080,6 +3086,12 @@ abstract class AppLocalizations {
   /// **'连接中...'**
   String get git_connecting;
 
+  /// No description provided for @git_search.
+  ///
+  /// In zh, this message translates to:
+  /// **'搜索仓库、路径...'**
+  String get git_search;
+
   /// No description provided for @webdav_title.
   ///
   /// In zh, this message translates to:
@@ -3187,6 +3199,12 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'添加连接'**
   String get webdav_addTitle;
+
+  /// No description provided for @webdav_search.
+  ///
+  /// In zh, this message translates to:
+  /// **'搜索连接、URL...'**
+  String get webdav_search;
 
   /// No description provided for @smb_title.
   ///
@@ -3331,6 +3349,12 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'添加连接'**
   String get smb_addTitle;
+
+  /// No description provided for @smb_search.
+  ///
+  /// In zh, this message translates to:
+  /// **'搜索连接、主机...'**
+  String get smb_search;
 }
 
 class _AppLocalizationsDelegate

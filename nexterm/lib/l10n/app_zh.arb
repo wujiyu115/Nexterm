@@ -116,6 +116,7 @@
   "terminal_switchToFunction": "切换到功能面板",
   "terminal_newTab": "新建终端",
   "terminal_openSftp": "打开 SFTP",
+  "terminal_openGit": "打开 Git",
   "terminal_toggleKeyboard": "切换键盘",
   "terminal_backToHosts": "返回主机",
   "terminal_uploadFile": "上传文件",
@@ -567,6 +568,7 @@
   "git_noCommits": "暂无提交",
   "git_openGit": "打开 Git",
   "git_connecting": "连接中...",
+  "git_search": "搜索仓库、路径...",
 
   "webdav_title": "WebDAV",
   "webdav_add": "添加连接",
@@ -588,6 +590,7 @@
   "@webdav_deleteConfirm": { "placeholders": { "name": { "type": "String" } } },
   "webdav_editTitle": "编辑连接",
   "webdav_addTitle": "添加连接",
+  "webdav_search": "搜索连接、URL...",
 
   "smb_title": "SMB",
   "smb_add": "添加连接",
@@ -614,5 +617,6 @@
   "smb_deleteConfirm": "确定要删除「{name}」吗？",
   "@smb_deleteConfirm": { "placeholders": { "name": { "type": "String" } } },
   "smb_editTitle": "编辑连接",
-  "smb_addTitle": "添加连接"
+  "smb_addTitle": "添加连接",
+  "smb_search": "搜索连接、主机..."
   }

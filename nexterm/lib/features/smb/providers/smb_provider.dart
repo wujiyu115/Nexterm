@@ -15,3 +15,7 @@ final smbConnectionsStreamProvider = StreamProvider<List<SmbConnectionEntity>>((
 final smbConnectionByIdProvider = FutureProvider.family<SmbConnectionEntity?, String>((ref, id) {
   return ref.watch(smbDaoProvider).getById(id);
 });
+
+final smbSearchProvider = FutureProvider.family<List<SmbConnectionEntity>, String>((ref, query) {
+  return ref.watch(smbDaoProvider).search(query);
+});

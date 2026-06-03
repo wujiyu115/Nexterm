@@ -97,6 +97,20 @@ class TerminalActions {
     }
   }
 
+  /// Finds an existing active SSH session for [hostId].
+  /// Returns the sessionId if one exists and is still alive, or null.
+  String? findActiveSessionForHost(String hostId) {
+    for (final tab in _tabManager.tabs) {
+      if (tab.hostId != hostId) continue;
+      if (tab.status != ConnectionStatus.connected) continue;
+      if (tab.sessionId == null) continue;
+      if (_sshService.isActive(tab.sessionId!)) {
+        return tab.sessionId!;
+      }
+    }
+    return null;
+  }
+
   /// Opens a new tab for [hostId] and starts the SSH connection.
   ///
   /// Looks up the host (and key if needed) from providers.

@@ -55,4 +55,9 @@ class SmbConnectionsDao extends DatabaseAccessor<AppDatabase> with _$SmbConnecti
   Stream<List<SmbConnectionEntity>> watchAll() {
     return select(smbConnections).watch().map((rows) => rows.map(_rowToEntity).toList());
   }
+
+  Future<List<SmbConnectionEntity>> search(String query) async {
+    final pattern = '%$query%';
+    return (await (select(smbConnections)..where((t) => t.name.like(pattern) | t.host.like(pattern) | t.shareName.like(pattern))).get()).map(_rowToEntity).toList();
+  }
 }

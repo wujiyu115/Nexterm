@@ -334,6 +334,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get terminal_openSftp => 'Open SFTP';
 
   @override
+  String get terminal_openGit => 'Open Git';
+
+  @override
   String get terminal_toggleKeyboard => 'Toggle Keyboard';
 
   @override
@@ -1616,6 +1619,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get git_connecting => 'Connecting...';
 
   @override
+  String get git_search => 'Search repos, paths...';
+
+  @override
   String get webdav_title => 'WebDAV';
 
   @override
@@ -1674,6 +1680,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get webdav_addTitle => 'Add Connection';
+
+  @override
+  String get webdav_search => 'Search connections, URLs...';
 
   @override
   String get smb_title => 'SMB';
@@ -1751,4 +1760,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get smb_addTitle => 'Add Connection';
+
+  @override
+  String get smb_search => 'Search connections, hosts...';
 }

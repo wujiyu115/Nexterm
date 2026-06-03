@@ -49,4 +49,9 @@ class WebdavConnectionsDao extends DatabaseAccessor<AppDatabase> with _$WebdavCo
   Stream<List<WebdavConnectionEntity>> watchAll() {
     return select(webdavConnections).watch().map((rows) => rows.map(_rowToEntity).toList());
   }
+
+  Future<List<WebdavConnectionEntity>> search(String query) async {
+    final pattern = '%$query%';
+    return (await (select(webdavConnections)..where((t) => t.name.like(pattern) | t.url.like(pattern))).get()).map(_rowToEntity).toList();
+  }
 }

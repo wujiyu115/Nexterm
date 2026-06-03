@@ -26,6 +26,7 @@ class TerminalTabBar extends ConsumerWidget {
   final VoidCallback? onUploadFile;
   final VoidCallback? onDetectPorts;
   final VoidCallback? onOpenSftp;
+  final VoidCallback? onOpenGit;
 
   const TerminalTabBar({
     super.key,
@@ -39,6 +40,7 @@ class TerminalTabBar extends ConsumerWidget {
     this.onUploadFile,
     this.onDetectPorts,
     this.onOpenSftp,
+    this.onOpenGit,
   });
 
   @override
@@ -107,6 +109,8 @@ class TerminalTabBar extends ConsumerWidget {
                   onDetectPorts?.call();
                 case 'open_sftp':
                   onOpenSftp?.call();
+              case 'open_git':
+                  onOpenGit?.call();
               }
             },
             itemBuilder: (ctx) {
@@ -178,6 +182,12 @@ class TerminalTabBar extends ConsumerWidget {
                     value: 'open_sftp',
                     icon: Icons.folder_outlined,
                     label: l.terminal_openSftp,
+                  ),
+                if (onOpenGit != null)
+                  menuItem(
+                    value: 'open_git',
+                    icon: Icons.source_outlined,
+                    label: l.terminal_openGit,
                   ),
                 if (onUploadFile != null)
                   menuItem(

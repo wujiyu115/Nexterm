@@ -324,6 +324,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get terminal_openSftp => '打开 SFTP';
 
   @override
+  String get terminal_openGit => '打开 Git';
+
+  @override
   String get terminal_toggleKeyboard => '切换键盘';
 
   @override
@@ -1578,6 +1581,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get git_connecting => '连接中...';
 
   @override
+  String get git_search => '搜索仓库、路径...';
+
+  @override
   String get webdav_title => 'WebDAV';
 
   @override
@@ -1635,6 +1641,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get webdav_addTitle => '添加连接';
+
+  @override
+  String get webdav_search => '搜索连接、URL...';
 
   @override
   String get smb_title => 'SMB';
@@ -1711,4 +1720,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get smb_addTitle => '添加连接';
+
+  @override
+  String get smb_search => '搜索连接、主机...';
 }

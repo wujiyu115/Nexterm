@@ -111,6 +111,7 @@
   "terminal_switchToFunction": "Switch to Function Panel",
   "terminal_newTab": "New Terminal",
   "terminal_openSftp": "Open SFTP",
+  "terminal_openGit": "Open Git",
   "terminal_toggleKeyboard": "Toggle Keyboard",
   "terminal_backToHosts": "Back to Hosts",
   "terminal_uploadFile": "Upload File",
@@ -538,6 +539,7 @@
   "git_noCommits": "No commits yet",
   "git_openGit": "Open Git",
   "git_connecting": "Connecting...",
+  "git_search": "Search repos, paths...",
 
   "webdav_title": "WebDAV",
   "webdav_add": "Add Connection",
@@ -559,6 +561,7 @@
   "@webdav_deleteConfirm": { "placeholders": { "name": { "type": "String" } } },
   "webdav_editTitle": "Edit Connection",
   "webdav_addTitle": "Add Connection",
+  "webdav_search": "Search connections, URLs...",
 
   "smb_title": "SMB",
   "smb_add": "Add Connection",
@@ -585,5 +588,6 @@
   "smb_deleteConfirm": "Are you sure you want to delete \"{name}\"?",
   "@smb_deleteConfirm": { "placeholders": { "name": { "type": "String" } } },
   "smb_editTitle": "Edit Connection",
-  "smb_addTitle": "Add Connection"
+  "smb_addTitle": "Add Connection",
+  "smb_search": "Search connections, hosts..."
   }

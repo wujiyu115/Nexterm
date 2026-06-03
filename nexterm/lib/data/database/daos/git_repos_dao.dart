@@ -43,4 +43,9 @@ class GitReposDao extends DatabaseAccessor<AppDatabase> with _$GitReposDaoMixin 
   Stream<List<GitRepoEntity>> watchAll() {
     return select(gitRepos).watch().map((rows) => rows.map(_rowToEntity).toList());
   }
+
+  Future<List<GitRepoEntity>> search(String query) async {
+    final pattern = '%$query%';
+    return (await (select(gitRepos)..where((t) => t.label.like(pattern) | t.remotePath.like(pattern))).get()).map(_rowToEntity).toList();
+  }
 }

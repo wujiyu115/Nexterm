@@ -271,6 +271,34 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
     );
   }
 
+  Future<void> _openGitTab() async {
+    final tabManager = ref.read(tabManagerProvider);
+    final activeTab = tabManager.activeTab;
+    if (activeTab == null || activeTab.sessionId == null) return;
+
+    final sshService = ref.read(sshServiceProvider);
+    final client = sshService.getClient(activeTab.sessionId!);
+    if (client == null) return;
+
+    String remotePath = '.';
+    try {
+      // Find the PTY shell's cwd via /proc: the exec channel and PTY shell
+      // share the same sshd parent process.
+      final session = await client.execute(
+        r"p=$(cat /proc/$$/status 2>/dev/null | grep PPid | awk '{print $2}');"
+        r" c=$(ps --ppid $p -o pid=,tty= 2>/dev/null | grep pts | head -1 | awk '{print $1}');"
+        r' readlink /proc/${c:-$$}/cwd 2>/dev/null || pwd',
+      );
+      final stdoutBytes = await session.stdout.toList();
+      final pwd = String.fromCharCodes(stdoutBytes.expand((b) => b)).trim();
+      await session.done;
+      if (pwd.isNotEmpty) remotePath = pwd;
+    } catch (_) {}
+
+    if (!mounted) return;
+    context.push('/git/${activeTab.sessionId}?path=${Uri.encodeComponent(remotePath)}');
+  }
+
   @override
   Widget build(BuildContext context) {
     final tabManager = ref.watch(tabManagerProvider);
@@ -308,6 +336,7 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
             onUploadFile: activeTab != null && activeTab.connectionType == ConnectionType.ssh ? _uploadFile : null,
             onDetectPorts: activeTab != null && activeTab.connectionType == ConnectionType.ssh ? _showPortDetection : null,
             onOpenSftp: activeTab != null && activeTab.connectionType == ConnectionType.ssh ? _openSftpTab : null,
+            onOpenGit: activeTab != null && activeTab.connectionType == ConnectionType.ssh ? _openGitTab : null,
             onGoToHosts: () {
               if (context.canPop()) context.pop();
             },

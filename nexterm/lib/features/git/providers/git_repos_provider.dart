@@ -12,3 +12,8 @@ final gitRepoRepositoryProvider = Provider<GitRepoRepository>((ref) {
 final gitReposStreamProvider = StreamProvider<List<GitRepoEntity>>((ref) {
   return ref.watch(gitRepoRepositoryProvider).watchAll();
 });
+
+final gitRepoSearchProvider = FutureProvider.family<List<GitRepoEntity>, String>((ref, query) {
+  final db = ref.watch(databaseProvider);
+  return db.gitReposDao.search(query);
+});

@@ -15,3 +15,7 @@ final webdavConnectionsStreamProvider = StreamProvider<List<WebdavConnectionEnti
 final webdavConnectionByIdProvider = FutureProvider.family<WebdavConnectionEntity?, String>((ref, id) {
   return ref.watch(webdavDaoProvider).getById(id);
 });
+
+final webdavSearchProvider = FutureProvider.family<List<WebdavConnectionEntity>, String>((ref, query) {
+  return ref.watch(webdavDaoProvider).search(query);
+});
