@@ -1946,6 +1946,12 @@ abstract class AppLocalizations {
   /// **'选择会话'**
   String get portDetect_selectSession;
 
+  /// No description provided for @portDetect_search.
+  ///
+  /// In zh, this message translates to:
+  /// **'搜索端口、进程...'**
+  String get portDetect_search;
+
   /// No description provided for @sftp_copy.
   ///
   /// In zh, this message translates to:

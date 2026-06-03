@@ -336,6 +336,7 @@
   "portDetect_error": "Scan failed: {error}",
   "@portDetect_error": { "placeholders": { "error": { "type": "String" } } },
   "portDetect_selectSession": "Select Session",
+  "portDetect_search": "Search port, process...",
 
   "sftp_copy": "Copy",
   "sftp_rename": "Rename",

@@ -17,6 +17,9 @@ class PortDetectionSheet extends ConsumerStatefulWidget {
 }
 
 class _PortDetectionSheetState extends ConsumerState<PortDetectionSheet> {
+  final _searchController = TextEditingController();
+  String _searchQuery = '';
+
   @override
   void initState() {
     super.initState();
@@ -26,6 +29,12 @@ class _PortDetectionSheetState extends ConsumerState<PortDetectionSheet> {
         ref.read(portDetectionNotifierProvider.notifier).scan(sessions.first.sessionId);
       }
     });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   @override
@@ -126,6 +135,28 @@ class _PortDetectionSheetState extends ConsumerState<PortDetectionSheet> {
                   ),
                 ),
               ],
+              // Search
+              if (detectionState.ports.valueOrNull != null && detectionState.ports.valueOrNull!.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  child: TextField(
+                    controller: _searchController,
+                    onChanged: (v) => setState(() => _searchQuery = v),
+                    decoration: InputDecoration(
+                      isDense: true,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      hintText: l.portDetect_search,
+                      prefixIcon: const Icon(Icons.search, size: 18),
+                      suffixIcon: _searchQuery.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(Icons.clear, size: 18),
+                              onPressed: () => setState(() { _searchController.clear(); _searchQuery = ''; }),
+                            )
+                          : null,
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                    ),
+                  ),
+                ),
               const SizedBox(height: 4),
               // Content
               Expanded(
@@ -229,8 +260,18 @@ class _PortDetectionSheetState extends ConsumerState<PortDetectionSheet> {
           );
         }
 
-        final userPorts = ports.where((p) => p.category == PortCategory.user).toList();
-        final systemPorts = ports.where((p) => p.category == PortCategory.system).toList();
+        final filtered = _searchQuery.isEmpty
+            ? ports
+            : ports.where((p) {
+                final q = _searchQuery.toLowerCase();
+                return p.port.toString().contains(q) ||
+                    (p.processName?.toLowerCase().contains(q) ?? false) ||
+                    p.bindAddress.toLowerCase().contains(q) ||
+                    p.protocolGuess.toLowerCase().contains(q);
+              }).toList();
+
+        final userPorts = filtered.where((p) => p.category == PortCategory.user).toList();
+        final systemPorts = filtered.where((p) => p.category == PortCategory.system).toList();
 
         return ListView(
           controller: scrollController,

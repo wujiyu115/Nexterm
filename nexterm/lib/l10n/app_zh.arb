@@ -353,6 +353,7 @@
   "portDetect_error": "扫描失败: {error}",
   "@portDetect_error": { "placeholders": { "error": { "type": "String" } } },
   "portDetect_selectSession": "选择会话",
+  "portDetect_search": "搜索端口、进程...",
 
   "sftp_copy": "复制",
   "sftp_rename": "重命名",

@@ -1009,6 +1009,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get portDetect_selectSession => 'Select Session';
 
   @override
+  String get portDetect_search => 'Search port, process...';
+
+  @override
   String get sftp_copy => 'Copy';
 
   @override

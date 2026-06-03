@@ -981,6 +981,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get portDetect_selectSession => '选择会话';
 
   @override
+  String get portDetect_search => '搜索端口、进程...';
+
+  @override
   String get sftp_copy => '复制';
 
   @override
