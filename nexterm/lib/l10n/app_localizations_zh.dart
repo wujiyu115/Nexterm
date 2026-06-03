@@ -1163,9 +1163,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_sectionTerminal => '终端';
 
   @override
-  String get settings_terminalTheme => '终端配色方案';
-
-  @override
   String get settings_cursorStyle => '光标样式';
 
   @override
@@ -1241,13 +1238,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_version => '版本';
 
   @override
-  String get settings_themeLight => '浅色';
+  String get settings_themeGroupDark => '暗色';
 
   @override
-  String get settings_themeDark => '深色';
-
-  @override
-  String get settings_themeSystem => '跟随系统';
+  String get settings_themeGroupLight => '亮色';
 
   @override
   String get settings_cursorBlock => '块状';
@@ -1289,9 +1283,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get settings_selectTheme => '选择主题';
-
-  @override
-  String get settings_selectTerminalTheme => '选择终端配色';
 
   @override
   String get settings_selectCursorStyle => '选择光标样式';

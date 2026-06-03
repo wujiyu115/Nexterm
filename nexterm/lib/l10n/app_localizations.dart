@@ -2282,12 +2282,6 @@ abstract class AppLocalizations {
   /// **'终端'**
   String get settings_sectionTerminal;
 
-  /// No description provided for @settings_terminalTheme.
-  ///
-  /// In zh, this message translates to:
-  /// **'终端配色方案'**
-  String get settings_terminalTheme;
-
   /// No description provided for @settings_cursorStyle.
   ///
   /// In zh, this message translates to:
@@ -2438,23 +2432,17 @@ abstract class AppLocalizations {
   /// **'版本'**
   String get settings_version;
 
-  /// No description provided for @settings_themeLight.
+  /// No description provided for @settings_themeGroupDark.
   ///
   /// In zh, this message translates to:
-  /// **'浅色'**
-  String get settings_themeLight;
+  /// **'暗色'**
+  String get settings_themeGroupDark;
 
-  /// No description provided for @settings_themeDark.
+  /// No description provided for @settings_themeGroupLight.
   ///
   /// In zh, this message translates to:
-  /// **'深色'**
-  String get settings_themeDark;
-
-  /// No description provided for @settings_themeSystem.
-  ///
-  /// In zh, this message translates to:
-  /// **'跟随系统'**
-  String get settings_themeSystem;
+  /// **'亮色'**
+  String get settings_themeGroupLight;
 
   /// No description provided for @settings_cursorBlock.
   ///
@@ -2533,12 +2521,6 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'选择主题'**
   String get settings_selectTheme;
-
-  /// No description provided for @settings_selectTerminalTheme.
-  ///
-  /// In zh, this message translates to:
-  /// **'选择终端配色'**
-  String get settings_selectTerminalTheme;
 
   /// No description provided for @settings_selectCursorStyle.
   ///

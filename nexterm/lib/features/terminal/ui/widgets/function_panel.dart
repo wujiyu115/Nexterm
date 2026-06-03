@@ -95,7 +95,7 @@ class _FunctionPanelState extends ConsumerState<FunctionPanel>
                   ),
                 ),
                 IconButton(
-                  tooltip: l.settings_terminalTheme,
+                  tooltip: l.settings_theme,
                   icon: Icon(
                     Icons.palette_outlined,
                     size: 18,
@@ -606,7 +606,7 @@ class _TerminalThemeSheet extends ConsumerWidget {
     final l = AppLocalizations.of(context)!;
     final selected = ref.watch(themeProvider);
     return SimpleDialog(
-      title: Text(l.settings_selectTerminalTheme),
+      title: Text(l.settings_selectTheme),
       children: [
         RadioGroup<String>(
           groupValue: selected,

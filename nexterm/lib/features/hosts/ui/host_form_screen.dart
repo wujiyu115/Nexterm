@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:nexterm/core/theme/outdoor_colors.dart';
+import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/domain/entities/enums.dart';
 import 'package:nexterm/domain/entities/host_entity.dart';
 import 'package:nexterm/domain/entities/snippet_entity.dart';
@@ -219,6 +219,7 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
+    final p = Theme.of(context).extension<ThemePalette>()!;
     final hostsAsync = ref.watch(hostsStreamProvider);
     final allHosts = hostsAsync.valueOrNull ?? [];
 
@@ -312,19 +313,19 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         backgroundColor: WidgetStateProperty.resolveWith((states) {
                           if (states.contains(WidgetState.selected)) {
-                            return OutdoorColors.accentDim;
+                            return p.accentDim;
                           }
                           return null;
                         }),
                         foregroundColor: WidgetStateProperty.resolveWith((states) {
                           if (states.contains(WidgetState.selected)) {
-                            return OutdoorColors.accent;
+                            return p.accent;
                           }
                           return null;
                         }),
                         side: WidgetStateProperty.resolveWith((states) {
                           if (states.contains(WidgetState.selected)) {
-                            return const BorderSide(color: OutdoorColors.accent, width: 1);
+                            return BorderSide(color: p.accent, width: 1);
                           }
                           return null;
                         }),
@@ -385,6 +386,7 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
 
   Widget _buildKeySelector() {
     final l = AppLocalizations.of(context)!;
+    final p = Theme.of(context).extension<ThemePalette>()!;
     final keysAsync = ref.watch(keysStreamProvider);
     return keysAsync.when(
       loading: () => const LinearProgressIndicator(),
@@ -399,7 +401,7 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
                   child: Text(
                     l.hostForm_noKeys,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).brightness == Brightness.dark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary,
+                      color: p.fgSecondary,
                     ),
                   ),
                 ),
@@ -442,6 +444,7 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
 
   Widget _buildJumpHostsSection(List<HostEntity> allHosts) {
     final l = AppLocalizations.of(context)!;
+    final p = Theme.of(context).extension<ThemePalette>()!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -458,7 +461,7 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
                   child: Text(
                     l.hostForm_noJumpHostConfigured,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).brightness == Brightness.dark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary,
+                      color: p.fgSecondary,
                     ),
                   ),
                 )
@@ -494,6 +497,7 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
 
   Widget _buildStartupCommandSection() {
     final l = AppLocalizations.of(context)!;
+    final p = Theme.of(context).extension<ThemePalette>()!;
     final snippetsAsync = ref.watch(snippetsStreamProvider);
 
     return Column(
@@ -535,19 +539,19 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 backgroundColor: WidgetStateProperty.resolveWith((states) {
                   if (states.contains(WidgetState.selected)) {
-                    return OutdoorColors.accentDim;
+                    return p.accentDim;
                   }
                   return null;
                 }),
                 foregroundColor: WidgetStateProperty.resolveWith((states) {
                   if (states.contains(WidgetState.selected)) {
-                    return OutdoorColors.accent;
+                    return p.accent;
                   }
                   return null;
                 }),
                 side: WidgetStateProperty.resolveWith((states) {
                   if (states.contains(WidgetState.selected)) {
-                    return const BorderSide(color: OutdoorColors.accent, width: 1);
+                    return BorderSide(color: p.accent, width: 1);
                   }
                   return null;
                 }),
@@ -577,7 +581,7 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
                       child: Text(
                         l.hostForm_noSnippets,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).brightness == Brightness.dark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary,
+                          color: p.fgSecondary,
                         ),
                       ),
                     );

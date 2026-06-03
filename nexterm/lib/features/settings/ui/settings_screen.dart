@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nexterm/core/locale/locale_provider.dart';
-import 'package:nexterm/core/theme/outdoor_colors.dart';
-import 'package:nexterm/core/theme/terminal_themes.dart';
+import 'package:nexterm/core/theme/theme_catalog.dart';
+import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/core/theme/theme_provider.dart';
 import 'package:nexterm/domain/entities/enums.dart';
 import 'package:nexterm/domain/entities/host_entity.dart';
@@ -23,12 +23,10 @@ class SettingsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final p = Theme.of(context).extension<ThemePalette>()!;
     final l = AppLocalizations.of(context)!;
     final settings = ref.watch(settingsNotifierProvider);
     final settingsNotifier = ref.read(settingsNotifierProvider.notifier);
-    final themeState = ref.watch(themeProvider);
-    final themeNotifier = ref.read(themeProvider.notifier);
     final authState = ref.watch(authProvider);
 
     return Scaffold(
@@ -47,8 +45,8 @@ class SettingsScreen extends ConsumerWidget {
           ListTile(
             leading: const Icon(Icons.palette_outlined),
             title: Text(l.settings_theme),
-            subtitle: Text(_themePreferenceLabel(themeState.preference, l)),
-            onTap: () => _showThemePicker(context, themeState.preference, themeNotifier),
+            subtitle: Text(ThemeCatalog.displayName(ref.watch(themeProvider))),
+            onTap: () => _showThemePicker(context, ref),
           ),
           ListTile(
             leading: const Icon(Icons.language_outlined),
@@ -76,12 +74,6 @@ class SettingsScreen extends ConsumerWidget {
             title: Text(l.settings_scrollbackLines),
             subtitle: Text('${ref.watch(terminalScrollbackProvider)} ${l.settings_scrollbackLinesSuffix}'),
             onTap: () => _showScrollbackPicker(context, ref),
-          ),
-          ListTile(
-            leading: const Icon(Icons.color_lens_outlined),
-            title: Text(l.settings_terminalTheme),
-            subtitle: Text(_terminalThemeLabel(themeState.terminalThemeName)),
-            onTap: () => _showTerminalThemePicker(context, themeState.terminalThemeName, themeNotifier),
           ),
           ListTile(
             leading: const Icon(Icons.text_fields_outlined),
@@ -177,7 +169,7 @@ class SettingsScreen extends ConsumerWidget {
                 'v0.1.0',
                 style: TextStyle(
                   fontSize: 12,
-                  color: isDark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary,
+                  color: p.fgTertiary,
                 ),
               ),
             ),
@@ -190,21 +182,6 @@ class SettingsScreen extends ConsumerWidget {
   }
 
   // ---------- label helpers ----------
-
-  static String _themePreferenceLabel(ThemePreference pref, AppLocalizations l) => switch (pref) {
-        ThemePreference.light => l.settings_themeLight,
-        ThemePreference.dark => l.settings_themeDark,
-        ThemePreference.system => l.settings_themeSystem,
-      };
-
-  static String _terminalThemeLabel(String name) => switch (name) {
-        'catppuccin' => 'Catppuccin Mocha',
-        'dracula' => 'Dracula',
-        'monokai' => 'Monokai',
-        'solarized-dark' => 'Solarized Dark',
-        'solarized-light' => 'Solarized Light',
-        _ => name,
-      };
 
   static String _cursorStyleLabel(String style, AppLocalizations l) => switch (style) {
         'block' => l.settings_cursorBlock,
@@ -242,17 +219,10 @@ class SettingsScreen extends ConsumerWidget {
 
   // ---------- pickers / dialogs ----------
 
-  void _showThemePicker(BuildContext context, ThemePreference current, ThemeNotifier notifier) {
+  void _showThemePicker(BuildContext context, WidgetRef ref) {
     showDialog<void>(
       context: context,
-      builder: (ctx) => _ThemePickerDialog(current: current, notifier: notifier),
-    );
-  }
-
-  void _showTerminalThemePicker(BuildContext context, String current, ThemeNotifier notifier) {
-    showDialog<void>(
-      context: context,
-      builder: (ctx) => _TerminalThemePickerDialog(current: current, notifier: notifier),
+      builder: (ctx) => const _UnifiedThemePickerDialog(),
     );
   }
 
@@ -488,112 +458,175 @@ class _FontSizeTile extends StatelessWidget {
   }
 }
 
-// ---------- Theme picker dialog ----------
+// ---------- Unified theme picker dialog ----------
 
-class _ThemePickerDialog extends StatefulWidget {
-  final ThemePreference current;
-  final ThemeNotifier notifier;
-  const _ThemePickerDialog({required this.current, required this.notifier});
+class _UnifiedThemePickerDialog extends ConsumerWidget {
+  const _UnifiedThemePickerDialog();
 
   @override
-  State<_ThemePickerDialog> createState() => _ThemePickerDialogState();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
+    final p = Theme.of(context).extension<ThemePalette>()!;
+    final current = ref.watch(themeProvider);
+    final notifier = ref.read(themeProvider.notifier);
+
+    return Dialog(
+      insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.8,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      l.settings_selectTheme,
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: ListView(
+                children: [
+                  _ThemeGroup(
+                    label: l.settings_themeGroupDark,
+                    keys: ThemeCatalog.darkKeys,
+                    current: current,
+                    accent: p.accent,
+                    onSelect: (k) {
+                      notifier.setTheme(k);
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  _ThemeGroup(
+                    label: l.settings_themeGroupLight,
+                    keys: ThemeCatalog.lightKeys,
+                    current: current,
+                    accent: p.accent,
+                    onSelect: (k) {
+                      notifier.setTheme(k);
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
-class _ThemePickerDialogState extends State<_ThemePickerDialog> {
-  late ThemePreference _selected;
+class _ThemeGroup extends StatelessWidget {
+  final String label;
+  final List<String> keys;
+  final String current;
+  final Color accent;
+  final ValueChanged<String> onSelect;
 
-  @override
-  void initState() {
-    super.initState();
-    _selected = widget.current;
-  }
+  const _ThemeGroup({
+    required this.label,
+    required this.keys,
+    required this.current,
+    required this.accent,
+    required this.onSelect,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context)!;
-    String labelFor(ThemePreference pref) => switch (pref) {
-      ThemePreference.light => l.settings_themeLight,
-      ThemePreference.dark => l.settings_themeDark,
-      ThemePreference.system => l.settings_themeSystem,
-    };
-    return SimpleDialog(
-      title: Text(l.settings_selectTheme),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        RadioGroup<ThemePreference>(
-          groupValue: _selected,
-          onChanged: (v) {
-            if (v != null) {
-              widget.notifier.setThemePreference(v);
-              Navigator.of(context).pop();
-            }
-          },
-          child: Column(
-            children: ThemePreference.values.map((pref) {
-              return RadioListTile<ThemePreference>(
-                title: Text(labelFor(pref)),
-                value: pref,
-              );
-            }).toList(),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 4),
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 1.2,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ),
         ),
+        for (final key in keys)
+          _ThemeRow(
+            themeKey: key,
+            isSelected: key == current,
+            accent: accent,
+            onTap: () => onSelect(key),
+          ),
       ],
     );
   }
 }
 
-// ---------- Terminal theme picker dialog ----------
+class _ThemeRow extends StatelessWidget {
+  final String themeKey;
+  final bool isSelected;
+  final Color accent;
+  final VoidCallback onTap;
 
-class _TerminalThemePickerDialog extends StatefulWidget {
-  final String current;
-  final ThemeNotifier notifier;
-  const _TerminalThemePickerDialog({required this.current, required this.notifier});
-
-  @override
-  State<_TerminalThemePickerDialog> createState() => _TerminalThemePickerDialogState();
-}
-
-class _TerminalThemePickerDialogState extends State<_TerminalThemePickerDialog> {
-  late String _selected;
-
-  @override
-  void initState() {
-    super.initState();
-    _selected = widget.current;
-  }
-
-  static String _label(String name) => switch (name) {
-        'catppuccin' => 'Catppuccin Mocha',
-        'dracula' => 'Dracula',
-        'monokai' => 'Monokai',
-        'solarized-dark' => 'Solarized Dark',
-        'solarized-light' => 'Solarized Light',
-        _ => name,
-      };
+  const _ThemeRow({
+    required this.themeKey,
+    required this.isSelected,
+    required this.accent,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context)!;
-    return SimpleDialog(
-      title: Text(l.settings_selectTerminalTheme),
-      children: [
-        RadioGroup<String>(
-          groupValue: _selected,
-          onChanged: (v) {
-            if (v != null) {
-              widget.notifier.setTerminalTheme(v);
-              Navigator.of(context).pop();
-            }
-          },
-          child: Column(
-            children: TerminalThemes.all.keys.map((name) {
-              return RadioListTile<String>(
-                title: Text(_label(name)),
-                value: name,
-              );
-            }).toList(),
-          ),
+    final palette = ThemeCatalog.byKey(themeKey);
+    final swatches = [
+      palette.terminal.black,
+      palette.terminal.red,
+      palette.terminal.green,
+      palette.terminal.yellow,
+      palette.terminal.blue,
+    ];
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                ThemeCatalog.displayName(themeKey),
+                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+              ),
+            ),
+            for (final swatch in swatches)
+              Container(
+                width: 18,
+                height: 18,
+                margin: const EdgeInsets.only(left: 4),
+                decoration: BoxDecoration(
+                  color: swatch,
+                  borderRadius: BorderRadius.circular(3),
+                ),
+              ),
+            const SizedBox(width: 8),
+            Icon(
+              Icons.check,
+              size: 18,
+              color: isSelected ? accent : Colors.transparent,
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }
@@ -989,8 +1022,8 @@ class _NavTitle extends StatelessWidget {
           height: 2,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(1),
-            gradient: const LinearGradient(
-              colors: [OutdoorColors.accent, Colors.transparent],
+            gradient: LinearGradient(
+              colors: [Theme.of(context).extension<ThemePalette>()!.accent, Colors.transparent],
             ),
           ),
         ),

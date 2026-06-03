@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nexterm/domain/entities/enums.dart';
 import 'package:nexterm/domain/entities/host_entity.dart';
-import 'package:nexterm/core/theme/outdoor_colors.dart';
+import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/shared/widgets/section_label.dart';
 import 'package:nexterm/shared/widgets/outdoor_search_bar.dart';
 import 'package:nexterm/features/hosts/providers/hosts_provider.dart';
@@ -210,6 +210,7 @@ class _HostsScreenState extends ConsumerState<HostsScreen> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
+    final p = Theme.of(context).extension<ThemePalette>()!;
     final notifier = ref.read(hostsNotifierProvider.notifier);
 
     Widget buildContent() {
@@ -280,8 +281,8 @@ class _HostsScreenState extends ConsumerState<HostsScreen> {
                   icon: Container(
                     width: 32,
                     height: 32,
-                    decoration: const BoxDecoration(shape: BoxShape.circle, color: OutdoorColors.accentDim),
-                    child: const Icon(Icons.add, size: 16, color: OutdoorColors.accent),
+                    decoration: BoxDecoration(shape: BoxShape.circle, color: p.accentDim),
+                    child: Icon(Icons.add, size: 16, color: p.accent),
                   ),
                   tooltip: l.hosts_addTooltip,
                   onPressed: () => context.push('/vaults/hosts/add'),
@@ -360,11 +361,12 @@ class _HostsScreenState extends ConsumerState<HostsScreen> {
 
   Widget _buildEmptyState() {
     final l = AppLocalizations.of(context)!;
+    final p = Theme.of(context).extension<ThemePalette>()!;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.dns_outlined, size: 64, color: Theme.of(context).brightness == Brightness.dark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary),
+          Icon(Icons.dns_outlined, size: 64, color: p.fgTertiary),
           const SizedBox(height: 16),
           Text(l.hosts_noHosts, style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 8),
