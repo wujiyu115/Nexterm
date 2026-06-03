@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
+import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/domain/entities/host_entity.dart';
 
 enum HostContextAction {
@@ -18,9 +19,15 @@ Future<HostContextAction?> showHostContextMenu({
   required HostEntity host,
 }) {
   final l = AppLocalizations.of(context)!;
+  final p = Theme.of(context).extension<ThemePalette>()!;
   return showCupertinoModalPopup<HostContextAction>(
     context: context,
-    builder: (ctx) => CupertinoActionSheet(
+    builder: (ctx) => CupertinoTheme(
+      data: CupertinoThemeData(
+        brightness: p.brightness,
+        primaryColor: p.accent,
+      ),
+      child: CupertinoActionSheet(
       title: Text(host.name),
       message: Text('${host.username}@${host.hostname}:${host.port}'),
       actions: [
@@ -107,6 +114,7 @@ Future<HostContextAction?> showHostContextMenu({
         onPressed: () => Navigator.pop(ctx),
         child: Text(l.common_cancel),
       ),
+    ),
     ),
   );
 }
