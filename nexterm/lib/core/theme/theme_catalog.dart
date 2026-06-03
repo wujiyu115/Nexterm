@@ -26,6 +26,9 @@ class ThemeCatalog {
     'tokyo-night-light': _tokyoNightLight,
     'everforest-light': _everforestLight,
     'ayu-light': _ayuLight,
+    'nord-light': _nordLight,
+    'gruvbox-light': _gruvboxLight,
+    'dracula-light': _draculaLight,
   };
 
   /// Returns the palette for [key], falling back to `nexterm` if absent.
@@ -92,6 +95,12 @@ class ThemeCatalog {
         return 'Everforest Light';
       case 'ayu-light':
         return 'Ayu Light';
+      case 'nord-light':
+        return 'Nord Light';
+      case 'gruvbox-light':
+        return 'Gruvbox Light';
+      case 'dracula-light':
+        return 'Dracula Light';
       default:
         assert(false, 'displayName missing for theme key: $key');
         return key;
@@ -122,6 +131,9 @@ class ThemeCatalog {
     'tokyo-night-light',
     'everforest-light',
     'ayu-light',
+    'nord-light',
+    'gruvbox-light',
+    'dracula-light',
   ];
 
   // ───────────────────────── Dark palettes ─────────────────────────
@@ -726,5 +738,95 @@ class ThemeCatalog {
     termCommand: Color(0xFF575F66),
     termOutput: Color(0xFF828C99),
     terminal: TerminalThemes.ayuLight,
+  );
+
+  static const _nordLight = ThemePalette(
+    brightness: Brightness.light,
+    bg: Color(0xFFECEFF4),
+    bgElevated: Color(0xFFE5E9F0),
+    surface: Color(0xC7D8DEE9),
+    surfaceSolid: Color(0xFFE5E9F0),
+    cardBg: Color(0xA6E5E9F0),
+    navBg: Color(0xB8ECEFF4),
+    inputBg: Color(0x0A000000),
+    fg: Color(0xFF2E3440),
+    fgSecondary: Color(0xFF4C566A),
+    fgTertiary: Color(0xFF7B88A1),
+    tabInactive: Color(0xFF7B88A1),
+    border: Color(0x33D8DEE9),
+    glassBorder: Color(0x1F5E81AC),
+    accent: Color(0xFF5E81AC),
+    accentDim: Color(0x265E81AC),
+    accentGlow: Color(0x4D5E81AC),
+    statusOnline: Color(0xFFA3BE8C),
+    statusConnecting: Color(0xFFEBCB8B),
+    statusOffline: Color(0xFF7B88A1),
+    statusError: Color(0xFFBF616A),
+    terminalBg: Color(0xFFECEFF4),
+    termPrompt: Color(0xFFA3BE8C),
+    termPath: Color(0xFF5E81AC),
+    termCommand: Color(0xFF2E3440),
+    termOutput: Color(0xFF4C566A),
+    terminal: TerminalThemes.nordLight,
+  );
+
+  static const _gruvboxLight = ThemePalette(
+    brightness: Brightness.light,
+    bg: Color(0xFFFBF1C7),
+    bgElevated: Color(0xFFF2E5BC),
+    surface: Color(0xC7EBDBB2),
+    surfaceSolid: Color(0xFFF2E5BC),
+    cardBg: Color(0xA6F2E5BC),
+    navBg: Color(0xB8FBF1C7),
+    inputBg: Color(0x0A000000),
+    fg: Color(0xFF3C3836),
+    fgSecondary: Color(0xFF504945),
+    fgTertiary: Color(0xFF928374),
+    tabInactive: Color(0xFF928374),
+    border: Color(0x33D5C4A1),
+    glassBorder: Color(0x1F98971A),
+    accent: Color(0xFF076678),
+    accentDim: Color(0x26076678),
+    accentGlow: Color(0x4D076678),
+    statusOnline: Color(0xFF79740E),
+    statusConnecting: Color(0xFFB57614),
+    statusOffline: Color(0xFF928374),
+    statusError: Color(0xFF9D0006),
+    terminalBg: Color(0xFFFBF1C7),
+    termPrompt: Color(0xFF79740E),
+    termPath: Color(0xFF076678),
+    termCommand: Color(0xFF3C3836),
+    termOutput: Color(0xFF504945),
+    terminal: TerminalThemes.gruvboxLight,
+  );
+
+  static const _draculaLight = ThemePalette(
+    brightness: Brightness.light,
+    bg: Color(0xFFF8F8F2),
+    bgElevated: Color(0xFFFFFFFF),
+    surface: Color(0xC7E8E8E2),
+    surfaceSolid: Color(0xFFF0F0EA),
+    cardBg: Color(0xA6F0F0EA),
+    navBg: Color(0xB8F8F8F2),
+    inputBg: Color(0x0A000000),
+    fg: Color(0xFF282A36),
+    fgSecondary: Color(0xFF44475A),
+    fgTertiary: Color(0xFF6272A4),
+    tabInactive: Color(0xFF6272A4),
+    border: Color(0x33D0D0CC),
+    glassBorder: Color(0x1FBD93F9),
+    accent: Color(0xFFBD93F9),
+    accentDim: Color(0x26BD93F9),
+    accentGlow: Color(0x4DBD93F9),
+    statusOnline: Color(0xFF50FA7B),
+    statusConnecting: Color(0xFFF1FA8C),
+    statusOffline: Color(0xFF6272A4),
+    statusError: Color(0xFFFF5555),
+    terminalBg: Color(0xFFF8F8F2),
+    termPrompt: Color(0xFF50FA7B),
+    termPath: Color(0xFFBD93F9),
+    termCommand: Color(0xFF282A36),
+    termOutput: Color(0xFF44475A),
+    terminal: TerminalThemes.draculaLight,
   );
 }

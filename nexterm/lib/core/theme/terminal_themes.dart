@@ -518,6 +518,87 @@ class TerminalThemes {
     searchHitForeground: Color(0xFFFAFAFA),
   );
 
+  /// Nord Light (Snow Storm).
+  static const nordLight = TerminalTheme(
+    cursor: Color(0xFF2E3440),
+    selection: Color(0x66D8DEE9),
+    foreground: Color(0xFF2E3440),
+    background: Color(0xFFECEFF4),
+    black: Color(0xFF2E3440),
+    red: Color(0xFFBF616A),
+    green: Color(0xFFA3BE8C),
+    yellow: Color(0xFFEBCB8B),
+    blue: Color(0xFF5E81AC),
+    magenta: Color(0xFFB48EAD),
+    cyan: Color(0xFF88C0D0),
+    white: Color(0xFFD8DEE9),
+    brightBlack: Color(0xFF4C566A),
+    brightRed: Color(0xFFBF616A),
+    brightGreen: Color(0xFFA3BE8C),
+    brightYellow: Color(0xFFEBCB8B),
+    brightBlue: Color(0xFF5E81AC),
+    brightMagenta: Color(0xFFB48EAD),
+    brightCyan: Color(0xFF8FBCBB),
+    brightWhite: Color(0xFF2E3440),
+    searchHitBackground: Color(0xFFEBCB8B),
+    searchHitBackgroundCurrent: Color(0xFFA3BE8C),
+    searchHitForeground: Color(0xFF2E3440),
+  );
+
+  /// Gruvbox Light.
+  static const gruvboxLight = TerminalTheme(
+    cursor: Color(0xFF3C3836),
+    selection: Color(0x66EBDBB2),
+    foreground: Color(0xFF3C3836),
+    background: Color(0xFFFBF1C7),
+    black: Color(0xFF3C3836),
+    red: Color(0xFFCC241D),
+    green: Color(0xFF98971A),
+    yellow: Color(0xFFD79921),
+    blue: Color(0xFF458588),
+    magenta: Color(0xFFB16286),
+    cyan: Color(0xFF689D6A),
+    white: Color(0xFF7C6F64),
+    brightBlack: Color(0xFF928374),
+    brightRed: Color(0xFF9D0006),
+    brightGreen: Color(0xFF79740E),
+    brightYellow: Color(0xFFB57614),
+    brightBlue: Color(0xFF076678),
+    brightMagenta: Color(0xFF8F3F71),
+    brightCyan: Color(0xFF427B58),
+    brightWhite: Color(0xFF3C3836),
+    searchHitBackground: Color(0xFFD79921),
+    searchHitBackgroundCurrent: Color(0xFF98971A),
+    searchHitForeground: Color(0xFFFBF1C7),
+  );
+
+  /// Dracula Light (soft community variant).
+  static const draculaLight = TerminalTheme(
+    cursor: Color(0xFF282A36),
+    selection: Color(0x66BD93F9),
+    foreground: Color(0xFF282A36),
+    background: Color(0xFFF8F8F2),
+    black: Color(0xFF282A36),
+    red: Color(0xFFFF5555),
+    green: Color(0xFF50FA7B),
+    yellow: Color(0xFFF1FA8C),
+    blue: Color(0xFFBD93F9),
+    magenta: Color(0xFFFF79C6),
+    cyan: Color(0xFF8BE9FD),
+    white: Color(0xFF6272A4),
+    brightBlack: Color(0xFF6272A4),
+    brightRed: Color(0xFFFF6E6E),
+    brightGreen: Color(0xFF69FF94),
+    brightYellow: Color(0xFFFFFFA5),
+    brightBlue: Color(0xFFD6ACFF),
+    brightMagenta: Color(0xFFFF92DF),
+    brightCyan: Color(0xFFA4FFFF),
+    brightWhite: Color(0xFF282A36),
+    searchHitBackground: Color(0xFFF1FA8C),
+    searchHitBackgroundCurrent: Color(0xFF50FA7B),
+    searchHitForeground: Color(0xFF282A36),
+  );
+
   /// Map of all available terminal themes by name.
   static const Map<String, TerminalTheme> all = {
     'catppuccin': catppuccin,
@@ -539,6 +620,9 @@ class TerminalThemes {
     'tokyo-night-light': tokyoNightLight,
     'everforest-light': everforestLight,
     'ayu-light': ayuLight,
+    'nord-light': nordLight,
+    'gruvbox-light': gruvboxLight,
+    'dracula-light': draculaLight,
   };
 
   /// Returns the theme for [name], falling back to [catppuccin] if not found.
