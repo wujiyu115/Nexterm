@@ -94,8 +94,7 @@ class _BreadcrumbSegment extends StatelessWidget {
         ? Icon(Icons.home, size: 18, color: foreground)
         : Text(
             label,
-            style: TextStyle(
-              fontSize: 13,
+            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
               fontWeight: isLast ? FontWeight.w600 : FontWeight.w400,
               color: foreground,
             ),

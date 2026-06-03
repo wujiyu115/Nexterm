@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nexterm/core/theme/app_theme.dart';
 import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/features/forwarding/models/detected_port.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
@@ -45,7 +46,7 @@ class DetectedPortTile extends StatelessWidget {
               '${port.port}',
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w700,
-                fontFamily: 'monospace',
+                fontFamily: AppFonts.mono,
               ),
             ),
           ),
@@ -84,10 +85,9 @@ class DetectedPortTile extends StatelessWidget {
                   const SizedBox(height: 1),
                   Text(
                     port.bindAddress,
-                    style: theme.textTheme.bodySmall?.copyWith(
+                    style: theme.textTheme.labelSmall?.copyWith(
                       color: secondaryColor,
-                      fontFamily: 'monospace',
-                      fontSize: 11,
+                      fontFamily: AppFonts.mono,
                     ),
                   ),
                 ],

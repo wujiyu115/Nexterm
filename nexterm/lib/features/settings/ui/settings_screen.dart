@@ -167,8 +167,7 @@ class SettingsScreen extends ConsumerWidget {
             child: Center(
               child: Text(
                 'v0.1.0',
-                style: TextStyle(
-                  fontSize: 12,
+                style: Theme.of(context).textTheme.bodySmall!.copyWith(
                   color: p.fgTertiary,
                 ),
               ),
@@ -486,7 +485,7 @@ class _UnifiedThemePickerDialog extends ConsumerWidget {
                   Expanded(
                     child: Text(
                       l.settings_selectTheme,
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                      style: Theme.of(context).textTheme.headlineSmall,
                     ),
                   ),
                   IconButton(
@@ -553,9 +552,7 @@ class _ThemeGroup extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(20, 12, 20, 4),
           child: Text(
             label,
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
+            style: Theme.of(context).textTheme.labelSmall!.copyWith(
               letterSpacing: 1.2,
               color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
@@ -605,7 +602,9 @@ class _ThemeRow extends StatelessWidget {
             Expanded(
               child: Text(
                 ThemeCatalog.displayName(themeKey),
-                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+                style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
             for (final swatch in swatches)
@@ -1009,11 +1008,8 @@ class _NavTitle extends StatelessWidget {
       children: [
         Text(
           title,
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.w700,
+          style: Theme.of(context).textTheme.headlineLarge!.copyWith(
             letterSpacing: -0.3,
-            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
         const SizedBox(height: 4),

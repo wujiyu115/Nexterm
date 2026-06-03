@@ -126,7 +126,7 @@ class _FileListItem extends StatelessWidget {
       subtitle: _subtitle().isNotEmpty
           ? Text(
               _subtitle(),
-              style: const TextStyle(fontSize: 12),
+              style: Theme.of(context).textTheme.bodySmall,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             )

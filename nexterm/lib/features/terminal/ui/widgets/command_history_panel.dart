@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nexterm/core/theme/outdoor_colors.dart';
+import 'package:nexterm/core/theme/app_theme.dart';
 import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -44,7 +45,8 @@ class _CommandHistoryPanelState extends ConsumerState<CommandHistoryPanel> {
     // Show most recent first.
     final reversed = commands.reversed.toList();
 
-    final p = Theme.of(context).extension<ThemePalette>()!;
+    final theme = Theme.of(context);
+    final p = theme.extension<ThemePalette>()!;
 
     return Column(
       children: [
@@ -53,10 +55,7 @@ class _CommandHistoryPanelState extends ConsumerState<CommandHistoryPanel> {
           padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
           child: TextField(
             controller: _searchController,
-            style: TextStyle(
-              color: p.fg,
-              fontSize: 14,
-            ),
+            style: theme.textTheme.bodyLarge,
             decoration: InputDecoration(
               hintText: AppLocalizations.of(context)!.commandHistory_searchHint,
               hintStyle: TextStyle(
@@ -85,9 +84,8 @@ class _CommandHistoryPanelState extends ConsumerState<CommandHistoryPanel> {
               ? Center(
                   child: Text(
                     _query.isEmpty ? AppLocalizations.of(context)!.commandHistory_empty : AppLocalizations.of(context)!.commandHistory_noMatch,
-                    style: TextStyle(
+                    style: theme.textTheme.bodyLarge!.copyWith(
                       color: p.fgSecondary,
-                      fontSize: 14,
                     ),
                   ),
                 )
@@ -117,10 +115,8 @@ class _CommandHistoryPanelState extends ConsumerState<CommandHistoryPanel> {
                             Expanded(
                               child: Text(
                                 cmd,
-                                style: TextStyle(
-                                  fontFamily: 'monospace',
-                                  fontSize: 13,
-                                  color: p.fg,
+                                style: theme.textTheme.bodyMedium!.copyWith(
+                                  fontFamily: AppFonts.mono,
                                 ),
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,

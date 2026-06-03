@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nexterm/core/theme/app_theme.dart';
 import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/features/git/models/git_branch.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
@@ -33,7 +34,8 @@ class _BranchListState extends State<BranchList> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    final p = Theme.of(context).extension<ThemePalette>()!;
+    final theme = Theme.of(context);
+    final p = theme.extension<ThemePalette>()!;
     if (widget.branches.isEmpty) return Center(child: Text(l.git_noBranches));
     final filtered = _filtered;
     return Column(children: [
@@ -57,7 +59,7 @@ class _BranchListState extends State<BranchList> {
                 : null,
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
           ),
-          style: const TextStyle(fontSize: 14),
+          style: theme.textTheme.bodyLarge!,
         ),
       ),
       Expanded(child: filtered.isEmpty
@@ -81,14 +83,14 @@ class _BranchListState extends State<BranchList> {
               onTap: () => widget.onBranchTap(branch),
               leading: Icon(branch.isRemote ? Icons.cloud_outlined : Icons.call_split, size: 18,
                   color: branch.isCurrent ? p.accent : p.fgSecondary),
-              title: Text(branch.name, style: TextStyle(fontSize: 14, fontWeight: branch.isCurrent ? FontWeight.w600 : FontWeight.normal,
+              title: Text(branch.name, style: (branch.isCurrent ? theme.textTheme.titleSmall! : theme.textTheme.bodyLarge!).copyWith(
                   color: p.fg)),
               trailing: Row(mainAxisSize: MainAxisSize.min, children: [
                 if (branch.isCurrent) Container(padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(color: p.accent.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(4)),
-                    child: Text(l.git_currentBranch, style: TextStyle(fontSize: 10, color: p.accent))),
+                    child: Text(l.git_currentBranch, style: theme.textTheme.labelSmall!.copyWith(fontSize: 10, color: p.accent))),
                 const SizedBox(width: 4),
-                Text(branch.shortSha, style: TextStyle(fontSize: 12, fontFamily: 'JetBrains Mono', color: p.fgTertiary)),
+                Text(branch.shortSha, style: theme.textTheme.bodySmall!.copyWith(fontFamily: AppFonts.mono, color: p.fgTertiary)),
               ]),
             ),
           );

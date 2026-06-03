@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:nexterm/core/theme/app_theme.dart';
 import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_highlight/flutter_highlight.dart';
@@ -185,7 +186,7 @@ class _FileEditorScreenState extends ConsumerState<FileEditorScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(title, style: const TextStyle(fontFamily: 'monospace')),
+        title: Text(title, style: TextStyle(fontFamily: AppFonts.mono)),
         actions: [
           if (_isMarkdown && _isPreviewMode && !_showMarkdownSource)
             IconButton(
@@ -264,9 +265,8 @@ class _FileEditorScreenState extends ConsumerState<FileEditorScreen> {
       maxLines: null,
       expands: true,
       keyboardType: TextInputType.multiline,
-      style: const TextStyle(
-        fontFamily: 'monospace',
-        fontSize: 13,
+      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+        fontFamily: AppFonts.mono,
       ),
       decoration: const InputDecoration(
         contentPadding: EdgeInsets.all(12),
@@ -307,10 +307,9 @@ class _FileEditorScreenState extends ConsumerState<FileEditorScreen> {
               dense: true,
               title: Text(
                 h.title,
-                style: TextStyle(
-                  fontSize: h.level <= 2 ? 15 : 13,
-                  fontWeight: h.level <= 2 ? FontWeight.w600 : FontWeight.normal,
-                ),
+                style: h.level <= 2
+                    ? Theme.of(context).textTheme.titleMedium
+                    : Theme.of(context).textTheme.bodyMedium,
               ),
               onTap: () {
                 Navigator.pop(ctx);
@@ -353,42 +352,42 @@ class _FileEditorScreenState extends ConsumerState<FileEditorScreen> {
         language: lang,
         theme: monokaiSublimeTheme,
         padding: const EdgeInsets.all(12),
-        textStyle: const TextStyle(
-          fontFamily: 'monospace',
-          fontSize: 13,
+        textStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(
+          fontFamily: AppFonts.mono,
         ),
       ),
     );
   }
 
   Widget _buildStatusBar() {
-    final p = Theme.of(context).extension<ThemePalette>()!;
+    final theme = Theme.of(context);
+    final p = theme.extension<ThemePalette>()!;
     final langLabel = _language.isNotEmpty ? _language : 'plain text';
     return Container(
       height: 28,
-      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+      color: theme.colorScheme.surfaceContainerHighest,
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Row(
         children: [
           Text(
             'Ln $_lineNumber, Col $_columnNumber',
-            style: const TextStyle(fontSize: 11, fontFamily: 'monospace'),
+            style: theme.textTheme.labelSmall!.copyWith(fontFamily: AppFonts.mono),
           ),
           const SizedBox(width: 16),
           Text(
             langLabel,
-            style: const TextStyle(fontSize: 11),
+            style: theme.textTheme.labelSmall,
           ),
           const SizedBox(width: 16),
-          const Text(
+          Text(
             'UTF-8',
-            style: TextStyle(fontSize: 11),
+            style: theme.textTheme.labelSmall,
           ),
           const Spacer(),
           if (_isModified)
             Text(
               AppLocalizations.of(context)!.fileEditor_modified,
-              style: TextStyle(fontSize: 11, color: p.statusConnecting),
+              style: theme.textTheme.labelSmall!.copyWith(color: p.statusConnecting),
             ),
         ],
       ),

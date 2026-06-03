@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nexterm/core/theme/app_theme.dart';
 import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/core/theme/theme_provider.dart';
 import 'package:nexterm/features/sftp/services/sftp_service.dart';
@@ -85,8 +86,8 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
 
   void _showHelpDialog() {
     final l = AppLocalizations.of(context)!;
-    final p = Theme.of(context).extension<ThemePalette>()!;
-    final textColor = p.fg;
+    final theme = Theme.of(context);
+    final p = theme.extension<ThemePalette>()!;
     final dimColor = p.fgSecondary;
 
     final shortcuts = [
@@ -123,16 +124,14 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
                     ),
                     child: Text(
                       key,
-                      style: TextStyle(
-                        fontFamily: 'monospace',
-                        fontSize: 12,
+                      style: theme.textTheme.bodySmall!.copyWith(
+                        fontFamily: AppFonts.mono,
                         fontWeight: FontWeight.w600,
-                        color: textColor,
                       ),
                     ),
                   ),
                   const SizedBox(width: 12),
-                  Expanded(child: Text(desc, style: TextStyle(fontSize: 13, color: dimColor))),
+                  Expanded(child: Text(desc, style: theme.textTheme.bodyMedium!.copyWith(color: dimColor))),
                 ],
               ),
             );
@@ -208,11 +207,11 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(l.terminal_remotePath, style: const TextStyle(fontSize: 12)),
+            Text(l.terminal_remotePath, style: Theme.of(context).textTheme.bodySmall),
             const SizedBox(height: 4),
             SelectableText(
               remotePath,
-              style: const TextStyle(fontFamily: 'monospace', fontSize: 14),
+              style: Theme.of(context).textTheme.bodyLarge!.copyWith(fontFamily: AppFonts.mono),
             ),
           ],
         ),

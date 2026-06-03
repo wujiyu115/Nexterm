@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nexterm/core/theme/app_theme.dart';
 import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -230,7 +231,7 @@ class _SnippetFormScreenState extends ConsumerState<SnippetFormScreen> {
                       hintText: 'kubectl apply -f \${FILE}',
                       alignLabelWithHint: true,
                     ),
-                    style: const TextStyle(fontFamily: 'monospace', fontSize: 13),
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontFamily: AppFonts.mono),
                     maxLines: 5,
                     minLines: 3,
                     validator: (v) => v == null || v.trim().isEmpty ? l.snippetForm_commandRequired : null,
@@ -244,7 +245,7 @@ class _SnippetFormScreenState extends ConsumerState<SnippetFormScreen> {
                   _FormSection(title: l.snippetForm_sectionVariables, children: [
                     Text(
                       l.snippetForm_variablesHint,
-                      style: TextStyle(fontSize: 12, color: p.fgSecondary),
+                      style: Theme.of(context).textTheme.bodySmall!.copyWith(color: p.fgSecondary),
                     ),
                     const SizedBox(height: 8),
                     ..._detectedVariables.map((name) => Padding(
@@ -258,7 +259,7 @@ class _SnippetFormScreenState extends ConsumerState<SnippetFormScreen> {
                               labelText: name,
                               hintText: l.snippetForm_defaultValueHint,
                               prefixText: '\${$name} = ',
-                              prefixStyle: const TextStyle(fontFamily: 'monospace', fontSize: 12),
+                              prefixStyle: Theme.of(context).textTheme.bodySmall!.copyWith(fontFamily: AppFonts.mono),
                             ),
                           ),
                           const SizedBox(height: 6),
@@ -269,7 +270,7 @@ class _SnippetFormScreenState extends ConsumerState<SnippetFormScreen> {
                               hintText: l.snippetForm_variableDescHint,
                               isDense: true,
                             ),
-                            style: const TextStyle(fontSize: 13),
+                            style: Theme.of(context).textTheme.bodyMedium,
                           ),
                         ],
                       ),

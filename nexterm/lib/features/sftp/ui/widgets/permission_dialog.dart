@@ -174,7 +174,7 @@ class _PermissionDialogState extends State<_PermissionDialog> {
                         padding: const EdgeInsets.symmetric(vertical: 4),
                         child: Text(
                           _rowLabels[row],
-                          style: const TextStyle(fontSize: 13),
+                          style: Theme.of(context).textTheme.bodyMedium,
                         ),
                       ),
                       for (int col = 0; col < 3; col++)

@@ -47,7 +47,7 @@ class VaultsScreen extends StatelessWidget {
             ),
             GlassCard(
               onTap: () => context.push('/vaults/git'),
-              child: _VaultItem(icon: Icons.source_outlined, title: l.git_repos),
+              child: _VaultItem(icon: Icons.account_tree_outlined, title: l.git_repos),
             ),
 
             SectionLabel(title: l.vaults_keychain),
@@ -70,17 +70,15 @@ class _NavTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final p = Theme.of(context).extension<ThemePalette>()!;
+    final theme = Theme.of(context);
+    final p = theme.extension<ThemePalette>()!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           title,
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.w700,
+          style: theme.textTheme.headlineLarge!.copyWith(
             letterSpacing: -0.3,
-            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
         const SizedBox(height: 4),
@@ -106,7 +104,8 @@ class _VaultItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     return Row(
       children: [
         Container(
@@ -122,8 +121,7 @@ class _VaultItem extends StatelessWidget {
         Expanded(
           child: Text(
             title,
-            style: TextStyle(
-              fontSize: 16,
+            style: theme.textTheme.titleLarge!.copyWith(
               color: colorScheme.onSurface,
             ),
           ),

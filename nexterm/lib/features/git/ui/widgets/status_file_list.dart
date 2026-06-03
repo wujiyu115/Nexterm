@@ -42,11 +42,12 @@ class _SectionHeader extends StatelessWidget {
   const _SectionHeader({required this.title, required this.count});
   @override
   Widget build(BuildContext context) {
-    final p = Theme.of(context).extension<ThemePalette>()!;
+    final theme = Theme.of(context);
+    final p = theme.extension<ThemePalette>()!;
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
       child: Row(children: [
-        Text(title, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600,
+        Text(title, style: theme.textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w600,
             color: p.fgSecondary)),
         const SizedBox(width: 6),
         Container(
@@ -54,7 +55,7 @@ class _SectionHeader extends StatelessWidget {
           decoration: BoxDecoration(
             color: p.fgTertiary.withValues(alpha: 0.3),
             borderRadius: BorderRadius.circular(8)),
-          child: Text('$count', style: TextStyle(fontSize: 11,
+          child: Text('$count', style: theme.textTheme.labelSmall!.copyWith(
               color: p.fgSecondary)),
         ),
       ]),
@@ -88,15 +89,16 @@ class _FileRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final p = Theme.of(context).extension<ThemePalette>()!;
+    final theme = Theme.of(context);
+    final p = theme.extension<ThemePalette>()!;
     final code = staged ? entry.indexStatus : entry.workTreeStatus;
     final fileName = entry.path.split('/').last;
     final dirPath = entry.path.contains('/') ? entry.path.substring(0, entry.path.lastIndexOf('/')) : '';
     return ListTile(
       dense: true, visualDensity: VisualDensity.compact,
       leading: Icon(_statusIcon(code), size: 18, color: _statusColor(code)),
-      title: Text(fileName, style: TextStyle(fontSize: 14, color: p.fg), maxLines: 1, overflow: TextOverflow.ellipsis),
-      subtitle: dirPath.isNotEmpty ? Text(dirPath, style: TextStyle(fontSize: 11, color: p.fgTertiary), maxLines: 1, overflow: TextOverflow.ellipsis) : null,
+      title: Text(fileName, style: theme.textTheme.bodyLarge!.copyWith(color: p.fg), maxLines: 1, overflow: TextOverflow.ellipsis),
+      subtitle: dirPath.isNotEmpty ? Text(dirPath, style: theme.textTheme.labelSmall!.copyWith(color: p.fgTertiary), maxLines: 1, overflow: TextOverflow.ellipsis) : null,
       onTap: onTap,
     );
   }

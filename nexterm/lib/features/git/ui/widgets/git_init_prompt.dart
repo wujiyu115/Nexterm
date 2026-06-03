@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:nexterm/core/theme/app_theme.dart';
 import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 
@@ -33,24 +34,25 @@ class GitInitPrompt extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    final p = Theme.of(context).extension<ThemePalette>()!;
+    final theme = Theme.of(context);
+    final p = theme.extension<ThemePalette>()!;
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.source_outlined, size: 64,
+            Icon(Icons.account_tree_outlined, size: 64,
                 color: p.fgTertiary),
             const SizedBox(height: 16),
-            Text(l.git_initTitle, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600,
+            Text(l.git_initTitle, style: theme.textTheme.headlineSmall!.copyWith(
                 color: p.fg)),
             const SizedBox(height: 8),
             if (remotePath != null)
-              Text(remotePath!, style: TextStyle(fontSize: 12, fontFamily: 'JetBrains Mono',
+              Text(remotePath!, style: theme.textTheme.bodySmall!.copyWith(fontFamily: AppFonts.mono,
                   color: p.fgTertiary)),
             if (remotePath != null) const SizedBox(height: 8),
-            Text(l.git_initMessage, style: TextStyle(fontSize: 14,
+            Text(l.git_initMessage, style: theme.textTheme.bodyLarge!.copyWith(
                 color: p.fgSecondary),
                 textAlign: TextAlign.center),
             if (errorDetail != null) ...[
@@ -61,7 +63,7 @@ class GitInitPrompt extends StatelessWidget {
                   color: p.statusError.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Text(errorDetail!, style: TextStyle(fontSize: 12, fontFamily: 'JetBrains Mono',
+                child: Text(errorDetail!, style: theme.textTheme.bodySmall!.copyWith(fontFamily: AppFonts.mono,
                     color: p.statusError),
                     textAlign: TextAlign.center),
               ),

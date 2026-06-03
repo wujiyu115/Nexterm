@@ -219,7 +219,8 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    final p = Theme.of(context).extension<ThemePalette>()!;
+    final theme = Theme.of(context);
+    final p = theme.extension<ThemePalette>()!;
     final hostsAsync = ref.watch(hostsStreamProvider);
     final allHosts = hostsAsync.valueOrNull ?? [];
 
@@ -305,7 +306,7 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
                   child: Column(children: [
                     SegmentedButton<AuthMethod>(
                       segments: AuthMethod.values
-                          .map((m) => ButtonSegment<AuthMethod>(value: m, label: Text(m.localizedName(l), style: const TextStyle(fontSize: 13))))
+                          .map((m) => ButtonSegment<AuthMethod>(value: m, label: Text(m.localizedName(l), style: theme.textTheme.bodyMedium)))
                           .toList(),
                       selected: {_authMethod},
                       onSelectionChanged: (s) => setState(() => _authMethod = s.first),
@@ -497,7 +498,8 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
 
   Widget _buildStartupCommandSection() {
     final l = AppLocalizations.of(context)!;
-    final p = Theme.of(context).extension<ThemePalette>()!;
+    final theme = Theme.of(context);
+    final p = theme.extension<ThemePalette>()!;
     final snippetsAsync = ref.watch(snippetsStreamProvider);
 
     return Column(
@@ -512,12 +514,12 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
               segments: [
                 ButtonSegment<_StartupMode>(
                   value: _StartupMode.command,
-                  label: Text(l.hostForm_startupModeCommand, style: const TextStyle(fontSize: 13)),
+                  label: Text(l.hostForm_startupModeCommand, style: theme.textTheme.bodyMedium),
                   icon: const Icon(Icons.terminal, size: 18),
                 ),
                 ButtonSegment<_StartupMode>(
                   value: _StartupMode.snippet,
-                  label: Text(l.hostForm_startupModeSnippet, style: const TextStyle(fontSize: 13)),
+                  label: Text(l.hostForm_startupModeSnippet, style: theme.textTheme.bodyMedium),
                   icon: const Icon(Icons.code, size: 18),
                 ),
               ],

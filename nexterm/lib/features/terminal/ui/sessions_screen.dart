@@ -57,17 +57,15 @@ class _NavTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final p = Theme.of(context).extension<ThemePalette>()!;
+    final theme = Theme.of(context);
+    final p = theme.extension<ThemePalette>()!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           title,
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.w700,
+          style: theme.textTheme.headlineLarge!.copyWith(
             letterSpacing: -0.3,
-            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
         const SizedBox(height: 4),
@@ -129,7 +127,8 @@ class _ActiveSessionCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final p = Theme.of(context).extension<ThemePalette>()!;
+    final theme = Theme.of(context);
+    final p = theme.extension<ThemePalette>()!;
 
     final statusColor = switch (tab.status) {
       ConnectionStatus.connected => p.accent,
@@ -162,18 +161,13 @@ class _ActiveSessionCard extends ConsumerWidget {
               children: [
                 Text(
                   tab.title,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                    color: p.fg,
-                  ),
+                  style: theme.textTheme.titleMedium,
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 2),
                 Text(
                   subtitle,
-                  style: TextStyle(
-                    fontSize: 12,
+                  style: theme.textTheme.bodySmall!.copyWith(
                     color: p.fgTertiary,
                   ),
                   overflow: TextOverflow.ellipsis,
@@ -339,7 +333,8 @@ class _RecentCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final p = Theme.of(context).extension<ThemePalette>()!;
+    final theme = Theme.of(context);
+    final p = theme.extension<ThemePalette>()!;
 
     return GlassCard(
       onTap: () => _connect(context, ref),
@@ -361,18 +356,13 @@ class _RecentCard extends ConsumerWidget {
               children: [
                 Text(
                   item.name,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                    color: p.fg,
-                  ),
+                  style: theme.textTheme.titleMedium,
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 2),
                 Text(
                   item.subtitle,
-                  style: TextStyle(
-                    fontSize: 12,
+                  style: theme.textTheme.bodySmall!.copyWith(
                     color: p.fgTertiary,
                   ),
                   overflow: TextOverflow.ellipsis,
@@ -397,7 +387,8 @@ class _EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    final p = Theme.of(context).extension<ThemePalette>()!;
+    final theme = Theme.of(context);
+    final p = theme.extension<ThemePalette>()!;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 48),
@@ -406,9 +397,9 @@ class _EmptyState extends StatelessWidget {
           children: [
             Icon(Icons.link_off, size: 56, color: p.fgTertiary),
             const SizedBox(height: 16),
-            Text(l.sessions_noActive, style: TextStyle(fontSize: 16, color: p.fgSecondary)),
+            Text(l.sessions_noActive, style: theme.textTheme.titleLarge!.copyWith(color: p.fgSecondary)),
             const SizedBox(height: 8),
-            Text(l.sessions_noActiveHint, style: TextStyle(fontSize: 13, color: p.fgTertiary)),
+            Text(l.sessions_noActiveHint, style: theme.textTheme.bodyMedium!.copyWith(color: p.fgTertiary)),
             const SizedBox(height: 20),
             FilledButton.icon(
               onPressed: () => context.push('/vaults/hosts/add'),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:nexterm/core/theme/app_theme.dart';
 import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/features/git/models/git_commit.dart';
 import 'package:nexterm/features/git/models/git_diff.dart';
@@ -79,7 +80,8 @@ class _CommitDetailSheetState extends State<CommitDetailSheet> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    final p = Theme.of(context).extension<ThemePalette>()!;
+    final theme = Theme.of(context);
+    final p = theme.extension<ThemePalette>()!;
     final commit = widget.commit;
 
     return DraggableScrollableSheet(
@@ -105,8 +107,7 @@ class _CommitDetailSheetState extends State<CommitDetailSheet> {
             Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Text(l.git_commitDetail,
-                    style: TextStyle(
-                        fontSize: 18,
+                    style: theme.textTheme.headlineSmall!.copyWith(
                         fontWeight: FontWeight.w700,
                         color: p.fg))),
             const SizedBox(height: 12),
@@ -125,30 +126,26 @@ class _CommitDetailSheetState extends State<CommitDetailSheet> {
             Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Text(l.git_message,
-                    style: TextStyle(
-                        fontSize: 13,
+                    style: theme.textTheme.bodyMedium!.copyWith(
                         fontWeight: FontWeight.w600,
                         color: p.fgSecondary))),
             Padding(
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
                 child: Text(commit.subject,
-                    style: TextStyle(
-                        fontSize: 15,
+                    style: theme.textTheme.titleMedium!.copyWith(
                         color: p.fg))),
             if (commit.body.isNotEmpty)
               Padding(
                   padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
                   child: Text(commit.body,
-                      style: TextStyle(
-                          fontSize: 13,
+                      style: theme.textTheme.bodyMedium!.copyWith(
                           color: p.fgSecondary))),
             const Divider(height: 24),
             Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Row(children: [
                   Text(l.git_changedFiles,
-                      style: TextStyle(
-                          fontSize: 13,
+                      style: theme.textTheme.bodyMedium!.copyWith(
                           fontWeight: FontWeight.w600,
                           color: p.fgSecondary)),
                   const Spacer(),
@@ -170,9 +167,8 @@ class _CommitDetailSheetState extends State<CommitDetailSheet> {
                   dense: true,
                   leading: _statusIcon(f.status),
                   title: Text(f.path,
-                      style: const TextStyle(
-                          fontSize: 13,
-                          fontFamily: 'JetBrains Mono')),
+                      style: theme.textTheme.bodyMedium!.copyWith(
+                          fontFamily: AppFonts.mono)),
                   trailing: const Icon(Icons.chevron_right, size: 18),
                   onTap: () => _openFileDiff(f)))),
             const SizedBox(height: 32),
@@ -209,7 +205,8 @@ class _DetailRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final p = Theme.of(context).extension<ThemePalette>()!;
+    final theme = Theme.of(context);
+    final p = theme.extension<ThemePalette>()!;
     return InkWell(
         onTap: onTap,
         child: Padding(
@@ -218,14 +215,12 @@ class _DetailRow extends StatelessWidget {
             SizedBox(
                 width: 60,
                 child: Text(label,
-                    style: TextStyle(
-                        fontSize: 13,
+                    style: theme.textTheme.bodyMedium!.copyWith(
                         color: p.fgTertiary))),
             Expanded(
                 child: Text(value,
-                    style: TextStyle(
-                        fontSize: 13,
-                        fontFamily: 'JetBrains Mono',
+                    style: theme.textTheme.bodyMedium!.copyWith(
+                        fontFamily: AppFonts.mono,
                         color: p.fg))),
           ]),
         ));

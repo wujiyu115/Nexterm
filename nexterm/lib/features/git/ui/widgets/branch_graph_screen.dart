@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nexterm/core/theme/app_theme.dart';
 import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/features/git/models/git_graph.dart';
 import 'package:nexterm/features/git/providers/git_provider.dart';
@@ -59,7 +60,8 @@ class _BranchGraphScreenState extends State<BranchGraphScreen> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    final p = Theme.of(context).extension<ThemePalette>()!;
+    final theme = Theme.of(context);
+    final p = theme.extension<ThemePalette>()!;
     final graphWidth = (_maxLanes + 1) * _laneWidth;
     final itemCount = _rows.length + (_hasMore ? 1 : 0);
 
@@ -110,8 +112,7 @@ class _BranchGraphScreenState extends State<BranchGraphScreen> {
                       commit.subject,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 13,
+                      style: theme.textTheme.bodyMedium!.copyWith(
                         color: p.fg,
                       ),
                     ),
@@ -120,9 +121,8 @@ class _BranchGraphScreenState extends State<BranchGraphScreen> {
                       children: [
                         Text(
                           commit.shortSha,
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontFamily: 'JetBrains Mono',
+                          style: theme.textTheme.labelSmall!.copyWith(
+                            fontFamily: AppFonts.mono,
                             color: p.accent,
                           ),
                         ),
@@ -142,7 +142,7 @@ class _BranchGraphScreenState extends State<BranchGraphScreen> {
                                 ),
                                 child: Text(
                                   ref.replaceFirst('HEAD -> ', ''),
-                                  style: TextStyle(
+                                  style: theme.textTheme.labelSmall!.copyWith(
                                     fontSize: 10,
                                     color: graphLaneColors[row.colorIndex % graphLaneColors.length],
                                   ),
@@ -156,8 +156,7 @@ class _BranchGraphScreenState extends State<BranchGraphScreen> {
                         const Spacer(),
                         Text(
                           commit.authorName,
-                          style: TextStyle(
-                            fontSize: 11,
+                          style: theme.textTheme.labelSmall!.copyWith(
                             color: p.fgTertiary,
                           ),
                         ),

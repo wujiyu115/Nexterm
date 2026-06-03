@@ -3,8 +3,30 @@ import 'package:flutter/material.dart';
 import 'package:nexterm/core/theme/outdoor_colors.dart';
 import 'package:nexterm/core/theme/theme_palette.dart';
 
+class AppFonts {
+  AppFonts._();
+  static const mono = 'JetBrains Mono';
+}
+
 class AppTheme {
   AppTheme._();
+
+  static TextTheme _buildTextTheme(ThemePalette p) {
+    final color = p.fg;
+    return TextTheme(
+      headlineLarge: TextStyle(fontSize: 24, fontWeight: FontWeight.w700, color: color),
+      headlineSmall: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: color),
+      titleLarge: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: color),
+      titleMedium: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: color),
+      titleSmall: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: color),
+      bodyLarge: TextStyle(fontSize: 14, color: color),
+      bodyMedium: TextStyle(fontSize: 13, color: color),
+      bodySmall: TextStyle(fontSize: 12, color: color),
+      labelLarge: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: color),
+      labelMedium: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: color),
+      labelSmall: TextStyle(fontSize: 11, fontWeight: FontWeight.w500, color: color),
+    );
+  }
 
   /// Builds a [ThemeData] from a [ThemePalette]. Used by `app.dart`.
   static ThemeData fromPalette(ThemePalette p) {
@@ -14,6 +36,7 @@ class AppTheme {
       brightness: p.brightness,
       colorScheme: _buildColorScheme(p),
       scaffoldBackgroundColor: p.bg,
+      textTheme: _buildTextTheme(p),
       extensions: [p],
       appBarTheme: AppBarTheme(
         backgroundColor: Colors.transparent,

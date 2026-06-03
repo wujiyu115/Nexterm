@@ -245,7 +245,7 @@ class _ToolbarPreview extends StatelessWidget {
                   alignment: Alignment.center,
                   child: Text(
                     key.label,
-                    style: TextStyle(color: txtColor, fontSize: 11, fontWeight: FontWeight.w600),
+                    style: Theme.of(context).textTheme.labelSmall!.copyWith(color: txtColor),
                   ),
                 ),
               if (i < visible.length - 1)
@@ -305,18 +305,13 @@ class _GroupTile extends StatelessWidget {
                     children: [
                       Text(
                         groupName,
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: p.fg,
-                        ),
+                        style: theme.textTheme.titleSmall,
                       ),
                       if (!isVisible) ...[
                         const SizedBox(width: 6),
                         Text(
                           l.toolbar_hidden,
-                          style: TextStyle(
-                            fontSize: 11,
+                          style: theme.textTheme.labelSmall!.copyWith(
                             color: p.fgTertiary,
                           ),
                         ),
@@ -326,8 +321,7 @@ class _GroupTile extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     keysPreview,
-                    style: TextStyle(
-                      fontSize: 12,
+                    style: theme.textTheme.bodySmall!.copyWith(
                       color: p.fgSecondary,
                       letterSpacing: 1.2,
                     ),

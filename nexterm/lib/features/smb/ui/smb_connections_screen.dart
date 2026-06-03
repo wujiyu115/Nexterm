@@ -162,7 +162,8 @@ class _SmbConnectionsScreenState extends ConsumerState<SmbConnectionsScreen> {
   }
 
   Widget _buildTile(SmbConnectionEntity connection) {
-    final p = Theme.of(context).extension<ThemePalette>()!;
+    final theme = Theme.of(context);
+    final p = theme.extension<ThemePalette>()!;
     final subtitleParts = <String>['\\\\${connection.host}\\${connection.shareName}'];
     if (connection.lastConnected != null) {
       final dt = connection.lastConnected!;
@@ -183,19 +184,14 @@ class _SmbConnectionsScreenState extends ConsumerState<SmbConnectionsScreen> {
               children: [
                 Text(
                   connection.displayName,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: p.fg,
-                  ),
+                  style: theme.textTheme.titleLarge,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 2),
                 Text(
                   subtitleParts.join(' · '),
-                  style: TextStyle(
-                    fontSize: 13,
+                  style: theme.textTheme.bodyMedium!.copyWith(
                     color: p.fgSecondary,
                   ),
                   maxLines: 1,

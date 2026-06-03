@@ -336,9 +336,8 @@ class _ToolbarButton extends StatelessWidget {
         alignment: Alignment.center,
         child: Text(
           label,
-          style: TextStyle(
+          style: Theme.of(context).textTheme.bodyMedium!.copyWith(
             color: textColor,
-            fontSize: 13,
             fontWeight: FontWeight.w600,
             height: 1,
           ),

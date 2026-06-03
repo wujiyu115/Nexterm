@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:nexterm/core/theme/app_theme.dart';
 import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -339,7 +340,7 @@ class _SftpContentWidgetState extends ConsumerState<SftpContentWidget> {
             hintText: l.sftp_goToPathHint,
             prefixIcon: const Icon(Icons.folder_outlined),
           ),
-          style: const TextStyle(fontFamily: 'JetBrains Mono', fontSize: 14),
+          style: Theme.of(context).textTheme.bodyLarge!.copyWith(fontFamily: AppFonts.mono),
         ),
         actions: [
           TextButton(
@@ -506,7 +507,7 @@ class _SftpContentWidgetState extends ConsumerState<SftpContentWidget> {
               _toolbarIcon(icon: Icons.refresh, color: iconColor, onTap: notifier.refresh),
               if (widget.sessionId != null && state.files.any((f) => f.isDirectory && f.name == '.git'))
                 _toolbarIcon(
-                  icon: Icons.source_outlined,
+                  icon: Icons.account_tree_outlined,
                   color: iconColor,
                   onTap: () => context.push('/git/${widget.sessionId}?path=${Uri.encodeComponent(state.currentPath)}'),
                 ),
@@ -532,7 +533,7 @@ class _SftpContentWidgetState extends ConsumerState<SftpContentWidget> {
                     : null,
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
               ),
-              style: const TextStyle(fontSize: 14),
+              style: Theme.of(context).textTheme.bodyLarge,
             ),
           )
         else

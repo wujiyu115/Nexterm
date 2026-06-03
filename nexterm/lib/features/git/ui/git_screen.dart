@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nexterm/core/theme/app_theme.dart';
 import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/features/git/models/git_tag.dart';
 import 'package:nexterm/features/git/providers/git_provider.dart';
@@ -110,12 +111,13 @@ class _GitScreenState extends ConsumerState<GitScreen> with SingleTickerProvider
 
   Widget _buildMain(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    final p = Theme.of(context).extension<ThemePalette>()!;
+    final theme = Theme.of(context);
+    final p = theme.extension<ThemePalette>()!;
     return Scaffold(
       appBar: AppBar(
         title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const Text('Git', style: TextStyle(fontSize: 17)),
-          Text(_gitState.currentBranch, style: TextStyle(fontSize: 12, color: p.fgSecondary)),
+          Text('Git', style: theme.textTheme.headlineSmall!.copyWith(fontSize: 17)),
+          Text(_gitState.currentBranch, style: theme.textTheme.bodySmall!.copyWith(color: p.fgSecondary)),
         ]),
         actions: [IconButton(icon: const Icon(Icons.refresh), onPressed: () => _gitNotifier!.loadAll())],
         bottom: TabBar(controller: _tabController, tabs: [Tab(text: l.git_tabWorkTree), Tab(text: l.git_tabBranches), Tab(text: l.git_tabTags)]),
@@ -129,7 +131,7 @@ class _GitScreenState extends ConsumerState<GitScreen> with SingleTickerProvider
                     Icon(Icons.error_outline, size: 48, color: p.statusError),
                     const SizedBox(height: 12),
                     Text(_gitState.error!, textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 13, fontFamily: 'JetBrains Mono',
+                        style: theme.textTheme.bodyMedium!.copyWith(fontFamily: AppFonts.mono,
                             color: p.fgSecondary)),
                     const SizedBox(height: 16),
                     FilledButton(onPressed: () => _gitNotifier!.loadAll(), child: Text(l.common_retry)),

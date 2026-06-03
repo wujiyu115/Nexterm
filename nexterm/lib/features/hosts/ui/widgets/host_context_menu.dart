@@ -18,7 +18,8 @@ Future<HostContextAction?> showHostContextMenu({
   required HostEntity host,
 }) {
   final l = AppLocalizations.of(context)!;
-  final p = Theme.of(context).extension<ThemePalette>()!;
+  final theme = Theme.of(context);
+  final p = theme.extension<ThemePalette>()!;
 
   return showModalBottomSheet<HostContextAction>(
     context: context,
@@ -52,16 +53,12 @@ Future<HostContextAction?> showHostContextMenu({
                 children: [
                   Text(
                     host.name,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: p.fg,
-                    ),
+                    style: theme.textTheme.titleLarge,
                   ),
                   const SizedBox(height: 2),
                   Text(
                     '${host.username}@${host.hostname}:${host.port}',
-                    style: TextStyle(fontSize: 13, color: p.fgSecondary),
+                    style: theme.textTheme.bodyMedium!.copyWith(color: p.fgSecondary),
                   ),
                 ],
               ),
@@ -134,9 +131,10 @@ class _ActionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return ListTile(
       leading: Icon(icon, color: color, size: 22),
-      title: Text(label, style: TextStyle(color: color, fontSize: 15)),
+      title: Text(label, style: theme.textTheme.titleMedium!.copyWith(color: color)),
       onTap: onTap,
       dense: true,
       visualDensity: const VisualDensity(vertical: -1),

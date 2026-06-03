@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nexterm/core/theme/theme_catalog.dart';
+import 'package:nexterm/core/theme/app_theme.dart';
 import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/core/theme/theme_provider.dart';
 import 'package:nexterm/domain/entities/snippet_entity.dart';
@@ -12,8 +13,6 @@ import 'package:nexterm/features/terminal/providers/toolbar_modifier_provider.da
 import 'package:nexterm/features/terminal/providers/toolbar_usage_provider.dart';
 import 'package:nexterm/features/terminal/ui/widgets/command_history_panel.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
-import 'package:go_router/go_router.dart';
-import 'package:nexterm/features/terminal/providers/terminal_provider.dart';
 
 class FunctionPanel extends ConsumerStatefulWidget {
   final String? sessionId;
@@ -38,7 +37,7 @@ class _FunctionPanelState extends ConsumerState<FunctionPanel>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -58,7 +57,8 @@ class _FunctionPanelState extends ConsumerState<FunctionPanel>
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    final p = Theme.of(context).extension<ThemePalette>()!;
+    final theme = Theme.of(context);
+    final p = theme.extension<ThemePalette>()!;
     final bgColor = p.bgElevated;
     final headerColor = p.bg;
 
@@ -78,19 +78,18 @@ class _FunctionPanelState extends ConsumerState<FunctionPanel>
                     unselectedLabelColor: p.fgTertiary,
                     indicatorColor: p.accent,
                     indicatorSize: TabBarIndicatorSize.label,
-                    labelStyle: const TextStyle(
-                        fontSize: 13, fontWeight: FontWeight.w600),
-                    tabs: const [
+                    labelStyle: theme.textTheme.bodyMedium!.copyWith(
+                        fontWeight: FontWeight.w600),
+                    tabs: [
                       Tab(
                         icon: Text(
                           '{}',
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
+                          style: theme.textTheme.titleLarge!.copyWith(
+                              fontWeight: FontWeight.bold),
                         ),
                       ),
-                      Tab(icon: Icon(Icons.history, size: 18)),
-                      Tab(icon: Icon(Icons.app_shortcut, size: 18)),
-                      Tab(icon: Icon(Icons.source_outlined, size: 18)),
+                      const Tab(icon: Icon(Icons.history, size: 18)),
+                      const Tab(icon: Icon(Icons.app_shortcut, size: 18)),
                     ],
                   ),
                 ),
@@ -118,9 +117,6 @@ class _FunctionPanelState extends ConsumerState<FunctionPanel>
                       )
                     : _EmptyTab(message: l.function_noActiveSession),
                 _AllShortcutsOverlayInline(onKeyInput: widget.onKeyInput),
-                widget.sessionId != null
-                    ? _GitTab(sessionId: widget.sessionId!)
-                    : _EmptyTab(message: l.function_noActiveSession),
               ],
             ),
           ),
@@ -200,7 +196,8 @@ class _AllShortcutsOverlayInline extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final p = Theme.of(context).extension<ThemePalette>()!;
+    final theme = Theme.of(context);
+    final p = theme.extension<ThemePalette>()!;
     final usage = ref.watch(toolbarUsageProvider);
     final modifier = ref.watch(toolbarModifierProvider);
 
@@ -270,9 +267,8 @@ class _AllShortcutsOverlayInline extends ConsumerWidget {
                   alignment: Alignment.center,
                   child: Text(
                     key.label,
-                    style: TextStyle(
+                    style: theme.textTheme.bodyMedium!.copyWith(
                       color: isActive ? activeTextColor : textColor,
-                      fontSize: 13,
                       fontWeight: FontWeight.w600,
                       height: 1,
                     ),
@@ -319,7 +315,8 @@ class _SnippetsTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
     final snippetsAsync = ref.watch(snippetsStreamProvider);
-    final p = Theme.of(context).extension<ThemePalette>()!;
+    final theme = Theme.of(context);
+    final p = theme.extension<ThemePalette>()!;
 
     return snippetsAsync.when(
       data: (snippets) {
@@ -332,17 +329,15 @@ class _SnippetsTab extends ConsumerWidget {
                 const SizedBox(height: 8),
                 Text(
                   l.function_noSnippets,
-                  style: TextStyle(
+                  style: theme.textTheme.bodyLarge!.copyWith(
                     color: p.fgSecondary,
-                    fontSize: 14,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   l.function_noSnippetsHint,
-                  style: TextStyle(
+                  style: theme.textTheme.bodySmall!.copyWith(
                     color: p.fgTertiary,
-                    fontSize: 12,
                   ),
                 ),
               ],
@@ -371,15 +366,14 @@ class _SnippetsTab extends ConsumerWidget {
                 snippet.name,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontSize: 13),
+                style: theme.textTheme.bodyMedium,
               ),
               subtitle: Text(
                 snippet.command,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontFamily: 'monospace',
-                  fontSize: 11,
+                style: theme.textTheme.labelSmall!.copyWith(
+                  fontFamily: AppFonts.mono,
                   color: p.fgSecondary,
                 ),
               ),
@@ -478,119 +472,14 @@ class _EmptyTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final p = Theme.of(context).extension<ThemePalette>()!;
+    final theme = Theme.of(context);
+    final p = theme.extension<ThemePalette>()!;
     return Center(
       child: Text(
         message,
-        style: TextStyle(
+        style: theme.textTheme.bodyLarge!.copyWith(
           color: p.fgSecondary,
-          fontSize: 14,
         ),
-      ),
-    );
-  }
-}
-
-class _GitTab extends ConsumerStatefulWidget {
-  final String sessionId;
-  const _GitTab({required this.sessionId});
-
-  @override
-  ConsumerState<_GitTab> createState() => _GitTabState();
-}
-
-class _GitTabState extends ConsumerState<_GitTab> {
-  late TextEditingController _pathController;
-  bool _loading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _pathController = TextEditingController();
-    _fetchHomePath();
-  }
-
-  @override
-  void dispose() {
-    _pathController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _fetchHomePath() async {
-    final sshService = ref.read(sshServiceProvider);
-    final client = sshService.getClient(widget.sessionId);
-    if (client == null) {
-      if (mounted) setState(() => _loading = false);
-      return;
-    }
-    try {
-      final session = await client.execute('echo \$HOME');
-      final stdoutBytes = await session.stdout.toList();
-      final home = String.fromCharCodes(stdoutBytes.expand((b) => b)).trim();
-      await session.done;
-      if (mounted) {
-        _pathController.text = home;
-        setState(() => _loading = false);
-      }
-    } catch (_) {
-      if (mounted) setState(() => _loading = false);
-    }
-  }
-
-  void _openGit() {
-    final path = _pathController.text.trim();
-    if (path.isEmpty) return;
-    GoRouter.of(context).push(
-        '/git/${widget.sessionId}?path=${Uri.encodeComponent(path)}');
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context)!;
-    final p = Theme.of(context).extension<ThemePalette>()!;
-
-    if (_loading) {
-      return const Center(
-        child: SizedBox(height: 20, width: 20,
-            child: CircularProgressIndicator(strokeWidth: 2)),
-      );
-    }
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TextField(
-            controller: _pathController,
-            style: TextStyle(
-              fontSize: 13,
-              fontFamily: 'JetBrains Mono',
-              color: p.fg,
-            ),
-            decoration: InputDecoration(
-              labelText: l.git_repoPath,
-              hintText: '/home/user/project',
-              isDense: true,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-              suffixIcon: IconButton(
-                icon: const Icon(Icons.clear, size: 18),
-                onPressed: () => _pathController.clear(),
-              ),
-            ),
-            onSubmitted: (_) => _openGit(),
-          ),
-          const SizedBox(height: 12),
-          SizedBox(
-            width: double.infinity,
-            child: FilledButton.icon(
-              onPressed: _openGit,
-              icon: const Icon(Icons.source_outlined),
-              label: Text(l.git_openGit),
-            ),
-          ),
-        ],
       ),
     );
   }

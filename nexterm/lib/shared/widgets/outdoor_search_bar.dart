@@ -16,21 +16,20 @@ class OutdoorSearchBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final p = Theme.of(context).extension<ThemePalette>()!;
+    final theme = Theme.of(context);
+    final p = theme.extension<ThemePalette>()!;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       child: TextField(
         controller: controller,
         onChanged: onChanged,
-        style: TextStyle(
-          fontSize: 16,
+        style: theme.textTheme.titleLarge!.copyWith(
           color: p.fg,
         ),
         decoration: InputDecoration(
           hintText: hintText,
-          hintStyle: TextStyle(
-            fontSize: 16,
+          hintStyle: theme.textTheme.titleLarge!.copyWith(
             color: p.fgTertiary,
           ),
           prefixIcon: Icon(

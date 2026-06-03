@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nexterm/core/theme/app_theme.dart';
 import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/features/git/models/git_commit.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
@@ -41,7 +42,8 @@ class _CommitRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final p = Theme.of(context).extension<ThemePalette>()!;
+    final theme = Theme.of(context);
+    final p = theme.extension<ThemePalette>()!;
     return ListTile(
       dense: true,
       visualDensity: VisualDensity.compact,
@@ -49,24 +51,20 @@ class _CommitRow extends StatelessWidget {
       title: Text(commit.subject,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-              fontSize: 14,
+          style: theme.textTheme.bodyLarge!.copyWith(
               color: p.fg)),
       subtitle: Row(children: [
         Text(commit.shortSha,
-            style: TextStyle(
-                fontSize: 12,
-                fontFamily: 'JetBrains Mono',
+            style: theme.textTheme.bodySmall!.copyWith(
+                fontFamily: AppFonts.mono,
                 color: p.accent)),
         const SizedBox(width: 8),
         Text(commit.authorName,
-            style: TextStyle(
-                fontSize: 12,
+            style: theme.textTheme.bodySmall!.copyWith(
                 color: p.fgSecondary)),
         const Spacer(),
         Text(_timeAgo(commit.timestamp),
-            style: TextStyle(
-                fontSize: 11,
+            style: theme.textTheme.labelSmall!.copyWith(
                 color: p.fgTertiary)),
       ]),
     );

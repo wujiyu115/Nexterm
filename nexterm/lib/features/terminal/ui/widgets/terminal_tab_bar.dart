@@ -186,7 +186,7 @@ class TerminalTabBar extends ConsumerWidget {
                 if (onOpenGit != null)
                   menuItem(
                     value: 'open_git',
-                    icon: Icons.source_outlined,
+                    icon: Icons.account_tree_outlined,
                     label: l.terminal_openGit,
                   ),
                 if (onUploadFile != null)

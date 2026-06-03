@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nexterm/core/theme/app_theme.dart';
 import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/domain/entities/enums.dart';
 import 'package:nexterm/domain/entities/host_entity.dart';
@@ -29,7 +30,8 @@ class HostListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final p = Theme.of(context).extension<ThemePalette>()!;
+    final theme = Theme.of(context);
+    final p = theme.extension<ThemePalette>()!;
     final subtitle = '${host.username}@${host.hostname}:${host.port}';
 
     return GlassCard(
@@ -58,11 +60,7 @@ class HostListTile extends StatelessWidget {
                     Flexible(
                       child: Text(
                         host.name,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: p.fg,
-                        ),
+                        style: theme.textTheme.titleLarge,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -76,9 +74,8 @@ class HostListTile extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   subtitle,
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontFamily: 'monospace',
+                  style: theme.textTheme.bodyMedium!.copyWith(
+                    fontFamily: AppFonts.mono,
                     color: p.fgSecondary,
                   ),
                   maxLines: 1,
@@ -115,7 +112,8 @@ class _ActiveConnectionBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final p = Theme.of(context).extension<ThemePalette>()!;
+    final theme = Theme.of(context);
+    final p = theme.extension<ThemePalette>()!;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
@@ -128,7 +126,7 @@ class _ActiveConnectionBadge extends StatelessWidget {
         children: [
           Container(width: 6, height: 6, decoration: BoxDecoration(color: p.accent, shape: BoxShape.circle)),
           const SizedBox(width: 4),
-          Text('$count', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: p.accent, height: 1)),
+          Text('$count', style: theme.textTheme.labelSmall!.copyWith(fontWeight: FontWeight.w600, color: p.accent, height: 1)),
         ],
       ),
     );
@@ -141,14 +139,15 @@ class _TagChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final p = Theme.of(context).extension<ThemePalette>()!;
+    final theme = Theme.of(context);
+    final p = theme.extension<ThemePalette>()!;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
         color: p.accentDim,
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Text(tag, style: TextStyle(fontSize: 11, color: p.accent)),
+      child: Text(tag, style: theme.textTheme.labelSmall!.copyWith(color: p.accent)),
     );
   }
 }

@@ -130,14 +130,15 @@ class _GitReposScreenState extends ConsumerState<GitReposScreen> {
   }
 
   Widget _buildTile(GitRepoEntity repo) {
-    final p = Theme.of(context).extension<ThemePalette>()!;
+    final theme = Theme.of(context);
+    final p = theme.extension<ThemePalette>()!;
     final hostAsync = ref.watch(hostByIdProvider(repo.hostId));
 
     return GlassCard(
       onTap: () => _connect(repo),
       child: Row(
         children: [
-          Icon(Icons.source_outlined, size: 24, color: p.fgSecondary),
+          Icon(Icons.account_tree_outlined, size: 24, color: p.fgSecondary),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -145,11 +146,7 @@ class _GitReposScreenState extends ConsumerState<GitReposScreen> {
               children: [
                 Text(
                   repo.displayName,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: p.fg,
-                  ),
+                  style: theme.textTheme.titleLarge,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -159,17 +156,17 @@ class _GitReposScreenState extends ConsumerState<GitReposScreen> {
                     host != null
                         ? '${host.name} · ${repo.remotePath}'
                         : repo.remotePath,
-                    style: TextStyle(fontSize: 13, color: p.fgSecondary),
+                    style: theme.textTheme.bodyMedium!.copyWith(color: p.fgSecondary),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                   loading: () => Text(
                     repo.remotePath,
-                    style: TextStyle(fontSize: 13, color: p.fgSecondary),
+                    style: theme.textTheme.bodyMedium!.copyWith(color: p.fgSecondary),
                   ),
                   error: (_, __) => Text(
                     repo.remotePath,
-                    style: TextStyle(fontSize: 13, color: p.fgSecondary),
+                    style: theme.textTheme.bodyMedium!.copyWith(color: p.fgSecondary),
                   ),
                 ),
               ],
@@ -188,7 +185,7 @@ class _GitReposScreenState extends ConsumerState<GitReposScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.source_outlined, size: 64, color: p.fgTertiary),
+          Icon(Icons.account_tree_outlined, size: 64, color: p.fgTertiary),
           const SizedBox(height: 16),
           Text(l.git_reposEmpty, style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 16),
