@@ -138,12 +138,6 @@ class _SttSettingsSectionState extends ConsumerState<SttSettingsSection> {
             obscure: true,
             onTap: () => _showCredentialEditor(l.settings_sttAccessToken, () => credentials.volcAccessToken, credentials.setVolcAccessToken, obscure: true),
           ),
-          _CredentialTile(
-            title: l.settings_sttResourceId,
-            getter: () => credentials.volcResourceId,
-            setter: credentials.setVolcResourceId,
-            onTap: () => _showCredentialEditor(l.settings_sttResourceId, () => credentials.volcResourceId, credentials.setVolcResourceId),
-          ),
         ],
         if (type == SttProviderType.alibaba) ...[
           _CredentialTile(
@@ -204,6 +198,12 @@ class _CredentialTileState extends State<_CredentialTile> {
   @override
   void initState() {
     super.initState();
+    _check();
+  }
+
+  @override
+  void didUpdateWidget(covariant _CredentialTile oldWidget) {
+    super.didUpdateWidget(oldWidget);
     _check();
   }
 

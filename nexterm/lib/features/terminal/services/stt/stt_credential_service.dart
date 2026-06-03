@@ -7,7 +7,6 @@ class SttCredentialService {
 
   static const _volcAppId = 'stt_volcengine_app_id';
   static const _volcAccessToken = 'stt_volcengine_access_token';
-  static const _volcResourceId = 'stt_volcengine_resource_id';
 
   static const _aliAccessKeyId = 'stt_aliyun_access_key_id';
   static const _aliAccessKeySecret = 'stt_aliyun_access_key_secret';
@@ -18,8 +17,6 @@ class SttCredentialService {
   Future<void> setVolcAppId(String v) => _storage.write(key: _volcAppId, value: v);
   Future<String?> get volcAccessToken => _storage.read(key: _volcAccessToken);
   Future<void> setVolcAccessToken(String v) => _storage.write(key: _volcAccessToken, value: v);
-  Future<String?> get volcResourceId => _storage.read(key: _volcResourceId);
-  Future<void> setVolcResourceId(String v) => _storage.write(key: _volcResourceId, value: v);
 
   // Alibaba
   Future<String?> get aliAccessKeyId => _storage.read(key: _aliAccessKeyId);
@@ -36,8 +33,7 @@ class SttCredentialService {
       case SttProviderType.volcengine:
         final a = await volcAppId;
         final b = await volcAccessToken;
-        final c = await volcResourceId;
-        return a != null && a.isNotEmpty && b != null && b.isNotEmpty && c != null && c.isNotEmpty;
+        return a != null && a.isNotEmpty && b != null && b.isNotEmpty;
       case SttProviderType.alibaba:
         final a = await aliAccessKeyId;
         final b = await aliAccessKeySecret;
