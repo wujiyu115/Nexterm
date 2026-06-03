@@ -103,6 +103,8 @@ class _ActiveSessionCard extends ConsumerWidget {
       case ConnectionType.smb:
         final conn = ref.watch(smbConnectionByIdProvider(tab.hostId)).valueOrNull;
         return conn != null ? 'smb · \\\\${conn.host}\\${conn.shareName}' : tab.title;
+      case ConnectionType.webPreview:
+        return 'web · localhost:${tab.localPort ?? ''}';
     }
   }
 
@@ -122,6 +124,11 @@ class _ActiveSessionCard extends ConsumerWidget {
             ? '/webdav/browse'
             : '/smb/browse';
         context.push(route, extra: {'service': service, 'name': tab.title});
+      case ConnectionType.webPreview:
+        final tabManager = ref.read(tabManagerProvider);
+        final index = tabManager.tabs.indexWhere((t) => t.id == tab.id);
+        if (index >= 0) tabManager.setActiveTab(index);
+        context.push('/terminal/session/${tab.id}');
     }
   }
 
@@ -328,6 +335,8 @@ class _RecentCard extends ConsumerWidget {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
           }
         }
+      case ConnectionType.webPreview:
+        break;
     }
   }
 

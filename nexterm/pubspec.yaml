@@ -40,6 +40,8 @@ dependencies:
   speech_to_text: ^7.0.0
   webdav_client: ^1.2.2
   smb_connect: ^0.0.9
+  flutter_local_notifications: ^18.0.0
+  webview_flutter: ^4.10.0
 
 dev_dependencies:
   flutter_test:

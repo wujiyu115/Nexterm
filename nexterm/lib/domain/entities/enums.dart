@@ -71,5 +71,6 @@ enum ConnectionType {
   ssh,
   sftp,
   webdav,
-  smb;
+  smb,
+  webPreview;
 }

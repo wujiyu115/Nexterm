@@ -268,6 +268,7 @@ class _TabItem extends StatelessWidget {
                 ConnectionType.sftp => Icons.folder_outlined,
                 ConnectionType.webdav => Icons.cloud_outlined,
                 ConnectionType.smb => Icons.folder_shared_outlined,
+                ConnectionType.webPreview => Icons.language,
                 _ => Icons.terminal,
               },
               size: 14,
