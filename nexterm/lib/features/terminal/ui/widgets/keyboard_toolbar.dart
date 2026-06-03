@@ -38,11 +38,12 @@ class KeyboardToolbar extends ConsumerStatefulWidget {
 class _KeyboardToolbarState extends ConsumerState<KeyboardToolbar> {
   bool _isListening = false;
   StreamSubscription<SttResult>? _sttSub;
+  SttProvider? _activeSttProvider;
 
   @override
   void dispose() {
     _sttSub?.cancel();
-    ref.read(sttProviderInstanceProvider).stop();
+    _activeSttProvider?.stop();
     super.dispose();
   }
 
@@ -56,7 +57,8 @@ class _KeyboardToolbarState extends ConsumerState<KeyboardToolbar> {
   }
 
   void _startListening() {
-    final provider = ref.read(sttProviderInstanceProvider);
+    _activeSttProvider = ref.read(sttProviderInstanceProvider);
+    final provider = _activeSttProvider!;
     final localeId = ref.read(voiceLocaleIdProvider);
     setState(() => _isListening = true);
     final stream = provider.start(localeId: localeId.isEmpty ? null : localeId);
@@ -78,7 +80,8 @@ class _KeyboardToolbarState extends ConsumerState<KeyboardToolbar> {
   void _stopListening() {
     _sttSub?.cancel();
     _sttSub = null;
-    ref.read(sttProviderInstanceProvider).stop();
+    _activeSttProvider?.stop();
+    _activeSttProvider = null;
     setState(() => _isListening = false);
   }
 
