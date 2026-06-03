@@ -1769,4 +1769,65 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get smb_search => 'Search connections, hosts...';
+
+  @override
+  String get settings_sectionVoiceInput => 'Voice Input';
+
+  @override
+  String get settings_sttProvider => 'Speech Recognition Provider';
+
+  @override
+  String get settings_sttProviderSystem => 'System (On-device)';
+
+  @override
+  String get settings_sttProviderVolcengine => 'Volcengine (Doubao)';
+
+  @override
+  String get settings_sttProviderAlibaba => 'Alibaba Cloud NLS';
+
+  @override
+  String get settings_sttSelectProvider => 'Select Provider';
+
+  @override
+  String get settings_sttAppId => 'App ID';
+
+  @override
+  String get settings_sttAccessToken => 'Access Token';
+
+  @override
+  String get settings_sttResourceId => 'Resource ID';
+
+  @override
+  String get settings_sttAccessKeyId => 'AccessKey ID';
+
+  @override
+  String get settings_sttAccessKeySecret => 'AccessKey Secret';
+
+  @override
+  String get settings_sttAppKey => 'AppKey';
+
+  @override
+  String get settings_sttSpeedTest => 'Test Connection Speed';
+
+  @override
+  String settings_sttSpeedTestResult(int ms) {
+    return 'Latency: ${ms}ms';
+  }
+
+  @override
+  String settings_sttSpeedTestFailed(String error) {
+    return 'Test failed: $error';
+  }
+
+  @override
+  String get settings_sttCredentialsSaved => 'Credentials saved';
+
+  @override
+  String get settings_sttEditCredential => 'Edit';
+
+  @override
+  String get settings_sttConfigured => 'Configured';
+
+  @override
+  String get settings_sttNotConfigured => 'Not configured';
 }

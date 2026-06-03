@@ -3367,6 +3367,120 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'搜索连接、主机...'**
   String get smb_search;
+
+  /// No description provided for @settings_sectionVoiceInput.
+  ///
+  /// In zh, this message translates to:
+  /// **'语音输入'**
+  String get settings_sectionVoiceInput;
+
+  /// No description provided for @settings_sttProvider.
+  ///
+  /// In zh, this message translates to:
+  /// **'语音识别服务'**
+  String get settings_sttProvider;
+
+  /// No description provided for @settings_sttProviderSystem.
+  ///
+  /// In zh, this message translates to:
+  /// **'系统(本地识别)'**
+  String get settings_sttProviderSystem;
+
+  /// No description provided for @settings_sttProviderVolcengine.
+  ///
+  /// In zh, this message translates to:
+  /// **'火山引擎(豆包)'**
+  String get settings_sttProviderVolcengine;
+
+  /// No description provided for @settings_sttProviderAlibaba.
+  ///
+  /// In zh, this message translates to:
+  /// **'阿里云 NLS'**
+  String get settings_sttProviderAlibaba;
+
+  /// No description provided for @settings_sttSelectProvider.
+  ///
+  /// In zh, this message translates to:
+  /// **'选择服务商'**
+  String get settings_sttSelectProvider;
+
+  /// No description provided for @settings_sttAppId.
+  ///
+  /// In zh, this message translates to:
+  /// **'App ID'**
+  String get settings_sttAppId;
+
+  /// No description provided for @settings_sttAccessToken.
+  ///
+  /// In zh, this message translates to:
+  /// **'Access Token'**
+  String get settings_sttAccessToken;
+
+  /// No description provided for @settings_sttResourceId.
+  ///
+  /// In zh, this message translates to:
+  /// **'Resource ID'**
+  String get settings_sttResourceId;
+
+  /// No description provided for @settings_sttAccessKeyId.
+  ///
+  /// In zh, this message translates to:
+  /// **'AccessKey ID'**
+  String get settings_sttAccessKeyId;
+
+  /// No description provided for @settings_sttAccessKeySecret.
+  ///
+  /// In zh, this message translates to:
+  /// **'AccessKey Secret'**
+  String get settings_sttAccessKeySecret;
+
+  /// No description provided for @settings_sttAppKey.
+  ///
+  /// In zh, this message translates to:
+  /// **'AppKey'**
+  String get settings_sttAppKey;
+
+  /// No description provided for @settings_sttSpeedTest.
+  ///
+  /// In zh, this message translates to:
+  /// **'测试连接速度'**
+  String get settings_sttSpeedTest;
+
+  /// No description provided for @settings_sttSpeedTestResult.
+  ///
+  /// In zh, this message translates to:
+  /// **'延迟: {ms}ms'**
+  String settings_sttSpeedTestResult(int ms);
+
+  /// No description provided for @settings_sttSpeedTestFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'测试失败: {error}'**
+  String settings_sttSpeedTestFailed(String error);
+
+  /// No description provided for @settings_sttCredentialsSaved.
+  ///
+  /// In zh, this message translates to:
+  /// **'凭证已保存'**
+  String get settings_sttCredentialsSaved;
+
+  /// No description provided for @settings_sttEditCredential.
+  ///
+  /// In zh, this message translates to:
+  /// **'编辑'**
+  String get settings_sttEditCredential;
+
+  /// No description provided for @settings_sttConfigured.
+  ///
+  /// In zh, this message translates to:
+  /// **'已配置'**
+  String get settings_sttConfigured;
+
+  /// No description provided for @settings_sttNotConfigured.
+  ///
+  /// In zh, this message translates to:
+  /// **'未配置'**
+  String get settings_sttNotConfigured;
 }
 
 class _AppLocalizationsDelegate

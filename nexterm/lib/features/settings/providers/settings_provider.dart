@@ -14,6 +14,7 @@ class SettingsKeys {
   static const clipboardAutoClear = 'clipboard_auto_clear';
   static const terminalFontFamily = 'terminal_font_family';
   static const voiceInputLocale = 'voice_input_locale';
+  static const sttProvider = 'stt_provider';
 }
 
 final settingsStreamProvider = StreamProvider<Map<String, String>>((ref) {

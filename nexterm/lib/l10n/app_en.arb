@@ -591,5 +591,27 @@
   "@smb_deleteConfirm": { "placeholders": { "name": { "type": "String" } } },
   "smb_editTitle": "Edit Connection",
   "smb_addTitle": "Add Connection",
-  "smb_search": "Search connections, hosts..."
+  "smb_search": "Search connections, hosts...",
+
+  "settings_sectionVoiceInput": "Voice Input",
+  "settings_sttProvider": "Speech Recognition Provider",
+  "settings_sttProviderSystem": "System (On-device)",
+  "settings_sttProviderVolcengine": "Volcengine (Doubao)",
+  "settings_sttProviderAlibaba": "Alibaba Cloud NLS",
+  "settings_sttSelectProvider": "Select Provider",
+  "settings_sttAppId": "App ID",
+  "settings_sttAccessToken": "Access Token",
+  "settings_sttResourceId": "Resource ID",
+  "settings_sttAccessKeyId": "AccessKey ID",
+  "settings_sttAccessKeySecret": "AccessKey Secret",
+  "settings_sttAppKey": "AppKey",
+  "settings_sttSpeedTest": "Test Connection Speed",
+  "settings_sttSpeedTestResult": "Latency: {ms}ms",
+  "@settings_sttSpeedTestResult": { "placeholders": { "ms": { "type": "int" } } },
+  "settings_sttSpeedTestFailed": "Test failed: {error}",
+  "@settings_sttSpeedTestFailed": { "placeholders": { "error": { "type": "String" } } },
+  "settings_sttCredentialsSaved": "Credentials saved",
+  "settings_sttEditCredential": "Edit",
+  "settings_sttConfigured": "Configured",
+  "settings_sttNotConfigured": "Not configured"
   }

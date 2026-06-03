@@ -12,6 +12,7 @@ import 'package:nexterm/features/settings/providers/settings_provider.dart';
 import 'package:nexterm/features/terminal/providers/terminal_font_family_provider.dart';
 import 'package:nexterm/features/terminal/providers/terminal_scrollback_provider.dart';
 import 'package:nexterm/features/terminal/providers/voice_locale_provider.dart';
+import 'package:nexterm/features/settings/ui/widgets/stt_settings_section.dart';
 import 'package:nexterm/features/settings/utils/ssh_config_parser.dart';
 import 'package:nexterm/features/sync/providers/auth_provider.dart';
 import 'package:nexterm/shared/widgets/section_label.dart';
@@ -87,6 +88,8 @@ class SettingsScreen extends ConsumerWidget {
             value: settings[SettingsKeys.hapticFeedback] == 'true',
             onChanged: (v) => settingsNotifier.set(SettingsKeys.hapticFeedback, v.toString()),
           ),
+
+          const SttSettingsSection(),
           ListTile(
             leading: const Icon(Icons.mic_outlined),
             title: Text(l.settings_voiceLocale),

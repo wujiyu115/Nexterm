@@ -620,5 +620,27 @@
   "@smb_deleteConfirm": { "placeholders": { "name": { "type": "String" } } },
   "smb_editTitle": "编辑连接",
   "smb_addTitle": "添加连接",
-  "smb_search": "搜索连接、主机..."
+  "smb_search": "搜索连接、主机...",
+
+  "settings_sectionVoiceInput": "语音输入",
+  "settings_sttProvider": "语音识别服务",
+  "settings_sttProviderSystem": "系统(本地识别)",
+  "settings_sttProviderVolcengine": "火山引擎(豆包)",
+  "settings_sttProviderAlibaba": "阿里云 NLS",
+  "settings_sttSelectProvider": "选择服务商",
+  "settings_sttAppId": "App ID",
+  "settings_sttAccessToken": "Access Token",
+  "settings_sttResourceId": "Resource ID",
+  "settings_sttAccessKeyId": "AccessKey ID",
+  "settings_sttAccessKeySecret": "AccessKey Secret",
+  "settings_sttAppKey": "AppKey",
+  "settings_sttSpeedTest": "测试连接速度",
+  "settings_sttSpeedTestResult": "延迟: {ms}ms",
+  "@settings_sttSpeedTestResult": { "placeholders": { "ms": { "type": "int" } } },
+  "settings_sttSpeedTestFailed": "测试失败: {error}",
+  "@settings_sttSpeedTestFailed": { "placeholders": { "error": { "type": "String" } } },
+  "settings_sttCredentialsSaved": "凭证已保存",
+  "settings_sttEditCredential": "编辑",
+  "settings_sttConfigured": "已配置",
+  "settings_sttNotConfigured": "未配置"
   }

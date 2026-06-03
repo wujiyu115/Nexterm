@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -5,11 +6,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/features/terminal/models/toolbar_key_definition.dart';
+import 'package:nexterm/features/terminal/providers/stt_provider.dart';
 import 'package:nexterm/features/terminal/providers/toolbar_config_provider.dart';
 import 'package:nexterm/features/terminal/providers/toolbar_modifier_provider.dart';
 import 'package:nexterm/features/terminal/providers/toolbar_usage_provider.dart';
 import 'package:nexterm/features/terminal/providers/voice_locale_provider.dart';
-import 'package:speech_to_text/speech_to_text.dart';
+import 'package:nexterm/features/terminal/services/stt/stt_provider_interface.dart';
 
 /// A scrollable, grouped toolbar that sits above the soft keyboard.
 ///
@@ -34,59 +36,59 @@ class KeyboardToolbar extends ConsumerStatefulWidget {
 }
 
 class _KeyboardToolbarState extends ConsumerState<KeyboardToolbar> {
-  final SpeechToText _speech = SpeechToText();
   bool _isListening = false;
-  bool _speechAvailable = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _initSpeech();
-  }
+  StreamSubscription<SttResult>? _sttSub;
 
   @override
   void dispose() {
-    _speech.stop();
+    _sttSub?.cancel();
+    ref.read(sttProviderInstanceProvider).stop();
     super.dispose();
-  }
-
-  Future<void> _initSpeech() async {
-    _speechAvailable = await _speech.initialize(
-      onStatus: (status) {
-        if (status == 'done' || status == 'notListening') {
-          if (mounted) setState(() => _isListening = false);
-        }
-      },
-    );
-    if (mounted) setState(() {});
   }
 
   void _toggleSpeech() {
     HapticFeedback.lightImpact();
     if (_isListening) {
-      _speech.stop();
-      setState(() => _isListening = false);
+      _stopListening();
     } else {
       _startListening();
     }
   }
 
   void _startListening() {
-    if (!_speechAvailable) return;
-    setState(() => _isListening = true);
+    final provider = ref.read(sttProviderInstanceProvider);
     final localeId = ref.read(voiceLocaleIdProvider);
-    _speech.listen(
-      onResult: (result) {
-        if (result.finalResult && result.recognizedWords.isNotEmpty) {
-          widget.onKeyInput(Uint8List.fromList(utf8.encode(result.recognizedWords)));
+    setState(() => _isListening = true);
+    final stream = provider.start(localeId: localeId.isEmpty ? null : localeId);
+    _sttSub = stream.listen(
+      (result) {
+        if (result.isFinal && result.text.isNotEmpty) {
+          widget.onKeyInput(Uint8List.fromList(utf8.encode(result.text)));
         }
       },
-      listenOptions: SpeechListenOptions(
-        listenMode: ListenMode.dictation,
-        cancelOnError: true,
-        localeId: localeId.isEmpty ? null : localeId,
-      ),
+      onDone: () {
+        if (mounted) setState(() => _isListening = false);
+      },
+      onError: (_) {
+        if (mounted) setState(() => _isListening = false);
+      },
     );
+  }
+
+  void _stopListening() {
+    _sttSub?.cancel();
+    _sttSub = null;
+    ref.read(sttProviderInstanceProvider).stop();
+    setState(() => _isListening = false);
+  }
+
+  void _onLongPressStart() {
+    HapticFeedback.lightImpact();
+    _startListening();
+  }
+
+  void _onLongPressEnd() {
+    _stopListening();
   }
 
   // -------------------------------------------------------------------------
@@ -233,20 +235,15 @@ class _KeyboardToolbarState extends ConsumerState<KeyboardToolbar> {
               ),
             ),
           ),
-          if (_speechAvailable)
-            GestureDetector(
-              onTap: _toggleSpeech,
-              child: Container(
-                width: 44,
-                height: double.infinity,
-                alignment: Alignment.center,
-                child: Icon(
-                  _isListening ? Icons.mic : Icons.mic_none,
-                  size: 20,
-                  color: _isListening ? p.accent : textColor,
-                ),
-              ),
-            ),
+          _MicButton(
+            isListening: _isListening,
+            providerType: ref.watch(sttProviderTypeProvider),
+            accentColor: activeColor,
+            textColor: textColor,
+            onTap: _toggleSpeech,
+            onLongPressStart: _onLongPressStart,
+            onLongPressEnd: _onLongPressEnd,
+          ),
           if (widget.onHideKeyboard != null)
             GestureDetector(
               onTap: widget.onHideKeyboard,
@@ -359,6 +356,57 @@ class _VerticalDivider extends StatelessWidget {
       height: 24,
       margin: const EdgeInsets.symmetric(horizontal: 4),
       color: color,
+    );
+  }
+}
+
+class _MicButton extends ConsumerWidget {
+  final bool isListening;
+  final SttProviderType providerType;
+  final Color accentColor;
+  final Color textColor;
+  final VoidCallback onTap;
+  final VoidCallback onLongPressStart;
+  final VoidCallback onLongPressEnd;
+
+  const _MicButton({
+    required this.isListening,
+    required this.providerType,
+    required this.accentColor,
+    required this.textColor,
+    required this.onTap,
+    required this.onLongPressStart,
+    required this.onLongPressEnd,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final available = ref.watch(sttAvailableProvider);
+    final isAvailable = available.valueOrNull ?? false;
+    if (!isAvailable) return const SizedBox.shrink();
+
+    final child = Container(
+      width: 44,
+      height: double.infinity,
+      alignment: Alignment.center,
+      child: Icon(
+        isListening ? Icons.mic : Icons.mic_none,
+        size: 20,
+        color: isListening ? accentColor : textColor,
+      ),
+    );
+
+    if (providerType == SttProviderType.volcengine) {
+      return GestureDetector(
+        onLongPressStart: (_) => onLongPressStart(),
+        onLongPressEnd: (_) => onLongPressEnd(),
+        child: child,
+      );
+    }
+
+    return GestureDetector(
+      onTap: onTap,
+      child: child,
     );
   }
 }

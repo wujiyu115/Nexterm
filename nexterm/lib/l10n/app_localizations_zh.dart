@@ -1729,4 +1729,65 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get smb_search => '搜索连接、主机...';
+
+  @override
+  String get settings_sectionVoiceInput => '语音输入';
+
+  @override
+  String get settings_sttProvider => '语音识别服务';
+
+  @override
+  String get settings_sttProviderSystem => '系统(本地识别)';
+
+  @override
+  String get settings_sttProviderVolcengine => '火山引擎(豆包)';
+
+  @override
+  String get settings_sttProviderAlibaba => '阿里云 NLS';
+
+  @override
+  String get settings_sttSelectProvider => '选择服务商';
+
+  @override
+  String get settings_sttAppId => 'App ID';
+
+  @override
+  String get settings_sttAccessToken => 'Access Token';
+
+  @override
+  String get settings_sttResourceId => 'Resource ID';
+
+  @override
+  String get settings_sttAccessKeyId => 'AccessKey ID';
+
+  @override
+  String get settings_sttAccessKeySecret => 'AccessKey Secret';
+
+  @override
+  String get settings_sttAppKey => 'AppKey';
+
+  @override
+  String get settings_sttSpeedTest => '测试连接速度';
+
+  @override
+  String settings_sttSpeedTestResult(int ms) {
+    return '延迟: ${ms}ms';
+  }
+
+  @override
+  String settings_sttSpeedTestFailed(String error) {
+    return '测试失败: $error';
+  }
+
+  @override
+  String get settings_sttCredentialsSaved => '凭证已保存';
+
+  @override
+  String get settings_sttEditCredential => '编辑';
+
+  @override
+  String get settings_sttConfigured => '已配置';
+
+  @override
+  String get settings_sttNotConfigured => '未配置';
 }
