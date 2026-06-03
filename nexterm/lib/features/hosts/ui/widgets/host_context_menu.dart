@@ -22,90 +22,98 @@ Future<HostContextAction?> showHostContextMenu({
 
   return showModalBottomSheet<HostContextAction>(
     context: context,
+    isScrollControlled: true,
     backgroundColor: p.bgElevated,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
     ),
-    builder: (ctx) => SafeArea(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const SizedBox(height: 12),
-          Container(
-            width: 36,
-            height: 4,
-            decoration: BoxDecoration(
-              color: p.fgTertiary,
-              borderRadius: BorderRadius.circular(2),
+    builder: (ctx) => ConstrainedBox(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(ctx).size.height * 0.7,
+      ),
+      child: SafeArea(
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            const SizedBox(height: 12),
+            Center(
+              child: Container(
+                width: 36,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: p.fgTertiary,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
-            child: Column(
-              children: [
-                Text(
-                  host.name,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: p.fg,
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
+              child: Column(
+                children: [
+                  Text(
+                    host.name,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: p.fg,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  '${host.username}@${host.hostname}:${host.port}',
-                  style: TextStyle(fontSize: 13, color: p.fgSecondary),
-                ),
-              ],
+                  const SizedBox(height: 2),
+                  Text(
+                    '${host.username}@${host.hostname}:${host.port}',
+                    style: TextStyle(fontSize: 13, color: p.fgSecondary),
+                  ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(height: 8),
-          Divider(height: 1, color: p.border),
-          _ActionTile(
-            icon: Icons.bolt,
-            label: l.hosts_contextConnect,
-            color: p.accent,
-            onTap: () => Navigator.pop(ctx, HostContextAction.connect),
-          ),
-          _ActionTile(
-            icon: Icons.folder_outlined,
-            label: l.hosts_contextSftp,
-            color: p.accent,
-            onTap: () => Navigator.pop(ctx, HostContextAction.sftpConnect),
-          ),
-          _ActionTile(
-            icon: Icons.copy_outlined,
-            label: l.hosts_contextCopy,
-            color: p.fg,
-            onTap: () => Navigator.pop(ctx, HostContextAction.duplicate),
-          ),
-          _ActionTile(
-            icon: Icons.drive_file_move_outline,
-            label: l.hosts_contextMoveToGroup,
-            color: p.fg,
-            onTap: () => Navigator.pop(ctx, HostContextAction.moveToGroup),
-          ),
-          _ActionTile(
-            icon: Icons.edit_outlined,
-            label: l.hosts_contextEdit,
-            color: p.fg,
-            onTap: () => Navigator.pop(ctx, HostContextAction.edit),
-          ),
-          _ActionTile(
-            icon: Icons.check_circle_outline,
-            label: l.hosts_contextSelect,
-            color: p.fg,
-            onTap: () => Navigator.pop(ctx, HostContextAction.select),
-          ),
-          Divider(height: 1, color: p.border),
-          _ActionTile(
-            icon: Icons.delete_outline,
-            label: l.hosts_contextDelete,
-            color: p.statusError,
-            onTap: () => Navigator.pop(ctx, HostContextAction.delete),
-          ),
-          const SizedBox(height: 8),
-        ],
+            const SizedBox(height: 8),
+            Divider(height: 1, color: p.border),
+            _ActionTile(
+              icon: Icons.bolt,
+              label: l.hosts_contextConnect,
+              color: p.accent,
+              onTap: () => Navigator.pop(ctx, HostContextAction.connect),
+            ),
+            _ActionTile(
+              icon: Icons.folder_outlined,
+              label: l.hosts_contextSftp,
+              color: p.accent,
+              onTap: () => Navigator.pop(ctx, HostContextAction.sftpConnect),
+            ),
+            _ActionTile(
+              icon: Icons.copy_outlined,
+              label: l.hosts_contextCopy,
+              color: p.fg,
+              onTap: () => Navigator.pop(ctx, HostContextAction.duplicate),
+            ),
+            _ActionTile(
+              icon: Icons.drive_file_move_outline,
+              label: l.hosts_contextMoveToGroup,
+              color: p.fg,
+              onTap: () => Navigator.pop(ctx, HostContextAction.moveToGroup),
+            ),
+            _ActionTile(
+              icon: Icons.edit_outlined,
+              label: l.hosts_contextEdit,
+              color: p.fg,
+              onTap: () => Navigator.pop(ctx, HostContextAction.edit),
+            ),
+            _ActionTile(
+              icon: Icons.check_circle_outline,
+              label: l.hosts_contextSelect,
+              color: p.fg,
+              onTap: () => Navigator.pop(ctx, HostContextAction.select),
+            ),
+            Divider(height: 1, color: p.border),
+            _ActionTile(
+              icon: Icons.delete_outline,
+              label: l.hosts_contextDelete,
+              color: p.statusError,
+              onTap: () => Navigator.pop(ctx, HostContextAction.delete),
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
       ),
     ),
   );
