@@ -15,6 +15,7 @@ import 'package:nexterm/features/sftp/ui/widgets/permission_dialog.dart';
 import 'package:nexterm/features/sftp/ui/widgets/transfer_queue_bar.dart';
 import 'package:nexterm/features/terminal/providers/terminal_provider.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nexterm/shared/widgets/dashed_divider.dart';
 
 class SftpContentWidget extends ConsumerStatefulWidget {
   final String? sessionId;
@@ -542,7 +543,7 @@ class _SftpContentWidgetState extends ConsumerState<SftpContentWidget> {
             alignment: Alignment.centerLeft,
             child: FileBreadcrumb(path: state.currentPath, onNavigate: notifier.navigateTo),
           ),
-        const Divider(height: 1),
+        DashedDivider(color: p.border.withValues(alpha: 0.4), padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4)),
         // File list
         Expanded(
           child: state.isLoading
