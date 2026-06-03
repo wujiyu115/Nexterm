@@ -524,6 +524,7 @@
   "git_initMessage": "This directory is not a git repository. Initialize one?",
   "git_initButton": "Initialize",
   "git_initConfirm": "Initialize a git repository at this path?",
+  "git_changePath": "Change Path",
   "git_fileHistory": "File History",
   "git_diff": "Diff",
   "git_additions": "+{count}",

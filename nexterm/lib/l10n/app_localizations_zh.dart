@@ -1538,6 +1538,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get git_initConfirm => '在此路径初始化 git 仓库？';
 
   @override
+  String get git_changePath => '切换目录';
+
+  @override
   String get git_fileHistory => '文件历史';
 
   @override

@@ -32,11 +32,13 @@ class _GitScreenState extends ConsumerState<GitScreen> with SingleTickerProvider
   GitState _gitState = const GitState();
   bool _isInitializing = true;
   String? _initError;
+  late String _currentPath;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    _currentPath = widget.remotePath;
     _initialize();
   }
 
@@ -45,7 +47,7 @@ class _GitScreenState extends ConsumerState<GitScreen> with SingleTickerProvider
       final sshService = ref.read(sshServiceProvider);
       final client = sshService.getClient(widget.sessionId);
       if (client == null) throw StateError('No active SSH session');
-      final service = GitCommandService(client: client, repoPath: widget.remotePath);
+      final service = GitCommandService(client: client, repoPath: _currentPath);
       final notifier = GitNotifier(service);
       notifier.addListener(() { if (mounted) setState(() => _gitState = notifier.state); });
       setState(() { _gitNotifier = notifier; _isInitializing = false; });
@@ -53,6 +55,59 @@ class _GitScreenState extends ConsumerState<GitScreen> with SingleTickerProvider
     } catch (e) {
       if (mounted) setState(() { _initError = e.toString(); _isInitializing = false; });
     }
+  }
+
+  void _changePath(String newPath) {
+    _gitNotifier?.dispose();
+    setState(() {
+      _currentPath = newPath;
+      _gitNotifier = null;
+      _gitState = const GitState();
+      _isInitializing = true;
+      _initError = null;
+    });
+    _initialize();
+  }
+
+  void _showChangePathDialog() {
+    final l = AppLocalizations.of(context)!;
+    final controller = TextEditingController(text: _currentPath);
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l.git_changePath),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          style: const TextStyle(fontFamily: AppFonts.mono, fontSize: 14),
+          decoration: InputDecoration(
+            hintText: '/home/user/project',
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          ),
+          onSubmitted: (v) {
+            final path = v.trim();
+            if (path.isNotEmpty) {
+              Navigator.of(ctx).pop();
+              _changePath(path);
+            }
+          },
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(ctx).pop(), child: Text(l.common_cancel)),
+          FilledButton(
+            onPressed: () {
+              final path = controller.text.trim();
+              if (path.isNotEmpty) {
+                Navigator.of(ctx).pop();
+                _changePath(path);
+              }
+            },
+            child: Text(l.common_confirm),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -104,7 +159,8 @@ class _GitScreenState extends ConsumerState<GitScreen> with SingleTickerProvider
       body: GitInitPrompt(
         onInit: () => _gitNotifier!.initRepo(),
         errorDetail: _gitState.error,
-        remotePath: widget.remotePath,
+        remotePath: _currentPath,
+        onChangePath: _changePath,
       ),
     );
     return _buildMain(context);
@@ -120,7 +176,10 @@ class _GitScreenState extends ConsumerState<GitScreen> with SingleTickerProvider
           Text('Git', style: theme.textTheme.headlineSmall!.copyWith(fontSize: 17)),
           Text(_gitState.currentBranch, style: theme.textTheme.bodySmall!.copyWith(color: p.fgSecondary)),
         ]),
-        actions: [IconButton(icon: const Icon(Icons.refresh), onPressed: () => _gitNotifier!.loadAll())],
+        actions: [
+          IconButton(icon: const Icon(Icons.folder_open, size: 20), onPressed: _showChangePathDialog),
+          IconButton(icon: const Icon(Icons.refresh), onPressed: () => _gitNotifier!.loadAll()),
+        ],
         bottom: TabBar(controller: _tabController, dividerColor: Colors.transparent, tabs: [Tab(text: l.git_tabWorkTree), Tab(text: l.git_tabBranches), Tab(text: l.git_tabTags)]),
       ),
       body: Column(

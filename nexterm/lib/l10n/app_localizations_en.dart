@@ -1576,6 +1576,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get git_initConfirm => 'Initialize a git repository at this path?';
 
   @override
+  String get git_changePath => 'Change Path';
+
+  @override
   String get git_fileHistory => 'File History';
 
   @override

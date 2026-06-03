@@ -8,13 +8,56 @@ class GitInitPrompt extends StatelessWidget {
   final VoidCallback onInit;
   final String? errorDetail;
   final String? remotePath;
+  final ValueChanged<String>? onChangePath;
 
   const GitInitPrompt({
     super.key,
     required this.onInit,
     this.errorDetail,
     this.remotePath,
+    this.onChangePath,
   });
+
+  void _showChangePathDialog(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    final controller = TextEditingController(text: remotePath ?? '');
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l.git_changePath),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          style: const TextStyle(fontFamily: AppFonts.mono, fontSize: 14),
+          decoration: InputDecoration(
+            hintText: '/home/user/project',
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          ),
+          onSubmitted: (v) {
+            final path = v.trim();
+            if (path.isNotEmpty) {
+              Navigator.of(ctx).pop();
+              onChangePath?.call(path);
+            }
+          },
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(ctx).pop(), child: Text(l.common_cancel)),
+          FilledButton(
+            onPressed: () {
+              final path = controller.text.trim();
+              if (path.isNotEmpty) {
+                Navigator.of(ctx).pop();
+                onChangePath?.call(path);
+              }
+            },
+            child: Text(l.common_confirm),
+          ),
+        ],
+      ),
+    );
+  }
 
   void _confirmInit(BuildContext context) {
     final l = AppLocalizations.of(context)!;
@@ -70,6 +113,14 @@ class GitInitPrompt extends StatelessWidget {
             ],
             const SizedBox(height: 24),
             FilledButton.icon(onPressed: () => _confirmInit(context), icon: const Icon(Icons.play_arrow), label: Text(l.git_initButton)),
+            if (onChangePath != null) ...[
+              const SizedBox(height: 12),
+              OutlinedButton.icon(
+                onPressed: () => _showChangePathDialog(context),
+                icon: const Icon(Icons.folder_open, size: 18),
+                label: Text(l.git_changePath),
+              ),
+            ],
           ],
         ),
       ),

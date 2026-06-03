@@ -553,6 +553,7 @@
   "git_initMessage": "此目录不是 git 仓库。是否初始化？",
   "git_initButton": "初始化",
   "git_initConfirm": "在此路径初始化 git 仓库？",
+  "git_changePath": "切换目录",
   "git_fileHistory": "文件历史",
   "git_diff": "差异",
   "git_additions": "+{count}",

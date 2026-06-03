@@ -3008,6 +3008,12 @@ abstract class AppLocalizations {
   /// **'在此路径初始化 git 仓库？'**
   String get git_initConfirm;
 
+  /// No description provided for @git_changePath.
+  ///
+  /// In zh, this message translates to:
+  /// **'切换目录'**
+  String get git_changePath;
+
   /// No description provided for @git_fileHistory.
   ///
   /// In zh, this message translates to:
