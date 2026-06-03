@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:nexterm/core/theme/outdoor_colors.dart';
+import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/domain/entities/enums.dart';
 import 'package:nexterm/domain/entities/smb_connection_entity.dart';
 import 'package:nexterm/features/smb/providers/smb_provider.dart';
@@ -113,7 +113,7 @@ class _ConnectionTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final p = Theme.of(context).extension<ThemePalette>()!;
     final subtitleParts = <String>['\\\\${connection.host}\\${connection.shareName}'];
     if (connection.lastConnected != null) {
       final dt = connection.lastConnected!;
@@ -136,18 +136,14 @@ class _ConnectionTile extends ConsumerWidget {
       child: ListTile(
         leading: Icon(Icons.folder_shared_outlined,
             size: 24,
-            color: isDark
-                ? OutdoorColors.darkFgSecondary
-                : OutdoorColors.lightFgSecondary),
+            color: p.fgSecondary),
         title: Text(connection.displayName),
         subtitle: Text(subtitleParts.join(' · '),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
                 fontSize: 12,
-                color: isDark
-                    ? OutdoorColors.darkFgTertiary
-                    : OutdoorColors.lightFgTertiary)),
+                color: p.fgTertiary)),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [

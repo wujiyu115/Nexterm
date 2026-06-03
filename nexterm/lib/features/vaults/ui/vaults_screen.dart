@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
-import 'package:nexterm/core/theme/outdoor_colors.dart';
+import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/shared/widgets/glass_card.dart';
 import 'package:nexterm/shared/widgets/section_label.dart';
 
@@ -70,6 +70,7 @@ class _NavTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final p = Theme.of(context).extension<ThemePalette>()!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -88,8 +89,8 @@ class _NavTitle extends StatelessWidget {
           height: 2,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(1),
-            gradient: const LinearGradient(
-              colors: [OutdoorColors.accent, Colors.transparent],
+            gradient: LinearGradient(
+              colors: [p.accent, Colors.transparent],
             ),
           ),
         ),
