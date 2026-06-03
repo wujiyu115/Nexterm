@@ -15,7 +15,7 @@ Nexterm 是一款基于 Flutter 构建的现代化 SSH 终端客户端，支持 
 | **多标签 SSH 终端** | 同时开启多个 SSH 会话，通过标签页自由切换 |
 | **跳板机链式连接** | 支持多级跳板机（Jump Host）链路，一键穿透内网访问目标服务器 |
 | **自定义字体** | 内置 JetBrains Mono、Source Code Pro、Fira Code、Ubuntu Mono 四款等宽字体，可自由切换 |
-| **终端配色主题** | Catppuccin Mocha、Dracula、Monokai、Solarized Dark/Light 等多套配色 |
+| **10 套统一主题** | Nexterm、Dracula、Nord、Solarized Dark、Gruvbox、Catppuccin Mocha（暗色）；Solarized Light、Catppuccin Latte、GitHub Light、Rosé Pine Dawn（亮色）——选一个即同时切换终端配色与 App 界面风格 |
 | **字体大小调节** | 在设置中调整或在终端内双指缩放实时改变字号 |
 | **可配置回滚行数** | 自定义终端缓冲区大小（100 ~ 1,000,000 行） |
 | **光标样式** | 块状、下划线、竖线三种光标样式可选 |
@@ -95,7 +95,7 @@ Nexterm 是一款基于 Flutter 构建的现代化 SSH 终端客户端，支持 
 | 功能 | 描述 |
 |------|------|
 | **多语言支持** | 中文 / English，可跟随系统语言 |
-| **深色 / 浅色主题** | 支持跟随系统或手动切换 |
+| **语音输入** | 终端内语音转文字输入，支持独立选择语音识别语言（中文、英文等） |
 | **导出数据** | 将所有主机、密钥、片段导出为 JSON 文件 |
 
 ---
@@ -133,10 +133,12 @@ Nexterm/
 │   │   │   ├── keys/        # SSH 密钥管理
 │   │   │   ├── settings/    # 应用设置
 │   │   │   ├── sftp/        # SFTP 文件管理
+│   │   │   ├── smb/         # SMB 连接
 │   │   │   ├── snippets/    # 代码片段
 │   │   │   ├── sync/        # 云同步
 │   │   │   ├── terminal/    # 终端
-│   │   │   └── vaults/      # 保险库首页
+│   │   │   ├── vaults/      # 保险库首页
+│   │   │   └── webdav/      # WebDAV 连接
 │   │   └── shared/   # 全局共用 Widget
 │   ├── assets/fonts/  # 内置等宽字体
 │   └── test/         # 单元测试与 Widget 测试
