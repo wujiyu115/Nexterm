@@ -65,7 +65,7 @@ class _BranchListState extends State<BranchList> {
       Expanded(child: filtered.isEmpty
         ? Center(child: Text(l.git_noBranches))
         : ListView.separated(
-        itemCount: filtered.length, separatorBuilder: (_, __) => const Divider(height: 1),
+        itemCount: filtered.length, separatorBuilder: (_, __) => const SizedBox(height: 4),
         itemBuilder: (context, index) {
           final branch = filtered[index];
           final canDelete = !branch.isCurrent && !branch.isDefault && !branch.isRemote;

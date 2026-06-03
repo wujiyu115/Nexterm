@@ -16,7 +16,7 @@ class CommitList extends StatelessWidget {
     if (commits.isEmpty) return Center(child: Text(l.git_noCommits));
     return ListView.separated(
       itemCount: commits.length,
-      separatorBuilder: (_, __) => const Divider(height: 1),
+      separatorBuilder: (_, __) => const SizedBox(height: 4),
       itemBuilder: (context, index) {
         final commit = commits[index];
         return _CommitRow(commit: commit, onTap: () => onCommitTap(commit));

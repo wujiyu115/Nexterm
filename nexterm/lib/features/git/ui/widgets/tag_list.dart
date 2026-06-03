@@ -17,7 +17,7 @@ class TagList extends StatelessWidget {
     final p = theme.extension<ThemePalette>()!;
     if (tags.isEmpty) return Center(child: Text(l.git_noTags));
     return ListView.separated(
-      itemCount: tags.length, separatorBuilder: (_, __) => const Divider(height: 1),
+      itemCount: tags.length, separatorBuilder: (_, __) => const SizedBox(height: 4),
       itemBuilder: (context, index) {
         final tag = tags[index];
         return Dismissible(
