@@ -12,10 +12,20 @@ class ThemeCatalog {
     'solarized-dark': _solarizedDark,
     'gruvbox': _gruvbox,
     'catppuccin-mocha': _catppuccinMocha,
+    'one-dark': _oneDark,
+    'tokyo-night': _tokyoNight,
+    'monokai': _monokai,
+    'everforest-dark': _everforestDark,
+    'kanagawa': _kanagawa,
+    'ayu-dark': _ayuDark,
     'solarized-light': _solarizedLight,
     'catppuccin-latte': _catppuccinLatte,
     'github-light': _githubLight,
     'rose-pine-dawn': _rosePineDawn,
+    'one-light': _oneLight,
+    'tokyo-night-light': _tokyoNightLight,
+    'everforest-light': _everforestLight,
+    'ayu-light': _ayuLight,
   };
 
   /// Returns the palette for [key], falling back to `nexterm` if absent.
@@ -62,6 +72,26 @@ class ThemeCatalog {
         return 'GitHub Light';
       case 'rose-pine-dawn':
         return 'Rosé Pine Dawn';
+      case 'one-dark':
+        return 'One Dark';
+      case 'tokyo-night':
+        return 'Tokyo Night';
+      case 'monokai':
+        return 'Monokai';
+      case 'everforest-dark':
+        return 'Everforest Dark';
+      case 'kanagawa':
+        return 'Kanagawa';
+      case 'ayu-dark':
+        return 'Ayu Dark';
+      case 'one-light':
+        return 'One Light';
+      case 'tokyo-night-light':
+        return 'Tokyo Night Light';
+      case 'everforest-light':
+        return 'Everforest Light';
+      case 'ayu-light':
+        return 'Ayu Light';
       default:
         assert(false, 'displayName missing for theme key: $key');
         return key;
@@ -75,6 +105,12 @@ class ThemeCatalog {
     'solarized-dark',
     'gruvbox',
     'catppuccin-mocha',
+    'one-dark',
+    'tokyo-night',
+    'monokai',
+    'everforest-dark',
+    'kanagawa',
+    'ayu-dark',
   ];
 
   static const List<String> lightKeys = [
@@ -82,6 +118,10 @@ class ThemeCatalog {
     'catppuccin-latte',
     'github-light',
     'rose-pine-dawn',
+    'one-light',
+    'tokyo-night-light',
+    'everforest-light',
+    'ayu-light',
   ];
 
   // ───────────────────────── Dark palettes ─────────────────────────
@@ -266,6 +306,186 @@ class ThemeCatalog {
     terminal: TerminalThemes.catppuccin,
   );
 
+  static const _oneDark = ThemePalette(
+    brightness: Brightness.dark,
+    bg: Color(0xFF282C34),
+    bgElevated: Color(0xFF21252B),
+    surface: Color(0xC72C313A),
+    surfaceSolid: Color(0xFF2C313A),
+    cardBg: Color(0xA62C313A),
+    navBg: Color(0xB8282C34),
+    inputBg: Color(0xCC2C313A),
+    fg: Color(0xFFABB2BF),
+    fgSecondary: Color(0xFF7F848E),
+    fgTertiary: Color(0xFF5C6370),
+    tabInactive: Color(0xFF5C6370),
+    border: Color(0x99454951),
+    glassBorder: Color(0x1461AFEF),
+    accent: Color(0xFF61AFEF),
+    accentDim: Color(0x2661AFEF),
+    accentGlow: Color(0x4D61AFEF),
+    statusOnline: Color(0xFF98C379),
+    statusConnecting: Color(0xFFE5C07B),
+    statusOffline: Color(0xFF5C6370),
+    statusError: Color(0xFFE06C75),
+    terminalBg: Color(0xFF282C34),
+    termPrompt: Color(0xFF98C379),
+    termPath: Color(0xFF61AFEF),
+    termCommand: Color(0xFFABB2BF),
+    termOutput: Color(0xFF7F848E),
+    terminal: TerminalThemes.oneDark,
+  );
+
+  static const _tokyoNight = ThemePalette(
+    brightness: Brightness.dark,
+    bg: Color(0xFF1A1B26),
+    bgElevated: Color(0xFF24283B),
+    surface: Color(0xC724283B),
+    surfaceSolid: Color(0xFF24283B),
+    cardBg: Color(0xA624283B),
+    navBg: Color(0xB81A1B26),
+    inputBg: Color(0xCC24283B),
+    fg: Color(0xFFC0CAF5),
+    fgSecondary: Color(0xFFA9B1D6),
+    fgTertiary: Color(0xFF565F89),
+    tabInactive: Color(0xFF565F89),
+    border: Color(0x99414868),
+    glassBorder: Color(0x147AA2F7),
+    accent: Color(0xFF7AA2F7),
+    accentDim: Color(0x267AA2F7),
+    accentGlow: Color(0x4D7AA2F7),
+    statusOnline: Color(0xFF9ECE6A),
+    statusConnecting: Color(0xFFE0AF68),
+    statusOffline: Color(0xFF565F89),
+    statusError: Color(0xFFF7768E),
+    terminalBg: Color(0xFF1A1B26),
+    termPrompt: Color(0xFF9ECE6A),
+    termPath: Color(0xFF7AA2F7),
+    termCommand: Color(0xFFC0CAF5),
+    termOutput: Color(0xFFA9B1D6),
+    terminal: TerminalThemes.tokyoNight,
+  );
+
+  static const _monokai = ThemePalette(
+    brightness: Brightness.dark,
+    bg: Color(0xFF272822),
+    bgElevated: Color(0xFF2D2E27),
+    surface: Color(0xC73E3D32),
+    surfaceSolid: Color(0xFF3E3D32),
+    cardBg: Color(0xA63E3D32),
+    navBg: Color(0xB8272822),
+    inputBg: Color(0xCC3E3D32),
+    fg: Color(0xFFF8F8F2),
+    fgSecondary: Color(0xFFA59F85),
+    fgTertiary: Color(0xFF75715E),
+    tabInactive: Color(0xFF75715E),
+    border: Color(0x9949483E),
+    glassBorder: Color(0x14A6E22E),
+    accent: Color(0xFFA6E22E),
+    accentDim: Color(0x26A6E22E),
+    accentGlow: Color(0x4DA6E22E),
+    statusOnline: Color(0xFFA6E22E),
+    statusConnecting: Color(0xFFF4BF75),
+    statusOffline: Color(0xFF75715E),
+    statusError: Color(0xFFF92672),
+    terminalBg: Color(0xFF272822),
+    termPrompt: Color(0xFFA6E22E),
+    termPath: Color(0xFF66D9EF),
+    termCommand: Color(0xFFF8F8F2),
+    termOutput: Color(0xFFA59F85),
+    terminal: TerminalThemes.monokai,
+  );
+
+  static const _everforestDark = ThemePalette(
+    brightness: Brightness.dark,
+    bg: Color(0xFF2D353B),
+    bgElevated: Color(0xFF343F44),
+    surface: Color(0xC7343F44),
+    surfaceSolid: Color(0xFF343F44),
+    cardBg: Color(0xA6343F44),
+    navBg: Color(0xB82D353B),
+    inputBg: Color(0xCC3D484D),
+    fg: Color(0xFFD3C6AA),
+    fgSecondary: Color(0xFF9DA9A0),
+    fgTertiary: Color(0xFF859289),
+    tabInactive: Color(0xFF859289),
+    border: Color(0x99475258),
+    glassBorder: Color(0x14A7C080),
+    accent: Color(0xFFA7C080),
+    accentDim: Color(0x26A7C080),
+    accentGlow: Color(0x4DA7C080),
+    statusOnline: Color(0xFFA7C080),
+    statusConnecting: Color(0xFFDBBC7F),
+    statusOffline: Color(0xFF859289),
+    statusError: Color(0xFFE67E80),
+    terminalBg: Color(0xFF2D353B),
+    termPrompt: Color(0xFFA7C080),
+    termPath: Color(0xFF7FBBB3),
+    termCommand: Color(0xFFD3C6AA),
+    termOutput: Color(0xFF9DA9A0),
+    terminal: TerminalThemes.everforestDark,
+  );
+
+  static const _kanagawa = ThemePalette(
+    brightness: Brightness.dark,
+    bg: Color(0xFF1F1F28),
+    bgElevated: Color(0xFF2A2A37),
+    surface: Color(0xC72A2A37),
+    surfaceSolid: Color(0xFF2A2A37),
+    cardBg: Color(0xA62A2A37),
+    navBg: Color(0xB81F1F28),
+    inputBg: Color(0xCC2A2A37),
+    fg: Color(0xFFDCD7BA),
+    fgSecondary: Color(0xFFC8C093),
+    fgTertiary: Color(0xFF727169),
+    tabInactive: Color(0xFF727169),
+    border: Color(0x9954546D),
+    glassBorder: Color(0x147E9CD8),
+    accent: Color(0xFF7E9CD8),
+    accentDim: Color(0x267E9CD8),
+    accentGlow: Color(0x4D7E9CD8),
+    statusOnline: Color(0xFF76946A),
+    statusConnecting: Color(0xFFC0A36E),
+    statusOffline: Color(0xFF727169),
+    statusError: Color(0xFFC34043),
+    terminalBg: Color(0xFF1F1F28),
+    termPrompt: Color(0xFF98BB6C),
+    termPath: Color(0xFF7E9CD8),
+    termCommand: Color(0xFFDCD7BA),
+    termOutput: Color(0xFFC8C093),
+    terminal: TerminalThemes.kanagawa,
+  );
+
+  static const _ayuDark = ThemePalette(
+    brightness: Brightness.dark,
+    bg: Color(0xFF0D1017),
+    bgElevated: Color(0xFF131721),
+    surface: Color(0xC7131721),
+    surfaceSolid: Color(0xFF131721),
+    cardBg: Color(0xA6131721),
+    navBg: Color(0xB80D1017),
+    inputBg: Color(0xCC1A1F29),
+    fg: Color(0xFFBFBDB6),
+    fgSecondary: Color(0xFF858B91),
+    fgTertiary: Color(0xFF626A73),
+    tabInactive: Color(0xFF626A73),
+    border: Color(0x99304357),
+    glassBorder: Color(0x14E6B450),
+    accent: Color(0xFFE6B450),
+    accentDim: Color(0x26E6B450),
+    accentGlow: Color(0x4DE6B450),
+    statusOnline: Color(0xFFAAD94C),
+    statusConnecting: Color(0xFFE6B450),
+    statusOffline: Color(0xFF626A73),
+    statusError: Color(0xFFF07178),
+    terminalBg: Color(0xFF0D1017),
+    termPrompt: Color(0xFFAAD94C),
+    termPath: Color(0xFF59C2FF),
+    termCommand: Color(0xFFBFBDB6),
+    termOutput: Color(0xFF858B91),
+    terminal: TerminalThemes.ayuDark,
+  );
+
   // ───────────────────────── Light palettes ─────────────────────────
 
   static const _solarizedLight = ThemePalette(
@@ -386,5 +606,125 @@ class ThemeCatalog {
     termCommand: Color(0xFF575279),
     termOutput: Color(0xFF797593),
     terminal: TerminalThemes.rosePineDawn,
+  );
+
+  static const _oneLight = ThemePalette(
+    brightness: Brightness.light,
+    bg: Color(0xFFFAFAFA),
+    bgElevated: Color(0xFFFFFFFF),
+    surface: Color(0xC7E5E5E6),
+    surfaceSolid: Color(0xFFF0F0F1),
+    cardBg: Color(0xA6F0F0F1),
+    navBg: Color(0xB8FAFAFA),
+    inputBg: Color(0x0A000000),
+    fg: Color(0xFF383A42),
+    fgSecondary: Color(0xFF696C77),
+    fgTertiary: Color(0xFFA0A1A7),
+    tabInactive: Color(0xFFA0A1A7),
+    border: Color(0x33D4D4D5),
+    glassBorder: Color(0x1F4078F2),
+    accent: Color(0xFF4078F2),
+    accentDim: Color(0x264078F2),
+    accentGlow: Color(0x4D4078F2),
+    statusOnline: Color(0xFF50A14F),
+    statusConnecting: Color(0xFFC18401),
+    statusOffline: Color(0xFFA0A1A7),
+    statusError: Color(0xFFE45649),
+    terminalBg: Color(0xFFFAFAFA),
+    termPrompt: Color(0xFF50A14F),
+    termPath: Color(0xFF4078F2),
+    termCommand: Color(0xFF383A42),
+    termOutput: Color(0xFF696C77),
+    terminal: TerminalThemes.oneLight,
+  );
+
+  static const _tokyoNightLight = ThemePalette(
+    brightness: Brightness.light,
+    bg: Color(0xFFD5D6DB),
+    bgElevated: Color(0xFFE1E2E7),
+    surface: Color(0xC7D5D6DB),
+    surfaceSolid: Color(0xFFE1E2E7),
+    cardBg: Color(0xA6E1E2E7),
+    navBg: Color(0xB8D5D6DB),
+    inputBg: Color(0x0A000000),
+    fg: Color(0xFF3760BF),
+    fgSecondary: Color(0xFF6172B0),
+    fgTertiary: Color(0xFFA1A6C5),
+    tabInactive: Color(0xFFA1A6C5),
+    border: Color(0x33B4B5B9),
+    glassBorder: Color(0x1F2E7DE9),
+    accent: Color(0xFF2E7DE9),
+    accentDim: Color(0x262E7DE9),
+    accentGlow: Color(0x4D2E7DE9),
+    statusOnline: Color(0xFF587539),
+    statusConnecting: Color(0xFF8C6C3E),
+    statusOffline: Color(0xFFA1A6C5),
+    statusError: Color(0xFFF52A65),
+    terminalBg: Color(0xFFD5D6DB),
+    termPrompt: Color(0xFF587539),
+    termPath: Color(0xFF2E7DE9),
+    termCommand: Color(0xFF3760BF),
+    termOutput: Color(0xFF6172B0),
+    terminal: TerminalThemes.tokyoNightLight,
+  );
+
+  static const _everforestLight = ThemePalette(
+    brightness: Brightness.light,
+    bg: Color(0xFFFDF6E3),
+    bgElevated: Color(0xFFF4F0D9),
+    surface: Color(0xC7E5DFC5),
+    surfaceSolid: Color(0xFFF4F0D9),
+    cardBg: Color(0xA6F4F0D9),
+    navBg: Color(0xB8FDF6E3),
+    inputBg: Color(0x0A000000),
+    fg: Color(0xFF5C6A72),
+    fgSecondary: Color(0xFF829181),
+    fgTertiary: Color(0xFF939F91),
+    tabInactive: Color(0xFF939F91),
+    border: Color(0x33D5CEB6),
+    glassBorder: Color(0x1F8DA101),
+    accent: Color(0xFF8DA101),
+    accentDim: Color(0x268DA101),
+    accentGlow: Color(0x4D8DA101),
+    statusOnline: Color(0xFF8DA101),
+    statusConnecting: Color(0xFFDFA000),
+    statusOffline: Color(0xFF939F91),
+    statusError: Color(0xFFF85552),
+    terminalBg: Color(0xFFFDF6E3),
+    termPrompt: Color(0xFF8DA101),
+    termPath: Color(0xFF3A94C5),
+    termCommand: Color(0xFF5C6A72),
+    termOutput: Color(0xFF829181),
+    terminal: TerminalThemes.everforestLight,
+  );
+
+  static const _ayuLight = ThemePalette(
+    brightness: Brightness.light,
+    bg: Color(0xFFFAFAFA),
+    bgElevated: Color(0xFFFFFFFF),
+    surface: Color(0xC7F0F0F0),
+    surfaceSolid: Color(0xFFF8F8F8),
+    cardBg: Color(0xA6F8F8F8),
+    navBg: Color(0xB8FAFAFA),
+    inputBg: Color(0x0A000000),
+    fg: Color(0xFF575F66),
+    fgSecondary: Color(0xFF828C99),
+    fgTertiary: Color(0xFFABB0B6),
+    tabInactive: Color(0xFFABB0B6),
+    border: Color(0x33D8D8D8),
+    glassBorder: Color(0x1FFF9940),
+    accent: Color(0xFFFF9940),
+    accentDim: Color(0x26FF9940),
+    accentGlow: Color(0x4DFF9940),
+    statusOnline: Color(0xFF86B300),
+    statusConnecting: Color(0xFFF2AE49),
+    statusOffline: Color(0xFFABB0B6),
+    statusError: Color(0xFFF07171),
+    terminalBg: Color(0xFFFAFAFA),
+    termPrompt: Color(0xFF86B300),
+    termPath: Color(0xFF399EE6),
+    termCommand: Color(0xFF575F66),
+    termOutput: Color(0xFF828C99),
+    terminal: TerminalThemes.ayuLight,
   );
 }
