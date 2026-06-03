@@ -90,6 +90,7 @@ final activeSessionsForDetectionProvider = Provider<List<SessionInfo>>((ref) {
   final seen = <String>{};
 
   for (final tab in tabManager.tabs) {
+    if (tab.connectionType != ConnectionType.ssh) continue;
     if (tab.status != ConnectionStatus.connected) continue;
     if (tab.sessionId == null) continue;
     if (seen.contains(tab.sessionId)) continue;
