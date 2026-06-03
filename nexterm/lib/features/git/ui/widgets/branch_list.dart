@@ -26,9 +26,15 @@ class _BranchListState extends State<BranchList> {
   }
 
   List<GitBranch> get _filtered {
-    if (_query.isEmpty) return widget.branches;
+    final sorted = List<GitBranch>.from(widget.branches)
+      ..sort((a, b) {
+        if (a.isCurrent && !b.isCurrent) return -1;
+        if (!a.isCurrent && b.isCurrent) return 1;
+        return 0;
+      });
+    if (_query.isEmpty) return sorted;
     final lower = _query.toLowerCase();
-    return widget.branches.where((b) => b.name.toLowerCase().contains(lower)).toList();
+    return sorted.where((b) => b.name.toLowerCase().contains(lower)).toList();
   }
 
   @override
