@@ -102,7 +102,11 @@ class GitCommandService {
   Future<List<GitCommit>> log({int limit = 100, String? filePath, String? branch}) async {
     var cmd = "log --format='$_commitFormat' -n $limit";
     if (branch != null) cmd = "log ${_shellEscape(branch)} --format='$_commitFormat' -n $limit";
-    if (filePath != null) cmd += ' --follow -- ${_shellEscape(filePath)}';
+    if (filePath != null) {
+      cmd += ' --follow -- ${_shellEscape(filePath)}';
+    } else if (branch != null) {
+      cmd += ' --';
+    }
     final output = await _run(cmd);
     return _parseCommits(output);
   }
