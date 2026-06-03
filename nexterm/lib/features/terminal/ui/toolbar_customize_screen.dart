@@ -52,13 +52,13 @@ class ToolbarCustomizeScreen extends ConsumerWidget {
       body: Column(
         children: [
           _ToolbarPreview(groups: groups, visibleCount: visibleCount),
-          const Divider(height: 1),
+          const SizedBox(height: 12),
           _VisibleCountSetting(
             value: visibleCount,
             max: groups.length,
             onChanged: (v) => visibleCountNotifier.setCount(v),
           ),
-          const Divider(height: 1),
+          const SizedBox(height: 8),
           Expanded(
             child: ReorderableListView.builder(
               buildDefaultDragHandles: false,
