@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nexterm/features/settings/providers/settings_provider.dart';
 
-const defaultFontFamily = 'JetBrains Mono';
+const defaultFontFamily = 'Ubuntu Mono';
 
 const terminalFontFamilies = [
   'JetBrains Mono',
