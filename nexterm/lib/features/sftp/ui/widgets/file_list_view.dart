@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nexterm/core/theme/outdoor_colors.dart';
+import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:nexterm/features/sftp/services/sftp_service.dart';
 import 'package:nexterm/features/sftp/ui/utils/file_icon.dart';
@@ -31,11 +31,12 @@ class FileListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final p = Theme.of(context).extension<ThemePalette>()!;
     if (files.isEmpty) {
       return Center(
         child: Text(
           AppLocalizations.of(context)!.sftp_noFiles,
-          style: TextStyle(color: Theme.of(context).brightness == Brightness.dark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary),
+          style: TextStyle(color: p.fgSecondary),
         ),
       );
     }
@@ -101,6 +102,7 @@ class _FileListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final p = Theme.of(context).extension<ThemePalette>()!;
     final brightness = Theme.of(context).brightness;
     final iconData = getFileIcon(file.name, isDirectory: file.isDirectory);
     final iconColor =
@@ -134,7 +136,7 @@ class _FileListItem extends StatelessWidget {
           : (file.isDirectory
               ? Icon(
                   Icons.chevron_right,
-                  color: Theme.of(context).brightness == Brightness.dark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary,
+                  color: p.fgTertiary,
                   size: 20,
                 )
               : null),

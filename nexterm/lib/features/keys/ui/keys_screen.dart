@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:nexterm/core/theme/outdoor_colors.dart';
+import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/domain/entities/ssh_key_entity.dart';
 import 'package:nexterm/features/keys/providers/keys_provider.dart';
 import 'package:nexterm/features/keys/ui/widgets/key_list_tile.dart';
@@ -16,6 +16,7 @@ class KeysScreen extends ConsumerWidget {
     final l = AppLocalizations.of(context)!;
     final keysAsync = ref.watch(keysStreamProvider);
     final notifier = ref.read(keysNotifierProvider.notifier);
+    final p = Theme.of(context).extension<ThemePalette>()!;
 
     return DecorativeBackground(
       showRidge: false,
@@ -36,11 +37,11 @@ class KeysScreen extends ConsumerWidget {
             icon: Container(
               width: 32,
               height: 32,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: OutdoorColors.accentDim,
+                color: p.accentDim,
               ),
-              child: const Icon(Icons.file_upload_outlined, size: 16, color: OutdoorColors.accent),
+              child: Icon(Icons.file_upload_outlined, size: 16, color: p.accent),
             ),
           ),
           IconButton(
@@ -49,11 +50,11 @@ class KeysScreen extends ConsumerWidget {
             icon: Container(
               width: 32,
               height: 32,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: OutdoorColors.accentDim,
+                color: p.accentDim,
               ),
-              child: const Icon(Icons.add, size: 16, color: OutdoorColors.accent),
+              child: Icon(Icons.add, size: 16, color: p.accent),
             ),
           ),
         ],
@@ -88,6 +89,8 @@ class KeysScreen extends ConsumerWidget {
 
   Widget _buildEmptyState(BuildContext context) {
     final l = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final p = theme.extension<ThemePalette>()!;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -95,15 +98,15 @@ class KeysScreen extends ConsumerWidget {
           Icon(
             Icons.vpn_key_outlined,
             size: 64,
-            color: Theme.of(context).brightness == Brightness.dark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary,
+            color: p.fgTertiary,
           ),
           const SizedBox(height: 16),
-          Text(l.keys_noKeys, style: Theme.of(context).textTheme.titleMedium),
+          Text(l.keys_noKeys, style: theme.textTheme.titleMedium),
           const SizedBox(height: 8),
           Text(
             l.keys_noKeysHint,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).brightness == Brightness.dark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: p.fgTertiary,
             ),
           ),
           const SizedBox(height: 24),

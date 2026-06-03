@@ -1191,9 +1191,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings_sectionTerminal => 'Terminal';
 
   @override
-  String get settings_terminalTheme => 'Terminal Color Scheme';
-
-  @override
   String get settings_cursorStyle => 'Cursor Style';
 
   @override
@@ -1270,13 +1267,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings_version => 'Version';
 
   @override
-  String get settings_themeLight => 'Light';
+  String get settings_themeGroupDark => 'DARK';
 
   @override
-  String get settings_themeDark => 'Dark';
-
-  @override
-  String get settings_themeSystem => 'Follow System';
+  String get settings_themeGroupLight => 'LIGHT';
 
   @override
   String get settings_cursorBlock => 'Block';
@@ -1318,9 +1312,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settings_selectTheme => 'Select Theme';
-
-  @override
-  String get settings_selectTerminalTheme => 'Select Terminal Theme';
 
   @override
   String get settings_selectCursorStyle => 'Select Cursor Style';

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:nexterm/core/theme/outdoor_colors.dart';
+import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/domain/entities/ssh_key_entity.dart';
 import 'package:nexterm/features/keys/providers/keys_provider.dart';
 import 'package:nexterm/shared/widgets/glass_card.dart';
@@ -22,6 +22,7 @@ class KeyListTile extends ConsumerWidget {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final p = theme.extension<ThemePalette>()!;
 
     return GlassCard(
       child: Row(
@@ -30,12 +31,12 @@ class KeyListTile extends ConsumerWidget {
             width: 36,
             height: 36,
             decoration: BoxDecoration(
-              color: OutdoorColors.accentDim,
+              color: p.accentDim,
               borderRadius: BorderRadius.circular(10),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.key,
-              color: OutdoorColors.accent,
+              color: p.accent,
               size: 18,
             ),
           ),
@@ -56,7 +57,7 @@ class KeyListTile extends ConsumerWidget {
                 Text(
                   sshKey.type.displayName,
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: OutdoorColors.accent,
+                    color: p.accent,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -64,7 +65,7 @@ class KeyListTile extends ConsumerWidget {
                 Text(
                   sshKey.fingerprint,
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).brightness == Brightness.dark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary,
+                    color: p.fgSecondary,
                     fontFamily: 'monospace',
                   ),
                   maxLines: 1,

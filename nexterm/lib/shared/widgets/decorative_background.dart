@@ -1,6 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:nexterm/core/theme/outdoor_colors.dart';
+import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/shared/painters/topo_painter.dart';
 import 'package:nexterm/shared/painters/noise_painter.dart';
 import 'package:nexterm/shared/painters/ridge_painter.dart';
@@ -24,7 +24,8 @@ class DecorativeBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final p = Theme.of(context).extension<ThemePalette>()!;
+    final isDark = p.brightness == Brightness.dark;
     final screen = MediaQuery.of(context).size;
     final rng = Random(_seed);
 
@@ -50,7 +51,7 @@ class DecorativeBackground extends StatelessWidget {
       children: [
         Positioned.fill(
           child: ColoredBox(
-            color: isDark ? OutdoorColors.darkBg : OutdoorColors.lightBg,
+            color: p.bg,
           ),
         ),
 
@@ -65,7 +66,7 @@ class DecorativeBackground extends StatelessWidget {
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    OutdoorColors.accent.withValues(alpha: g.alpha),
+                    p.accent.withValues(alpha: g.alpha),
                     Colors.transparent,
                   ],
                 ),
@@ -74,7 +75,7 @@ class DecorativeBackground extends StatelessWidget {
           ),
 
         Positioned.fill(
-          child: CustomPaint(painter: TopoPainter(isDark: isDark)),
+          child: CustomPaint(painter: TopoPainter(p)),
         ),
 
         Positioned.fill(
@@ -87,7 +88,7 @@ class DecorativeBackground extends StatelessWidget {
             left: 0,
             right: 0,
             height: 120,
-            child: CustomPaint(painter: RidgePainter(isDark: isDark)),
+            child: CustomPaint(painter: RidgePainter(p)),
           ),
 
         Positioned.fill(child: child),

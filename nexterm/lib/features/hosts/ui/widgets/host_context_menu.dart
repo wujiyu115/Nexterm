@@ -1,6 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
+import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/domain/entities/host_entity.dart';
 
 enum HostContextAction {
@@ -18,95 +18,128 @@ Future<HostContextAction?> showHostContextMenu({
   required HostEntity host,
 }) {
   final l = AppLocalizations.of(context)!;
-  return showCupertinoModalPopup<HostContextAction>(
+  final p = Theme.of(context).extension<ThemePalette>()!;
+
+  return showModalBottomSheet<HostContextAction>(
     context: context,
-    builder: (ctx) => CupertinoActionSheet(
-      title: Text(host.name),
-      message: Text('${host.username}@${host.hostname}:${host.port}'),
-      actions: [
-        CupertinoActionSheetAction(
-          onPressed: () => Navigator.pop(ctx, HostContextAction.connect),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(CupertinoIcons.bolt, size: 20),
-              const SizedBox(width: 8),
-              Text(l.hosts_contextConnect),
-            ],
-          ),
+    isScrollControlled: true,
+    backgroundColor: p.bgElevated,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+    ),
+    builder: (ctx) => ConstrainedBox(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(ctx).size.height * 0.7,
+      ),
+      child: SafeArea(
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            const SizedBox(height: 12),
+            Center(
+              child: Container(
+                width: 36,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: p.fgTertiary,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
+              child: Column(
+                children: [
+                  Text(
+                    host.name,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: p.fg,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    '${host.username}@${host.hostname}:${host.port}',
+                    style: TextStyle(fontSize: 13, color: p.fgSecondary),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 8),
+            Divider(height: 1, color: p.border),
+            _ActionTile(
+              icon: Icons.bolt,
+              label: l.hosts_contextConnect,
+              color: p.accent,
+              onTap: () => Navigator.pop(ctx, HostContextAction.connect),
+            ),
+            _ActionTile(
+              icon: Icons.folder_outlined,
+              label: l.hosts_contextSftp,
+              color: p.accent,
+              onTap: () => Navigator.pop(ctx, HostContextAction.sftpConnect),
+            ),
+            _ActionTile(
+              icon: Icons.copy_outlined,
+              label: l.hosts_contextCopy,
+              color: p.fg,
+              onTap: () => Navigator.pop(ctx, HostContextAction.duplicate),
+            ),
+            _ActionTile(
+              icon: Icons.drive_file_move_outline,
+              label: l.hosts_contextMoveToGroup,
+              color: p.fg,
+              onTap: () => Navigator.pop(ctx, HostContextAction.moveToGroup),
+            ),
+            _ActionTile(
+              icon: Icons.edit_outlined,
+              label: l.hosts_contextEdit,
+              color: p.fg,
+              onTap: () => Navigator.pop(ctx, HostContextAction.edit),
+            ),
+            _ActionTile(
+              icon: Icons.check_circle_outline,
+              label: l.hosts_contextSelect,
+              color: p.fg,
+              onTap: () => Navigator.pop(ctx, HostContextAction.select),
+            ),
+            Divider(height: 1, color: p.border),
+            _ActionTile(
+              icon: Icons.delete_outline,
+              label: l.hosts_contextDelete,
+              color: p.statusError,
+              onTap: () => Navigator.pop(ctx, HostContextAction.delete),
+            ),
+            const SizedBox(height: 8),
+          ],
         ),
-        CupertinoActionSheetAction(
-          onPressed: () => Navigator.pop(ctx, HostContextAction.sftpConnect),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(CupertinoIcons.folder, size: 20),
-              const SizedBox(width: 8),
-              Text(l.hosts_contextSftp),
-            ],
-          ),
-        ),
-        CupertinoActionSheetAction(
-          onPressed: () => Navigator.pop(ctx, HostContextAction.duplicate),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(CupertinoIcons.doc_on_doc, size: 20),
-              const SizedBox(width: 8),
-              Text(l.hosts_contextCopy),
-            ],
-          ),
-        ),
-        CupertinoActionSheetAction(
-          onPressed: () => Navigator.pop(ctx, HostContextAction.moveToGroup),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(CupertinoIcons.folder_badge_plus, size: 20),
-              const SizedBox(width: 8),
-              Text(l.hosts_contextMoveToGroup),
-            ],
-          ),
-        ),
-        CupertinoActionSheetAction(
-          onPressed: () => Navigator.pop(ctx, HostContextAction.edit),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(CupertinoIcons.pencil, size: 20),
-              const SizedBox(width: 8),
-              Text(l.hosts_contextEdit),
-            ],
-          ),
-        ),
-        CupertinoActionSheetAction(
-          onPressed: () => Navigator.pop(ctx, HostContextAction.select),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(CupertinoIcons.checkmark_circle, size: 20),
-              const SizedBox(width: 8),
-              Text(l.hosts_contextSelect),
-            ],
-          ),
-        ),
-        CupertinoActionSheetAction(
-          isDestructiveAction: true,
-          onPressed: () => Navigator.pop(ctx, HostContextAction.delete),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(CupertinoIcons.trash, size: 20, color: CupertinoColors.destructiveRed),
-              const SizedBox(width: 8),
-              Text(l.hosts_contextDelete),
-            ],
-          ),
-        ),
-      ],
-      cancelButton: CupertinoActionSheetAction(
-        onPressed: () => Navigator.pop(ctx),
-        child: Text(l.common_cancel),
       ),
     ),
   );
+}
+
+class _ActionTile extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _ActionTile({
+    required this.icon,
+    required this.label,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: Icon(icon, color: color, size: 22),
+      title: Text(label, style: TextStyle(color: color, fontSize: 15)),
+      onTap: onTap,
+      dense: true,
+      visualDensity: const VisualDensity(vertical: -1),
+    );
+  }
 }

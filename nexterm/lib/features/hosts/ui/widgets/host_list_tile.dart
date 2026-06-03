@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/domain/entities/enums.dart';
 import 'package:nexterm/domain/entities/host_entity.dart';
-import 'package:nexterm/core/theme/outdoor_colors.dart';
 import 'package:nexterm/shared/widgets/glass_card.dart';
 import 'package:nexterm/shared/widgets/status_indicator.dart';
 
@@ -29,7 +29,7 @@ class HostListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final p = Theme.of(context).extension<ThemePalette>()!;
     final subtitle = '${host.username}@${host.hostname}:${host.port}';
 
     return GlassCard(
@@ -43,7 +43,7 @@ class HostListTile extends StatelessWidget {
               child: Icon(
                 isSelected ? Icons.check_circle : Icons.radio_button_unchecked,
                 size: 22,
-                color: isSelected ? OutdoorColors.accent : (isDark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary),
+                color: isSelected ? p.accent : p.fgTertiary,
               ),
             )
           else
@@ -61,7 +61,7 @@ class HostListTile extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: isDark ? OutdoorColors.darkFg : OutdoorColors.lightFg,
+                          color: p.fg,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -79,7 +79,7 @@ class HostListTile extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 13,
                     fontFamily: 'monospace',
-                    color: isDark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary,
+                    color: p.fgSecondary,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -100,7 +100,7 @@ class HostListTile extends StatelessWidget {
             child: Icon(
               host.isFavorite ? Icons.star : Icons.star_border,
               size: 20,
-              color: host.isFavorite ? OutdoorColors.accent : (isDark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary),
+              color: host.isFavorite ? p.accent : p.fgTertiary,
             ),
           ),
         ],
@@ -115,19 +115,20 @@ class _ActiveConnectionBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final p = Theme.of(context).extension<ThemePalette>()!;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: OutdoorColors.accentDim,
+        color: p.accentDim,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: OutdoorColors.accent.withValues(alpha: 0.4), width: 0.5),
+        border: Border.all(color: p.accent.withValues(alpha: 0.4), width: 0.5),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(width: 6, height: 6, decoration: const BoxDecoration(color: OutdoorColors.accent, shape: BoxShape.circle)),
+          Container(width: 6, height: 6, decoration: BoxDecoration(color: p.accent, shape: BoxShape.circle)),
           const SizedBox(width: 4),
-          Text('$count', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: OutdoorColors.accent, height: 1)),
+          Text('$count', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: p.accent, height: 1)),
         ],
       ),
     );
@@ -140,13 +141,14 @@ class _TagChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final p = Theme.of(context).extension<ThemePalette>()!;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
-        color: OutdoorColors.accentDim,
+        color: p.accentDim,
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Text(tag, style: const TextStyle(fontSize: 11, color: OutdoorColors.accent)),
+      child: Text(tag, style: TextStyle(fontSize: 11, color: p.accent)),
     );
   }
 }

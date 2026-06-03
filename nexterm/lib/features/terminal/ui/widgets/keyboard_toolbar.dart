@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:nexterm/core/theme/outdoor_colors.dart';
+import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/features/terminal/models/toolbar_key_definition.dart';
 import 'package:nexterm/features/terminal/providers/toolbar_config_provider.dart';
 import 'package:nexterm/features/terminal/providers/toolbar_modifier_provider.dart';
@@ -200,25 +200,15 @@ class _KeyboardToolbarState extends ConsumerState<KeyboardToolbar> {
     final visibleCount = ref.watch(visibleGroupCountProvider);
     final modifier = ref.watch(toolbarModifierProvider);
     final groups = allGroups.take(visibleCount).toList();
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final p = Theme.of(context).extension<ThemePalette>()!;
+    final isDark = p.brightness == Brightness.dark;
 
-    final Color background = isDark
-        ? OutdoorColors.darkBgElevated
-        : OutdoorColors.lightBgElevated;
-    final Color buttonColor = isDark
-        ? OutdoorColors.darkSurfaceSolid
-        : OutdoorColors.lightSurface;
-    final Color activeColor = OutdoorColors.accent;
-    final Color textColor = isDark
-        ? OutdoorColors.darkFg
-        : OutdoorColors.lightFg;
-    final Color activeTextColor = isDark
-        ? OutdoorColors.darkBg
-        : Colors.white;
-    final Color dividerColor = isDark
-        ? OutdoorColors.darkBorder
-        : OutdoorColors.lightBorder;
+    final Color background = p.bgElevated;
+    final Color buttonColor = p.surfaceSolid;
+    final Color activeColor = p.accent;
+    final Color textColor = p.fg;
+    final Color activeTextColor = isDark ? p.bg : Colors.white;
+    final Color dividerColor = p.border;
 
     return Container(
       height: 44,
@@ -253,7 +243,7 @@ class _KeyboardToolbarState extends ConsumerState<KeyboardToolbar> {
                 child: Icon(
                   _isListening ? Icons.mic : Icons.mic_none,
                   size: 20,
-                  color: _isListening ? OutdoorColors.accent : textColor,
+                  color: _isListening ? p.accent : textColor,
                 ),
               ),
             ),

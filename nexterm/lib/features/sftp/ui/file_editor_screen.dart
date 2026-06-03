@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:nexterm/core/theme/outdoor_colors.dart';
+import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_highlight/flutter_highlight.dart';
 import 'package:flutter_highlight/themes/monokai-sublime.dart';
@@ -233,11 +233,12 @@ class _FileEditorScreenState extends ConsumerState<FileEditorScreen> {
   }
 
   Widget _buildError() {
+    final p = Theme.of(context).extension<ThemePalette>()!;
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.error_outline, size: 48, color: Theme.of(context).brightness == Brightness.dark ? OutdoorColors.darkStatusError : OutdoorColors.lightStatusError),
+          Icon(Icons.error_outline, size: 48, color: p.statusError),
           const SizedBox(height: 16),
           Text(AppLocalizations.of(context)!.fileEditor_loadFailed(_loadError!)),
           const SizedBox(height: 16),
@@ -361,6 +362,7 @@ class _FileEditorScreenState extends ConsumerState<FileEditorScreen> {
   }
 
   Widget _buildStatusBar() {
+    final p = Theme.of(context).extension<ThemePalette>()!;
     final langLabel = _language.isNotEmpty ? _language : 'plain text';
     return Container(
       height: 28,
@@ -386,7 +388,7 @@ class _FileEditorScreenState extends ConsumerState<FileEditorScreen> {
           if (_isModified)
             Text(
               AppLocalizations.of(context)!.fileEditor_modified,
-              style: TextStyle(fontSize: 11, color: Theme.of(context).brightness == Brightness.dark ? OutdoorColors.darkStatusConnecting : OutdoorColors.lightStatusConnecting),
+              style: TextStyle(fontSize: 11, color: p.statusConnecting),
             ),
         ],
       ),

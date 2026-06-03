@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:nexterm/core/theme/outdoor_colors.dart';
+import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nexterm/domain/entities/enums.dart';
@@ -46,10 +46,10 @@ class TerminalTabBar extends ConsumerWidget {
     final tabManager = ref.watch(tabManagerProvider);
     final tabs = tabManager.tabs;
     final activeIndex = tabManager.activeTabIndex;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final barBg = isDark ? OutdoorColors.darkBgElevated : OutdoorColors.lightBgElevated;
-    final barFg = isDark ? OutdoorColors.darkFg : OutdoorColors.lightFg;
-    final menuBg = isDark ? OutdoorColors.darkBgElevated : OutdoorColors.lightBgElevated;
+    final p = Theme.of(context).extension<ThemePalette>()!;
+    final barBg = p.bgElevated;
+    final barFg = p.fg;
+    final menuBg = p.bgElevated;
 
     return Container(
       height: 40,
@@ -112,10 +112,10 @@ class TerminalTabBar extends ConsumerWidget {
             itemBuilder: (ctx) {
               final l = AppLocalizations.of(ctx)!;
               final theme = Theme.of(ctx);
-              final menuDark = theme.brightness == Brightness.dark;
-              final iconColor = menuDark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary;
-              final textColor = menuDark ? OutdoorColors.darkFg : OutdoorColors.lightFg;
-              final dividerColor = menuDark ? OutdoorColors.darkBorder : OutdoorColors.lightBorder;
+              final menuP = theme.extension<ThemePalette>()!;
+              final iconColor = menuP.fgSecondary;
+              final textColor = menuP.fg;
+              final dividerColor = menuP.border;
 
               PopupMenuItem<String> menuItem({
                 required String value,
@@ -229,8 +229,9 @@ class _TabItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final p = Theme.of(context).extension<ThemePalette>()!;
     final color = isActive
-        ? OutdoorColors.accentDim
+        ? p.accentDim
         : Colors.transparent;
 
     return GestureDetector(
@@ -242,7 +243,7 @@ class _TabItem extends StatelessWidget {
           border: Border(
             bottom: BorderSide(
               color: isActive
-                  ? OutdoorColors.accent
+                  ? p.accent
                   : Colors.transparent,
               width: 2,
             ),
@@ -260,7 +261,7 @@ class _TabItem extends StatelessWidget {
                 _ => Icons.terminal,
               },
               size: 14,
-              color: isActive ? OutdoorColors.accent : null,
+              color: isActive ? p.accent : null,
             ),
             const SizedBox(width: 4),
             _StatusDot(status: tab.status),
@@ -300,12 +301,12 @@ class _StatusDot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final p = Theme.of(context).extension<ThemePalette>()!;
     final color = switch (status) {
-      ConnectionStatus.connected => isDark ? OutdoorColors.darkStatusOnline : OutdoorColors.lightStatusOnline,
-      ConnectionStatus.connecting => OutdoorColors.accent,
-      ConnectionStatus.disconnected => isDark ? OutdoorColors.darkStatusOffline : OutdoorColors.lightStatusOffline,
-      ConnectionStatus.error => isDark ? OutdoorColors.darkStatusError : OutdoorColors.lightStatusError,
+      ConnectionStatus.connected => p.statusOnline,
+      ConnectionStatus.connecting => p.accent,
+      ConnectionStatus.disconnected => p.statusOffline,
+      ConnectionStatus.error => p.statusError,
     };
     return Container(
       width: 8,
@@ -314,7 +315,7 @@ class _StatusDot extends StatelessWidget {
         color: color,
         shape: BoxShape.circle,
         boxShadow: status == ConnectionStatus.connected
-            ? [BoxShadow(color: OutdoorColors.accentGlow, blurRadius: 6)]
+            ? [BoxShadow(color: p.accentGlow, blurRadius: 6)]
             : null,
       ),
     );

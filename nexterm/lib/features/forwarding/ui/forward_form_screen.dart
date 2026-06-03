@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nexterm/core/theme/outdoor_colors.dart';
+import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -167,6 +167,7 @@ class _ForwardFormScreenState extends ConsumerState<ForwardFormScreen> {
       future: _loadForward(),
       builder: (context, _) {
         final l = AppLocalizations.of(context)!;
+        final p = Theme.of(context).extension<ThemePalette>()!;
         return DecorativeBackground(
           showRidge: false,
           child: Scaffold(
@@ -232,7 +233,7 @@ class _ForwardFormScreenState extends ConsumerState<ForwardFormScreen> {
                   Text(
                     _forwardType.localizedName(l),
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).brightness == Brightness.dark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary,
+                          color: p.fgSecondary,
                         ),
                   ),
                 ]),
@@ -429,6 +430,7 @@ class _FormSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final p = Theme.of(context).extension<ThemePalette>()!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -437,7 +439,7 @@ class _FormSection extends StatelessWidget {
             Text(
               title,
               style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    color: OutdoorColors.accent,
+                    color: p.accent,
                     fontWeight: FontWeight.w600,
                   ),
             ),

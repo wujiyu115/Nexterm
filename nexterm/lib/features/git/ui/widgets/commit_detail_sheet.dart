@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:nexterm/core/theme/outdoor_colors.dart';
+import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/features/git/models/git_commit.dart';
 import 'package:nexterm/features/git/models/git_diff.dart';
 import 'package:nexterm/features/git/providers/git_provider.dart';
@@ -79,7 +79,7 @@ class _CommitDetailSheetState extends State<CommitDetailSheet> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final p = Theme.of(context).extension<ThemePalette>()!;
     final commit = widget.commit;
 
     return DraggableScrollableSheet(
@@ -92,7 +92,7 @@ class _CommitDetailSheetState extends State<CommitDetailSheet> {
         return ClipRRect(
           borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
           child: Material(
-            color: isDark ? OutdoorColors.darkBg : OutdoorColors.lightBg,
+            color: p.bg,
             child: ListView(controller: scrollController, children: [
             Center(
                 child: Container(
@@ -100,9 +100,7 @@ class _CommitDetailSheetState extends State<CommitDetailSheet> {
                     width: 36,
                     height: 4,
                     decoration: BoxDecoration(
-                        color: isDark
-                            ? OutdoorColors.darkFgTertiary
-                            : OutdoorColors.lightFgTertiary,
+                        color: p.fgTertiary,
                         borderRadius: BorderRadius.circular(2)))),
             Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -110,9 +108,7 @@ class _CommitDetailSheetState extends State<CommitDetailSheet> {
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
-                        color: isDark
-                            ? OutdoorColors.darkFg
-                            : OutdoorColors.lightFg))),
+                        color: p.fg))),
             const SizedBox(height: 12),
             _DetailRow(
                 label: 'SHA',
@@ -132,26 +128,20 @@ class _CommitDetailSheetState extends State<CommitDetailSheet> {
                     style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
-                        color: isDark
-                            ? OutdoorColors.darkFgSecondary
-                            : OutdoorColors.lightFgSecondary))),
+                        color: p.fgSecondary))),
             Padding(
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
                 child: Text(commit.subject,
                     style: TextStyle(
                         fontSize: 15,
-                        color: isDark
-                            ? OutdoorColors.darkFg
-                            : OutdoorColors.lightFg))),
+                        color: p.fg))),
             if (commit.body.isNotEmpty)
               Padding(
                   padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
                   child: Text(commit.body,
                       style: TextStyle(
                           fontSize: 13,
-                          color: isDark
-                              ? OutdoorColors.darkFgSecondary
-                              : OutdoorColors.lightFgSecondary))),
+                          color: p.fgSecondary))),
             const Divider(height: 24),
             Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -160,9 +150,7 @@ class _CommitDetailSheetState extends State<CommitDetailSheet> {
                       style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
-                          color: isDark
-                              ? OutdoorColors.darkFgSecondary
-                              : OutdoorColors.lightFgSecondary)),
+                          color: p.fgSecondary)),
                   const Spacer(),
                   if (!_showDiff)
                     TextButton(
@@ -221,7 +209,7 @@ class _DetailRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final p = Theme.of(context).extension<ThemePalette>()!;
     return InkWell(
         onTap: onTap,
         child: Padding(
@@ -232,17 +220,13 @@ class _DetailRow extends StatelessWidget {
                 child: Text(label,
                     style: TextStyle(
                         fontSize: 13,
-                        color: isDark
-                            ? OutdoorColors.darkFgTertiary
-                            : OutdoorColors.lightFgTertiary))),
+                        color: p.fgTertiary))),
             Expanded(
                 child: Text(value,
                     style: TextStyle(
                         fontSize: 13,
                         fontFamily: 'JetBrains Mono',
-                        color: isDark
-                            ? OutdoorColors.darkFg
-                            : OutdoorColors.lightFg))),
+                        color: p.fg))),
           ]),
         ));
   }

@@ -1,6 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:nexterm/core/theme/outdoor_colors.dart';
+import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -130,6 +130,7 @@ class _KeyImportScreenState extends ConsumerState<KeyImportScreen>
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final p = theme.extension<ThemePalette>()!;
 
     return DecorativeBackground(
       showRidge: false,
@@ -174,12 +175,12 @@ class _KeyImportScreenState extends ConsumerState<KeyImportScreen>
                   child: TabBar(
                     controller: _tabController,
                     indicator: BoxDecoration(
-                      color: OutdoorColors.accentDim,
+                      color: p.accentDim,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     indicatorSize: TabBarIndicatorSize.tab,
-                    labelColor: OutdoorColors.accent,
-                    unselectedLabelColor: Theme.of(context).brightness == Brightness.dark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary,
+                    labelColor: p.accent,
+                    unselectedLabelColor: p.fgTertiary,
                     dividerColor: Colors.transparent,
                     tabs: [
                       Tab(
@@ -282,6 +283,7 @@ class _KeyImportScreenState extends ConsumerState<KeyImportScreen>
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final p = theme.extension<ThemePalette>()!;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -302,7 +304,7 @@ class _KeyImportScreenState extends ConsumerState<KeyImportScreen>
             child: Row(
               children: [
                 Icon(Icons.insert_drive_file,
-                    size: 20, color: OutdoorColors.accent),
+                    size: 20, color: p.accent),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -355,13 +357,15 @@ class _FormSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final p = theme.extension<ThemePalette>()!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           title,
-          style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                color: OutdoorColors.accent,
+          style: theme.textTheme.labelLarge?.copyWith(
+                color: p.accent,
                 fontWeight: FontWeight.w600,
               ),
         ),

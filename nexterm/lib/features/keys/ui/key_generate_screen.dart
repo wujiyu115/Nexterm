@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:nexterm/core/theme/outdoor_colors.dart';
+import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -127,6 +127,7 @@ class _KeyGenerateScreenState extends ConsumerState<KeyGenerateScreen> {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final p = theme.extension<ThemePalette>()!;
 
     return DecorativeBackground(
       showRidge: false,
@@ -198,13 +199,13 @@ class _KeyGenerateScreenState extends ConsumerState<KeyGenerateScreen> {
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                 decoration: BoxDecoration(
-                                  color: OutdoorColors.accentDim,
+                                  color: p.accentDim,
                                   borderRadius: BorderRadius.circular(4),
                                 ),
                                 child: Text(
                                   l.keyGenerate_recommended,
                                   style: theme.textTheme.labelSmall?.copyWith(
-                                    color: OutdoorColors.accent,
+                                    color: p.accent,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
@@ -219,7 +220,7 @@ class _KeyGenerateScreenState extends ConsumerState<KeyGenerateScreen> {
                             KeyType.rsa4096 => l.keyGenerate_rsa4096Desc,
                             _ => '',
                           },
-                          style: theme.textTheme.bodySmall?.copyWith(color: Theme.of(context).brightness == Brightness.dark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary),
+                          style: theme.textTheme.bodySmall?.copyWith(color: p.fgSecondary),
                         ),
                         value: type,
                       );
@@ -277,13 +278,15 @@ class _FormSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final p = theme.extension<ThemePalette>()!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           title,
-          style: Theme.of(context).textTheme.labelLarge?.copyWith(
-            color: OutdoorColors.accent,
+          style: theme.textTheme.labelLarge?.copyWith(
+            color: p.accent,
             fontWeight: FontWeight.w600,
           ),
         ),

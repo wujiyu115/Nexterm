@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nexterm/core/theme/outdoor_colors.dart';
+import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/domain/entities/snippet_entity.dart';
 import 'package:nexterm/shared/widgets/glass_card.dart';
 
@@ -20,8 +21,7 @@ class SnippetListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final p = theme.extension<ThemePalette>()!;
 
     return GlassCard(
       onTap: onTap,
@@ -45,13 +45,13 @@ class SnippetListTile extends StatelessWidget {
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   decoration: BoxDecoration(
-                    color: isDark ? OutdoorColors.darkInputBg : OutdoorColors.lightInputBg,
+                    color: p.inputBg,
                     borderRadius: BorderRadius.circular(OutdoorColors.radiusSm),
                   ),
                   child: Text(
                     snippet.command,
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: isDark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary,
+                      color: p.fgSecondary,
                       fontFamily: 'monospace',
                     ),
                     maxLines: 1,
@@ -75,7 +75,7 @@ class SnippetListTile extends StatelessWidget {
             icon: Icon(
               snippet.isFavorite ? Icons.star : Icons.star_border,
               size: 20,
-              color: snippet.isFavorite ? OutdoorColors.accent : (isDark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary),
+              color: snippet.isFavorite ? p.accent : p.fgTertiary,
             ),
             onPressed: onToggleFavorite,
             visualDensity: VisualDensity.compact,
@@ -92,16 +92,17 @@ class _TagChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final p = Theme.of(context).extension<ThemePalette>()!;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
-        color: OutdoorColors.accentDim,
+        color: p.accentDim,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
         tag,
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-          color: OutdoorColors.accent,
+          color: p.accent,
         ),
       ),
     );

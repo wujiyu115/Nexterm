@@ -59,33 +59,6 @@ class TerminalThemes {
     searchHitForeground: Color(0xFF282A36),
   );
 
-  /// Monokai theme.
-  static const monokai = TerminalTheme(
-    cursor: Color(0xFFF8F8F2),
-    selection: Color(0x66A6E22E),
-    foreground: Color(0xFFF8F8F2),
-    background: Color(0xFF272822),
-    black: Color(0xFF272822),
-    red: Color(0xFFF92672),
-    green: Color(0xFFA6E22E),
-    yellow: Color(0xFFE6DB74),
-    blue: Color(0xFF66D9EF),
-    magenta: Color(0xFFAE81FF),
-    cyan: Color(0xFFA1EFE4),
-    white: Color(0xFFF8F8F2),
-    brightBlack: Color(0xFF75715E),
-    brightRed: Color(0xFFF92672),
-    brightGreen: Color(0xFFA6E22E),
-    brightYellow: Color(0xFFE6DB74),
-    brightBlue: Color(0xFF66D9EF),
-    brightMagenta: Color(0xFFAE81FF),
-    brightCyan: Color(0xFFA1EFE4),
-    brightWhite: Color(0xFFF9F8F5),
-    searchHitBackground: Color(0xFFE6DB74),
-    searchHitBackgroundCurrent: Color(0xFFA6E22E),
-    searchHitForeground: Color(0xFF272822),
-  );
-
   /// Solarized Dark theme.
   static const solarizedDark = TerminalTheme(
     cursor: Color(0xFF839496),
@@ -140,13 +113,152 @@ class TerminalThemes {
     searchHitForeground: Color(0xFFFDF6E3),
   );
 
+  /// Nord theme (https://www.nordtheme.com/).
+  static const nord = TerminalTheme(
+    cursor: Color(0xFFD8DEE9),
+    selection: Color(0x66434C5E),
+    foreground: Color(0xFFD8DEE9),
+    background: Color(0xFF2E3440),
+    black: Color(0xFF3B4252),
+    red: Color(0xFFBF616A),
+    green: Color(0xFFA3BE8C),
+    yellow: Color(0xFFEBCB8B),
+    blue: Color(0xFF81A1C1),
+    magenta: Color(0xFFB48EAD),
+    cyan: Color(0xFF88C0D0),
+    white: Color(0xFFE5E9F0),
+    brightBlack: Color(0xFF4C566A),
+    brightRed: Color(0xFFBF616A),
+    brightGreen: Color(0xFFA3BE8C),
+    brightYellow: Color(0xFFEBCB8B),
+    brightBlue: Color(0xFF81A1C1),
+    brightMagenta: Color(0xFFB48EAD),
+    brightCyan: Color(0xFF8FBCBB),
+    brightWhite: Color(0xFFECEFF4),
+    searchHitBackground: Color(0xFFEBCB8B),
+    searchHitBackgroundCurrent: Color(0xFFA3BE8C),
+    searchHitForeground: Color(0xFF2E3440),
+  );
+
+  /// Gruvbox Dark Hard theme.
+  static const gruvbox = TerminalTheme(
+    cursor: Color(0xFFEBDBB2),
+    selection: Color(0x66504945),
+    foreground: Color(0xFFEBDBB2),
+    background: Color(0xFF282828),
+    black: Color(0xFF282828),
+    red: Color(0xFFCC241D),
+    green: Color(0xFF98971A),
+    yellow: Color(0xFFD79921),
+    blue: Color(0xFF458588),
+    magenta: Color(0xFFB16286),
+    cyan: Color(0xFF689D6A),
+    white: Color(0xFFA89984),
+    brightBlack: Color(0xFF928374),
+    brightRed: Color(0xFFFB4934),
+    brightGreen: Color(0xFFB8BB26),
+    brightYellow: Color(0xFFFABD2F),
+    brightBlue: Color(0xFF83A598),
+    brightMagenta: Color(0xFFD3869B),
+    brightCyan: Color(0xFF8EC07C),
+    brightWhite: Color(0xFFEBDBB2),
+    searchHitBackground: Color(0xFFD79921),
+    searchHitBackgroundCurrent: Color(0xFF98971A),
+    searchHitForeground: Color(0xFF282828),
+  );
+
+  /// Catppuccin Latte (light).
+  static const catppuccinLatte = TerminalTheme(
+    cursor: Color(0xFFDC8A78),
+    selection: Color(0x66ACB0BE),
+    foreground: Color(0xFF4C4F69),
+    background: Color(0xFFEFF1F5),
+    black: Color(0xFF5C5F77),
+    red: Color(0xFFD20F39),
+    green: Color(0xFF40A02B),
+    yellow: Color(0xFFDF8E1D),
+    blue: Color(0xFF1E66F5),
+    magenta: Color(0xFFEA76CB),
+    cyan: Color(0xFF179299),
+    white: Color(0xFFACB0BE),
+    brightBlack: Color(0xFF6C6F85),
+    brightRed: Color(0xFFD20F39),
+    brightGreen: Color(0xFF40A02B),
+    brightYellow: Color(0xFFDF8E1D),
+    brightBlue: Color(0xFF1E66F5),
+    brightMagenta: Color(0xFFEA76CB),
+    brightCyan: Color(0xFF179299),
+    brightWhite: Color(0xFFBCC0CC),
+    searchHitBackground: Color(0xFFDF8E1D),
+    searchHitBackgroundCurrent: Color(0xFF40A02B),
+    searchHitForeground: Color(0xFFEFF1F5),
+  );
+
+  /// GitHub Light theme (palette derived from GitHub Primer Light).
+  static const githubLight = TerminalTheme(
+    cursor: Color(0xFF24292F),
+    selection: Color(0x660969DA),
+    foreground: Color(0xFF1F2328),
+    background: Color(0xFFFFFFFF),
+    black: Color(0xFF24292F),
+    red: Color(0xFFCF222E),
+    green: Color(0xFF116329),
+    yellow: Color(0xFF4D2D00),
+    blue: Color(0xFF0969DA),
+    magenta: Color(0xFF8250DF),
+    cyan: Color(0xFF1B7C83),
+    white: Color(0xFF6E7781),
+    brightBlack: Color(0xFF57606A),
+    brightRed: Color(0xFFA40E26),
+    brightGreen: Color(0xFF1A7F37),
+    brightYellow: Color(0xFF633C01),
+    brightBlue: Color(0xFF218BFF),
+    brightMagenta: Color(0xFF8250DF),
+    brightCyan: Color(0xFF3192AA),
+    brightWhite: Color(0xFF8C959F),
+    searchHitBackground: Color(0xFFFFF8C5),
+    searchHitBackgroundCurrent: Color(0xFFDAFBE1),
+    searchHitForeground: Color(0xFF24292F),
+  );
+
+  /// Rosé Pine Dawn (light) — https://rosepinetheme.com.
+  static const rosePineDawn = TerminalTheme(
+    cursor: Color(0xFF575279),
+    selection: Color(0x66DFDAD9),
+    foreground: Color(0xFF575279),
+    background: Color(0xFFFAF4ED),
+    black: Color(0xFFF2E9E1),
+    red: Color(0xFFB4637A),
+    green: Color(0xFF286983),
+    yellow: Color(0xFFEA9D34),
+    blue: Color(0xFF56949F),
+    magenta: Color(0xFF907AA9),
+    cyan: Color(0xFFD7827E),
+    white: Color(0xFF575279),
+    brightBlack: Color(0xFF9893A5),
+    brightRed: Color(0xFFB4637A),
+    brightGreen: Color(0xFF286983),
+    brightYellow: Color(0xFFEA9D34),
+    brightBlue: Color(0xFF56949F),
+    brightMagenta: Color(0xFF907AA9),
+    brightCyan: Color(0xFFD7827E),
+    brightWhite: Color(0xFF575279),
+    searchHitBackground: Color(0xFFEA9D34),
+    searchHitBackgroundCurrent: Color(0xFF286983),
+    searchHitForeground: Color(0xFFFAF4ED),
+  );
+
   /// Map of all available terminal themes by name.
   static const Map<String, TerminalTheme> all = {
     'catppuccin': catppuccin,
     'dracula': dracula,
-    'monokai': monokai,
     'solarized-dark': solarizedDark,
     'solarized-light': solarizedLight,
+    'nord': nord,
+    'gruvbox': gruvbox,
+    'catppuccin-latte': catppuccinLatte,
+    'github-light': githubLight,
+    'rose-pine-dawn': rosePineDawn,
   };
 
   /// Returns the theme for [name], falling back to [catppuccin] if not found.

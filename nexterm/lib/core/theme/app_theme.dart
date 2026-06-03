@@ -1,195 +1,119 @@
+// nexterm/lib/core/theme/app_theme.dart
 import 'package:flutter/material.dart';
 import 'package:nexterm/core/theme/outdoor_colors.dart';
+import 'package:nexterm/core/theme/theme_palette.dart';
 
 class AppTheme {
-  static ThemeData light() {
+  AppTheme._();
+
+  /// Builds a [ThemeData] from a [ThemePalette]. Used by `app.dart`.
+  static ThemeData fromPalette(ThemePalette p) {
+    final isDark = p.brightness == Brightness.dark;
     return ThemeData(
       useMaterial3: true,
-      brightness: Brightness.light,
-      colorScheme: ColorScheme.light(
-        primary: OutdoorColors.accent,
-        surface: OutdoorColors.lightSurfaceSolid,
-        onSurface: OutdoorColors.lightFg,
-        onSurfaceVariant: OutdoorColors.lightFgSecondary,
-        outline: OutdoorColors.lightBorder,
-        primaryContainer: OutdoorColors.accentDim,
-        onPrimaryContainer: OutdoorColors.accent,
-      ),
-      scaffoldBackgroundColor: OutdoorColors.lightBg,
-      appBarTheme: const AppBarTheme(
+      brightness: p.brightness,
+      colorScheme: _buildColorScheme(p),
+      scaffoldBackgroundColor: p.bg,
+      extensions: [p],
+      appBarTheme: AppBarTheme(
         backgroundColor: Colors.transparent,
-        foregroundColor: OutdoorColors.lightFg,
+        foregroundColor: p.fg,
         elevation: 0,
         scrolledUnderElevation: 0,
       ),
       cardTheme: CardThemeData(
-        color: OutdoorColors.lightCardBg,
+        color: p.cardBg,
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(OutdoorColors.radiusLg),
-          side: const BorderSide(color: OutdoorColors.lightGlassBorder, width: 0.5),
+          side: BorderSide(color: p.glassBorder, width: 0.5),
         ),
       ),
       listTileTheme: const ListTileThemeData(
         contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       ),
       navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: OutdoorColors.lightNavBg,
-        indicatorColor: OutdoorColors.accentDim,
+        backgroundColor: p.navBg,
+        indicatorColor: p.accentDim,
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return const TextStyle(fontSize: 10, fontWeight: FontWeight.w500, color: OutdoorColors.accent);
+            return TextStyle(
+                fontSize: 10, fontWeight: FontWeight.w500, color: p.accent);
           }
-          return const TextStyle(fontSize: 10, fontWeight: FontWeight.w500, color: OutdoorColors.lightTabInactive);
+          return TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w500,
+              color: p.tabInactive);
         }),
         iconTheme: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return const IconThemeData(color: OutdoorColors.accent, size: 24);
+            return IconThemeData(color: p.accent, size: 24);
           }
-          return const IconThemeData(color: OutdoorColors.lightTabInactive, size: 24);
+          return IconThemeData(color: p.tabInactive, size: 24);
         }),
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
-        backgroundColor: OutdoorColors.accent,
-        foregroundColor: Colors.white,
+        backgroundColor: p.accent,
+        foregroundColor: isDark ? p.bg : Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: OutdoorColors.lightInputBg,
+        fillColor: p.inputBg,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(OutdoorColors.radiusMd),
-          borderSide: const BorderSide(color: OutdoorColors.lightBorder, width: 0.5),
+          borderSide: BorderSide(color: p.border, width: 0.5),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(OutdoorColors.radiusMd),
-          borderSide: const BorderSide(color: OutdoorColors.lightBorder, width: 0.5),
+          borderSide: BorderSide(color: p.border, width: 0.5),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(OutdoorColors.radiusMd),
-          borderSide: const BorderSide(color: OutdoorColors.accent, width: 1),
+          borderSide: BorderSide(color: p.accent, width: 1),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          backgroundColor: OutdoorColors.accent,
+          backgroundColor: p.accent,
           foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(OutdoorColors.radiusMd)),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(OutdoorColors.radiusMd)),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
         ),
       ),
-      sliderTheme: const SliderThemeData(
-        activeTrackColor: OutdoorColors.accent,
+      sliderTheme: SliderThemeData(
+        activeTrackColor: p.accent,
         thumbColor: Colors.white,
-        inactiveTrackColor: OutdoorColors.lightBorder,
+        inactiveTrackColor: p.border,
       ),
       switchTheme: SwitchThemeData(
         thumbColor: WidgetStateProperty.all(Colors.white),
         trackColor: WidgetStateProperty.resolveWith((states) {
-          if (states.contains(WidgetState.selected)) return OutdoorColors.accent;
-          return OutdoorColors.lightFgTertiary;
+          if (states.contains(WidgetState.selected)) return p.accent;
+          return p.fgTertiary;
         }),
       ),
     );
   }
 
-  static ThemeData dark() {
-    return ThemeData(
-      useMaterial3: true,
-      brightness: Brightness.dark,
-      colorScheme: ColorScheme.dark(
-        primary: OutdoorColors.accent,
-        surface: OutdoorColors.darkSurfaceSolid,
-        onSurface: OutdoorColors.darkFg,
-        onSurfaceVariant: OutdoorColors.darkFgSecondary,
-        outline: OutdoorColors.darkBorder,
-        primaryContainer: OutdoorColors.accentDim,
-        onPrimaryContainer: OutdoorColors.accent,
-      ),
-      scaffoldBackgroundColor: OutdoorColors.darkBg,
-      appBarTheme: const AppBarTheme(
-        backgroundColor: Colors.transparent,
-        foregroundColor: OutdoorColors.darkFg,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-      ),
-      cardTheme: CardThemeData(
-        color: OutdoorColors.darkCardBg,
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(OutdoorColors.radiusLg),
-          side: const BorderSide(color: OutdoorColors.darkGlassBorder, width: 0.5),
-        ),
-      ),
-      listTileTheme: const ListTileThemeData(
-        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      ),
-      navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: OutdoorColors.darkNavBg,
-        indicatorColor: OutdoorColors.accentDim,
-        labelTextStyle: WidgetStateProperty.resolveWith((states) {
-          if (states.contains(WidgetState.selected)) {
-            return const TextStyle(fontSize: 10, fontWeight: FontWeight.w500, color: OutdoorColors.accent);
-          }
-          return const TextStyle(fontSize: 10, fontWeight: FontWeight.w500, color: OutdoorColors.darkTabInactive);
-        }),
-        iconTheme: WidgetStateProperty.resolveWith((states) {
-          if (states.contains(WidgetState.selected)) {
-            return const IconThemeData(color: OutdoorColors.accent, size: 24);
-          }
-          return const IconThemeData(color: OutdoorColors.darkTabInactive, size: 24);
-        }),
-      ),
-      floatingActionButtonTheme: FloatingActionButtonThemeData(
-        backgroundColor: OutdoorColors.accent,
-        foregroundColor: OutdoorColors.darkBg,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      ),
-      inputDecorationTheme: InputDecorationTheme(
-        filled: true,
-        fillColor: OutdoorColors.darkInputBg,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(OutdoorColors.radiusMd),
-          borderSide: const BorderSide(color: OutdoorColors.darkBorder, width: 0.5),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(OutdoorColors.radiusMd),
-          borderSide: const BorderSide(color: OutdoorColors.darkBorder, width: 0.5),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(OutdoorColors.radiusMd),
-          borderSide: const BorderSide(color: OutdoorColors.accent, width: 1),
-        ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      ),
-      filledButtonTheme: FilledButtonThemeData(
-        style: FilledButton.styleFrom(
-          backgroundColor: OutdoorColors.accent,
-          foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(OutdoorColors.radiusMd)),
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-        ),
-      ),
-      sliderTheme: const SliderThemeData(
-        activeTrackColor: OutdoorColors.accent,
-        thumbColor: Colors.white,
-        inactiveTrackColor: OutdoorColors.darkBorder,
-      ),
-      switchTheme: SwitchThemeData(
-        thumbColor: WidgetStateProperty.all(Colors.white),
-        trackColor: WidgetStateProperty.resolveWith((states) {
-          if (states.contains(WidgetState.selected)) return OutdoorColors.accent;
-          return OutdoorColors.darkFgTertiary;
-        }),
-      ),
+  static ColorScheme _buildColorScheme(ThemePalette p) {
+    final base = p.brightness == Brightness.dark
+        ? const ColorScheme.dark()
+        : const ColorScheme.light();
+    return base.copyWith(
+      primary: p.accent,
+      surface: p.surfaceSolid,
+      surfaceContainer: p.cardBg,
+      surfaceContainerHigh: p.bgElevated,
+      onSurface: p.fg,
+      onSurfaceVariant: p.fgSecondary,
+      outline: p.border,
+      primaryContainer: p.accentDim,
+      onPrimaryContainer: p.accent,
+      error: p.statusError,
     );
   }
-
-  // Status colors (compatible with existing references)
-  static const Color onlineGreen = OutdoorColors.darkStatusOnline;
-  static const Color onlineGreenLight = OutdoorColors.lightStatusOnline;
-  static const Color errorRed = Color(0xFFF38BA8);
-  static const Color errorRedLight = Color(0xFFE17055);
-  static const Color warningYellow = Color(0xFFF9E2AF);
 }

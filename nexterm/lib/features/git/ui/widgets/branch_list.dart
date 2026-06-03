@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nexterm/core/theme/outdoor_colors.dart';
+import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/features/git/models/git_branch.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 
@@ -33,7 +33,7 @@ class _BranchListState extends State<BranchList> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final p = Theme.of(context).extension<ThemePalette>()!;
     if (widget.branches.isEmpty) return Center(child: Text(l.git_noBranches));
     final filtered = _filtered;
     return Column(children: [
@@ -80,15 +80,15 @@ class _BranchListState extends State<BranchList> {
               dense: true, visualDensity: VisualDensity.compact,
               onTap: () => widget.onBranchTap(branch),
               leading: Icon(branch.isRemote ? Icons.cloud_outlined : Icons.call_split, size: 18,
-                  color: branch.isCurrent ? OutdoorColors.accent : (isDark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary)),
+                  color: branch.isCurrent ? p.accent : p.fgSecondary),
               title: Text(branch.name, style: TextStyle(fontSize: 14, fontWeight: branch.isCurrent ? FontWeight.w600 : FontWeight.normal,
-                  color: isDark ? OutdoorColors.darkFg : OutdoorColors.lightFg)),
+                  color: p.fg)),
               trailing: Row(mainAxisSize: MainAxisSize.min, children: [
                 if (branch.isCurrent) Container(padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(color: OutdoorColors.accent.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(4)),
-                    child: Text(l.git_currentBranch, style: TextStyle(fontSize: 10, color: OutdoorColors.accent))),
+                    decoration: BoxDecoration(color: p.accent.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(4)),
+                    child: Text(l.git_currentBranch, style: TextStyle(fontSize: 10, color: p.accent))),
                 const SizedBox(width: 4),
-                Text(branch.shortSha, style: TextStyle(fontSize: 12, fontFamily: 'JetBrains Mono', color: isDark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary)),
+                Text(branch.shortSha, style: TextStyle(fontSize: 12, fontFamily: 'JetBrains Mono', color: p.fgTertiary)),
               ]),
             ),
           );

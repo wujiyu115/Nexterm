@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nexterm/core/theme/outdoor_colors.dart';
+import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/features/git/models/git_status.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 
@@ -11,12 +11,12 @@ class StatusFileList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final p = Theme.of(context).extension<ThemePalette>()!;
     if (!status.isDirty) {
       return Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
-        Icon(Icons.check_circle_outline, size: 48, color: isDark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary),
+        Icon(Icons.check_circle_outline, size: 48, color: p.fgTertiary),
         const SizedBox(height: 12),
-        Text(l.git_noChanges, style: TextStyle(color: isDark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary)),
+        Text(l.git_noChanges, style: TextStyle(color: p.fgSecondary)),
       ]));
     }
     return ListView(children: [
@@ -42,20 +42,20 @@ class _SectionHeader extends StatelessWidget {
   const _SectionHeader({required this.title, required this.count});
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final p = Theme.of(context).extension<ThemePalette>()!;
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
       child: Row(children: [
         Text(title, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600,
-            color: isDark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary)),
+            color: p.fgSecondary)),
         const SizedBox(width: 6),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
           decoration: BoxDecoration(
-            color: (isDark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary).withValues(alpha: 0.3),
+            color: p.fgTertiary.withValues(alpha: 0.3),
             borderRadius: BorderRadius.circular(8)),
           child: Text('$count', style: TextStyle(fontSize: 11,
-              color: isDark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary)),
+              color: p.fgSecondary)),
         ),
       ]),
     );
@@ -88,15 +88,15 @@ class _FileRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final p = Theme.of(context).extension<ThemePalette>()!;
     final code = staged ? entry.indexStatus : entry.workTreeStatus;
     final fileName = entry.path.split('/').last;
     final dirPath = entry.path.contains('/') ? entry.path.substring(0, entry.path.lastIndexOf('/')) : '';
     return ListTile(
       dense: true, visualDensity: VisualDensity.compact,
       leading: Icon(_statusIcon(code), size: 18, color: _statusColor(code)),
-      title: Text(fileName, style: TextStyle(fontSize: 14, color: isDark ? OutdoorColors.darkFg : OutdoorColors.lightFg), maxLines: 1, overflow: TextOverflow.ellipsis),
-      subtitle: dirPath.isNotEmpty ? Text(dirPath, style: TextStyle(fontSize: 11, color: isDark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary), maxLines: 1, overflow: TextOverflow.ellipsis) : null,
+      title: Text(fileName, style: TextStyle(fontSize: 14, color: p.fg), maxLines: 1, overflow: TextOverflow.ellipsis),
+      subtitle: dirPath.isNotEmpty ? Text(dirPath, style: TextStyle(fontSize: 11, color: p.fgTertiary), maxLines: 1, overflow: TextOverflow.ellipsis) : null,
       onTap: onTap,
     );
   }

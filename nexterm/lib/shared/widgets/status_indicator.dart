@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nexterm/domain/entities/enums.dart';
-import 'package:nexterm/core/theme/outdoor_colors.dart';
+import 'package:nexterm/core/theme/theme_palette.dart';
 
 class StatusIndicator extends StatefulWidget {
   final ConnectionStatus status;
@@ -49,12 +49,12 @@ class _StatusIndicatorState extends State<StatusIndicator> with SingleTickerProv
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final p = Theme.of(context).extension<ThemePalette>()!;
     final color = switch (widget.status) {
-      ConnectionStatus.connected => isDark ? OutdoorColors.darkStatusOnline : OutdoorColors.lightStatusOnline,
-      ConnectionStatus.connecting => isDark ? OutdoorColors.darkStatusConnecting : OutdoorColors.lightStatusConnecting,
-      ConnectionStatus.error => isDark ? OutdoorColors.darkStatusError : OutdoorColors.lightStatusError,
-      ConnectionStatus.disconnected => isDark ? OutdoorColors.darkStatusOffline : OutdoorColors.lightStatusOffline,
+      ConnectionStatus.connected => p.statusOnline,
+      ConnectionStatus.connecting => p.statusConnecting,
+      ConnectionStatus.error => p.statusError,
+      ConnectionStatus.disconnected => p.statusOffline,
     };
 
     return SizedBox(
@@ -77,7 +77,7 @@ class _StatusIndicatorState extends State<StatusIndicator> with SingleTickerProv
                         height: widget.size,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          border: Border.all(color: OutdoorColors.accent, width: 1),
+                          border: Border.all(color: p.accent, width: 1),
                         ),
                       ),
                     ),
@@ -91,7 +91,7 @@ class _StatusIndicatorState extends State<StatusIndicator> with SingleTickerProv
                 shape: BoxShape.circle,
                 color: color,
                 boxShadow: _isOnline
-                    ? const [BoxShadow(color: OutdoorColors.accentGlow, blurRadius: 8, spreadRadius: 0)]
+                    ? [BoxShadow(color: p.accentGlow, blurRadius: 8, spreadRadius: 0)]
                     : null,
               ),
             ),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nexterm/core/theme/outdoor_colors.dart';
+import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/features/git/models/git_graph.dart';
 import 'package:nexterm/features/git/providers/git_provider.dart';
 import 'package:nexterm/features/git/ui/widgets/commit_detail_sheet.dart';
@@ -59,7 +59,7 @@ class _BranchGraphScreenState extends State<BranchGraphScreen> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final p = Theme.of(context).extension<ThemePalette>()!;
     final graphWidth = (_maxLanes + 1) * _laneWidth;
     final itemCount = _rows.length + (_hasMore ? 1 : 0);
 
@@ -112,7 +112,7 @@ class _BranchGraphScreenState extends State<BranchGraphScreen> {
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: 13,
-                        color: isDark ? OutdoorColors.darkFg : OutdoorColors.lightFg,
+                        color: p.fg,
                       ),
                     ),
                     const SizedBox(height: 2),
@@ -123,7 +123,7 @@ class _BranchGraphScreenState extends State<BranchGraphScreen> {
                           style: TextStyle(
                             fontSize: 11,
                             fontFamily: 'JetBrains Mono',
-                            color: OutdoorColors.accent,
+                            color: p.accent,
                           ),
                         ),
                         if (refs.isNotEmpty) ...[
@@ -158,7 +158,7 @@ class _BranchGraphScreenState extends State<BranchGraphScreen> {
                           commit.authorName,
                           style: TextStyle(
                             fontSize: 11,
-                            color: isDark ? OutdoorColors.darkFgTertiary : OutdoorColors.lightFgTertiary,
+                            color: p.fgTertiary,
                           ),
                         ),
                       ],

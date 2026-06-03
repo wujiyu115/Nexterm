@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nexterm/core/theme/outdoor_colors.dart';
+import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/features/forwarding/models/detected_port.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:nexterm/shared/widgets/glass_card.dart';
@@ -16,14 +16,14 @@ class DetectedPortTile extends StatelessWidget {
     this.onTap,
   });
 
-  Color _protocolColor(String protocol) {
+  Color _protocolColor(String protocol, Color fallback) {
     return switch (protocol) {
       'HTTP' || 'HTTPS' => const Color(0xFF4CAF50),
       'MySQL' || 'PostgreSQL' || 'MongoDB' => const Color(0xFF2196F3),
       'Redis' || 'Memcached' => const Color(0xFFFF5722),
       'SSH' => const Color(0xFF9C27B0),
       'Docker' || 'Container' => const Color(0xFF00BCD4),
-      _ => OutdoorColors.accent,
+      _ => fallback,
     };
   }
 
@@ -31,9 +31,8 @@ class DetectedPortTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l = AppLocalizations.of(context)!;
-    final isDark = theme.brightness == Brightness.dark;
-    final secondaryColor =
-        isDark ? OutdoorColors.darkFgSecondary : OutdoorColors.lightFgSecondary;
+    final p = theme.extension<ThemePalette>()!;
+    final secondaryColor = p.fgSecondary;
 
     return GlassCard(
       onTap: isForwarded ? null : onTap,
@@ -55,13 +54,13 @@ class DetectedPortTile extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             decoration: BoxDecoration(
-              color: _protocolColor(port.protocolGuess).withValues(alpha: 0.15),
+              color: _protocolColor(port.protocolGuess, p.accent).withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(6),
             ),
             child: Text(
               port.protocolGuess,
               style: theme.textTheme.labelSmall?.copyWith(
-                color: _protocolColor(port.protocolGuess),
+                color: _protocolColor(port.protocolGuess, p.accent),
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -100,13 +99,13 @@ class DetectedPortTile extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
-                color: OutdoorColors.accentDim,
+                color: p.accentDim,
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Text(
                 l.portDetect_alreadyForwarded,
                 style: theme.textTheme.labelSmall?.copyWith(
-                  color: OutdoorColors.accent,
+                  color: p.accent,
                 ),
               ),
             )
@@ -114,7 +113,7 @@ class DetectedPortTile extends StatelessWidget {
             Icon(
               Icons.add_circle_outline,
               size: 22,
-              color: OutdoorColors.accent,
+              color: p.accent,
             ),
         ],
       ),

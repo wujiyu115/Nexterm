@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nexterm/core/theme/outdoor_colors.dart';
+import 'package:nexterm/core/theme/theme_palette.dart';
 
 class SectionLabel extends StatelessWidget {
   final String title;
@@ -9,6 +9,7 @@ class SectionLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final p = Theme.of(context).extension<ThemePalette>()!;
     return Padding(
       padding: padding ?? const EdgeInsets.fromLTRB(16, 14, 16, 4),
       child: Row(
@@ -17,11 +18,11 @@ class SectionLabel extends StatelessWidget {
             width: 3,
             height: 14,
             decoration: BoxDecoration(
-              color: OutdoorColors.accent,
+              color: p.accent,
               borderRadius: BorderRadius.circular(2),
-              boxShadow: const [
+              boxShadow: [
                 BoxShadow(
-                  color: OutdoorColors.accentGlow,
+                  color: p.accentGlow,
                   blurRadius: 6,
                   spreadRadius: 0,
                 ),
@@ -31,10 +32,10 @@ class SectionLabel extends StatelessWidget {
           const SizedBox(width: 8),
           Text(
             title.toUpperCase(),
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w700,
-              color: OutdoorColors.accent,
+              color: p.accent,
               letterSpacing: 0.5,
             ),
           ),
