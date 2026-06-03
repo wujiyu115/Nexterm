@@ -493,36 +493,115 @@ class _TerminalThemeSheet extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
-    final selected = ref.watch(themeProvider);
-    return SimpleDialog(
-      title: Text(l.settings_selectTheme),
+    final p = Theme.of(context).extension<ThemePalette>()!;
+    final current = ref.watch(themeProvider);
+    final notifier = ref.read(themeProvider.notifier);
+
+    return Dialog(
+      insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.8,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      l.settings_selectTheme,
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: ListView(
+                children: [
+                  _buildGroup(context, l.settings_themeGroupDark, ThemeCatalog.darkKeys, current, p.accent, notifier),
+                  _buildGroup(context, l.settings_themeGroupLight, ThemeCatalog.lightKeys, current, p.accent, notifier),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGroup(BuildContext context, String label, List<String> keys, String current, Color accent, ThemeNotifier notifier) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        RadioGroup<String>(
-          groupValue: selected,
-          onChanged: (v) {
-            if (v != null) {
-              ref.read(themeProvider.notifier).setTheme(v);
-              Navigator.of(context).pop();
-            }
-          },
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              for (final key in ThemeCatalog.darkKeys)
-                RadioListTile<String>(
-                  title: Text(ThemeCatalog.displayName(key)),
-                  value: key,
-                ),
-              const Divider(),
-              for (final key in ThemeCatalog.lightKeys)
-                RadioListTile<String>(
-                  title: Text(ThemeCatalog.displayName(key)),
-                  value: key,
-                ),
-            ],
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 4),
+          child: Text(
+            label,
+            style: Theme.of(context).textTheme.labelSmall!.copyWith(
+              letterSpacing: 1.2,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ),
         ),
+        for (final key in keys)
+          _buildRow(context, key, key == current, accent, () {
+            notifier.setTheme(key);
+            Navigator.of(context).pop();
+          }),
       ],
+    );
+  }
+
+  Widget _buildRow(BuildContext context, String themeKey, bool isSelected, Color accent, VoidCallback onTap) {
+    final palette = ThemeCatalog.byKey(themeKey);
+    final swatches = [
+      palette.terminal.black,
+      palette.terminal.red,
+      palette.terminal.green,
+      palette.terminal.yellow,
+      palette.terminal.blue,
+    ];
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                ThemeCatalog.displayName(themeKey),
+                style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            for (final swatch in swatches)
+              Container(
+                width: 18,
+                height: 18,
+                margin: const EdgeInsets.only(left: 4),
+                decoration: BoxDecoration(
+                  color: swatch,
+                  borderRadius: BorderRadius.circular(3),
+                ),
+              ),
+            const SizedBox(width: 8),
+            Icon(
+              Icons.check,
+              size: 18,
+              color: isSelected ? accent : Colors.transparent,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
