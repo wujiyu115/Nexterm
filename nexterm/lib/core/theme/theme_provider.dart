@@ -40,18 +40,16 @@ class ThemeNotifier extends StateNotifier<String> {
       return;
     }
 
-    final legacyTerminal = snapshot[SettingsKeys.terminalTheme] ?? '';
+    final legacyTerminal = snapshot['terminal_theme'] ?? '';
     final stored = snapshot[SettingsKeys.themeName] ?? '';
 
     if (legacyTerminal.isNotEmpty) {
-      // Assign FIRST so UI gets the correct palette immediately; persist the
-      // migration in the background.
       final mapped = ThemeCatalog.mapLegacy(legacyTerminal);
       state = mapped;
       _migratedOnce = true;
       _settings.set(SettingsKeys.themeName, mapped);
-      _settings.remove(SettingsKeys.terminalTheme);
-      _settings.remove(SettingsKeys.theme);
+      _settings.remove('terminal_theme');
+      _settings.remove('theme');
     } else if (stored.isNotEmpty && ThemeCatalog.all.containsKey(stored)) {
       state = stored;
       _migratedOnce = true;
