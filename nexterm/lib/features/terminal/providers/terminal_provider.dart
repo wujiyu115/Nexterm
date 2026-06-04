@@ -370,22 +370,30 @@ class TerminalActions {
       return;
     }
 
-    final forwardId = _uuid.v4();
-    final entity = PortForwardEntity(
-      id: forwardId,
-      name: title ?? 'preview:$remotePort',
-      type: ForwardType.local,
-      hostId: hostId,
-      localPort: remotePort,
-      remoteHost: 'localhost',
-      remotePort: remotePort,
-    );
+    // If port is already bound (e.g. auto-forwarded on connect), just open the tab
+    final existingForwardId = _portForwardService.findByLocalPort(remotePort);
+    String? forwardId;
 
-    try {
-      await _portForwardService.startLocalForward(client: client, entity: entity);
-    } catch (e) {
-      debugPrint('openWebPreview forward failed: $e');
-      return;
+    if (existingForwardId == null) {
+      forwardId = _uuid.v4();
+      final entity = PortForwardEntity(
+        id: forwardId,
+        name: title ?? 'preview:$remotePort',
+        type: ForwardType.local,
+        hostId: hostId,
+        localPort: remotePort,
+        remoteHost: 'localhost',
+        remotePort: remotePort,
+      );
+
+      try {
+        await _portForwardService.startLocalForward(client: client, entity: entity);
+      } catch (e) {
+        debugPrint('openWebPreview forward failed: $e');
+        return;
+      }
+    } else {
+      forwardId = existingForwardId;
     }
 
     final tab = _tabManager.addTab(hostId: hostId, title: title ?? ':$remotePort');

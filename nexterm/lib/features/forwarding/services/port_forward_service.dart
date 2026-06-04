@@ -44,6 +44,14 @@ class PortForwardService {
   /// Returns all currently active forward IDs.
   Set<String> get activeForwardIds => Set.unmodifiable(_active.keys);
 
+  /// Returns the forward ID if a local port is already being forwarded, or null.
+  String? findByLocalPort(int port) {
+    for (final entry in _active.entries) {
+      if (entry.value.entity.localPort == port) return entry.key;
+    }
+    return null;
+  }
+
   // ---------------------------------------------------------------------------
   // Local forward: local port → SSH server → remote host:port
   // ---------------------------------------------------------------------------
