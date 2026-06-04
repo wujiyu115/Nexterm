@@ -327,6 +327,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get terminal_openGit => '打开 Git';
 
   @override
+  String get terminal_openWeb => '网页预览';
+
+  @override
+  String get terminal_openWebHint => '输入远程端口号进行预览';
+
+  @override
   String get terminal_toggleKeyboard => '切换键盘';
 
   @override

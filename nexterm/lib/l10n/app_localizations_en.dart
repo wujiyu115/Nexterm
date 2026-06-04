@@ -337,6 +337,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get terminal_openGit => 'Open Git';
 
   @override
+  String get terminal_openWeb => 'Web Preview';
+
+  @override
+  String get terminal_openWebHint => 'Enter remote port to preview';
+
+  @override
   String get terminal_toggleKeyboard => 'Toggle Keyboard';
 
   @override

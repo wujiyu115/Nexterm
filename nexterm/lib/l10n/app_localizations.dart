@@ -710,6 +710,18 @@ abstract class AppLocalizations {
   /// **'打开 Git'**
   String get terminal_openGit;
 
+  /// No description provided for @terminal_openWeb.
+  ///
+  /// In zh, this message translates to:
+  /// **'网页预览'**
+  String get terminal_openWeb;
+
+  /// No description provided for @terminal_openWebHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'输入远程端口号进行预览'**
+  String get terminal_openWebHint;
+
   /// No description provided for @terminal_toggleKeyboard.
   ///
   /// In zh, this message translates to:

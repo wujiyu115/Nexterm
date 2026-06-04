@@ -302,6 +302,60 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
     context.push('/git/${activeTab.sessionId}?path=${Uri.encodeComponent(remotePath)}');
   }
 
+  void _openWebPreview() {
+    final l = AppLocalizations.of(context)!;
+    final tabManager = ref.read(tabManagerProvider);
+    final activeTab = tabManager.activeTab;
+    if (activeTab == null || activeTab.sessionId == null) return;
+
+    final controller = TextEditingController();
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l.terminal_openWeb),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          keyboardType: TextInputType.number,
+          decoration: InputDecoration(
+            hintText: '8080',
+            labelText: l.terminal_openWebHint,
+          ),
+          onSubmitted: (v) {
+            final port = int.tryParse(v.trim());
+            if (port != null && port > 0) {
+              Navigator.of(ctx).pop();
+              ref.read(terminalActionsProvider).openWebPreview(
+                hostId: activeTab.hostId,
+                remotePort: port,
+                sessionId: activeTab.sessionId!,
+                title: ':$port',
+              );
+            }
+          },
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(ctx).pop(), child: Text(l.common_cancel)),
+          FilledButton(
+            onPressed: () {
+              final port = int.tryParse(controller.text.trim());
+              if (port != null && port > 0) {
+                Navigator.of(ctx).pop();
+                ref.read(terminalActionsProvider).openWebPreview(
+                  hostId: activeTab.hostId,
+                  remotePort: port,
+                  sessionId: activeTab.sessionId!,
+                  title: ':$port',
+                );
+              }
+            },
+            child: Text(l.common_confirm),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final tabManager = ref.watch(tabManagerProvider);
@@ -340,6 +394,7 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
             onDetectPorts: activeTab != null && activeTab.connectionType == ConnectionType.ssh ? _showPortDetection : null,
             onOpenSftp: activeTab != null && activeTab.connectionType == ConnectionType.ssh ? _openSftpTab : null,
             onOpenGit: activeTab != null && activeTab.connectionType == ConnectionType.ssh ? _openGitTab : null,
+            onOpenWeb: activeTab != null && activeTab.connectionType == ConnectionType.ssh ? _openWebPreview : null,
             onGoToHosts: () {
               if (context.canPop()) context.pop();
             },

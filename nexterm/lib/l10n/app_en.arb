@@ -112,6 +112,8 @@
   "terminal_newTab": "New Terminal",
   "terminal_openSftp": "Open SFTP",
   "terminal_openGit": "Open Git",
+  "terminal_openWeb": "Web Preview",
+  "terminal_openWebHint": "Enter remote port to preview",
   "terminal_toggleKeyboard": "Toggle Keyboard",
   "terminal_backToHosts": "Back to Hosts",
   "terminal_uploadFile": "Upload File",

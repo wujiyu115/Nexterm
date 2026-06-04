@@ -117,6 +117,8 @@
   "terminal_newTab": "新建终端",
   "terminal_openSftp": "打开 SFTP",
   "terminal_openGit": "打开 Git",
+  "terminal_openWeb": "网页预览",
+  "terminal_openWebHint": "输入远程端口号进行预览",
   "terminal_toggleKeyboard": "切换键盘",
   "terminal_backToHosts": "返回主机",
   "terminal_uploadFile": "上传文件",
