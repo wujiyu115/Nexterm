@@ -346,28 +346,32 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
           ),
 
           Expanded(
-            child: ClipRect(
-              child: activeTab == null
-                  ? Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const CircularProgressIndicator(),
-                          const SizedBox(height: 16),
-                          Text(l.terminal_connecting, style: TextStyle(color: p.fg)),
-                        ],
-                      ),
-                    )
-                  : activeTab.connectionType == ConnectionType.sftp && activeTab.sessionId != null
-                      ? SftpContentWidget(sessionId: activeTab.sessionId!)
-                      : activeTab.connectionType == ConnectionType.webPreview && activeTab.localPort != null
-                          ? WebPreviewContent(localPort: activeTab.localPort!, title: activeTab.title)
-                          : (activeTab.connectionType == ConnectionType.webdav || activeTab.connectionType == ConnectionType.smb)
-                              ? SftpContentWidget(service: ref.read(fileServicesProvider)[activeTab.id])
-                              : TerminalViewWidget(
-                              tab: activeTab,
-                              hardwareKeyboardOnly: _isFunctionMode,
-                            ),
+            child: Listener(
+              behavior: HitTestBehavior.translucent,
+              onPointerDown: _isDpadVisible ? (_) => setState(() => _isDpadVisible = false) : null,
+              child: ClipRect(
+                child: activeTab == null
+                    ? Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const CircularProgressIndicator(),
+                            const SizedBox(height: 16),
+                            Text(l.terminal_connecting, style: TextStyle(color: p.fg)),
+                          ],
+                        ),
+                      )
+                    : activeTab.connectionType == ConnectionType.sftp && activeTab.sessionId != null
+                        ? SftpContentWidget(sessionId: activeTab.sessionId!)
+                        : activeTab.connectionType == ConnectionType.webPreview && activeTab.localPort != null
+                            ? WebPreviewContent(localPort: activeTab.localPort!, title: activeTab.title)
+                            : (activeTab.connectionType == ConnectionType.webdav || activeTab.connectionType == ConnectionType.smb)
+                                ? SftpContentWidget(service: ref.read(fileServicesProvider)[activeTab.id])
+                                : TerminalViewWidget(
+                                tab: activeTab,
+                                hardwareKeyboardOnly: _isFunctionMode,
+                              ),
+              ),
             ),
           ),
 
