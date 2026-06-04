@@ -76,6 +76,7 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
 
   void _hideKeyboard() {
     FocusScope.of(context).unfocus();
+    if (_isDpadVisible) setState(() => _isDpadVisible = false);
   }
 
   void _toggleKeyboard() {
