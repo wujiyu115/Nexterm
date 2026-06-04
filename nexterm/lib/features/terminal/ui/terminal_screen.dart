@@ -18,6 +18,7 @@ import 'package:nexterm/features/terminal/ui/widgets/terminal_tab_bar.dart';
 import 'package:nexterm/features/terminal/ui/widgets/terminal_view.dart';
 import 'package:nexterm/features/sftp/ui/widgets/sftp_content.dart';
 import 'package:nexterm/features/forwarding/ui/port_detection_sheet.dart';
+import 'package:nexterm/features/multiplexer/ui/mux_session_sheet.dart';
 import 'package:nexterm/features/forwarding/ui/widgets/web_preview_content.dart';
 import 'package:nexterm/domain/entities/enums.dart';
 import 'package:nexterm/shared/widgets/dashed_divider.dart';
@@ -356,6 +357,18 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
     );
   }
 
+  void _showMuxSheet() {
+    final tabManager = ref.read(tabManagerProvider);
+    final activeTab = tabManager.activeTab;
+    if (activeTab == null || activeTab.sessionId == null) return;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => MuxSessionSheet(sessionId: activeTab.sessionId!),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final tabManager = ref.watch(tabManagerProvider);
@@ -395,6 +408,7 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
             onOpenSftp: activeTab != null && activeTab.connectionType == ConnectionType.ssh ? _openSftpTab : null,
             onOpenGit: activeTab != null && activeTab.connectionType == ConnectionType.ssh ? _openGitTab : null,
             onOpenWeb: activeTab != null && activeTab.connectionType == ConnectionType.ssh ? _openWebPreview : null,
+            onOpenMux: activeTab != null && activeTab.connectionType == ConnectionType.ssh ? _showMuxSheet : null,
             onGoToHosts: () {
               if (context.canPop()) context.pop();
             },

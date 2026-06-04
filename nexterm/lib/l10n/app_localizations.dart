@@ -722,6 +722,48 @@ abstract class AppLocalizations {
   /// **'网页预览'**
   String get terminal_openWeb;
 
+  /// No description provided for @terminal_openMux.
+  ///
+  /// In zh, this message translates to:
+  /// **'多路复用器'**
+  String get terminal_openMux;
+
+  /// No description provided for @mux_noSessions.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂无会话'**
+  String get mux_noSessions;
+
+  /// No description provided for @mux_notInstalled.
+  ///
+  /// In zh, this message translates to:
+  /// **'该主机未安装多路复用器'**
+  String get mux_notInstalled;
+
+  /// No description provided for @mux_newSession.
+  ///
+  /// In zh, this message translates to:
+  /// **'新建会话'**
+  String get mux_newSession;
+
+  /// No description provided for @mux_sessionName.
+  ///
+  /// In zh, this message translates to:
+  /// **'会话名称'**
+  String get mux_sessionName;
+
+  /// No description provided for @mux_windows.
+  ///
+  /// In zh, this message translates to:
+  /// **'{count} 个窗口'**
+  String mux_windows(int count);
+
+  /// No description provided for @mux_attached.
+  ///
+  /// In zh, this message translates to:
+  /// **'已连接'**
+  String get mux_attached;
+
   /// No description provided for @terminal_openWebHint.
   ///
   /// In zh, this message translates to:

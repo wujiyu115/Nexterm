@@ -333,6 +333,29 @@ class AppLocalizationsZh extends AppLocalizations {
   String get terminal_openWeb => '网页预览';
 
   @override
+  String get terminal_openMux => '多路复用器';
+
+  @override
+  String get mux_noSessions => '暂无会话';
+
+  @override
+  String get mux_notInstalled => '该主机未安装多路复用器';
+
+  @override
+  String get mux_newSession => '新建会话';
+
+  @override
+  String get mux_sessionName => '会话名称';
+
+  @override
+  String mux_windows(int count) {
+    return '$count 个窗口';
+  }
+
+  @override
+  String get mux_attached => '已连接';
+
+  @override
   String get terminal_openWebHint => '输入远程端口号进行预览';
 
   @override

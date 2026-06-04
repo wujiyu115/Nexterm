@@ -343,6 +343,29 @@ class AppLocalizationsEn extends AppLocalizations {
   String get terminal_openWeb => 'Web Preview';
 
   @override
+  String get terminal_openMux => 'Multiplexer';
+
+  @override
+  String get mux_noSessions => 'No sessions';
+
+  @override
+  String get mux_notInstalled => 'No multiplexer installed on this host';
+
+  @override
+  String get mux_newSession => 'New Session';
+
+  @override
+  String get mux_sessionName => 'Session name';
+
+  @override
+  String mux_windows(int count) {
+    return '$count windows';
+  }
+
+  @override
+  String get mux_attached => 'attached';
+
+  @override
   String get terminal_openWebHint => 'Enter remote port to preview';
 
   @override

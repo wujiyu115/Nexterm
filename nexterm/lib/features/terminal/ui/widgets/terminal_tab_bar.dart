@@ -28,6 +28,7 @@ class TerminalTabBar extends ConsumerWidget {
   final VoidCallback? onOpenSftp;
   final VoidCallback? onOpenGit;
   final VoidCallback? onOpenWeb;
+  final VoidCallback? onOpenMux;
 
   const TerminalTabBar({
     super.key,
@@ -43,6 +44,7 @@ class TerminalTabBar extends ConsumerWidget {
     this.onOpenSftp,
     this.onOpenGit,
     this.onOpenWeb,
+    this.onOpenMux,
   });
 
   @override
@@ -115,6 +117,8 @@ class TerminalTabBar extends ConsumerWidget {
                   onOpenGit?.call();
               case 'open_web':
                   onOpenWeb?.call();
+              case 'open_mux':
+                  onOpenMux?.call();
               }
             },
             itemBuilder: (ctx) {
@@ -198,6 +202,12 @@ class TerminalTabBar extends ConsumerWidget {
                     value: 'open_web',
                     icon: Icons.language,
                     label: l.terminal_openWeb,
+                  ),
+                if (onOpenMux != null)
+                  menuItem(
+                    value: 'open_mux',
+                    icon: Icons.view_week_outlined,
+                    label: l.terminal_openMux,
                   ),
                 if (onUploadFile != null)
                   menuItem(
