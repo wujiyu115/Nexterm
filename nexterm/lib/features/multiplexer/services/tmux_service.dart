@@ -26,14 +26,13 @@ class TmuxMultiplexerService implements MultiplexerService {
     }
   }
 
-  @override
   static const _sep = '|||';
 
   @override
   Future<List<MuxSession>> listSessions(SSHClient client) async {
     try {
       final result = await client
-          .run('tmux list-sessions -F "#{session_name}$_sep#{session_windows}$_sep#{session_attached}$_sep#{session_created}" 2>/dev/null')
+          .run('tmux list-sessions -F "#{session_name}$_sep#{session_windows}$_sep#{session_attached}$_sep#{session_created}$_sep#{session_last_attached}" 2>/dev/null')
           .timeout(_timeout);
       final output = utf8.decode(result, allowMalformed: true).trim();
       if (output.isEmpty) return [];
@@ -43,10 +42,9 @@ class TmuxMultiplexerService implements MultiplexerService {
         return MuxSession(
           name: parts[0],
           windows: parts.length > 1 ? (int.tryParse(parts[1]) ?? 0) : 0,
-          isAttached: parts.length > 2 && parts[2] != '0',
-          created: parts.length > 3 && (int.tryParse(parts[3]) ?? 0) > 0
-              ? DateTime.fromMillisecondsSinceEpoch((int.tryParse(parts[3])!) * 1000)
-              : null,
+          attachedCount: parts.length > 2 ? (int.tryParse(parts[2]) ?? 0) : 0,
+          created: _parseTimestamp(parts.length > 3 ? parts[3] : null),
+          lastActivity: _parseTimestamp(parts.length > 4 ? parts[4] : null),
           type: MultiplexerType.tmux,
         );
       }).toList();
@@ -54,6 +52,20 @@ class TmuxMultiplexerService implements MultiplexerService {
       return [];
     }
   }
+
+  DateTime? _parseTimestamp(String? value) {
+    if (value == null) return null;
+    final seconds = int.tryParse(value);
+    if (seconds == null || seconds <= 0) return null;
+    return DateTime.fromMillisecondsSinceEpoch(seconds * 1000);
+  }
+
+  @override
+  Future<void> killSession(SSHClient client, String sessionName) async {
+    await client.run('tmux kill-session -t ${_shellEscape(sessionName)} 2>/dev/null').timeout(_timeout);
+  }
+
+  String _shellEscape(String s) => "'${s.replaceAll("'", r"'\''")}'";
 
   @override
   String attachCommand(String sessionName) => 'tmux attach -t $sessionName';

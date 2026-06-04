@@ -73,6 +73,14 @@ class _MuxSessionSheetState extends ConsumerState<MuxSessionSheet> {
     sshService.write(widget.sessionId, '${_activeMux!.attachCommand(sessionName)}\r');
   }
 
+  Future<void> _killSession(String sessionName) async {
+    final client = _client;
+    final mux = _activeMux;
+    if (client == null || mux == null) return;
+    await mux.killSession(client, sessionName);
+    _loadSessions();
+  }
+
   void _newSession() {
     final l = AppLocalizations.of(context)!;
     final controller = TextEditingController();
@@ -240,12 +248,26 @@ class _MuxSessionSheetState extends ConsumerState<MuxSessionSheet> {
     );
   }
 
+  String _formatTime(DateTime? dt) {
+    if (dt == null) return '';
+    final now = DateTime.now();
+    final diff = now.difference(dt);
+    if (diff.inMinutes < 1) return 'just now';
+    if (diff.inHours < 1) return '${diff.inMinutes}m ago';
+    if (diff.inDays < 1) return '${diff.inHours}h ago';
+    return '${diff.inDays}d ago';
+  }
+
   Widget _buildSessionTile(MuxSession session, ThemeData theme, ThemePalette p, AppLocalizations l) {
+    final subtitleParts = <String>[l.mux_windows(session.windows)];
+    if (session.isAttached) subtitleParts.add('${session.attachedCount} ${l.mux_attached}');
+    if (session.lastActivity != null) subtitleParts.add(_formatTime(session.lastActivity));
+
     return GlassCard(
       onTap: () => _attach(session.name),
       child: Row(
         children: [
-          Icon(_activeMux!.icon, size: 22, color: p.fgSecondary),
+          Icon(_activeMux!.icon, size: 22, color: session.isAttached ? p.accent : p.fgSecondary),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -265,11 +287,15 @@ class _MuxSessionSheetState extends ConsumerState<MuxSessionSheet> {
                   ],
                 ),
                 const SizedBox(height: 2),
-                Text(l.mux_windows(session.windows), style: theme.textTheme.bodySmall?.copyWith(color: p.fgTertiary)),
+                Text(subtitleParts.join(' · '), style: theme.textTheme.bodySmall?.copyWith(color: p.fgTertiary)),
               ],
             ),
           ),
-          Icon(Icons.chevron_right, size: 18, color: p.fgTertiary),
+          IconButton(
+            icon: Icon(Icons.delete_outline, size: 18, color: p.statusError),
+            visualDensity: VisualDensity.compact,
+            onPressed: () => _killSession(session.name),
+          ),
         ],
       ),
     );
