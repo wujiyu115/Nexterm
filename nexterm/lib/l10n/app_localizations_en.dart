@@ -1510,6 +1510,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get git_editRepo => 'Edit Repository';
 
   @override
+  String get git_deleteRepo => 'Delete Repository';
+
+  @override
+  String git_deleteRepoConfirm(String name) {
+    return 'Delete \"$name\"?';
+  }
+
+  @override
   String get git_repoLabel => 'Label';
 
   @override

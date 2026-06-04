@@ -28,6 +28,30 @@ class _GitReposScreenState extends ConsumerState<GitReposScreen> {
     super.dispose();
   }
 
+  Future<void> _confirmDelete(GitRepoEntity repo) async {
+    final l = AppLocalizations.of(context)!;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l.git_deleteRepo),
+        content: Text(l.git_deleteRepoConfirm(repo.displayName)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l.common_cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l.common_delete),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      await ref.read(gitRepoRepositoryProvider).delete(repo.id);
+    }
+  }
+
   Future<void> _connect(GitRepoEntity repo) async {
     final l = AppLocalizations.of(context)!;
     final actions = ref.read(terminalActionsProvider);
@@ -136,6 +160,7 @@ class _GitReposScreenState extends ConsumerState<GitReposScreen> {
 
     return GlassCard(
       onTap: () => _connect(repo),
+      onLongPress: () => _confirmDelete(repo),
       child: Row(
         children: [
           Icon(Icons.account_tree_outlined, size: 24, color: p.fgSecondary),
@@ -172,7 +197,10 @@ class _GitReposScreenState extends ConsumerState<GitReposScreen> {
               ],
             ),
           ),
-          Icon(Icons.chevron_right, size: 18, color: p.fgTertiary),
+          IconButton(
+            icon: Icon(Icons.edit_outlined, size: 18, color: p.fgTertiary),
+            onPressed: () => context.push('/vaults/git/edit/${repo.id}'),
+          ),
         ],
       ),
     );

@@ -22,6 +22,23 @@ class _GitRepoFormScreenState extends ConsumerState<GitRepoFormScreen> {
   String? _selectedHostId;
 
   @override
+  void initState() {
+    super.initState();
+    if (widget.repoId != null) _loadExisting();
+  }
+
+  Future<void> _loadExisting() async {
+    final repo = await ref.read(gitRepoRepositoryProvider).getById(widget.repoId!);
+    if (repo != null && mounted) {
+      setState(() {
+        _labelController.text = repo.label ?? '';
+        _pathController.text = repo.remotePath;
+        _selectedHostId = repo.hostId;
+      });
+    }
+  }
+
+  @override
   void dispose() {
     _labelController.dispose();
     _pathController.dispose();
@@ -81,7 +98,7 @@ class _GitRepoFormScreenState extends ConsumerState<GitRepoFormScreen> {
             const SizedBox(height: 16),
             hostsAsync.when(
               data: (hosts) => DropdownButtonFormField<String>(
-                initialValue: _selectedHostId,
+                value: _selectedHostId,
                 decoration: InputDecoration(labelText: l.git_selectHost),
                 items: hosts
                     .map((h) =>

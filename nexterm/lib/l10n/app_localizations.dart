@@ -2882,6 +2882,18 @@ abstract class AppLocalizations {
   /// **'编辑仓库'**
   String get git_editRepo;
 
+  /// No description provided for @git_deleteRepo.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除仓库'**
+  String get git_deleteRepo;
+
+  /// No description provided for @git_deleteRepoConfirm.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除「{name}」？'**
+  String git_deleteRepoConfirm(String name);
+
   /// No description provided for @git_repoLabel.
   ///
   /// In zh, this message translates to:

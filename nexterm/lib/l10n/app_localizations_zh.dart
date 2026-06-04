@@ -1475,6 +1475,14 @@ class AppLocalizationsZh extends AppLocalizations {
   String get git_editRepo => '编辑仓库';
 
   @override
+  String get git_deleteRepo => '删除仓库';
+
+  @override
+  String git_deleteRepoConfirm(String name) {
+    return '删除「$name」？';
+  }
+
+  @override
   String get git_repoLabel => '标签';
 
   @override
