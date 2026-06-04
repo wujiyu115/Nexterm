@@ -312,6 +312,7 @@ class _KeyboardToolbarState extends ConsumerState<KeyboardToolbar> {
             color: isActive ? activeColor : buttonColor,
             textColor: isActive ? activeTextColor : textColor,
             onTap: () => _onKeyTap(key),
+            repeatable: key.id.startsWith('arrow_'),
           ),
         );
       }
@@ -329,37 +330,67 @@ class _KeyboardToolbarState extends ConsumerState<KeyboardToolbar> {
 // Private helpers
 // ---------------------------------------------------------------------------
 
-class _ToolbarButton extends StatelessWidget {
+class _ToolbarButton extends StatefulWidget {
   final String label;
   final Color color;
   final Color textColor;
   final VoidCallback onTap;
+  final bool repeatable;
 
   const _ToolbarButton({
     required this.label,
     required this.color,
     required this.textColor,
     required this.onTap,
+    this.repeatable = false,
   });
+
+  @override
+  State<_ToolbarButton> createState() => _ToolbarButtonState();
+}
+
+class _ToolbarButtonState extends State<_ToolbarButton> {
+  Timer? _repeatTimer;
+
+  void _startRepeat() {
+    widget.onTap();
+    _repeatTimer = Timer.periodic(const Duration(milliseconds: 80), (_) {
+      widget.onTap();
+    });
+  }
+
+  void _stopRepeat() {
+    _repeatTimer?.cancel();
+    _repeatTimer = null;
+  }
+
+  @override
+  void dispose() {
+    _stopRepeat();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: widget.onTap,
+      onLongPressStart: widget.repeatable ? (_) => _startRepeat() : null,
+      onLongPressEnd: widget.repeatable ? (_) => _stopRepeat() : null,
+      onLongPressCancel: widget.repeatable ? _stopRepeat : null,
       child: Container(
         constraints: const BoxConstraints(minWidth: 40),
         padding: const EdgeInsets.symmetric(horizontal: 6),
         height: double.infinity,
         margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 6),
         decoration: BoxDecoration(
-          color: color,
+          color: widget.color,
           borderRadius: BorderRadius.circular(6),
         ),
         alignment: Alignment.center,
         child: Text(
-          label,
+          widget.label,
           style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-            color: textColor,
+            color: widget.textColor,
             fontWeight: FontWeight.w600,
             height: 1,
           ),
