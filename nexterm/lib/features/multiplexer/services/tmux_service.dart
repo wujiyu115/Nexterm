@@ -27,19 +27,19 @@ class TmuxMultiplexerService implements MultiplexerService {
   }
 
   @override
+  static const _sep = '|||';
+
+  @override
   Future<List<MuxSession>> listSessions(SSHClient client) async {
     try {
       final result = await client
-          .run(r'tmux list-sessions -F "#{session_name}'
-              r'\x00#{session_windows}'
-              r'\x00#{session_attached}'
-              r'\x00#{session_created}" 2>/dev/null')
+          .run('tmux list-sessions -F "#{session_name}$_sep#{session_windows}$_sep#{session_attached}$_sep#{session_created}" 2>/dev/null')
           .timeout(_timeout);
       final output = utf8.decode(result, allowMalformed: true).trim();
       if (output.isEmpty) return [];
 
-      return output.split('\n').map((line) {
-        final parts = line.split('\x00');
+      return output.split('\n').where((l) => l.contains(_sep)).map((line) {
+        final parts = line.split(_sep);
         return MuxSession(
           name: parts[0],
           windows: parts.length > 1 ? (int.tryParse(parts[1]) ?? 0) : 0,
