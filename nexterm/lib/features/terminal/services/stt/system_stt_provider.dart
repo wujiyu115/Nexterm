@@ -25,6 +25,10 @@ class SystemSttProvider implements SttProvider {
           text: result.recognizedWords,
           isFinal: result.finalResult,
         ));
+        if (result.finalResult) {
+          _controller?.close();
+          _controller = null;
+        }
       },
       listenOptions: SpeechListenOptions(
         listenMode: ListenMode.dictation,
@@ -34,7 +38,10 @@ class SystemSttProvider implements SttProvider {
     );
     _speech.statusListener = (status) {
       if (status == 'done' || status == 'notListening') {
-        _controller?.close();
+        Future.delayed(const Duration(milliseconds: 200), () {
+          _controller?.close();
+          _controller = null;
+        });
       }
     };
     return _controller!.stream;
