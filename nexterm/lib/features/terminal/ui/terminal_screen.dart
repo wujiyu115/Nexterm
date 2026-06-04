@@ -12,6 +12,7 @@ import 'package:nexterm/domain/entities/host_entity.dart';
 import 'package:nexterm/features/hosts/providers/hosts_provider.dart';
 import 'package:nexterm/features/terminal/providers/terminal_provider.dart';
 import 'package:nexterm/features/terminal/ui/widgets/function_panel.dart';
+import 'package:nexterm/features/terminal/ui/widgets/dpad_panel.dart';
 import 'package:nexterm/features/terminal/ui/widgets/keyboard_toolbar.dart';
 import 'package:nexterm/features/terminal/ui/widgets/terminal_tab_bar.dart';
 import 'package:nexterm/features/terminal/ui/widgets/terminal_view.dart';
@@ -62,6 +63,7 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
   }
 
   bool _isFunctionMode = false;
+  bool _isDpadVisible = false;
 
   void _toggleKeyboardMode() {
     setState(() {
@@ -385,7 +387,16 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
                   }
                 },
               )
-            else
+            else ...[
+              if (_isDpadVisible)
+                DPadPanel(
+                  onKeyInput: (data) {
+                    final sshService = ref.read(sshServiceProvider);
+                    if (activeTab.sessionId != null) {
+                      sshService.writeBytes(activeTab.sessionId!, data);
+                    }
+                  },
+                ),
               KeyboardToolbar(
                 onKeyInput: (data) {
                   final sshService = ref.read(sshServiceProvider);
@@ -394,7 +405,10 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
                   }
                 },
                 onHideKeyboard: _hideKeyboard,
+                onToggleDpad: () => setState(() => _isDpadVisible = !_isDpadVisible),
+                isDpadVisible: _isDpadVisible,
               ),
+            ],
           ],
         ],
       ),

@@ -25,10 +25,18 @@ class KeyboardToolbar extends ConsumerStatefulWidget {
   /// Called to dismiss the soft keyboard without toggling.
   final VoidCallback? onHideKeyboard;
 
+  /// Called to toggle the d-pad panel visibility.
+  final VoidCallback? onToggleDpad;
+
+  /// Whether the d-pad panel is currently visible.
+  final bool isDpadVisible;
+
   const KeyboardToolbar({
     super.key,
     required this.onKeyInput,
     this.onHideKeyboard,
+    this.onToggleDpad,
+    this.isDpadVisible = false,
   });
 
   @override
@@ -238,6 +246,20 @@ class _KeyboardToolbarState extends ConsumerState<KeyboardToolbar> {
               ),
             ),
           ),
+          if (widget.onToggleDpad != null)
+            GestureDetector(
+              onTap: widget.onToggleDpad,
+              child: Container(
+                width: 36,
+                height: double.infinity,
+                alignment: Alignment.center,
+                child: Icon(
+                  Icons.control_camera,
+                  size: 20,
+                  color: widget.isDpadVisible ? activeColor : textColor,
+                ),
+              ),
+            ),
           _MicButton(
             isListening: _isListening,
             providerType: ref.watch(sttProviderTypeProvider),
