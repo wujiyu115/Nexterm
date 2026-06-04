@@ -361,6 +361,15 @@ class TerminalActions {
     final client = _sshService.getClient(sessionId);
     if (client == null) return;
 
+    // Check if port is already forwarded — reuse existing tab
+    final existingIndex = _tabManager.tabs.indexWhere(
+      (t) => t.connectionType == ConnectionType.webPreview && t.localPort == remotePort,
+    );
+    if (existingIndex != -1) {
+      _tabManager.setActiveTab(existingIndex);
+      return;
+    }
+
     final forwardId = _uuid.v4();
     final entity = PortForwardEntity(
       id: forwardId,
