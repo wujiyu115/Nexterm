@@ -312,11 +312,21 @@ class _PortDetectionSheetState extends ConsumerState<PortDetectionSheet> {
     );
   }
 
-  static const _httpPorts = {80, 443, 3000, 3001, 4200, 5000, 5173, 8000, 8080, 8888};
+  static const _httpPorts = {80, 443, 3000, 3001, 4200, 5000, 5173, 5174, 8000, 8080, 8443, 8888, 9000};
+  static const _httpProcessHints = ['node', 'python', 'python3', 'tsx', 'npx', 'next', 'vite', 'nginx', 'apache', 'caddy', 'deno', 'bun'];
 
   bool _isHttpLike(DetectedPort port) {
     final proto = port.protocolGuess.toLowerCase();
-    return proto.contains('http') || _httpPorts.contains(port.port);
+    if (proto.contains('http')) return true;
+    if (_httpPorts.contains(port.port)) return true;
+    final cmd = port.commandLine?.toLowerCase() ?? '';
+    if (cmd.isNotEmpty) {
+      for (final hint in _httpProcessHints) {
+        if (cmd.contains(hint)) return true;
+      }
+    }
+    if (port.port > 1024) return true;
+    return false;
   }
 
   Widget _buildPortTile(DetectedPort port, Set<int> forwardedPorts) {
