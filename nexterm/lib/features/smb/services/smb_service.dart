@@ -11,6 +11,11 @@ export '../../sftp/services/remote_file_service.dart';
 class SmbService implements RemoteFileService {
   SmbConnect? _client;
 
+  String? _host;
+  String? _username;
+  String? _password;
+  String? _domain;
+
   @override
   bool get isConnected => _client != null;
 
@@ -29,12 +34,46 @@ class SmbService implements RemoteFileService {
     String? password,
     String? domain,
   }) async {
+    _host = host;
+    _username = username;
+    _password = password;
+    _domain = domain;
+
     _client = await SmbConnect.connectAuth(
       host: host,
       username: username ?? '',
       password: password ?? '',
       domain: domain ?? '',
     );
+  }
+
+  Future<void> _reconnect() async {
+    if (_host == null) {
+      throw StateError('SmbService has no stored connection parameters.');
+    }
+    try {
+      _client?.close();
+    } catch (_) {}
+    _client = await SmbConnect.connectAuth(
+      host: _host!,
+      username: _username ?? '',
+      password: _password ?? '',
+      domain: _domain ?? '',
+    );
+  }
+
+  Future<T> _withReconnect<T>(Future<T> Function() operation) async {
+    _requireConnected();
+    try {
+      return await operation();
+    } catch (e) {
+      final msg = e.toString();
+      if (msg.contains('network name') || msg.contains('NT_STATUS')) {
+        await _reconnect();
+        return await operation();
+      }
+      rethrow;
+    }
   }
 
   @override
@@ -58,24 +97,24 @@ class SmbService implements RemoteFileService {
   /// underlying [SmbConnect.listFiles] call.
   @override
   Future<List<RemoteFileInfo>> listDirectory(String path) async {
-    _requireConnected();
+    return _withReconnect(() async {
+      final folder = await _client!.file(path);
+      final files = await _client!.listFiles(folder);
 
-    final folder = await _client!.file(path);
-    final files = await _client!.listFiles(folder);
-
-    final entries = <RemoteFileInfo>[];
-    for (final file in files) {
-      entries.add(_smbFileToInfo(file));
-    }
-
-    entries.sort((a, b) {
-      if (a.isDirectory != b.isDirectory) {
-        return a.isDirectory ? -1 : 1;
+      final entries = <RemoteFileInfo>[];
+      for (final file in files) {
+        entries.add(_smbFileToInfo(file));
       }
-      return a.name.toLowerCase().compareTo(b.name.toLowerCase());
-    });
 
-    return entries;
+      entries.sort((a, b) {
+        if (a.isDirectory != b.isDirectory) {
+          return a.isDirectory ? -1 : 1;
+        }
+        return a.name.toLowerCase().compareTo(b.name.toLowerCase());
+      });
+
+      return entries;
+    });
   }
 
   // ---------------------------------------------------------------------------
@@ -85,34 +124,33 @@ class SmbService implements RemoteFileService {
   /// Reads [remotePath] entirely into memory and returns the bytes.
   @override
   Future<Uint8List> readFile(String remotePath) async {
-    _requireConnected();
-
-    final smbFile = await _client!.file(remotePath);
-    final raf = await _client!.open(smbFile, mode: FileMode.read);
-    try {
-      final fileLength = await raf.length();
-      if (fileLength == 0) return Uint8List(0);
-      return await raf.read(fileLength);
-    } finally {
-      await raf.close();
-    }
+    return _withReconnect(() async {
+      final smbFile = await _client!.file(remotePath);
+      final raf = await _client!.open(smbFile, mode: FileMode.read);
+      try {
+        final fileLength = await raf.length();
+        if (fileLength == 0) return Uint8List(0);
+        return await raf.read(fileLength);
+      } finally {
+        await raf.close();
+      }
+    });
   }
 
   /// Writes [data] to [remotePath], creating or truncating the file.
   @override
   Future<void> writeFile(String remotePath, Uint8List data) async {
-    _requireConnected();
-
-    // Ensure the file exists on the share.
-    await _client!.createFile(remotePath);
-    final smbFile = await _client!.file(remotePath);
-    final sink = await _client!.openWrite(smbFile);
-    try {
-      sink.add(data);
-      await sink.flush();
-    } finally {
-      await sink.close();
-    }
+    return _withReconnect(() async {
+      await _client!.createFile(remotePath);
+      final smbFile = await _client!.file(remotePath);
+      final sink = await _client!.openWrite(smbFile);
+      try {
+        sink.add(data);
+        await sink.flush();
+      } finally {
+        await sink.close();
+      }
+    });
   }
 
   // ---------------------------------------------------------------------------
@@ -127,27 +165,27 @@ class SmbService implements RemoteFileService {
     String localPath, {
     TransferProgress? onProgress,
   }) async {
-    _requireConnected();
+    return _withReconnect(() async {
+      final smbFile = await _client!.file(remotePath);
+      final totalBytes = smbFile.size;
 
-    final smbFile = await _client!.file(remotePath);
-    final totalBytes = smbFile.size;
+      final stream = await _client!.openRead(smbFile);
+      final localFile = File(localPath);
+      await localFile.parent.create(recursive: true);
+      final sink = localFile.openWrite();
+      var transferred = 0;
 
-    final stream = await _client!.openRead(smbFile);
-    final localFile = File(localPath);
-    await localFile.parent.create(recursive: true);
-    final sink = localFile.openWrite();
-    var transferred = 0;
-
-    try {
-      await for (final chunk in stream) {
-        sink.add(chunk);
-        transferred += chunk.length;
-        onProgress?.call(transferred, totalBytes);
+      try {
+        await for (final chunk in stream) {
+          sink.add(chunk);
+          transferred += chunk.length;
+          onProgress?.call(transferred, totalBytes);
+        }
+        await sink.flush();
+      } finally {
+        await sink.close();
       }
-      await sink.flush();
-    } finally {
-      await sink.close();
-    }
+    });
   }
 
   // ---------------------------------------------------------------------------
@@ -162,28 +200,27 @@ class SmbService implements RemoteFileService {
     String remotePath, {
     TransferProgress? onProgress,
   }) async {
-    _requireConnected();
+    return _withReconnect(() async {
+      final localFile = File(localPath);
+      final totalBytes = await localFile.length();
 
-    final localFile = File(localPath);
-    final totalBytes = await localFile.length();
+      await _client!.createFile(remotePath);
+      final smbFile = await _client!.file(remotePath);
+      final sink = await _client!.openWrite(smbFile);
+      var transferred = 0;
 
-    // Ensure the remote file exists.
-    await _client!.createFile(remotePath);
-    final smbFile = await _client!.file(remotePath);
-    final sink = await _client!.openWrite(smbFile);
-    var transferred = 0;
-
-    try {
-      await for (final chunk in localFile.openRead()) {
-        final bytes = chunk is Uint8List ? chunk : Uint8List.fromList(chunk);
-        sink.add(bytes);
-        transferred += bytes.length;
-        onProgress?.call(transferred, totalBytes);
+      try {
+        await for (final chunk in localFile.openRead()) {
+          final bytes = chunk is Uint8List ? chunk : Uint8List.fromList(chunk);
+          sink.add(bytes);
+          transferred += bytes.length;
+          onProgress?.call(transferred, totalBytes);
+        }
+        await sink.flush();
+      } finally {
+        await sink.close();
       }
-      await sink.flush();
-    } finally {
-      await sink.close();
-    }
+    });
   }
 
   // ---------------------------------------------------------------------------
@@ -193,24 +230,25 @@ class SmbService implements RemoteFileService {
   /// Creates the directory at [path].
   @override
   Future<void> mkdir(String path) async {
-    _requireConnected();
-    await _client!.createFolder(path);
+    return _withReconnect(() async {
+      await _client!.createFolder(path);
+    });
   }
 
-  /// Renames / moves [oldPath] to [newPath].
   @override
   Future<void> rename(String oldPath, String newPath) async {
-    _requireConnected();
-    final srcFile = await _client!.file(oldPath);
-    await _client!.rename(srcFile, newPath);
+    return _withReconnect(() async {
+      final srcFile = await _client!.file(oldPath);
+      await _client!.rename(srcFile, newPath);
+    });
   }
 
-  /// Removes the file or empty directory at [path].
   @override
   Future<void> remove(String path) async {
-    _requireConnected();
-    final smbFile = await _client!.file(path);
-    await _client!.delete(smbFile);
+    return _withReconnect(() async {
+      final smbFile = await _client!.file(path);
+      await _client!.delete(smbFile);
+    });
   }
 
   /// Recursively deletes [path] and all its contents.
@@ -220,22 +258,20 @@ class SmbService implements RemoteFileService {
   /// first.
   @override
   Future<void> removeRecursive(String path) async {
-    _requireConnected();
+    return _withReconnect(() async {
+      final smbFile = await _client!.file(path);
+      if (!smbFile.isDirectory()) {
+        await _client!.delete(smbFile);
+        return;
+      }
 
-    final smbFile = await _client!.file(path);
-    if (!smbFile.isDirectory()) {
+      final children = await _client!.listFiles(smbFile);
+      for (final child in children) {
+        await removeRecursive(child.path);
+      }
+
       await _client!.delete(smbFile);
-      return;
-    }
-
-    // Delete children first.
-    final children = await _client!.listFiles(smbFile);
-    for (final child in children) {
-      await removeRecursive(child.path);
-    }
-
-    // Now remove the (now-empty) directory itself.
-    await _client!.delete(smbFile);
+    });
   }
 
   // ---------------------------------------------------------------------------
@@ -251,36 +287,34 @@ class SmbService implements RemoteFileService {
   /// Returns a [RemoteFileInfo] describing [remotePath].
   @override
   Future<RemoteFileInfo> stat(String remotePath) async {
-    _requireConnected();
-    final smbFile = await _client!.file(remotePath);
-    return _smbFileToInfo(smbFile);
+    return _withReconnect(() async {
+      final smbFile = await _client!.file(remotePath);
+      return _smbFileToInfo(smbFile);
+    });
   }
 
-  /// Copies a remote file from [sourcePath] to [destPath] by reading and
-  /// re-writing through the SMB channel.
   @override
   Future<void> copyFile(String sourcePath, String destPath) async {
     final data = await readFile(sourcePath);
     await writeFile(destPath, data);
   }
 
-  /// Recursively copies a directory from [sourcePath] to [destPath].
   @override
   Future<void> copyRecursive(String sourcePath, String destPath) async {
-    _requireConnected();
+    return _withReconnect(() async {
+      final srcFile = await _client!.file(sourcePath);
+      if (!srcFile.isDirectory()) {
+        await copyFile(sourcePath, destPath);
+        return;
+      }
 
-    final srcFile = await _client!.file(sourcePath);
-    if (!srcFile.isDirectory()) {
-      await copyFile(sourcePath, destPath);
-      return;
-    }
-
-    await mkdir(destPath);
-    final children = await _client!.listFiles(srcFile);
-    for (final child in children) {
-      final childDst = _joinPath(destPath, child.name);
-      await copyRecursive(child.path, childDst);
-    }
+      await mkdir(destPath);
+      final children = await _client!.listFiles(srcFile);
+      for (final child in children) {
+        final childDst = _joinPath(destPath, child.name);
+        await copyRecursive(child.path, childDst);
+      }
+    });
   }
 
   // ---------------------------------------------------------------------------
