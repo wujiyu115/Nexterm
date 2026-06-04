@@ -300,6 +300,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sessions_activeConnections => 'Active Connections';
 
   @override
+  String get sessions_activeForwards => 'Active Forwards';
+
+  @override
   String get sessions_hosts => 'Hosts';
 
   @override
@@ -844,6 +847,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get forwarding_addTooltip => 'Add Forward';
+
+  @override
+  String get forwarding_ephemeral => 'Temporary Forwards';
 
   @override
   String get forwarding_noForwards => 'No port forwarding rules';

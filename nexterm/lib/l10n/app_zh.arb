@@ -104,6 +104,7 @@
 
   "sessions_title": "会话",
   "sessions_activeConnections": "活跃连接",
+  "sessions_activeForwards": "活跃转发",
   "sessions_hosts": "主机",
   "sessions_recentConnections": "最近连接",
   "sessions_noActive": "没有活跃会话",
@@ -298,6 +299,7 @@
 
   "forwarding_title": "端口转发",
   "forwarding_addTooltip": "添加转发",
+  "forwarding_ephemeral": "临时转发",
   "forwarding_noForwards": "暂无端口转发",
   "forwarding_add": "添加转发",
   "forwarding_startFromTerminal": "请从终端会话中启动转发",

@@ -99,6 +99,7 @@
 
   "sessions_title": "Sessions",
   "sessions_activeConnections": "Active Connections",
+  "sessions_activeForwards": "Active Forwards",
   "sessions_hosts": "Hosts",
   "sessions_recentConnections": "Recent Connections",
   "sessions_noActive": "No active sessions",
@@ -283,6 +284,7 @@
 
   "forwarding_title": "Port Forwarding",
   "forwarding_addTooltip": "Add Forward",
+  "forwarding_ephemeral": "Temporary Forwards",
   "forwarding_noForwards": "No port forwarding rules",
   "forwarding_add": "Add Forward",
   "forwarding_startFromTerminal": "Please start forwarding from a terminal session",

@@ -638,6 +638,12 @@ abstract class AppLocalizations {
   /// **'活跃连接'**
   String get sessions_activeConnections;
 
+  /// No description provided for @sessions_activeForwards.
+  ///
+  /// In zh, this message translates to:
+  /// **'活跃转发'**
+  String get sessions_activeForwards;
+
   /// No description provided for @sessions_hosts.
   ///
   /// In zh, this message translates to:
@@ -1651,6 +1657,12 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'添加转发'**
   String get forwarding_addTooltip;
+
+  /// No description provided for @forwarding_ephemeral.
+  ///
+  /// In zh, this message translates to:
+  /// **'临时转发'**
+  String get forwarding_ephemeral;
 
   /// No description provided for @forwarding_noForwards.
   ///

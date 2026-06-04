@@ -46,6 +46,7 @@ class _PortDetectionSheetState extends ConsumerState<PortDetectionSheet> {
     final sessions = ref.watch(activeSessionsForDetectionProvider);
     final detectionState = ref.watch(portDetectionNotifierProvider);
     final forwardsAsync = ref.watch(forwardsStreamProvider);
+    final fwdService = ref.watch(portForwardServiceProvider);
 
     final forwardedPorts = <int>{};
     forwardsAsync.whenData((forwards) {
@@ -53,6 +54,10 @@ class _PortDetectionSheetState extends ConsumerState<PortDetectionSheet> {
         forwardedPorts.add(f.remotePort ?? f.localPort);
       }
     });
+    // Also include runtime-only (ephemeral) forwards
+    for (final af in fwdService.activeForwards) {
+      forwardedPorts.add(af.entity.localPort);
+    }
 
     return DraggableScrollableSheet(
       initialChildSize: 0.65,
@@ -331,6 +336,7 @@ class _PortDetectionSheetState extends ConsumerState<PortDetectionSheet> {
 
   Widget _buildPortTile(DetectedPort port, Set<int> forwardedPorts) {
     final isForwarded = forwardedPorts.contains(port.port);
+    final fwdService = ref.read(portForwardServiceProvider);
     final sessions = ref.read(activeSessionsForDetectionProvider);
     final activeSessionId = ref.read(portDetectionNotifierProvider).activeSessionId;
     final session = sessions.firstWhere((s) => s.sessionId == activeSessionId);
@@ -338,6 +344,12 @@ class _PortDetectionSheetState extends ConsumerState<PortDetectionSheet> {
     return DetectedPortTile(
       port: port,
       isForwarded: isForwarded,
+      onStopForward: isForwarded
+          ? () {
+              final fwdId = fwdService.findByLocalPort(port.port);
+              if (fwdId != null) fwdService.stop(fwdId);
+            }
+          : null,
       onPreview: _isHttpLike(port)
           ? () {
               Navigator.of(context).pop();

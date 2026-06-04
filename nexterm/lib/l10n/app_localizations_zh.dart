@@ -291,6 +291,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get sessions_activeConnections => '活跃连接';
 
   @override
+  String get sessions_activeForwards => '活跃转发';
+
+  @override
   String get sessions_hosts => '主机';
 
   @override
@@ -821,6 +824,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get forwarding_addTooltip => '添加转发';
+
+  @override
+  String get forwarding_ephemeral => '临时转发';
 
   @override
   String get forwarding_noForwards => '暂无端口转发';

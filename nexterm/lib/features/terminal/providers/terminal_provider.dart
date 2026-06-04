@@ -36,7 +36,7 @@ final sshServiceProvider = Provider<SSHService>((ref) {
 });
 
 /// Singleton PortForwardService shared across the app lifetime.
-final portForwardServiceProvider = Provider<PortForwardService>((ref) {
+final portForwardServiceProvider = ChangeNotifierProvider<PortForwardService>((ref) {
   final service = PortForwardService();
   ref.onDispose(() => service.stopAll());
   return service;

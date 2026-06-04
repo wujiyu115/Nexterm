@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:dartssh2/dartssh2.dart';
+import 'package:flutter/foundation.dart';
 import 'package:nexterm/domain/entities/enums.dart';
 import 'package:nexterm/domain/entities/port_forward_entity.dart';
 
@@ -28,7 +29,7 @@ class ActiveForward {
 ///
 /// This service uses `dart:io` and therefore only works on native platforms
 /// (mobile / desktop) — not on the web.
-class PortForwardService {
+class PortForwardService extends ChangeNotifier {
   final Map<String, ActiveForward> _active = {};
 
   /// Returns the live status of a forward rule.
@@ -76,12 +77,12 @@ class PortForwardService {
 
     final active = ActiveForward(entity: entity, serverSocket: server);
     _active[entity.id] = active;
+    notifyListeners();
 
     final sub = server.listen(
       (socket) async {
         try {
           final channel = await client.forwardLocal(remoteHost, remotePort);
-          // Pipe socket ↔ channel
           socket.cast<List<int>>().pipe(channel.sink);
           channel.stream.cast<List<int>>().pipe(socket);
         } catch (_) {
@@ -89,7 +90,7 @@ class PortForwardService {
         }
       },
       onError: (_) => _cleanupLocal(entity.id),
-      onDone: () => _active.remove(entity.id),
+      onDone: () { _active.remove(entity.id); notifyListeners(); },
     );
 
     active.subscriptions.add(sub);
@@ -120,6 +121,7 @@ class PortForwardService {
 
     final active = ActiveForward(entity: entity, remoteForward: forward);
     _active[entity.id] = active;
+    notifyListeners();
 
     final sub = forward.connections.listen(
       (connection) async {
@@ -127,11 +129,9 @@ class PortForwardService {
           final socket = await Socket.connect(localHost, localPort);
           connection.stream.cast<List<int>>().pipe(socket);
           socket.cast<List<int>>().pipe(connection.sink);
-        } catch (_) {
-          // Ignore individual connection errors.
-        }
+        } catch (_) {}
       },
-      onDone: () => _active.remove(entity.id),
+      onDone: () { _active.remove(entity.id); notifyListeners(); },
     );
 
     active.subscriptions.add(sub);
@@ -159,15 +159,15 @@ class PortForwardService {
 
     final active = ActiveForward(entity: entity, serverSocket: server);
     _active[entity.id] = active;
+    notifyListeners();
 
-    // SOCKS5 placeholder: accept and immediately close connections.
     final sub = server.listen(
       (socket) async {
         // TODO: implement full SOCKS5 negotiation and SSH channel opening.
         await socket.close();
       },
-      onError: (_) => _cleanupLocal(entity.id),
-      onDone: () => _active.remove(entity.id),
+      onError: (_) { _cleanupLocal(entity.id); notifyListeners(); },
+      onDone: () { _active.remove(entity.id); notifyListeners(); },
     );
 
     active.subscriptions.add(sub);
@@ -182,15 +182,21 @@ class PortForwardService {
     final active = _active.remove(forwardId);
     if (active == null) return;
     await _teardown(active);
+    notifyListeners();
   }
 
   /// Stops all active forwards.
   Future<void> stopAll() async {
     final ids = List<String>.from(_active.keys);
     for (final id in ids) {
-      await stop(id);
+      final active = _active.remove(id);
+      if (active != null) await _teardown(active);
     }
+    notifyListeners();
   }
+
+  /// Returns a snapshot of all currently active forwards.
+  List<ActiveForward> get activeForwards => List.unmodifiable(_active.values);
 
   // ---------------------------------------------------------------------------
   // Internal helpers

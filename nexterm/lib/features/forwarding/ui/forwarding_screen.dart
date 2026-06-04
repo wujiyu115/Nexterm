@@ -9,22 +9,9 @@ import 'package:nexterm/features/forwarding/providers/forwarding_provider.dart';
 import 'package:nexterm/features/forwarding/services/port_forward_service.dart';
 import 'package:nexterm/features/forwarding/ui/port_detection_sheet.dart';
 import 'package:nexterm/features/forwarding/ui/widgets/forward_list_tile.dart';
+import 'package:nexterm/features/terminal/providers/terminal_provider.dart';
 import 'package:nexterm/shared/widgets/decorative_background.dart';
 import 'package:nexterm/shared/widgets/section_label.dart';
-
-// ---------------------------------------------------------------------------
-// Service provider — one instance per app lifetime, disposed on teardown.
-// ---------------------------------------------------------------------------
-
-final portForwardServiceProvider = Provider<PortForwardService>((ref) {
-  final service = PortForwardService();
-  ref.onDispose(() => service.stopAll());
-  return service;
-});
-
-// ---------------------------------------------------------------------------
-// Forwarding screen
-// ---------------------------------------------------------------------------
 
 class ForwardingScreen extends ConsumerWidget {
   const ForwardingScreen({super.key});
@@ -92,7 +79,13 @@ class ForwardingScreen extends ConsumerWidget {
     PortForwardService service,
     ForwardingNotifier notifier,
   ) {
-    if (forwards.isEmpty) return _buildEmptyState(context);
+    // Find ephemeral forwards (active but not saved in DB)
+    final savedIds = forwards.map((f) => f.id).toSet();
+    final ephemeral = service.activeForwards
+        .where((af) => !savedIds.contains(af.entity.id))
+        .toList();
+
+    if (forwards.isEmpty && ephemeral.isEmpty) return _buildEmptyState(context);
 
     // Group by ForwardType
     final groups = <ForwardType, List<PortForwardEntity>>{
@@ -113,6 +106,10 @@ class ForwardingScreen extends ConsumerWidget {
             SectionLabel(title: type.localizedName(l)),
             ...groups[type]!.map((f) => _buildTile(context, f, service, notifier)),
           ],
+        if (ephemeral.isNotEmpty) ...[
+          SectionLabel(title: l.forwarding_ephemeral),
+          ...ephemeral.map((af) => _buildEphemeralTile(context, af, service)),
+        ],
         const SizedBox(height: 80),
       ],
     );
@@ -142,6 +139,21 @@ class ForwardingScreen extends ConsumerWidget {
           );
         }
       },
+    );
+  }
+
+  Widget _buildEphemeralTile(
+    BuildContext context,
+    ActiveForward af,
+    PortForwardService service,
+  ) {
+    final entity = af.entity;
+    return ForwardListTile(
+      key: ValueKey(entity.id),
+      forward: entity,
+      status: ForwardStatus.active,
+      onEdit: () {},
+      onStartStop: () => service.stop(entity.id),
     );
   }
 

@@ -12,6 +12,7 @@ import 'package:nexterm/features/webdav/providers/webdav_provider.dart';
 import 'package:nexterm/features/webdav/services/webdav_service.dart';
 import 'package:nexterm/features/smb/providers/smb_provider.dart';
 import 'package:nexterm/features/smb/services/smb_service.dart';
+import 'package:nexterm/features/forwarding/services/port_forward_service.dart';
 import 'package:nexterm/features/terminal/providers/terminal_provider.dart';
 import 'package:nexterm/features/terminal/ui/tab_manager.dart';
 import 'package:nexterm/shared/widgets/glass_card.dart';
@@ -25,6 +26,8 @@ class SessionsScreen extends ConsumerWidget {
     final l = AppLocalizations.of(context)!;
     final tabManager = ref.watch(tabManagerProvider);
     final tabs = tabManager.tabs;
+    final fwdService = ref.watch(portForwardServiceProvider);
+    final activeForwards = fwdService.activeForwards;
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -39,6 +42,11 @@ class SessionsScreen extends ConsumerWidget {
             if (tabs.isNotEmpty) ...[
               SectionLabel(title: l.sessions_activeConnections),
               ...tabs.map((tab) => _ActiveSessionCard(tab: tab)),
+            ],
+
+            if (activeForwards.isNotEmpty) ...[
+              SectionLabel(title: l.sessions_activeForwards),
+              ...activeForwards.map((fwd) => _ActiveForwardCard(forward: fwd, service: fwdService)),
             ],
 
             _RecentConnectionsList(tabs: tabs),
@@ -189,6 +197,59 @@ class _ActiveSessionCard extends ConsumerWidget {
               color: p.fgTertiary,
             ),
             onPressed: () => ref.read(terminalActionsProvider).disconnectTab(tab.id),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ActiveForwardCard extends StatelessWidget {
+  final ActiveForward forward;
+  final PortForwardService service;
+  const _ActiveForwardCard({required this.forward, required this.service});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final p = theme.extension<ThemePalette>()!;
+    final entity = forward.entity;
+    final summary = 'L ${entity.localPort} → ${entity.remoteHost ?? "localhost"}:${entity.remotePort ?? entity.localPort}';
+
+    return GlassCard(
+      child: Row(
+        children: [
+          Container(
+            width: 10,
+            height: 10,
+            decoration: BoxDecoration(
+              color: p.accent,
+              shape: BoxShape.circle,
+              boxShadow: [BoxShadow(color: p.accentGlow, blurRadius: 6)],
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  entity.name,
+                  style: theme.textTheme.titleMedium,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  summary,
+                  style: theme.textTheme.bodySmall!.copyWith(color: p.fgTertiary),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            icon: Icon(Icons.stop_circle_outlined, size: 20, color: p.statusError),
+            onPressed: () => service.stop(entity.id),
           ),
         ],
       ),
