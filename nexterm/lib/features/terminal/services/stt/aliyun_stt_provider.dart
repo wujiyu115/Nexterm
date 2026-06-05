@@ -153,6 +153,8 @@ class AliyunSttProvider implements SttProvider {
     await _channel?.sink.close();
     _channel = null;
     _taskId = null;
+    _controller?.close();
+    _controller = null;
     await _recorder?.dispose();
     _recorder = null;
   }

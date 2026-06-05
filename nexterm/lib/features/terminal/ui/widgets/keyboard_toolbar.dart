@@ -65,29 +65,39 @@ class _KeyboardToolbarState extends ConsumerState<KeyboardToolbar> {
   }
 
   void _startListening() {
+    _sttSub?.cancel();
     _activeSttProvider = ref.read(sttProviderInstanceProvider);
     final provider = _activeSttProvider!;
     final localeId = ref.read(voiceLocaleIdProvider);
     setState(() => _isListening = true);
     final stream = provider.start(localeId: localeId.isEmpty ? null : localeId);
+    String lastText = '';
+    bool sentFinal = false;
     _sttSub = stream.listen(
       (result) {
+        if (result.text.isNotEmpty) {
+          lastText = result.text;
+        }
         if (result.isFinal && result.text.isNotEmpty) {
+          sentFinal = true;
           widget.onKeyInput(Uint8List.fromList(utf8.encode(result.text)));
         }
       },
       onDone: () {
+        if (!sentFinal && lastText.isNotEmpty && mounted) {
+          widget.onKeyInput(Uint8List.fromList(utf8.encode(lastText)));
+        }
+        _sttSub = null;
         if (mounted) setState(() => _isListening = false);
       },
       onError: (_) {
+        _sttSub = null;
         if (mounted) setState(() => _isListening = false);
       },
     );
   }
 
   void _stopListening() {
-    _sttSub?.cancel();
-    _sttSub = null;
     _activeSttProvider?.stop();
     _activeSttProvider = null;
     setState(() => _isListening = false);
