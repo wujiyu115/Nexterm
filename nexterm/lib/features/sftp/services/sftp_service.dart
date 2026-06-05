@@ -347,10 +347,16 @@ class SftpService implements RemoteFileService {
   String? videoUrl(String remotePath) => null;
 
   @override
-  bool get supportsReadRange => false;
+  bool get supportsReadRange => true;
 
   @override
   Future<Uint8List> readRange(String remotePath, int offset, int length) async {
-    throw UnimplementedError('readRange not supported for SFTP');
+    _requireConnected();
+    final file = await _client!.open(remotePath, mode: SftpFileOpenMode.read);
+    try {
+      return await file.readBytes(offset: offset, length: length);
+    } finally {
+      await file.close();
+    }
   }
 }
