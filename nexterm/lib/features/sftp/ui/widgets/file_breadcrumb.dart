@@ -29,11 +29,12 @@ class FileBreadcrumb extends StatelessWidget {
 
     result.add(('/', rootPath));
 
-    final relative = path.startsWith(rootPath)
-        ? path.substring(rootPath.length)
-        : path;
+    final startsWithRoot = path.startsWith(rootPath);
+    final relative = startsWithRoot ? path.substring(rootPath.length) : path;
     final parts = relative.split('/').where((s) => s.isNotEmpty).toList();
-    final base = rootPath.endsWith('/') ? rootPath.substring(0, rootPath.length - 1) : rootPath;
+    final base = startsWithRoot
+        ? (rootPath.endsWith('/') ? rootPath.substring(0, rootPath.length - 1) : rootPath)
+        : '';
     var accumulated = base;
     for (final part in parts) {
       accumulated = '$accumulated/$part';
