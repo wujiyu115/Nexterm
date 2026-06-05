@@ -256,7 +256,6 @@ class _MenuPopup extends StatelessWidget {
 
     final hasFileItems = onOpenSftp != null || onUploadFile != null;
     final hasToolItems = onOpenGit != null || onOpenWeb != null || onOpenMux != null || onDetectPorts != null;
-    final hasSettingItems = onToggleMode != null || onCustomizeTap != null;
 
     return Material(
       elevation: 8,
@@ -290,22 +289,23 @@ class _MenuPopup extends StatelessWidget {
                   if (onOpenMux != null) _item(context, Icons.view_week_outlined, l.terminal_openMux, () => onItemTap(onOpenMux)),
                   if (onDetectPorts != null) _item(context, Icons.radar, l.portDetect_tooltip, () => onItemTap(onDetectPorts)),
                 ]),
-              if (hasSettingItems)
+              if (onCustomizeTap != null)
                 _group(context, Icons.settings_outlined, l.terminal_menuSettings, 'settings', [
-                  if (onToggleMode != null) _item(
-                    context,
-                    isFunctionMode ? Icons.keyboard : Icons.grid_view_rounded,
-                    isFunctionMode ? l.terminal_switchToAbc : l.terminal_switchToFunction,
-                    () => onItemTap(onToggleMode),
-                  ),
-                  if (onCustomizeTap != null) _item(context, Icons.settings, l.toolbar_customize, () => onItemTap(onCustomizeTap)),
+                  _item(context, Icons.settings, l.toolbar_customize, () => onItemTap(onCustomizeTap)),
                 ]),
-              if (onShowHelp != null) ...[
+              if (onToggleMode != null || onShowHelp != null) ...[
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   child: DashedDivider(color: p.border),
                 ),
-                _item(context, Icons.help_outline, l.function_tabHelp, () => onItemTap(onShowHelp)),
+                if (onToggleMode != null) _item(
+                  context,
+                  isFunctionMode ? Icons.keyboard : Icons.grid_view_rounded,
+                  isFunctionMode ? l.terminal_switchToAbc : l.terminal_switchToFunction,
+                  () => onItemTap(onToggleMode),
+                ),
+                if (onShowHelp != null)
+                  _item(context, Icons.help_outline, l.function_tabHelp, () => onItemTap(onShowHelp)),
               ],
               const SizedBox(height: 8),
             ],

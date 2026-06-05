@@ -415,32 +415,52 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
           ),
 
           Expanded(
-            child: Listener(
-              behavior: HitTestBehavior.translucent,
-              onPointerDown: _isDpadVisible ? (_) => setState(() => _isDpadVisible = false) : null,
-              child: ClipRect(
-                child: activeTab == null
-                    ? Center(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const CircularProgressIndicator(),
-                            const SizedBox(height: 16),
-                            Text(l.terminal_connecting, style: TextStyle(color: p.fg)),
-                          ],
-                        ),
-                      )
-                    : activeTab.connectionType == ConnectionType.sftp && activeTab.sessionId != null
-                        ? SftpContentWidget(sessionId: activeTab.sessionId!)
-                        : activeTab.connectionType == ConnectionType.webPreview && activeTab.localPort != null
-                            ? WebPreviewContent(localPort: activeTab.localPort!, title: activeTab.title)
-                            : (activeTab.connectionType == ConnectionType.webdav || activeTab.connectionType == ConnectionType.smb)
-                                ? SftpContentWidget(service: ref.read(fileServicesProvider)[activeTab.id])
-                                : TerminalViewWidget(
-                                tab: activeTab,
-                                hardwareKeyboardOnly: _isFunctionMode,
+            child: Stack(
+              children: [
+                Positioned.fill(
+                  child: Listener(
+                    behavior: HitTestBehavior.translucent,
+                    onPointerDown: _isDpadVisible ? (_) => setState(() => _isDpadVisible = false) : null,
+                    child: ClipRect(
+                      child: activeTab == null
+                          ? Center(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const CircularProgressIndicator(),
+                                  const SizedBox(height: 16),
+                                  Text(l.terminal_connecting, style: TextStyle(color: p.fg)),
+                                ],
                               ),
-              ),
+                            )
+                          : activeTab.connectionType == ConnectionType.sftp && activeTab.sessionId != null
+                              ? SftpContentWidget(sessionId: activeTab.sessionId!)
+                              : activeTab.connectionType == ConnectionType.webPreview && activeTab.localPort != null
+                                  ? WebPreviewContent(localPort: activeTab.localPort!, title: activeTab.title)
+                                  : (activeTab.connectionType == ConnectionType.webdav || activeTab.connectionType == ConnectionType.smb)
+                                      ? SftpContentWidget(service: ref.read(fileServicesProvider)[activeTab.id])
+                                      : TerminalViewWidget(
+                                          tab: activeTab,
+                                          hardwareKeyboardOnly: _isFunctionMode,
+                                        ),
+                    ),
+                  ),
+                ),
+                if (_isDpadVisible && activeTab != null && activeTab.connectionType == ConnectionType.ssh && !_isFunctionMode)
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: DPadPanel(
+                      onKeyInput: (data) {
+                        final sshService = ref.read(sshServiceProvider);
+                        if (activeTab.sessionId != null) {
+                          sshService.writeBytes(activeTab.sessionId!, data);
+                        }
+                      },
+                    ),
+                  ),
+              ],
             ),
           ),
 
@@ -461,16 +481,7 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
                   }
                 },
               )
-            else ...[
-              if (_isDpadVisible)
-                DPadPanel(
-                  onKeyInput: (data) {
-                    final sshService = ref.read(sshServiceProvider);
-                    if (activeTab.sessionId != null) {
-                      sshService.writeBytes(activeTab.sessionId!, data);
-                    }
-                  },
-                ),
+            else
               KeyboardToolbar(
                 onKeyInput: (data) {
                   final sshService = ref.read(sshServiceProvider);
@@ -482,7 +493,6 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
                 onToggleDpad: () => setState(() => _isDpadVisible = !_isDpadVisible),
                 isDpadVisible: _isDpadVisible,
               ),
-            ],
           ],
         ],
       ),
