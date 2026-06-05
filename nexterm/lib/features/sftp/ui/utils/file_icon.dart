@@ -536,6 +536,11 @@ const _imageExtensions = {
   'tiff', 'tif', 'heic', 'heif', 'avif', 'svg',
 };
 
+const _videoExtensions = {
+  'mp4', 'mkv', 'avi', 'mov', 'wmv', 'flv', 'webm', 'm4v',
+  'mpg', 'mpeg', 'ts', '3gp', 'rmvb', 'rm',
+};
+
 const _binaryExtensions = {
   // Audio
   'mp3', 'wav', 'ogg', 'flac', 'aac', 'm4a', 'wma',
@@ -559,6 +564,9 @@ const _binaryExtensions = {
 
 bool isImageFile(String filename) =>
     _imageExtensions.contains(_extension(filename));
+
+bool isVideoFile(String filename) =>
+    _videoExtensions.contains(_extension(filename));
 
 bool isBinaryFile(String filename) {
   final ext = _extension(filename);

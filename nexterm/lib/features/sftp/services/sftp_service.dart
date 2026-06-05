@@ -342,4 +342,15 @@ class SftpService implements RemoteFileService {
       group: attrs.groupID?.toString(),
     );
   }
+
+  @override
+  String? videoUrl(String remotePath) => null;
+
+  @override
+  bool get supportsReadRange => false;
+
+  @override
+  Future<Uint8List> readRange(String remotePath, int offset, int length) async {
+    throw UnimplementedError('readRange not supported for SFTP');
+  }
 }

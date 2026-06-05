@@ -1162,6 +1162,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sftp_noFiles => 'No files';
 
   @override
+  String get video_loading => 'Loading video...';
+
+  @override
+  String get video_play => 'Play Video';
+
+  @override
   String get fileEditor_fileSaved => 'File saved';
 
   @override

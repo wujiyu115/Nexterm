@@ -407,6 +407,8 @@
   "sftp_goToPath": "跳转路径",
   "sftp_goToPathHint": "输入远程路径",
   "sftp_noFiles": "无文件",
+  "video_loading": "加载视频中...",
+  "video_play": "播放视频",
 
   "fileEditor_fileSaved": "文件已保存",
   "fileEditor_saveFailed": "保存失败: {error}",

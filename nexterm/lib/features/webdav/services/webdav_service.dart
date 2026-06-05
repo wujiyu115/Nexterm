@@ -301,4 +301,15 @@ class WebDavService implements RemoteFileService {
       group: null,
     );
   }
+
+  @override
+  String? videoUrl(String remotePath) => null;
+
+  @override
+  bool get supportsReadRange => false;
+
+  @override
+  Future<Uint8List> readRange(String remotePath, int offset, int length) async {
+    throw UnimplementedError('readRange not supported for WebDAV');
+  }
 }

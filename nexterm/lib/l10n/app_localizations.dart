@@ -2228,6 +2228,18 @@ abstract class AppLocalizations {
   /// **'无文件'**
   String get sftp_noFiles;
 
+  /// No description provided for @video_loading.
+  ///
+  /// In zh, this message translates to:
+  /// **'加载视频中...'**
+  String get video_loading;
+
+  /// No description provided for @video_play.
+  ///
+  /// In zh, this message translates to:
+  /// **'播放视频'**
+  String get video_play;
+
   /// No description provided for @fileEditor_fileSaved.
   ///
   /// In zh, this message translates to:

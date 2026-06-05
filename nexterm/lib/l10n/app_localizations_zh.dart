@@ -1134,6 +1134,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get sftp_noFiles => '无文件';
 
   @override
+  String get video_loading => '加载视频中...';
+
+  @override
+  String get video_play => '播放视频';
+
+  @override
   String get fileEditor_fileSaved => '文件已保存';
 
   @override

@@ -362,4 +362,30 @@ class SmbService implements RemoteFileService {
       group: null,
     );
   }
+
+  @override
+  bool get supportsReadRange => true;
+
+  @override
+  Future<Uint8List> readRange(String remotePath, int offset, int length) async {
+    return _withReconnect(() async {
+      final smbFile = await _client!.file(remotePath);
+      final raf = await _client!.open(smbFile, mode: FileMode.read);
+      try {
+        await raf.setPosition(offset);
+        return await raf.read(length);
+      } finally {
+        await raf.close();
+      }
+    });
+  }
+
+  @override
+  String? videoUrl(String remotePath) {
+    if (_host == null) return null;
+    final user = Uri.encodeComponent(_username ?? 'guest');
+    final pass = Uri.encodeComponent(_password ?? '');
+    final path = remotePath.startsWith('/') ? remotePath : '/$remotePath';
+    return 'smb://$user:$pass@$_host$path';
+  }
 }

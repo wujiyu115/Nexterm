@@ -64,4 +64,10 @@ abstract class RemoteFileService {
   Future<RemoteFileInfo> stat(String remotePath);
   Future<void> copyFile(String sourcePath, String destPath);
   Future<void> copyRecursive(String sourcePath, String destPath);
+
+  String? videoUrl(String remotePath) => null;
+  Future<Uint8List> readRange(String remotePath, int offset, int length) async {
+    throw UnimplementedError('readRange not supported');
+  }
+  bool get supportsReadRange => false;
 }

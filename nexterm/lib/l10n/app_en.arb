@@ -387,6 +387,8 @@
   "sftp_goToPath": "Go to Path",
   "sftp_goToPathHint": "Enter remote path",
   "sftp_noFiles": "No files",
+  "video_loading": "Loading video...",
+  "video_play": "Play Video",
 
   "fileEditor_fileSaved": "File saved",
   "fileEditor_saveFailed": "Save failed: {error}",

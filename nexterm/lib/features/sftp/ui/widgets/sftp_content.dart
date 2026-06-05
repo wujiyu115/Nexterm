@@ -155,6 +155,10 @@ class _SftpContentWidgetState extends ConsumerState<SftpContentWidget> {
               ),
               const SizedBox(height: 8),
               Divider(height: 1, color: p.border),
+              if (!file.isDirectory && isVideoFile(file.name))
+                _menuTile(ctx, Icons.play_circle_outline, l.video_play, p.fg, () {
+                  context.push('/sftp/video', extra: <String, dynamic>{'sessionId': widget.sessionId, 'path': file.path, 'service': widget.service});
+                }),
               if (!file.isDirectory && isImageFile(file.name))
                 _menuTile(ctx, Icons.image_outlined, l.sftp_viewImage, p.fg, () {
                   context.push('/sftp/image', extra: <String, dynamic>{'sessionId': widget.sessionId, 'path': file.path, 'service': widget.service});
