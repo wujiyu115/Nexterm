@@ -346,6 +346,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get terminal_newTab => 'New Terminal';
 
   @override
+  String get terminal_menuFiles => 'Files';
+
+  @override
+  String get terminal_menuTools => 'Tools';
+
+  @override
+  String get terminal_menuSettings => 'Settings';
+
+  @override
   String get terminal_openSftp => 'Open SFTP';
 
   @override

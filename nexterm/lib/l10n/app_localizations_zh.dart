@@ -336,6 +336,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get terminal_newTab => '新建终端';
 
   @override
+  String get terminal_menuFiles => '文件管理';
+
+  @override
+  String get terminal_menuTools => '工具';
+
+  @override
+  String get terminal_menuSettings => '设置';
+
+  @override
   String get terminal_openSftp => '打开 SFTP';
 
   @override

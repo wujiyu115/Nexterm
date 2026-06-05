@@ -728,6 +728,24 @@ abstract class AppLocalizations {
   /// **'新建终端'**
   String get terminal_newTab;
 
+  /// No description provided for @terminal_menuFiles.
+  ///
+  /// In zh, this message translates to:
+  /// **'文件管理'**
+  String get terminal_menuFiles;
+
+  /// No description provided for @terminal_menuTools.
+  ///
+  /// In zh, this message translates to:
+  /// **'工具'**
+  String get terminal_menuTools;
+
+  /// No description provided for @terminal_menuSettings.
+  ///
+  /// In zh, this message translates to:
+  /// **'设置'**
+  String get terminal_menuSettings;
+
   /// No description provided for @terminal_openSftp.
   ///
   /// In zh, this message translates to:

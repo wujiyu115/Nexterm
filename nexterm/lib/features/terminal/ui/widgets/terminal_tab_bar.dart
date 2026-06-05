@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nexterm/domain/entities/enums.dart';
 import 'package:nexterm/features/terminal/providers/terminal_provider.dart';
 import 'package:nexterm/features/terminal/ui/tab_manager.dart';
-import 'package:nexterm/shared/widgets/dashed_divider.dart';
+import 'package:nexterm/shared/widgets/dashed_divider.dart';  // used in menu sheet
 
 /// Horizontal tab bar showing all open terminal tabs with:
 /// - Status indicator dot (color by [ConnectionStatus])
@@ -55,7 +55,6 @@ class TerminalTabBar extends ConsumerWidget {
     final p = Theme.of(context).extension<ThemePalette>()!;
     final barBg = p.bgElevated;
     final barFg = p.fg;
-    final menuBg = p.bgElevated;
 
     return Container(
       height: 40,
@@ -82,164 +81,287 @@ class TerminalTabBar extends ConsumerWidget {
             ),
           ),
 
-          PopupMenuButton<String>(
-            icon: Icon(
-              Icons.more_horiz,
-              size: 18,
-              color: barFg,
-            ),
-            padding: EdgeInsets.zero,
-            color: menuBg,
-            surfaceTintColor: Colors.transparent,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            onSelected: (value) {
-              HapticFeedback.lightImpact();
-              switch (value) {
-                case 'toggle':
-                  onToggleMode?.call();
-                case 'customize':
-                  onCustomizeTap?.call();
-                case 'add':
-                  onAddTab?.call();
-                case 'hosts':
-                  onGoToHosts?.call();
-                case 'help':
-                  onShowHelp?.call();
-                case 'upload':
-                  onUploadFile?.call();
-                case 'detect_ports':
-                  onDetectPorts?.call();
-                case 'open_sftp':
-                  onOpenSftp?.call();
-              case 'open_git':
-                  onOpenGit?.call();
-              case 'open_web':
-                  onOpenWeb?.call();
-              case 'open_mux':
-                  onOpenMux?.call();
-              }
-            },
-            itemBuilder: (ctx) {
-              final l = AppLocalizations.of(ctx)!;
-              final theme = Theme.of(ctx);
-              final menuP = theme.extension<ThemePalette>()!;
-              final iconColor = menuP.fgSecondary;
-              final textColor = menuP.fg;
-              final dividerColor = menuP.border;
-
-              PopupMenuItem<String> menuItem({
-                required String value,
-                required IconData icon,
-                required String label,
-              }) {
-                return PopupMenuItem<String>(
-                  value: value,
-                  height: 40,
-                  child: Row(
-                    children: [
-                      Icon(icon, size: 18, color: iconColor),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          label,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: textColor,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              }
-
-              PopupMenuItem<String> divider() => PopupMenuItem<String>(
-                    enabled: false,
-                    height: 9,
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: DashedDivider(color: dividerColor),
-                  );
-
-              final hasTerminalItems = onToggleMode != null || onCustomizeTap != null;
-              return <PopupMenuEntry<String>>[
-                if (onToggleMode != null)
-                  menuItem(
-                    value: 'toggle',
-                    icon: isFunctionMode
-                        ? Icons.keyboard
-                        : Icons.grid_view_rounded,
-                    label: isFunctionMode
-                        ? l.terminal_switchToAbc
-                        : l.terminal_switchToFunction,
-                  ),
-                if (onCustomizeTap != null)
-                  menuItem(
-                    value: 'customize',
-                    icon: Icons.settings,
-                    label: l.toolbar_customize,
-                  ),
-                if (hasTerminalItems) divider(),
-                menuItem(
-                  value: 'add',
-                  icon: Icons.add,
-                  label: l.terminal_newTab,
-                ),
-                if (onOpenSftp != null)
-                  menuItem(
-                    value: 'open_sftp',
-                    icon: Icons.folder_outlined,
-                    label: l.terminal_openSftp,
-                  ),
-                if (onOpenGit != null)
-                  menuItem(
-                    value: 'open_git',
-                    icon: Icons.account_tree_outlined,
-                    label: l.terminal_openGit,
-                  ),
-                if (onOpenWeb != null)
-                  menuItem(
-                    value: 'open_web',
-                    icon: Icons.language,
-                    label: l.terminal_openWeb,
-                  ),
-                if (onOpenMux != null)
-                  menuItem(
-                    value: 'open_mux',
-                    icon: Icons.view_week_outlined,
-                    label: l.terminal_openMux,
-                  ),
-                if (onUploadFile != null)
-                  menuItem(
-                    value: 'upload',
-                    icon: Icons.upload_file_outlined,
-                    label: l.terminal_uploadFile,
-                  ),
-                if (onDetectPorts != null)
-                  menuItem(
-                    value: 'detect_ports',
-                    icon: Icons.radar,
-                    label: l.portDetect_tooltip,
-                  ),
-                if (onGoToHosts != null)
-                  menuItem(
-                    value: 'hosts',
-                    icon: Icons.dns_outlined,
-                    label: l.terminal_backToHosts,
-                  ),
-                if (onShowHelp != null) ...[
-                  divider(),
-                  menuItem(
-                    value: 'help',
-                    icon: Icons.help_outline,
-                    label: l.function_tabHelp,
-                  ),
-                ],
-              ];
-            },
+          _MenuButton(
+            color: barFg,
+            onAddTab: onAddTab,
+            onGoToHosts: onGoToHosts,
+            onShowHelp: onShowHelp,
+            onOpenSftp: onOpenSftp,
+            onUploadFile: onUploadFile,
+            onOpenGit: onOpenGit,
+            onOpenWeb: onOpenWeb,
+            onOpenMux: onOpenMux,
+            onDetectPorts: onDetectPorts,
+            onToggleMode: onToggleMode,
+            onCustomizeTap: onCustomizeTap,
+            isFunctionMode: isFunctionMode,
           ),
         ],
       ),
+    );
+  }
+
+}
+
+class _MenuButton extends StatefulWidget {
+  final Color color;
+  final VoidCallback? onAddTab;
+  final VoidCallback? onGoToHosts;
+  final VoidCallback? onShowHelp;
+  final VoidCallback? onOpenSftp;
+  final VoidCallback? onUploadFile;
+  final VoidCallback? onOpenGit;
+  final VoidCallback? onOpenWeb;
+  final VoidCallback? onOpenMux;
+  final VoidCallback? onDetectPorts;
+  final VoidCallback? onToggleMode;
+  final VoidCallback? onCustomizeTap;
+  final bool isFunctionMode;
+
+  const _MenuButton({
+    required this.color,
+    this.onAddTab,
+    this.onGoToHosts,
+    this.onShowHelp,
+    this.onOpenSftp,
+    this.onUploadFile,
+    this.onOpenGit,
+    this.onOpenWeb,
+    this.onOpenMux,
+    this.onDetectPorts,
+    this.onToggleMode,
+    this.onCustomizeTap,
+    this.isFunctionMode = false,
+  });
+
+  @override
+  State<_MenuButton> createState() => _MenuButtonState();
+}
+
+class _MenuButtonState extends State<_MenuButton> {
+  String? _expandedGroup;
+  OverlayEntry? _overlay;
+
+  void _show() {
+    _expandedGroup = null;
+    final renderBox = context.findRenderObject() as RenderBox;
+    final offset = renderBox.localToGlobal(Offset.zero);
+    final size = renderBox.size;
+
+    _overlay = OverlayEntry(builder: (ctx) {
+      return Stack(
+        children: [
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: _dismiss,
+            child: const SizedBox.expand(),
+          ),
+          Positioned(
+            right: MediaQuery.of(ctx).size.width - offset.dx - size.width,
+            top: offset.dy + size.height + 4,
+            child: _MenuPopup(
+              expandedGroup: _expandedGroup,
+              onGroupTap: (key) {
+                setState(() {
+                  _expandedGroup = _expandedGroup == key ? null : key;
+                });
+                _overlay?.markNeedsBuild();
+              },
+              onItemTap: (cb) {
+                _dismiss();
+                HapticFeedback.lightImpact();
+                cb?.call();
+              },
+              onAddTab: widget.onAddTab,
+              onGoToHosts: widget.onGoToHosts,
+              onShowHelp: widget.onShowHelp,
+              onOpenSftp: widget.onOpenSftp,
+              onUploadFile: widget.onUploadFile,
+              onOpenGit: widget.onOpenGit,
+              onOpenWeb: widget.onOpenWeb,
+              onOpenMux: widget.onOpenMux,
+              onDetectPorts: widget.onDetectPorts,
+              onToggleMode: widget.onToggleMode,
+              onCustomizeTap: widget.onCustomizeTap,
+              isFunctionMode: widget.isFunctionMode,
+            ),
+          ),
+        ],
+      );
+    });
+    Overlay.of(context).insert(_overlay!);
+  }
+
+  void _dismiss() {
+    _overlay?.remove();
+    _overlay = null;
+  }
+
+  @override
+  void dispose() {
+    _dismiss();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      icon: Icon(Icons.more_horiz, size: 18, color: widget.color),
+      padding: EdgeInsets.zero,
+      constraints: const BoxConstraints(minWidth: 40),
+      onPressed: _show,
+    );
+  }
+}
+
+class _MenuPopup extends StatelessWidget {
+  final String? expandedGroup;
+  final void Function(String key) onGroupTap;
+  final void Function(VoidCallback? cb) onItemTap;
+  final VoidCallback? onAddTab;
+  final VoidCallback? onGoToHosts;
+  final VoidCallback? onShowHelp;
+  final VoidCallback? onOpenSftp;
+  final VoidCallback? onUploadFile;
+  final VoidCallback? onOpenGit;
+  final VoidCallback? onOpenWeb;
+  final VoidCallback? onOpenMux;
+  final VoidCallback? onDetectPorts;
+  final VoidCallback? onToggleMode;
+  final VoidCallback? onCustomizeTap;
+  final bool isFunctionMode;
+
+  const _MenuPopup({
+    this.expandedGroup,
+    required this.onGroupTap,
+    required this.onItemTap,
+    this.onAddTab,
+    this.onGoToHosts,
+    this.onShowHelp,
+    this.onOpenSftp,
+    this.onUploadFile,
+    this.onOpenGit,
+    this.onOpenWeb,
+    this.onOpenMux,
+    this.onDetectPorts,
+    this.onToggleMode,
+    this.onCustomizeTap,
+    this.isFunctionMode = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    final p = Theme.of(context).extension<ThemePalette>()!;
+
+    final hasFileItems = onOpenSftp != null || onUploadFile != null;
+    final hasToolItems = onOpenGit != null || onOpenWeb != null || onOpenMux != null || onDetectPorts != null;
+    final hasSettingItems = onToggleMode != null || onCustomizeTap != null;
+
+    return Material(
+      elevation: 8,
+      borderRadius: BorderRadius.circular(12),
+      color: p.bgElevated,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minWidth: 200, maxWidth: 240),
+        child: IntrinsicWidth(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const SizedBox(height: 8),
+              _item(context, Icons.add, l.terminal_newTab, () => onItemTap(onAddTab)),
+              if (onGoToHosts != null)
+                _item(context, Icons.dns_outlined, l.terminal_backToHosts, () => onItemTap(onGoToHosts)),
+              if (hasFileItems) ...[
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  child: DashedDivider(color: p.border),
+                ),
+                _group(context, Icons.folder_outlined, l.terminal_menuFiles, 'files', [
+                  if (onOpenSftp != null) _item(context, Icons.folder_outlined, l.terminal_openSftp, () => onItemTap(onOpenSftp)),
+                  if (onUploadFile != null) _item(context, Icons.upload_file_outlined, l.terminal_uploadFile, () => onItemTap(onUploadFile)),
+                ]),
+              ],
+              if (hasToolItems)
+                _group(context, Icons.build_outlined, l.terminal_menuTools, 'tools', [
+                  if (onOpenGit != null) _item(context, Icons.account_tree_outlined, l.terminal_openGit, () => onItemTap(onOpenGit)),
+                  if (onOpenWeb != null) _item(context, Icons.language, l.terminal_openWeb, () => onItemTap(onOpenWeb)),
+                  if (onOpenMux != null) _item(context, Icons.view_week_outlined, l.terminal_openMux, () => onItemTap(onOpenMux)),
+                  if (onDetectPorts != null) _item(context, Icons.radar, l.portDetect_tooltip, () => onItemTap(onDetectPorts)),
+                ]),
+              if (hasSettingItems)
+                _group(context, Icons.settings_outlined, l.terminal_menuSettings, 'settings', [
+                  if (onToggleMode != null) _item(
+                    context,
+                    isFunctionMode ? Icons.keyboard : Icons.grid_view_rounded,
+                    isFunctionMode ? l.terminal_switchToAbc : l.terminal_switchToFunction,
+                    () => onItemTap(onToggleMode),
+                  ),
+                  if (onCustomizeTap != null) _item(context, Icons.settings, l.toolbar_customize, () => onItemTap(onCustomizeTap)),
+                ]),
+              if (onShowHelp != null) ...[
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  child: DashedDivider(color: p.border),
+                ),
+                _item(context, Icons.help_outline, l.function_tabHelp, () => onItemTap(onShowHelp)),
+              ],
+              const SizedBox(height: 8),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _item(BuildContext context, IconData icon, String label, VoidCallback onTap) {
+    final p = Theme.of(context).extension<ThemePalette>()!;
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        child: Row(
+          children: [
+            Icon(icon, size: 18, color: p.fgSecondary),
+            const SizedBox(width: 12),
+            Expanded(child: Text(label, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: p.fg))),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _group(BuildContext context, IconData icon, String label, String key, List<Widget> children) {
+    final p = Theme.of(context).extension<ThemePalette>()!;
+    final isExpanded = expandedGroup == key;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        InkWell(
+          onTap: () => onGroupTap(key),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            child: Row(
+              children: [
+                Icon(icon, size: 18, color: p.fgSecondary),
+                const SizedBox(width: 12),
+                Expanded(child: Text(label, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: p.fg))),
+                AnimatedRotation(
+                  turns: isExpanded ? 0.25 : 0,
+                  duration: const Duration(milliseconds: 200),
+                  child: Icon(Icons.chevron_right, size: 16, color: p.fgTertiary),
+                ),
+              ],
+            ),
+          ),
+        ),
+        if (isExpanded)
+          Padding(
+            padding: const EdgeInsets.only(left: 20),
+            child: Column(mainAxisSize: MainAxisSize.min, children: children),
+          ),
+      ],
     );
   }
 }
