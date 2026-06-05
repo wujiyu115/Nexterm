@@ -154,6 +154,18 @@ class VideoStreamServer {
     final remotePath = _remotePath;
     if (service == null || remotePath == null) return;
 
+    final isSequential = start < _cachedBytes + 10 * 1024 * 1024;
+
+    if (isSequential) {
+      while (_cachedBytes <= start && !_downloadComplete && !_disposed) {
+        await Future.delayed(const Duration(milliseconds: 100));
+      }
+      if (_canServeFromCache(start, start + length - 1)) {
+        await _serveFromCache(request, start, length);
+        return;
+      }
+    }
+
     int offset = start;
     int remaining = length;
     while (remaining > 0 && !_disposed) {
