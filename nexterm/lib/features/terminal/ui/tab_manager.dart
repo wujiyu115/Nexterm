@@ -12,6 +12,7 @@ class TerminalTab {
   String? sessionId;
   int? localPort;
   String? forwardId;
+  String? sftpPath;
 
   TerminalTab({
     required this.id,
@@ -22,6 +23,7 @@ class TerminalTab {
     this.sessionId,
     this.localPort,
     this.forwardId,
+    this.sftpPath,
   });
 
   TerminalTab copyWith({
@@ -64,11 +66,12 @@ class TabManager extends ChangeNotifier {
 
   /// Creates a new tab for [hostId] with [title], sets it as active, and
   /// returns it.
-  TerminalTab addTab({required String hostId, required String title}) {
+  TerminalTab addTab({required String hostId, required String title, String? sftpPath}) {
     final tab = TerminalTab(
       id: _uuid.v4(),
       hostId: hostId,
       title: title,
+      sftpPath: sftpPath,
     );
     _tabs.add(tab);
     _activeTabIndex = _tabs.length - 1;

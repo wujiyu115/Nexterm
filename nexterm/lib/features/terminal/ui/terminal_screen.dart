@@ -434,7 +434,7 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
                               ),
                             )
                           : activeTab.connectionType == ConnectionType.sftp && activeTab.sessionId != null
-                              ? SftpContentWidget(sessionId: activeTab.sessionId!)
+                              ? SftpContentWidget(sessionId: activeTab.sessionId!, initialPath: activeTab.sftpPath)
                               : activeTab.connectionType == ConnectionType.webPreview && activeTab.localPort != null
                                   ? WebPreviewContent(localPort: activeTab.localPort!, title: activeTab.title)
                                   : (activeTab.connectionType == ConnectionType.webdav || activeTab.connectionType == ConnectionType.smb)

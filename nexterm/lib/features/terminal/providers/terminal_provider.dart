@@ -136,7 +136,7 @@ class TerminalActions {
     final host = hostAsync;
 
     // Create tab.
-    final tab = _tabManager.addTab(hostId: hostId, title: host.name);
+    final tab = _tabManager.addTab(hostId: hostId, title: host.name, sftpPath: host.sftpPath);
     _tabManager.updateTabStatus(tab.id, ConnectionStatus.connecting);
     _tabManager.updateTabConnectionType(tab.id, connectionType);
 
