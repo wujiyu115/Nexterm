@@ -30,6 +30,7 @@ class VideoStreamServer {
   int _totalBytes = 0;
   String _mime = 'application/octet-stream';
   bool _disposed = false;
+  bool _downloadStarted = false;
 
   String? _cachePath;
   int _cachedBytes = 0;
@@ -64,8 +65,6 @@ class VideoStreamServer {
     if (!await cacheDir.exists()) await cacheDir.create();
     _cachePath = '${cacheDir.path}/${p.basename(remotePath)}';
 
-    _startBackgroundDownload(service, remotePath);
-
     final ext = p.extension(remotePath).replaceFirst('.', '').toLowerCase();
     _mime = _mimeTypes[ext] ?? 'application/octet-stream';
 
@@ -76,7 +75,13 @@ class VideoStreamServer {
     return 'http://localhost:${_server!.port}/video';
   }
 
-  void _startBackgroundDownload(RemoteFileService service, String remotePath) {
+  void _startBackgroundDownload() {
+    if (_downloadStarted || _disposed) return;
+    _downloadStarted = true;
+    final service = _service;
+    final remotePath = _remotePath;
+    if (service == null || remotePath == null) return;
+
     debugPrint('[StreamServer] background download starting');
     service.downloadFile(
       remotePath,
@@ -88,7 +93,7 @@ class VideoStreamServer {
     ).then((_) {
       _downloadComplete = true;
       _cachedBytes = _totalBytes;
-      debugPrint('[StreamServer] background download complete');
+      debugPrint('[StreamServer] download complete');
       onProgress?.call(_totalBytes, _totalBytes);
     }).catchError((e) {
       if (!_disposed) debugPrint('[StreamServer] download error: $e');
@@ -129,8 +134,10 @@ class VideoStreamServer {
     try {
       if (_canServeFromCache(start, end)) {
         await _serveFromCache(request, start, length);
+      } else if (_downloadStarted) {
+        await _waitAndServeFromCache(request, start, length);
       } else {
-        await _serveFromRemote(request, start, length);
+        await _serveViaReadRange(request, start, length);
       }
     } catch (e) {
       if (!_disposed) debugPrint('[StreamServer] serve error: $e');
@@ -149,43 +156,46 @@ class VideoStreamServer {
     await request.response.addStream(file.openRead(start, start + length));
   }
 
-  Future<void> _serveFromRemote(HttpRequest request, int start, int length) async {
+  Future<void> _waitAndServeFromCache(HttpRequest request, int start, int length) async {
+    while (_cachedBytes <= start && !_downloadComplete && !_disposed) {
+      await Future.delayed(const Duration(milliseconds: 150));
+    }
+    if (_disposed) return;
+    if (_canServeFromCache(start, start + length - 1)) {
+      await _serveFromCache(request, start, length);
+    } else {
+      final available = _cachedBytes - start;
+      if (available > 0) {
+        await _serveFromCache(request, start, available);
+      }
+    }
+  }
+
+  Future<void> _serveViaReadRange(HttpRequest request, int start, int length) async {
     final service = _service;
     final remotePath = _remotePath;
     if (service == null || remotePath == null) return;
 
-    final isSequential = _cachedBytes > 0 && start < _cachedBytes + 10 * 1024 * 1024;
-
-    if (isSequential) {
-      while (_cachedBytes <= start && !_downloadComplete && !_disposed) {
-        await Future.delayed(const Duration(milliseconds: 100));
-      }
-      if (_canServeFromCache(start, start + length - 1)) {
-        await _serveFromCache(request, start, length);
-        return;
-      }
-    }
-
+    debugPrint('[StreamServer] readRange $start +$length');
     int offset = start;
     int remaining = length;
     while (remaining > 0 && !_disposed) {
-      if (_canServeFromCache(offset, offset + remaining - 1)) {
-        await _serveFromCache(request, offset, remaining);
-        break;
-      }
-
       final readLen = remaining > _readRangeChunk ? _readRangeChunk : remaining;
       final Uint8List chunk;
       try {
         chunk = await service.readRange(remotePath, offset, readLen);
       } catch (e) {
-        if (!_disposed) debugPrint('[StreamServer] readRange error at $offset: $e');
+        if (!_disposed) debugPrint('[StreamServer] readRange error: $e');
         break;
       }
       if (chunk.isEmpty || _disposed) break;
       request.response.add(chunk);
       offset += chunk.length;
       remaining -= chunk.length;
+    }
+
+    if (!_downloadStarted && !_disposed) {
+      _startBackgroundDownload();
     }
   }
 
