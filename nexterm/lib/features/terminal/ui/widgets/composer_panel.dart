@@ -206,23 +206,50 @@ class ComposerPanelState extends ConsumerState<ComposerPanel> {
     );
   }
 
+  static String _providerLabel(SttProviderType type) => switch (type) {
+    SttProviderType.system => 'SYS',
+    SttProviderType.volcengine => '豆包',
+    SttProviderType.alibaba => 'ALI',
+  };
+
   Widget _buildMicButton(ThemePalette p, SttProviderType providerType) {
-    final button = _CircleButton(
-      icon: _isListening ? Icons.mic : Icons.mic_none,
-      color: _isListening ? Colors.white : p.fgSecondary,
-      bgColor: _isListening ? p.accent : p.surface,
-      onTap: providerType == SttProviderType.volcengine ? null : _toggleSpeech,
+    final label = _providerLabel(providerType);
+    final micWidget = Stack(
+      clipBehavior: Clip.none,
+      children: [
+        _CircleButton(
+          icon: _isListening ? Icons.mic : Icons.mic_none,
+          color: _isListening ? Colors.white : p.fgSecondary,
+          bgColor: _isListening ? p.accent : p.surface,
+          onTap: providerType == SttProviderType.volcengine ? null : _toggleSpeech,
+        ),
+        Positioned(
+          top: -4,
+          right: -6,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
+            decoration: BoxDecoration(
+              color: p.accent,
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: Text(
+              label,
+              style: const TextStyle(fontSize: 7, color: Colors.white, height: 1.1, fontWeight: FontWeight.w600),
+            ),
+          ),
+        ),
+      ],
     );
 
     if (providerType == SttProviderType.volcengine) {
       return GestureDetector(
         onLongPressStart: (_) => _onLongPressStart(),
         onLongPressEnd: (_) => _onLongPressEnd(),
-        child: button,
+        child: micWidget,
       );
     }
 
-    return button;
+    return micWidget;
   }
 }
 
