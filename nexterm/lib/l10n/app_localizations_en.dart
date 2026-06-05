@@ -774,6 +774,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get snippets_add => 'Add Snippet';
 
   @override
+  String snippets_deleteConfirm(String name) {
+    return 'Delete snippet \"$name\"?';
+  }
+
+  @override
   String get snippets_favorites => 'Favorites';
 
   @override
@@ -886,6 +891,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get forwarding_startFromTerminal =>
       'Please start forwarding from a terminal session';
+
+  @override
+  String forwarding_deleteConfirm(String name) {
+    return 'Delete forward rule \"$name\"?';
+  }
 
   @override
   String get forwarding_stop => 'Stop';

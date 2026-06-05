@@ -1520,6 +1520,12 @@ abstract class AppLocalizations {
   /// **'添加片段'**
   String get snippets_add;
 
+  /// No description provided for @snippets_deleteConfirm.
+  ///
+  /// In zh, this message translates to:
+  /// **'确定删除代码片段 \"{name}\" 吗？'**
+  String snippets_deleteConfirm(String name);
+
   /// No description provided for @snippets_favorites.
   ///
   /// In zh, this message translates to:
@@ -1729,6 +1735,12 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'请从终端会话中启动转发'**
   String get forwarding_startFromTerminal;
+
+  /// No description provided for @forwarding_deleteConfirm.
+  ///
+  /// In zh, this message translates to:
+  /// **'确定删除转发规则 \"{name}\" 吗？'**
+  String forwarding_deleteConfirm(String name);
 
   /// No description provided for @forwarding_stop.
   ///

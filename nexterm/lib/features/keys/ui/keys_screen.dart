@@ -7,12 +7,27 @@ import 'package:nexterm/domain/entities/ssh_key_entity.dart';
 import 'package:nexterm/features/keys/providers/keys_provider.dart';
 import 'package:nexterm/features/keys/ui/widgets/key_list_tile.dart';
 import 'package:nexterm/shared/widgets/decorative_background.dart';
+import 'package:nexterm/shared/widgets/swipe_to_delete_wrapper.dart';
 
-class KeysScreen extends ConsumerWidget {
+class KeysScreen extends ConsumerStatefulWidget {
   const KeysScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<KeysScreen> createState() => _KeysScreenState();
+}
+
+class _KeysScreenState extends ConsumerState<KeysScreen> {
+  final _swipeController = SwipeToDeleteController();
+
+  @override
+  void dispose() {
+    _swipeController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final ref = this.ref;
     final l = AppLocalizations.of(context)!;
     final keysAsync = ref.watch(keysStreamProvider);
     final notifier = ref.read(keysNotifierProvider.notifier);
@@ -73,17 +88,24 @@ class KeysScreen extends ConsumerWidget {
       return _buildEmptyState(context);
     }
 
-    return ListView.builder(
-      padding: const EdgeInsets.only(top: 8, bottom: 80),
-      itemCount: keys.length,
-      itemBuilder: (context, index) {
-        final key = keys[index];
-        return KeyListTile(
-          key: ValueKey(key.id),
-          sshKey: key,
-          onDelete: () => notifier.deleteKey(key.id),
-        );
+    return NotificationListener<ScrollNotification>(
+      onNotification: (_) {
+        _swipeController.closeAny();
+        return false;
       },
+      child: ListView.builder(
+        padding: const EdgeInsets.only(top: 8, bottom: 80),
+        itemCount: keys.length,
+        itemBuilder: (context, index) {
+          final key = keys[index];
+          return KeyListTile(
+            key: ValueKey(key.id),
+            sshKey: key,
+            swipeController: _swipeController,
+            onDelete: () => notifier.deleteKey(key.id),
+          );
+        },
+      ),
     );
   }
 

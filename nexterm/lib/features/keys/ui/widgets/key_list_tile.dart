@@ -5,16 +5,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/domain/entities/ssh_key_entity.dart';
 import 'package:nexterm/features/keys/providers/keys_provider.dart';
-import 'package:nexterm/shared/widgets/glass_card.dart';
+import 'package:nexterm/shared/widgets/swipe_delete_glass_card.dart';
+import 'package:nexterm/shared/widgets/swipe_to_delete_wrapper.dart';
 
 class KeyListTile extends ConsumerWidget {
   final SSHKeyEntity sshKey;
   final VoidCallback onDelete;
+  final SwipeToDeleteController? swipeController;
 
   const KeyListTile({
     super.key,
     required this.sshKey,
     required this.onDelete,
+    this.swipeController,
   });
 
   @override
@@ -24,7 +27,26 @@ class KeyListTile extends ConsumerWidget {
     final colorScheme = theme.colorScheme;
     final p = theme.extension<ThemePalette>()!;
 
-    return GlassCard(
+    return SwipeDeleteGlassCard(
+      swipeController: swipeController,
+      onDelete: () async {
+        final confirmed = await showDialog<bool>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: Text(l.keyTile_deleteTitle),
+            content: Text(l.keyTile_deleteConfirm(sshKey.name)),
+            actions: [
+              TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: Text(l.common_cancel)),
+              FilledButton(
+                style: FilledButton.styleFrom(backgroundColor: Theme.of(ctx).colorScheme.error),
+                onPressed: () => Navigator.of(ctx).pop(true),
+                child: Text(l.common_delete),
+              ),
+            ],
+          ),
+        );
+        if (confirmed == true) onDelete();
+      },
       child: Row(
         children: [
           Container(

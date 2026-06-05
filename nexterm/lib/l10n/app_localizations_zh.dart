@@ -753,6 +753,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get snippets_add => '添加片段';
 
   @override
+  String snippets_deleteConfirm(String name) {
+    return '确定删除代码片段 \"$name\" 吗？';
+  }
+
+  @override
   String get snippets_favorites => '收藏';
 
   @override
@@ -862,6 +867,11 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get forwarding_startFromTerminal => '请从终端会话中启动转发';
+
+  @override
+  String forwarding_deleteConfirm(String name) {
+    return '确定删除转发规则 \"$name\" 吗？';
+  }
 
   @override
   String get forwarding_stop => '停止';

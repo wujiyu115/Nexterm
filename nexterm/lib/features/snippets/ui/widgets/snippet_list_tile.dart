@@ -3,12 +3,16 @@ import 'package:nexterm/core/theme/outdoor_colors.dart';
 import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/domain/entities/snippet_entity.dart';
 import 'package:nexterm/shared/widgets/glass_card.dart';
+import 'package:nexterm/shared/widgets/swipe_delete_glass_card.dart';
+import 'package:nexterm/shared/widgets/swipe_to_delete_wrapper.dart';
 
 class SnippetListTile extends StatelessWidget {
   final SnippetEntity snippet;
   final VoidCallback onTap;
   final VoidCallback onEdit;
   final VoidCallback onToggleFavorite;
+  final VoidCallback? onDelete;
+  final SwipeToDeleteController? swipeController;
 
   const SnippetListTile({
     super.key,
@@ -16,6 +20,8 @@ class SnippetListTile extends StatelessWidget {
     required this.onTap,
     required this.onEdit,
     required this.onToggleFavorite,
+    this.onDelete,
+    this.swipeController,
   });
 
   @override
@@ -23,10 +29,24 @@ class SnippetListTile extends StatelessWidget {
     final theme = Theme.of(context);
     final p = theme.extension<ThemePalette>()!;
 
+    if (onDelete != null) {
+      return SwipeDeleteGlassCard(
+        swipeController: swipeController,
+        onTap: onTap,
+        onLongPress: onEdit,
+        onDelete: onDelete!,
+        child: _buildRow(theme, p),
+      );
+    }
     return GlassCard(
       onTap: onTap,
       onLongPress: onEdit,
-      child: Row(
+      child: _buildRow(theme, p),
+    );
+  }
+
+  Widget _buildRow(ThemeData theme, ThemePalette p) {
+    return Row(
         children: [
           Expanded(
             child: Column(
@@ -81,8 +101,7 @@ class SnippetListTile extends StatelessWidget {
             visualDensity: VisualDensity.compact,
           ),
         ],
-      ),
-    );
+      );
   }
 }
 

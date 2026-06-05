@@ -8,8 +8,9 @@ import 'package:nexterm/features/hosts/providers/hosts_provider.dart';
 import 'package:nexterm/features/terminal/providers/terminal_provider.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:nexterm/shared/widgets/decorative_background.dart';
-import 'package:nexterm/shared/widgets/glass_card.dart';
 import 'package:nexterm/shared/widgets/outdoor_search_bar.dart';
+import 'package:nexterm/shared/widgets/swipe_delete_glass_card.dart';
+import 'package:nexterm/shared/widgets/swipe_to_delete_wrapper.dart';
 
 class GitReposScreen extends ConsumerStatefulWidget {
   const GitReposScreen({super.key});
@@ -20,11 +21,13 @@ class GitReposScreen extends ConsumerStatefulWidget {
 
 class _GitReposScreenState extends ConsumerState<GitReposScreen> {
   final _searchController = TextEditingController();
+  final _swipeController = SwipeToDeleteController();
   String _searchQuery = '';
 
   @override
   void dispose() {
     _searchController.dispose();
+    _swipeController.dispose();
     super.dispose();
   }
 
@@ -145,11 +148,17 @@ class _GitReposScreenState extends ConsumerState<GitReposScreen> {
       return _buildEmptyState();
     }
 
-    return ListView(
-      children: [
-        ...repos.map((repo) => _buildTile(repo)),
-        const SizedBox(height: 80),
-      ],
+    return NotificationListener<ScrollNotification>(
+      onNotification: (_) {
+        _swipeController.closeAny();
+        return false;
+      },
+      child: ListView(
+        children: [
+          ...repos.map((repo) => _buildTile(repo)),
+          const SizedBox(height: 80),
+        ],
+      ),
     );
   }
 
@@ -158,9 +167,10 @@ class _GitReposScreenState extends ConsumerState<GitReposScreen> {
     final p = theme.extension<ThemePalette>()!;
     final hostAsync = ref.watch(hostByIdProvider(repo.hostId));
 
-    return GlassCard(
+    return SwipeDeleteGlassCard(
+      swipeController: _swipeController,
       onTap: () => _connect(repo),
-      onLongPress: () => _confirmDelete(repo),
+      onDelete: () => _confirmDelete(repo),
       child: Row(
         children: [
           Icon(Icons.account_tree_outlined, size: 24, color: p.fgSecondary),

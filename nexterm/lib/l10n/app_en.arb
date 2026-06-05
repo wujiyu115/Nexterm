@@ -259,6 +259,8 @@
   "snippets_addTooltip": "Add Snippet",
   "snippets_noSnippets": "No snippets yet",
   "snippets_add": "Add Snippet",
+  "snippets_deleteConfirm": "Delete snippet \"{name}\"?",
+  "@snippets_deleteConfirm": { "placeholders": { "name": { "type": "String" } } },
   "snippets_favorites": "Favorites",
   "snippets_ungrouped": "Ungrouped",
 
@@ -297,6 +299,8 @@
   "forwarding_noForwards": "No port forwarding rules",
   "forwarding_add": "Add Forward",
   "forwarding_startFromTerminal": "Please start forwarding from a terminal session",
+  "forwarding_deleteConfirm": "Delete forward rule \"{name}\"?",
+  "@forwarding_deleteConfirm": { "placeholders": { "name": { "type": "String" } } },
   "forwarding_stop": "Stop",
   "forwarding_start": "Start",
   "forwarding_autoStart": "Auto Start",

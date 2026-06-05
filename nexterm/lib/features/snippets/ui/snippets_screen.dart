@@ -8,12 +8,27 @@ import 'package:nexterm/features/snippets/providers/snippets_provider.dart';
 import 'package:nexterm/features/snippets/ui/widgets/snippet_list_tile.dart';
 import 'package:nexterm/shared/widgets/decorative_background.dart';
 import 'package:nexterm/shared/widgets/section_label.dart';
+import 'package:nexterm/shared/widgets/swipe_to_delete_wrapper.dart';
 
-class SnippetsScreen extends ConsumerWidget {
+class SnippetsScreen extends ConsumerStatefulWidget {
   const SnippetsScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SnippetsScreen> createState() => _SnippetsScreenState();
+}
+
+class _SnippetsScreenState extends ConsumerState<SnippetsScreen> {
+  final _swipeController = SwipeToDeleteController();
+
+  @override
+  void dispose() {
+    _swipeController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final ref = this.ref;
     final l = AppLocalizations.of(context)!;
     final p = Theme.of(context).extension<ThemePalette>()!;
     final notifier = ref.read(snippetsNotifierProvider.notifier);
@@ -69,18 +84,24 @@ class SnippetsScreen extends ConsumerWidget {
       groups.putIfAbsent(snippet.group, () => []).add(snippet);
     }
 
-    return ListView(
-      children: [
-        if (favorites.isNotEmpty) ...[
-          SectionLabel(title: l.snippets_favorites),
-          ...favorites.map((s) => _buildTile(context, s, notifier)),
+    return NotificationListener<ScrollNotification>(
+      onNotification: (_) {
+        _swipeController.closeAny();
+        return false;
+      },
+      child: ListView(
+        children: [
+          if (favorites.isNotEmpty) ...[
+            SectionLabel(title: l.snippets_favorites),
+            ...favorites.map((s) => _buildTile(context, s, notifier)),
+          ],
+          ...groups.entries.expand((entry) => [
+            SectionLabel(title: entry.key ?? l.snippets_ungrouped),
+            ...entry.value.map((s) => _buildTile(context, s, notifier)),
+          ]),
+          const SizedBox(height: 80),
         ],
-        ...groups.entries.expand((entry) => [
-          SectionLabel(title: entry.key ?? l.snippets_ungrouped),
-          ...entry.value.map((s) => _buildTile(context, s, notifier)),
-        ]),
-        const SizedBox(height: 80),
-      ],
+      ),
     );
   }
 
@@ -91,7 +112,27 @@ class SnippetsScreen extends ConsumerWidget {
       onTap: () => context.push('/vaults/snippets/edit/${snippet.id}'),
       onEdit: () => context.push('/vaults/snippets/edit/${snippet.id}'),
       onToggleFavorite: () => notifier.toggleFavorite(snippet),
+      swipeController: _swipeController,
+      onDelete: () => _confirmDelete(snippet, notifier),
     );
+  }
+
+  Future<void> _confirmDelete(SnippetEntity snippet, SnippetsNotifier notifier) async {
+    final l = AppLocalizations.of(context)!;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l.common_delete),
+        content: Text(l.snippets_deleteConfirm(snippet.name)),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l.common_cancel)),
+          TextButton(onPressed: () => Navigator.pop(ctx, true), child: Text(l.common_delete)),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      await notifier.deleteSnippet(snippet.id);
+    }
   }
 
   Widget _buildEmptyState(BuildContext context) {

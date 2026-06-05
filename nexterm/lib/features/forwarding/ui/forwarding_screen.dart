@@ -12,12 +12,27 @@ import 'package:nexterm/features/forwarding/ui/widgets/forward_list_tile.dart';
 import 'package:nexterm/features/terminal/providers/terminal_provider.dart';
 import 'package:nexterm/shared/widgets/decorative_background.dart';
 import 'package:nexterm/shared/widgets/section_label.dart';
+import 'package:nexterm/shared/widgets/swipe_to_delete_wrapper.dart';
 
-class ForwardingScreen extends ConsumerWidget {
+class ForwardingScreen extends ConsumerStatefulWidget {
   const ForwardingScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ForwardingScreen> createState() => _ForwardingScreenState();
+}
+
+class _ForwardingScreenState extends ConsumerState<ForwardingScreen> {
+  final _swipeController = SwipeToDeleteController();
+
+  @override
+  void dispose() {
+    _swipeController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final ref = this.ref;
     final l = AppLocalizations.of(context)!;
     final p = Theme.of(context).extension<ThemePalette>()!;
     final forwardsAsync = ref.watch(forwardsStreamProvider);
@@ -99,19 +114,25 @@ class ForwardingScreen extends ConsumerWidget {
 
     final l = AppLocalizations.of(context)!;
 
-    return ListView(
-      children: [
-        for (final type in ForwardType.values)
-          if (groups[type]!.isNotEmpty) ...[
-            SectionLabel(title: type.localizedName(l)),
-            ...groups[type]!.map((f) => _buildTile(context, f, service, notifier)),
+    return NotificationListener<ScrollNotification>(
+      onNotification: (_) {
+        _swipeController.closeAny();
+        return false;
+      },
+      child: ListView(
+        children: [
+          for (final type in ForwardType.values)
+            if (groups[type]!.isNotEmpty) ...[
+              SectionLabel(title: type.localizedName(l)),
+              ...groups[type]!.map((f) => _buildTile(context, f, service, notifier)),
+            ],
+          if (ephemeral.isNotEmpty) ...[
+            SectionLabel(title: l.forwarding_ephemeral),
+            ...ephemeral.map((af) => _buildEphemeralTile(context, af, service)),
           ],
-        if (ephemeral.isNotEmpty) ...[
-          SectionLabel(title: l.forwarding_ephemeral),
-          ...ephemeral.map((af) => _buildEphemeralTile(context, af, service)),
+          const SizedBox(height: 80),
         ],
-        const SizedBox(height: 80),
-      ],
+      ),
     );
   }
 
@@ -125,6 +146,8 @@ class ForwardingScreen extends ConsumerWidget {
       key: ValueKey(forward.id),
       forward: forward,
       status: service.getStatus(forward.id),
+      swipeController: _swipeController,
+      onDelete: () => _confirmDelete(forward, notifier),
       onEdit: () => context.push('/vaults/forwarding/edit/${forward.id}'),
       onStartStop: () {
         // Toggle: stop if active, otherwise show a snackbar (no client here).
@@ -155,6 +178,24 @@ class ForwardingScreen extends ConsumerWidget {
       onEdit: () {},
       onStartStop: () => service.stop(entity.id),
     );
+  }
+
+  Future<void> _confirmDelete(PortForwardEntity forward, ForwardingNotifier notifier) async {
+    final l = AppLocalizations.of(context)!;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l.common_delete),
+        content: Text(l.forwarding_deleteConfirm(forward.name)),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l.common_cancel)),
+          TextButton(onPressed: () => Navigator.pop(ctx, true), child: Text(l.common_delete)),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      await notifier.deleteForward(forward.id);
+    }
   }
 
   void _showDetectionSheet(BuildContext context) {

@@ -4,16 +4,16 @@ import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/domain/entities/enums.dart';
 import 'package:nexterm/domain/entities/port_forward_entity.dart';
 import 'package:nexterm/shared/widgets/glass_card.dart';
+import 'package:nexterm/shared/widgets/swipe_delete_glass_card.dart';
+import 'package:nexterm/shared/widgets/swipe_to_delete_wrapper.dart';
 
-/// A card tile for a single port forward rule.
-///
-/// Shows the forward name, type icon, summary string, status indicator,
-/// a start/stop toggle button, and an autoStart indicator chip.
 class ForwardListTile extends StatelessWidget {
   final PortForwardEntity forward;
   final ForwardStatus status;
   final VoidCallback onEdit;
   final VoidCallback onStartStop;
+  final VoidCallback? onDelete;
+  final SwipeToDeleteController? swipeController;
 
   const ForwardListTile({
     super.key,
@@ -21,6 +21,8 @@ class ForwardListTile extends StatelessWidget {
     required this.status,
     required this.onEdit,
     required this.onStartStop,
+    this.onDelete,
+    this.swipeController,
   });
 
   IconData get _typeIcon => switch (forward.type) {
@@ -45,9 +47,26 @@ class ForwardListTile extends StatelessWidget {
     final colorScheme = theme.colorScheme;
     final isActive = status == ForwardStatus.active;
 
+    if (onDelete == null) {
+      return _buildContent(context, theme, p, colorScheme, isActive);
+    }
+    return SwipeDeleteGlassCard(
+      swipeController: swipeController,
+      onTap: onEdit,
+      onDelete: onDelete!,
+      child: _buildRow(context, theme, p, colorScheme, isActive),
+    );
+  }
+
+  Widget _buildContent(BuildContext context, ThemeData theme, ThemePalette p, ColorScheme colorScheme, bool isActive) {
     return GlassCard(
       onTap: onEdit,
-      child: Row(
+      child: _buildRow(context, theme, p, colorScheme, isActive),
+    );
+  }
+
+  Widget _buildRow(BuildContext context, ThemeData theme, ThemePalette p, ColorScheme colorScheme, bool isActive) {
+    return Row(
         children: [
           // Type icon container with status dot
           Stack(
@@ -126,8 +145,7 @@ class ForwardListTile extends StatelessWidget {
             visualDensity: VisualDensity.compact,
           ),
         ],
-      ),
-    );
+      );
   }
 }
 
