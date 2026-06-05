@@ -27,6 +27,7 @@ class HostsDao extends DatabaseAccessor<AppDatabase> with _$HostsDaoMixin {
       jumpHosts: (jsonDecode(row.jumpHosts) as List).cast<String>(),
       startupSnippetId: row.startupSnippetId,
       startupCommand: row.startupCommand,
+      sftpPath: row.sftpPath,
       lastConnected: row.lastConnected,
       lastConnectionType: row.lastConnectionType != null
           ? ConnectionType.values.byName(row.lastConnectionType!)
@@ -51,6 +52,7 @@ class HostsDao extends DatabaseAccessor<AppDatabase> with _$HostsDaoMixin {
       jumpHosts: Value(jsonEncode(entity.jumpHosts)),
       startupSnippetId: Value(entity.startupSnippetId),
       startupCommand: Value(entity.startupCommand),
+      sftpPath: Value(entity.sftpPath),
       lastConnected: Value(entity.lastConnected),
       lastConnectionType: Value(entity.lastConnectionType?.name),
       sortOrder: Value(entity.sortOrder),

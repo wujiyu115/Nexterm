@@ -169,6 +169,17 @@ class $HostsTable extends Hosts with TableInfo<$HostsTable, Host> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _sftpPathMeta = const VerificationMeta(
+    'sftpPath',
+  );
+  @override
+  late final GeneratedColumn<String> sftpPath = GeneratedColumn<String>(
+    'sftp_path',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _lastConnectedMeta = const VerificationMeta(
     'lastConnected',
   );
@@ -244,6 +255,7 @@ class $HostsTable extends Hosts with TableInfo<$HostsTable, Host> {
     jumpHosts,
     startupSnippetId,
     startupCommand,
+    sftpPath,
     lastConnected,
     lastConnectionType,
     sortOrder,
@@ -359,6 +371,12 @@ class $HostsTable extends Hosts with TableInfo<$HostsTable, Host> {
         ),
       );
     }
+    if (data.containsKey('sftp_path')) {
+      context.handle(
+        _sftpPathMeta,
+        sftpPath.isAcceptableOrUnknown(data['sftp_path']!, _sftpPathMeta),
+      );
+    }
     if (data.containsKey('last_connected')) {
       context.handle(
         _lastConnectedMeta,
@@ -469,6 +487,10 @@ class $HostsTable extends Hosts with TableInfo<$HostsTable, Host> {
         DriftSqlType.string,
         data['${effectivePrefix}startup_command'],
       ),
+      sftpPath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sftp_path'],
+      ),
       lastConnected: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}last_connected'],
@@ -516,6 +538,7 @@ class Host extends DataClass implements Insertable<Host> {
   final String jumpHosts;
   final String? startupSnippetId;
   final String? startupCommand;
+  final String? sftpPath;
   final DateTime? lastConnected;
   final String? lastConnectionType;
   final int sortOrder;
@@ -536,6 +559,7 @@ class Host extends DataClass implements Insertable<Host> {
     required this.jumpHosts,
     this.startupSnippetId,
     this.startupCommand,
+    this.sftpPath,
     this.lastConnected,
     this.lastConnectionType,
     required this.sortOrder,
@@ -568,6 +592,9 @@ class Host extends DataClass implements Insertable<Host> {
     }
     if (!nullToAbsent || startupCommand != null) {
       map['startup_command'] = Variable<String>(startupCommand);
+    }
+    if (!nullToAbsent || sftpPath != null) {
+      map['sftp_path'] = Variable<String>(sftpPath);
     }
     if (!nullToAbsent || lastConnected != null) {
       map['last_connected'] = Variable<DateTime>(lastConnected);
@@ -608,6 +635,10 @@ class Host extends DataClass implements Insertable<Host> {
           startupCommand == null && nullToAbsent
               ? const Value.absent()
               : Value(startupCommand),
+      sftpPath:
+          sftpPath == null && nullToAbsent
+              ? const Value.absent()
+              : Value(sftpPath),
       lastConnected:
           lastConnected == null && nullToAbsent
               ? const Value.absent()
@@ -642,6 +673,7 @@ class Host extends DataClass implements Insertable<Host> {
       jumpHosts: serializer.fromJson<String>(json['jumpHosts']),
       startupSnippetId: serializer.fromJson<String?>(json['startupSnippetId']),
       startupCommand: serializer.fromJson<String?>(json['startupCommand']),
+      sftpPath: serializer.fromJson<String?>(json['sftpPath']),
       lastConnected: serializer.fromJson<DateTime?>(json['lastConnected']),
       lastConnectionType: serializer.fromJson<String?>(
         json['lastConnectionType'],
@@ -669,6 +701,7 @@ class Host extends DataClass implements Insertable<Host> {
       'jumpHosts': serializer.toJson<String>(jumpHosts),
       'startupSnippetId': serializer.toJson<String?>(startupSnippetId),
       'startupCommand': serializer.toJson<String?>(startupCommand),
+      'sftpPath': serializer.toJson<String?>(sftpPath),
       'lastConnected': serializer.toJson<DateTime?>(lastConnected),
       'lastConnectionType': serializer.toJson<String?>(lastConnectionType),
       'sortOrder': serializer.toJson<int>(sortOrder),
@@ -692,6 +725,7 @@ class Host extends DataClass implements Insertable<Host> {
     String? jumpHosts,
     Value<String?> startupSnippetId = const Value.absent(),
     Value<String?> startupCommand = const Value.absent(),
+    Value<String?> sftpPath = const Value.absent(),
     Value<DateTime?> lastConnected = const Value.absent(),
     Value<String?> lastConnectionType = const Value.absent(),
     int? sortOrder,
@@ -716,6 +750,7 @@ class Host extends DataClass implements Insertable<Host> {
             : this.startupSnippetId,
     startupCommand:
         startupCommand.present ? startupCommand.value : this.startupCommand,
+    sftpPath: sftpPath.present ? sftpPath.value : this.sftpPath,
     lastConnected:
         lastConnected.present ? lastConnected.value : this.lastConnected,
     lastConnectionType:
@@ -750,6 +785,7 @@ class Host extends DataClass implements Insertable<Host> {
           data.startupCommand.present
               ? data.startupCommand.value
               : this.startupCommand,
+      sftpPath: data.sftpPath.present ? data.sftpPath.value : this.sftpPath,
       lastConnected:
           data.lastConnected.present
               ? data.lastConnected.value
@@ -781,6 +817,7 @@ class Host extends DataClass implements Insertable<Host> {
           ..write('jumpHosts: $jumpHosts, ')
           ..write('startupSnippetId: $startupSnippetId, ')
           ..write('startupCommand: $startupCommand, ')
+          ..write('sftpPath: $sftpPath, ')
           ..write('lastConnected: $lastConnected, ')
           ..write('lastConnectionType: $lastConnectionType, ')
           ..write('sortOrder: $sortOrder, ')
@@ -806,6 +843,7 @@ class Host extends DataClass implements Insertable<Host> {
     jumpHosts,
     startupSnippetId,
     startupCommand,
+    sftpPath,
     lastConnected,
     lastConnectionType,
     sortOrder,
@@ -830,6 +868,7 @@ class Host extends DataClass implements Insertable<Host> {
           other.jumpHosts == this.jumpHosts &&
           other.startupSnippetId == this.startupSnippetId &&
           other.startupCommand == this.startupCommand &&
+          other.sftpPath == this.sftpPath &&
           other.lastConnected == this.lastConnected &&
           other.lastConnectionType == this.lastConnectionType &&
           other.sortOrder == this.sortOrder &&
@@ -852,6 +891,7 @@ class HostsCompanion extends UpdateCompanion<Host> {
   final Value<String> jumpHosts;
   final Value<String?> startupSnippetId;
   final Value<String?> startupCommand;
+  final Value<String?> sftpPath;
   final Value<DateTime?> lastConnected;
   final Value<String?> lastConnectionType;
   final Value<int> sortOrder;
@@ -873,6 +913,7 @@ class HostsCompanion extends UpdateCompanion<Host> {
     this.jumpHosts = const Value.absent(),
     this.startupSnippetId = const Value.absent(),
     this.startupCommand = const Value.absent(),
+    this.sftpPath = const Value.absent(),
     this.lastConnected = const Value.absent(),
     this.lastConnectionType = const Value.absent(),
     this.sortOrder = const Value.absent(),
@@ -895,6 +936,7 @@ class HostsCompanion extends UpdateCompanion<Host> {
     this.jumpHosts = const Value.absent(),
     this.startupSnippetId = const Value.absent(),
     this.startupCommand = const Value.absent(),
+    this.sftpPath = const Value.absent(),
     this.lastConnected = const Value.absent(),
     this.lastConnectionType = const Value.absent(),
     this.sortOrder = const Value.absent(),
@@ -921,6 +963,7 @@ class HostsCompanion extends UpdateCompanion<Host> {
     Expression<String>? jumpHosts,
     Expression<String>? startupSnippetId,
     Expression<String>? startupCommand,
+    Expression<String>? sftpPath,
     Expression<DateTime>? lastConnected,
     Expression<String>? lastConnectionType,
     Expression<int>? sortOrder,
@@ -943,6 +986,7 @@ class HostsCompanion extends UpdateCompanion<Host> {
       if (jumpHosts != null) 'jump_hosts': jumpHosts,
       if (startupSnippetId != null) 'startup_snippet_id': startupSnippetId,
       if (startupCommand != null) 'startup_command': startupCommand,
+      if (sftpPath != null) 'sftp_path': sftpPath,
       if (lastConnected != null) 'last_connected': lastConnected,
       if (lastConnectionType != null)
         'last_connection_type': lastConnectionType,
@@ -968,6 +1012,7 @@ class HostsCompanion extends UpdateCompanion<Host> {
     Value<String>? jumpHosts,
     Value<String?>? startupSnippetId,
     Value<String?>? startupCommand,
+    Value<String?>? sftpPath,
     Value<DateTime?>? lastConnected,
     Value<String?>? lastConnectionType,
     Value<int>? sortOrder,
@@ -990,6 +1035,7 @@ class HostsCompanion extends UpdateCompanion<Host> {
       jumpHosts: jumpHosts ?? this.jumpHosts,
       startupSnippetId: startupSnippetId ?? this.startupSnippetId,
       startupCommand: startupCommand ?? this.startupCommand,
+      sftpPath: sftpPath ?? this.sftpPath,
       lastConnected: lastConnected ?? this.lastConnected,
       lastConnectionType: lastConnectionType ?? this.lastConnectionType,
       sortOrder: sortOrder ?? this.sortOrder,
@@ -1044,6 +1090,9 @@ class HostsCompanion extends UpdateCompanion<Host> {
     if (startupCommand.present) {
       map['startup_command'] = Variable<String>(startupCommand.value);
     }
+    if (sftpPath.present) {
+      map['sftp_path'] = Variable<String>(sftpPath.value);
+    }
     if (lastConnected.present) {
       map['last_connected'] = Variable<DateTime>(lastConnected.value);
     }
@@ -1082,6 +1131,7 @@ class HostsCompanion extends UpdateCompanion<Host> {
           ..write('jumpHosts: $jumpHosts, ')
           ..write('startupSnippetId: $startupSnippetId, ')
           ..write('startupCommand: $startupCommand, ')
+          ..write('sftpPath: $sftpPath, ')
           ..write('lastConnected: $lastConnected, ')
           ..write('lastConnectionType: $lastConnectionType, ')
           ..write('sortOrder: $sortOrder, ')
@@ -4764,6 +4814,7 @@ typedef $$HostsTableCreateCompanionBuilder =
       Value<String> jumpHosts,
       Value<String?> startupSnippetId,
       Value<String?> startupCommand,
+      Value<String?> sftpPath,
       Value<DateTime?> lastConnected,
       Value<String?> lastConnectionType,
       Value<int> sortOrder,
@@ -4787,6 +4838,7 @@ typedef $$HostsTableUpdateCompanionBuilder =
       Value<String> jumpHosts,
       Value<String?> startupSnippetId,
       Value<String?> startupCommand,
+      Value<String?> sftpPath,
       Value<DateTime?> lastConnected,
       Value<String?> lastConnectionType,
       Value<int> sortOrder,
@@ -4894,6 +4946,11 @@ class $$HostsTableFilterComposer extends Composer<_$AppDatabase, $HostsTable> {
 
   ColumnFilters<String> get startupCommand => $composableBuilder(
     column: $table.startupCommand,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sftpPath => $composableBuilder(
+    column: $table.sftpPath,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -5027,6 +5084,11 @@ class $$HostsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get sftpPath => $composableBuilder(
+    column: $table.sftpPath,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get lastConnected => $composableBuilder(
     column: $table.lastConnected,
     builder: (column) => ColumnOrderings(column),
@@ -5111,6 +5173,9 @@ class $$HostsTableAnnotationComposer
     column: $table.startupCommand,
     builder: (column) => column,
   );
+
+  GeneratedColumn<String> get sftpPath =>
+      $composableBuilder(column: $table.sftpPath, builder: (column) => column);
 
   GeneratedColumn<DateTime> get lastConnected => $composableBuilder(
     column: $table.lastConnected,
@@ -5199,6 +5264,7 @@ class $$HostsTableTableManager
                 Value<String> jumpHosts = const Value.absent(),
                 Value<String?> startupSnippetId = const Value.absent(),
                 Value<String?> startupCommand = const Value.absent(),
+                Value<String?> sftpPath = const Value.absent(),
                 Value<DateTime?> lastConnected = const Value.absent(),
                 Value<String?> lastConnectionType = const Value.absent(),
                 Value<int> sortOrder = const Value.absent(),
@@ -5220,6 +5286,7 @@ class $$HostsTableTableManager
                 jumpHosts: jumpHosts,
                 startupSnippetId: startupSnippetId,
                 startupCommand: startupCommand,
+                sftpPath: sftpPath,
                 lastConnected: lastConnected,
                 lastConnectionType: lastConnectionType,
                 sortOrder: sortOrder,
@@ -5243,6 +5310,7 @@ class $$HostsTableTableManager
                 Value<String> jumpHosts = const Value.absent(),
                 Value<String?> startupSnippetId = const Value.absent(),
                 Value<String?> startupCommand = const Value.absent(),
+                Value<String?> sftpPath = const Value.absent(),
                 Value<DateTime?> lastConnected = const Value.absent(),
                 Value<String?> lastConnectionType = const Value.absent(),
                 Value<int> sortOrder = const Value.absent(),
@@ -5264,6 +5332,7 @@ class $$HostsTableTableManager
                 jumpHosts: jumpHosts,
                 startupSnippetId: startupSnippetId,
                 startupCommand: startupCommand,
+                sftpPath: sftpPath,
                 lastConnected: lastConnected,
                 lastConnectionType: lastConnectionType,
                 sortOrder: sortOrder,

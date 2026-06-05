@@ -178,7 +178,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/sftp/:sessionId',
       parentNavigatorKey: _rootNavigatorKey,
-      builder: (context, state) => SftpScreen(sessionId: state.pathParameters['sessionId']!),
+      builder: (context, state) => SftpScreen(
+        sessionId: state.pathParameters['sessionId']!,
+        initialPath: state.uri.queryParameters['path'],
+      ),
     ),
     GoRoute(
       path: '/git/:sessionId',

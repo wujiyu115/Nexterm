@@ -21,8 +21,9 @@ import 'package:nexterm/shared/widgets/swipe_to_delete_wrapper.dart';
 class SftpContentWidget extends ConsumerStatefulWidget {
   final String? sessionId;
   final RemoteFileService? service;
+  final String? initialPath;
 
-  const SftpContentWidget({super.key, this.sessionId, this.service})
+  const SftpContentWidget({super.key, this.sessionId, this.service, this.initialPath})
       : assert(sessionId != null || service != null,
             'Either sessionId or service must be provided');
 
@@ -83,8 +84,9 @@ class _SftpContentWidgetState extends ConsumerState<SftpContentWidget> {
       });
 
       final home = await fileService.homePath();
+      final startPath = widget.initialPath ?? home;
       if (mounted) setState(() => _homePath = home);
-      await notifier.navigateTo(home);
+      await notifier.navigateTo(startPath);
     } catch (e) {
       if (mounted) {
         setState(() {

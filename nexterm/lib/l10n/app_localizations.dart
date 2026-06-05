@@ -590,6 +590,24 @@ abstract class AppLocalizations {
   /// **'启动命令'**
   String get hostForm_sectionStartup;
 
+  /// No description provided for @hostForm_sectionSftp.
+  ///
+  /// In zh, this message translates to:
+  /// **'SFTP'**
+  String get hostForm_sectionSftp;
+
+  /// No description provided for @hostForm_sftpPath.
+  ///
+  /// In zh, this message translates to:
+  /// **'初始目录'**
+  String get hostForm_sftpPath;
+
+  /// No description provided for @hostForm_sftpPathHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'/home/user 或 /var/www'**
+  String get hostForm_sftpPathHint;
+
   /// No description provided for @hostForm_startupModeCommand.
   ///
   /// In zh, this message translates to:

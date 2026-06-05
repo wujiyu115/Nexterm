@@ -15,6 +15,7 @@ class HostEntity {
   final List<String> jumpHosts;
   final String? startupSnippetId;
   final String? startupCommand;
+  final String? sftpPath;
   final DateTime? lastConnected;
   final ConnectionType? lastConnectionType;
   final int sortOrder;
@@ -34,6 +35,7 @@ class HostEntity {
     this.jumpHosts = const [],
     this.startupSnippetId,
     this.startupCommand,
+    this.sftpPath,
     this.lastConnected,
     this.lastConnectionType,
     this.sortOrder = 0,
@@ -54,6 +56,7 @@ class HostEntity {
     List<String>? jumpHosts,
     String? Function()? startupSnippetId,
     String? Function()? startupCommand,
+    String? Function()? sftpPath,
     DateTime? Function()? lastConnected,
     ConnectionType? Function()? lastConnectionType,
     int? sortOrder,
@@ -73,6 +76,7 @@ class HostEntity {
       jumpHosts: jumpHosts ?? this.jumpHosts,
       startupSnippetId: startupSnippetId != null ? startupSnippetId() : this.startupSnippetId,
       startupCommand: startupCommand != null ? startupCommand() : this.startupCommand,
+      sftpPath: sftpPath != null ? sftpPath() : this.sftpPath,
       lastConnected: lastConnected != null ? lastConnected() : this.lastConnected,
       lastConnectionType: lastConnectionType != null ? lastConnectionType() : this.lastConnectionType,
       sortOrder: sortOrder ?? this.sortOrder,

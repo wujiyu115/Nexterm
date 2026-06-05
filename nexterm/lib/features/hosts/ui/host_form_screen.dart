@@ -40,6 +40,7 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
   List<String> _jumpHosts = [];
   _StartupMode _startupMode = _StartupMode.command;
   final _startupCommandController = TextEditingController();
+  final _sftpPathController = TextEditingController();
   String? _startupSnippetId;
 
   bool _isLoading = false;
@@ -58,6 +59,7 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
     _groupController.dispose();
     _tagsController.dispose();
     _startupCommandController.dispose();
+    _sftpPathController.dispose();
     super.dispose();
   }
 
@@ -88,6 +90,9 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
           _startupMode = _StartupMode.command;
           _startupCommandController.text = host.startupCommand!;
         }
+        if (host.sftpPath != null) {
+          _sftpPathController.text = host.sftpPath!;
+        }
       });
     }
   }
@@ -106,6 +111,8 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
     final startupSnippetId = _startupMode == _StartupMode.snippet ? _startupSnippetId : null;
     final startupCommand = _startupMode == _StartupMode.command && _startupCommandController.text.trim().isNotEmpty
         ? _startupCommandController.text.trim() : null;
+    final sftpPath = _sftpPathController.text.trim().isNotEmpty
+        ? _sftpPathController.text.trim() : null;
 
     if (_isEditMode && _existingHost != null) {
       final updated = _existingHost!.copyWith(
@@ -121,6 +128,7 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
         jumpHosts: _jumpHosts,
         startupSnippetId: () => startupSnippetId,
         startupCommand: () => startupCommand,
+        sftpPath: () => sftpPath,
       );
       await notifier.updateHost(updated);
     } else {
@@ -138,6 +146,7 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
         jumpHosts: _jumpHosts,
         startupSnippetId: startupSnippetId,
         startupCommand: startupCommand,
+        sftpPath: sftpPath,
       );
       await notifier.addHost(newHost);
     }
@@ -346,6 +355,17 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
                 _buildJumpHostsSection(allHosts),
                 const SizedBox(height: 20),
                 _buildStartupCommandSection(),
+                const SizedBox(height: 20),
+                SectionLabel(title: l.hostForm_sectionSftp, padding: EdgeInsets.zero),
+                const SizedBox(height: 8),
+                TextFormField(
+                  controller: _sftpPathController,
+                  decoration: InputDecoration(
+                    labelText: l.hostForm_sftpPath,
+                    hintText: l.hostForm_sftpPathHint,
+                    prefixIcon: const Icon(Icons.folder_outlined, size: 20),
+                  ),
+                ),
                 const SizedBox(height: 20),
                 SectionLabel(title: l.hostForm_sectionGroup, padding: EdgeInsets.zero),
                 const SizedBox(height: 8),

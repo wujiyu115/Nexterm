@@ -15,6 +15,7 @@ class Hosts extends Table {
   TextColumn get jumpHosts => text().withDefault(const Constant('[]'))();
   TextColumn get startupSnippetId => text().nullable()();
   TextColumn get startupCommand => text().nullable()();
+  TextColumn get sftpPath => text().nullable()();
   DateTimeColumn get lastConnected => dateTime().nullable()();
   TextColumn get lastConnectionType => text().nullable()();
   IntColumn get sortOrder => integer().withDefault(const Constant(0))();

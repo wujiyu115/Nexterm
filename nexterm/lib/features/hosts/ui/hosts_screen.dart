@@ -100,7 +100,12 @@ class _HostsScreenState extends ConsumerState<HostsScreen> {
       );
       return;
     }
-    context.push('/sftp/$sessionId');
+    final path = host.sftpPath;
+    if (path != null && path.isNotEmpty) {
+      context.push('/sftp/$sessionId?path=${Uri.encodeComponent(path)}');
+    } else {
+      context.push('/sftp/$sessionId');
+    }
   }
 
   Future<void> _showMoveToGroupDialog(List<String> hostIds) async {

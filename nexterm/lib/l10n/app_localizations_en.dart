@@ -276,6 +276,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostForm_sectionStartup => 'Startup Command';
 
   @override
+  String get hostForm_sectionSftp => 'SFTP';
+
+  @override
+  String get hostForm_sftpPath => 'Initial Directory';
+
+  @override
+  String get hostForm_sftpPathHint => '/home/user or /var/www';
+
+  @override
   String get hostForm_startupModeCommand => 'Command';
 
   @override

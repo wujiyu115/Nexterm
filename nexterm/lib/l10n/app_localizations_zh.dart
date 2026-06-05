@@ -267,6 +267,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get hostForm_sectionStartup => '启动命令';
 
   @override
+  String get hostForm_sectionSftp => 'SFTP';
+
+  @override
+  String get hostForm_sftpPath => '初始目录';
+
+  @override
+  String get hostForm_sftpPathHint => '/home/user 或 /var/www';
+
+  @override
   String get hostForm_startupModeCommand => '命令';
 
   @override

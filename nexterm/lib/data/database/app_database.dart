@@ -31,7 +31,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 9;
+  int get schemaVersion => 10;
 
   @override
   MigrationStrategy get migration {
@@ -48,6 +48,7 @@ class AppDatabase extends _$AppDatabase {
         if (from < 7) await m.addColumn(hosts, hosts.lastConnectionType);
         if (from < 8) await m.createTable(webdavConnections);
         if (from < 9) await m.createTable(smbConnections);
+        if (from < 10) await m.addColumn(hosts, hosts.sftpPath);
       },
     );
   }
