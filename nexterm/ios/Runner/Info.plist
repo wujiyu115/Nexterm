@@ -57,6 +57,10 @@
 	<string>Voice input is used to dictate commands into the terminal.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Microphone access is needed for voice input to the terminal.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Camera access is used to take photos for uploading to the remote host.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Photo library access is used to select images for uploading to the remote host.</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
