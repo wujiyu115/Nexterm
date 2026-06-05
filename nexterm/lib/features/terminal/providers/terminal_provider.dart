@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nexterm/core/providers/app_lifecycle_provider.dart';
@@ -143,6 +144,16 @@ class TerminalActions {
     // Create a Terminal instance for this tab.
     final scrollback = _ref.read(terminalScrollbackProvider);
     final terminal = Terminal(maxLines: scrollback);
+    terminal.onPrivateOSC = (String code, List<String> args) {
+      if (code == '52' && args.isNotEmpty) {
+        final raw = args.length >= 2 ? args[1] : args[0].split(';').last;
+        if (raw == '?' || raw.isEmpty) return;
+        try {
+          final decoded = utf8.decode(base64Decode(raw));
+          Clipboard.setData(ClipboardData(text: decoded));
+        } catch (_) {}
+      }
+    };
     _ref.read(terminalControllersProvider.notifier).update(
           (state) => Map.unmodifiable({...state, tab.id: terminal}),
         );

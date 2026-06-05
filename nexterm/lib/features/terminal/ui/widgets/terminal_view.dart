@@ -7,6 +7,8 @@ import 'package:nexterm/core/theme/theme_provider.dart';
 import 'package:nexterm/features/terminal/providers/terminal_font_family_provider.dart';
 import 'package:nexterm/features/terminal/providers/terminal_font_size_provider.dart';
 import 'package:nexterm/features/terminal/providers/terminal_provider.dart';
+import 'package:nexterm/features/terminal/models/gesture_config.dart';
+import 'package:nexterm/features/terminal/providers/gesture_config_provider.dart';
 import 'package:nexterm/features/terminal/ui/tab_manager.dart';
 import 'package:xterm/xterm.dart';
 
@@ -30,6 +32,8 @@ class _TerminalViewWidgetState extends ConsumerState<TerminalViewWidget> {
   final _terminalController = TerminalController();
   double _pinchBaseSize = 0;
   bool _hasSelection = false;
+  int _pointerCount = 0;
+  bool _wasTwoFingerTap = false;
 
   @override
   void initState() {
@@ -64,6 +68,33 @@ class _TerminalViewWidgetState extends ConsumerState<TerminalViewWidget> {
     HapticFeedback.lightImpact();
   }
 
+  void _executeGesture(GestureType type) {
+    final action = ref.read(gestureConfigProvider.notifier).actionFor(type);
+    switch (action) {
+      case GestureAction.paste:
+        _pasteFromClipboard();
+      case GestureAction.copy:
+        _copySelection();
+      case GestureAction.switchTabLeft:
+      case GestureAction.switchTabRight:
+      case GestureAction.toggleDpad:
+      case GestureAction.toggleKeyboard:
+      case GestureAction.none:
+        break;
+    }
+  }
+
+  Future<void> _pasteFromClipboard() async {
+    HapticFeedback.lightImpact();
+    final data = await Clipboard.getData(Clipboard.kTextPlain);
+    if (data?.text == null || data!.text!.isEmpty) return;
+    final sshService = ref.read(sshServiceProvider);
+    final sessionId = widget.tab.sessionId;
+    if (sessionId != null) {
+      sshService.write(sessionId, data.text!);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final controllers = ref.watch(terminalControllersProvider);
@@ -95,13 +126,25 @@ class _TerminalViewWidgetState extends ConsumerState<TerminalViewWidget> {
 
     if (isMobile) {
       child = GestureDetector(
-        onScaleStart: (_) {
-          _pinchBaseSize = ref.read(terminalFontSizeProvider);
+        onScaleStart: (details) {
+          _pointerCount = details.pointerCount;
+          _wasTwoFingerTap = details.pointerCount == 2;
+          if (details.pointerCount >= 2) {
+            _pinchBaseSize = ref.read(terminalFontSizeProvider);
+          }
         },
         onScaleUpdate: (details) {
           if (details.pointerCount >= 2) {
+            if (details.scale < 0.95 || details.scale > 1.05) {
+              _wasTwoFingerTap = false;
+            }
             final newSize = (_pinchBaseSize * details.scale).clamp(8.0, 24.0);
             ref.read(terminalFontSizeProvider.notifier).setSize(newSize);
+          }
+        },
+        onScaleEnd: (_) {
+          if (_wasTwoFingerTap && _pointerCount == 2) {
+            _executeGesture(GestureType.twoFingerTap);
           }
         },
         child: child,

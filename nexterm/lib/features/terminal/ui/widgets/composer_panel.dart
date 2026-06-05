@@ -30,6 +30,7 @@ class ComposerPanelState extends ConsumerState<ComposerPanel> {
   final _controller = TextEditingController();
   final _focusNode = FocusNode();
   bool _isListening = false;
+  bool _chatMode = true;
   StreamSubscription<SttResult>? _sttSub;
   SttProvider? _activeSttProvider;
 
@@ -46,7 +47,8 @@ class ComposerPanelState extends ConsumerState<ComposerPanel> {
     final text = _controller.text.trim();
     if (text.isEmpty) return;
     HapticFeedback.lightImpact();
-    widget.onKeyInput(Uint8List.fromList(utf8.encode(text)));
+    final payload = _chatMode ? '$text\n' : text;
+    widget.onKeyInput(Uint8List.fromList(utf8.encode(payload)));
     _controller.clear();
     _focusNode.requestFocus();
   }
@@ -188,6 +190,13 @@ class ComposerPanelState extends ConsumerState<ComposerPanel> {
                 color: p.fgSecondary,
                 bgColor: p.surface,
                 onTap: () => FocusScope.of(context).unfocus(),
+              ),
+              const SizedBox(width: 8),
+              _CircleButton(
+                icon: _chatMode ? Icons.keyboard_return : Icons.text_fields,
+                color: _chatMode ? Colors.white : p.fgSecondary,
+                bgColor: _chatMode ? p.accent : p.surface,
+                onTap: () => setState(() => _chatMode = !_chatMode),
               ),
               const Spacer(),
               if (sttAvailable)

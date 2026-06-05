@@ -3679,6 +3679,78 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'上传文件到主机'**
   String get composer_attachFilesHint;
+
+  /// No description provided for @settings_gestures.
+  ///
+  /// In zh, this message translates to:
+  /// **'手势设置'**
+  String get settings_gestures;
+
+  /// No description provided for @gesture_twoFingerTap.
+  ///
+  /// In zh, this message translates to:
+  /// **'双指点击'**
+  String get gesture_twoFingerTap;
+
+  /// No description provided for @gesture_swipeLeft.
+  ///
+  /// In zh, this message translates to:
+  /// **'左滑'**
+  String get gesture_swipeLeft;
+
+  /// No description provided for @gesture_swipeRight.
+  ///
+  /// In zh, this message translates to:
+  /// **'右滑'**
+  String get gesture_swipeRight;
+
+  /// No description provided for @gesture_swipeDown.
+  ///
+  /// In zh, this message translates to:
+  /// **'下滑'**
+  String get gesture_swipeDown;
+
+  /// No description provided for @gesture_actionPaste.
+  ///
+  /// In zh, this message translates to:
+  /// **'粘贴'**
+  String get gesture_actionPaste;
+
+  /// No description provided for @gesture_actionCopy.
+  ///
+  /// In zh, this message translates to:
+  /// **'复制'**
+  String get gesture_actionCopy;
+
+  /// No description provided for @gesture_actionSwitchTabLeft.
+  ///
+  /// In zh, this message translates to:
+  /// **'上一个标签'**
+  String get gesture_actionSwitchTabLeft;
+
+  /// No description provided for @gesture_actionSwitchTabRight.
+  ///
+  /// In zh, this message translates to:
+  /// **'下一个标签'**
+  String get gesture_actionSwitchTabRight;
+
+  /// No description provided for @gesture_actionToggleDpad.
+  ///
+  /// In zh, this message translates to:
+  /// **'切换方向键'**
+  String get gesture_actionToggleDpad;
+
+  /// No description provided for @gesture_actionToggleKeyboard.
+  ///
+  /// In zh, this message translates to:
+  /// **'收起键盘'**
+  String get gesture_actionToggleKeyboard;
+
+  /// No description provided for @gesture_actionNone.
+  ///
+  /// In zh, this message translates to:
+  /// **'无'**
+  String get gesture_actionNone;
 }
 
 class _AppLocalizationsDelegate

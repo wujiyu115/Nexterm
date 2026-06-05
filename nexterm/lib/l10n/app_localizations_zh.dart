@@ -1897,4 +1897,40 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get composer_attachFilesHint => '上传文件到主机';
+
+  @override
+  String get settings_gestures => '手势设置';
+
+  @override
+  String get gesture_twoFingerTap => '双指点击';
+
+  @override
+  String get gesture_swipeLeft => '左滑';
+
+  @override
+  String get gesture_swipeRight => '右滑';
+
+  @override
+  String get gesture_swipeDown => '下滑';
+
+  @override
+  String get gesture_actionPaste => '粘贴';
+
+  @override
+  String get gesture_actionCopy => '复制';
+
+  @override
+  String get gesture_actionSwitchTabLeft => '上一个标签';
+
+  @override
+  String get gesture_actionSwitchTabRight => '下一个标签';
+
+  @override
+  String get gesture_actionToggleDpad => '切换方向键';
+
+  @override
+  String get gesture_actionToggleKeyboard => '收起键盘';
+
+  @override
+  String get gesture_actionNone => '无';
 }

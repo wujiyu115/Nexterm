@@ -651,5 +651,18 @@
   "composer_attachPhotos": "Photos & Videos",
   "composer_attachPhotosHint": "Choose photos and videos",
   "composer_attachFiles": "Files",
-  "composer_attachFilesHint": "Upload files to host"
+  "composer_attachFilesHint": "Upload files to host",
+
+  "settings_gestures": "Gestures",
+  "gesture_twoFingerTap": "Two-finger Tap",
+  "gesture_swipeLeft": "Swipe Left",
+  "gesture_swipeRight": "Swipe Right",
+  "gesture_swipeDown": "Swipe Down",
+  "gesture_actionPaste": "Paste",
+  "gesture_actionCopy": "Copy",
+  "gesture_actionSwitchTabLeft": "Previous Tab",
+  "gesture_actionSwitchTabRight": "Next Tab",
+  "gesture_actionToggleDpad": "Toggle D-Pad",
+  "gesture_actionToggleKeyboard": "Hide Keyboard",
+  "gesture_actionNone": "None"
   }

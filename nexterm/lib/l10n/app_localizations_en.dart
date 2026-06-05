@@ -1937,4 +1937,40 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get composer_attachFilesHint => 'Upload files to host';
+
+  @override
+  String get settings_gestures => 'Gestures';
+
+  @override
+  String get gesture_twoFingerTap => 'Two-finger Tap';
+
+  @override
+  String get gesture_swipeLeft => 'Swipe Left';
+
+  @override
+  String get gesture_swipeRight => 'Swipe Right';
+
+  @override
+  String get gesture_swipeDown => 'Swipe Down';
+
+  @override
+  String get gesture_actionPaste => 'Paste';
+
+  @override
+  String get gesture_actionCopy => 'Copy';
+
+  @override
+  String get gesture_actionSwitchTabLeft => 'Previous Tab';
+
+  @override
+  String get gesture_actionSwitchTabRight => 'Next Tab';
+
+  @override
+  String get gesture_actionToggleDpad => 'Toggle D-Pad';
+
+  @override
+  String get gesture_actionToggleKeyboard => 'Hide Keyboard';
+
+  @override
+  String get gesture_actionNone => 'None';
 }

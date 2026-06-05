@@ -13,6 +13,7 @@ import 'package:nexterm/features/terminal/providers/terminal_font_family_provide
 import 'package:nexterm/features/terminal/providers/terminal_scrollback_provider.dart';
 import 'package:nexterm/features/terminal/providers/voice_locale_provider.dart';
 import 'package:nexterm/features/settings/ui/widgets/stt_settings_section.dart';
+import 'package:nexterm/features/terminal/ui/gesture_settings_screen.dart';
 import 'package:nexterm/features/settings/utils/ssh_config_parser.dart';
 import 'package:nexterm/features/sync/providers/auth_provider.dart';
 import 'package:nexterm/shared/widgets/section_label.dart';
@@ -87,6 +88,11 @@ class SettingsScreen extends ConsumerWidget {
             title: Text(l.settings_hapticFeedback),
             value: settings[SettingsKeys.hapticFeedback] == 'true',
             onChanged: (v) => settingsNotifier.set(SettingsKeys.hapticFeedback, v.toString()),
+          ),
+          ListTile(
+            leading: const Icon(Icons.gesture_outlined),
+            title: Text(l.settings_gestures),
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const GestureSettingsScreen())),
           ),
 
           const SttSettingsSection(),
