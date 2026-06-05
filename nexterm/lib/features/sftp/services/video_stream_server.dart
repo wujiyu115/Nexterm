@@ -154,7 +154,7 @@ class VideoStreamServer {
     final remotePath = _remotePath;
     if (service == null || remotePath == null) return;
 
-    final isSequential = start < _cachedBytes + 10 * 1024 * 1024;
+    final isSequential = _cachedBytes > 0 && start < _cachedBytes + 10 * 1024 * 1024;
 
     if (isSequential) {
       while (_cachedBytes <= start && !_downloadComplete && !_disposed) {
