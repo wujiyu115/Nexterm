@@ -147,26 +147,31 @@ class ComposerPanelState extends ConsumerState<ComposerPanel> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          TextField(
-            controller: _controller,
-            focusNode: _focusNode,
-            style: TextStyle(color: p.fg, fontSize: 15),
-            decoration: InputDecoration(
-              hintText: l.composer_placeholder,
-              hintStyle: TextStyle(color: p.fgTertiary),
-              filled: true,
-              fillColor: p.surface,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide.none,
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxHeight: 120),
+            child: Scrollbar(
+              child: TextField(
+                controller: _controller,
+                focusNode: _focusNode,
+                style: TextStyle(color: p.fg, fontSize: 15),
+                decoration: InputDecoration(
+                  hintText: l.composer_placeholder,
+                  hintStyle: TextStyle(color: p.fgTertiary),
+                  filled: true,
+                  fillColor: p.surface,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide.none,
+                  ),
+                  isDense: true,
+                ),
+                minLines: 3,
+                maxLines: null,
+                textInputAction: TextInputAction.newline,
+                onSubmitted: (_) => _send(),
               ),
-              isDense: true,
             ),
-            minLines: 1,
-            maxLines: 4,
-            textInputAction: TextInputAction.newline,
-            onSubmitted: (_) => _send(),
           ),
           const SizedBox(height: 8),
           Row(
