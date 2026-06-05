@@ -252,6 +252,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get hostForm_selectKeyRequired => '请选择一个 SSH 密钥';
 
   @override
+  String get hostForm_manageKeys => '密钥管理';
+
+  @override
   String get hostForm_sectionJumpHost => '跳板机';
 
   @override

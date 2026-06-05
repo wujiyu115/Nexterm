@@ -9,6 +9,9 @@ class FileBreadcrumb extends StatelessWidget {
   /// The current remote path, e.g. "/home/user/documents".
   final String path;
 
+  /// The root path that the home icon navigates to.
+  final String rootPath;
+
   /// Called when the user taps a breadcrumb segment with the full path up to
   /// and including that segment.
   final void Function(String path) onNavigate;
@@ -17,17 +20,21 @@ class FileBreadcrumb extends StatelessWidget {
     super.key,
     required this.path,
     required this.onNavigate,
+    this.rootPath = '/',
   });
 
   /// Splits [path] into (label, fullPath) pairs for each segment.
   List<(String label, String fullPath)> _segments() {
     final result = <(String, String)>[];
 
-    // Always include root.
-    result.add(('/', '/'));
+    result.add(('/', rootPath));
 
-    final parts = path.split('/').where((s) => s.isNotEmpty).toList();
-    var accumulated = '';
+    final relative = path.startsWith(rootPath)
+        ? path.substring(rootPath.length)
+        : path;
+    final parts = relative.split('/').where((s) => s.isNotEmpty).toList();
+    final base = rootPath.endsWith('/') ? rootPath.substring(0, rootPath.length - 1) : rootPath;
+    var accumulated = base;
     for (final part in parts) {
       accumulated = '$accumulated/$part';
       result.add((part, accumulated));

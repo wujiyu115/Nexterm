@@ -4,6 +4,7 @@ import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:nexterm/features/sftp/services/sftp_service.dart';
 import 'package:nexterm/features/sftp/ui/utils/file_icon.dart';
 import 'package:nexterm/features/sftp/ui/utils/file_size_format.dart';
+import 'package:nexterm/shared/widgets/swipe_to_delete_wrapper.dart';
 
 /// A scrollable list of [RemoteFileInfo] items with icon, name, size/date, and
 /// optional multi-select checkboxes.
@@ -13,6 +14,8 @@ class FileListView extends StatelessWidget {
   final void Function(RemoteFileInfo file) onTap;
   final void Function(RemoteFileInfo file) onLongPress;
   final void Function(RemoteFileInfo file) onToggleSelect;
+  final void Function(RemoteFileInfo file)? onDelete;
+  final SwipeToDeleteController? swipeController;
   final bool hasMore;
   final VoidCallback? onLoadMore;
 
@@ -23,6 +26,8 @@ class FileListView extends StatelessWidget {
     required this.onTap,
     required this.onLongPress,
     required this.onToggleSelect,
+    this.onDelete,
+    this.swipeController,
     this.hasMore = false,
     this.onLoadMore,
   });
@@ -54,13 +59,20 @@ class FileListView extends StatelessWidget {
           );
         }
         final file = files[index];
-        return _FileListItem(
+        final item = _FileListItem(
           file: file,
           isSelected: selectedPaths.contains(file.path),
           isMultiSelectMode: _isMultiSelect,
           onTap: () => onTap(file),
           onLongPress: () => onLongPress(file),
           onToggleSelect: () => onToggleSelect(file),
+        );
+        if (_isMultiSelect || onDelete == null) return item;
+        return SwipeToDeleteWrapper(
+          key: ValueKey(file.path),
+          controller: swipeController,
+          onDelete: () => onDelete!(file),
+          child: item,
         );
       },
     );
@@ -108,7 +120,9 @@ class _FileListItem extends StatelessWidget {
     final iconColor =
         getFileIconColor(file.name, isDirectory: file.isDirectory, brightness: brightness);
 
-    return ListTile(
+    return Material(
+      color: p.bg,
+      child: ListTile(
       leading: isMultiSelectMode
           ? Checkbox(
               value: isSelected,
@@ -143,6 +157,7 @@ class _FileListItem extends StatelessWidget {
       selected: isSelected,
       onTap: isMultiSelectMode ? onToggleSelect : onTap,
       onLongPress: onLongPress,
+    ),
     );
   }
 }

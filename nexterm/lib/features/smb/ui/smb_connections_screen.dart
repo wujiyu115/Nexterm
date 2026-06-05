@@ -10,8 +10,9 @@ import 'package:nexterm/features/smb/services/smb_service.dart';
 import 'package:nexterm/features/terminal/providers/terminal_provider.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:nexterm/shared/widgets/decorative_background.dart';
-import 'package:nexterm/shared/widgets/glass_card.dart';
 import 'package:nexterm/shared/widgets/outdoor_search_bar.dart';
+import 'package:nexterm/shared/widgets/swipe_delete_glass_card.dart';
+import 'package:nexterm/shared/widgets/swipe_to_delete_wrapper.dart';
 
 class SmbConnectionsScreen extends ConsumerStatefulWidget {
   const SmbConnectionsScreen({super.key});
@@ -22,11 +23,13 @@ class SmbConnectionsScreen extends ConsumerStatefulWidget {
 
 class _SmbConnectionsScreenState extends ConsumerState<SmbConnectionsScreen> {
   final _searchController = TextEditingController();
+  final _swipeController = SwipeToDeleteController();
   String _searchQuery = '';
 
   @override
   void dispose() {
     _searchController.dispose();
+    _swipeController.dispose();
     super.dispose();
   }
 
@@ -153,11 +156,17 @@ class _SmbConnectionsScreenState extends ConsumerState<SmbConnectionsScreen> {
       return _buildEmptyState();
     }
 
-    return ListView(
-      children: [
-        ...connections.map((conn) => _buildTile(conn)),
-        const SizedBox(height: 80),
-      ],
+    return NotificationListener<ScrollNotification>(
+      onNotification: (_) {
+        _swipeController.closeAny();
+        return false;
+      },
+      child: ListView(
+        children: [
+          ...connections.map((conn) => _buildTile(conn)),
+          const SizedBox(height: 80),
+        ],
+      ),
     );
   }
 
@@ -171,9 +180,11 @@ class _SmbConnectionsScreenState extends ConsumerState<SmbConnectionsScreen> {
           '${dt.year}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')}');
     }
 
-    return GlassCard(
+    return SwipeDeleteGlassCard(
+      key: ValueKey(connection.id),
+      swipeController: _swipeController,
       onTap: () => _connect(connection),
-      onLongPress: () => _confirmDelete(connection),
+      onDelete: () => _confirmDelete(connection),
       child: Row(
         children: [
           Icon(Icons.folder_shared_outlined, size: 24, color: p.fgSecondary),

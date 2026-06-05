@@ -90,6 +90,7 @@
   "hostForm_selectKey": "选择密钥",
   "hostForm_selectKeyHint": "请选择 SSH 密钥",
   "hostForm_selectKeyRequired": "请选择一个 SSH 密钥",
+  "hostForm_manageKeys": "密钥管理",
   "hostForm_sectionJumpHost": "跳板机",
   "hostForm_noJumpHostConfigured": "未配置跳板机",
   "hostForm_addJumpHost": "添加跳板机",

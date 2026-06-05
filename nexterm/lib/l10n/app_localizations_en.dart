@@ -261,6 +261,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostForm_selectKeyRequired => 'Please select an SSH key';
 
   @override
+  String get hostForm_manageKeys => 'Manage Keys';
+
+  @override
   String get hostForm_sectionJumpHost => 'Jump Host';
 
   @override

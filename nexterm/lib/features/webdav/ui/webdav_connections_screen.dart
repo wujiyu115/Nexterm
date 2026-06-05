@@ -10,8 +10,9 @@ import 'package:nexterm/features/webdav/providers/webdav_provider.dart';
 import 'package:nexterm/features/webdav/services/webdav_service.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:nexterm/shared/widgets/decorative_background.dart';
-import 'package:nexterm/shared/widgets/glass_card.dart';
 import 'package:nexterm/shared/widgets/outdoor_search_bar.dart';
+import 'package:nexterm/shared/widgets/swipe_delete_glass_card.dart';
+import 'package:nexterm/shared/widgets/swipe_to_delete_wrapper.dart';
 
 class WebDavConnectionsScreen extends ConsumerStatefulWidget {
   const WebDavConnectionsScreen({super.key});
@@ -22,11 +23,13 @@ class WebDavConnectionsScreen extends ConsumerStatefulWidget {
 
 class _WebDavConnectionsScreenState extends ConsumerState<WebDavConnectionsScreen> {
   final _searchController = TextEditingController();
+  final _swipeController = SwipeToDeleteController();
   String _searchQuery = '';
 
   @override
   void dispose() {
     _searchController.dispose();
+    _swipeController.dispose();
     super.dispose();
   }
 
@@ -150,11 +153,17 @@ class _WebDavConnectionsScreenState extends ConsumerState<WebDavConnectionsScree
       return _buildEmptyState();
     }
 
-    return ListView(
-      children: [
-        ...connections.map((conn) => _buildTile(conn)),
-        const SizedBox(height: 80),
-      ],
+    return NotificationListener<ScrollNotification>(
+      onNotification: (_) {
+        _swipeController.closeAny();
+        return false;
+      },
+      child: ListView(
+        children: [
+          ...connections.map((conn) => _buildTile(conn)),
+          const SizedBox(height: 80),
+        ],
+      ),
     );
   }
 
@@ -168,9 +177,11 @@ class _WebDavConnectionsScreenState extends ConsumerState<WebDavConnectionsScree
           '${dt.year}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')}');
     }
 
-    return GlassCard(
+    return SwipeDeleteGlassCard(
+      key: ValueKey(connection.id),
+      swipeController: _swipeController,
       onTap: () => _connect(connection),
-      onLongPress: () => _confirmDelete(connection),
+      onDelete: () => _confirmDelete(connection),
       child: Row(
         children: [
           Icon(Icons.cloud_outlined, size: 24, color: p.fgSecondary),

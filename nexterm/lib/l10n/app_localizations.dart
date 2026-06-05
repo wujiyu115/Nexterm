@@ -560,6 +560,12 @@ abstract class AppLocalizations {
   /// **'请选择一个 SSH 密钥'**
   String get hostForm_selectKeyRequired;
 
+  /// No description provided for @hostForm_manageKeys.
+  ///
+  /// In zh, this message translates to:
+  /// **'密钥管理'**
+  String get hostForm_manageKeys;
+
   /// No description provided for @hostForm_sectionJumpHost.
   ///
   /// In zh, this message translates to:

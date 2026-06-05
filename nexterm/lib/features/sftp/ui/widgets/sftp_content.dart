@@ -16,6 +16,7 @@ import 'package:nexterm/features/sftp/ui/widgets/transfer_queue_bar.dart';
 import 'package:nexterm/features/terminal/providers/terminal_provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nexterm/shared/widgets/dashed_divider.dart';
+import 'package:nexterm/shared/widgets/swipe_to_delete_wrapper.dart';
 
 class SftpContentWidget extends ConsumerStatefulWidget {
   final String? sessionId;
@@ -34,6 +35,8 @@ class _SftpContentWidgetState extends ConsumerState<SftpContentWidget> {
   SftpState _sftpState = const SftpState();
   bool _isInitializing = true;
   String? _initError;
+  String _homePath = '/';
+  final _swipeController = SwipeToDeleteController();
 
   bool _isSearching = false;
   final _searchController = TextEditingController();
@@ -80,6 +83,7 @@ class _SftpContentWidgetState extends ConsumerState<SftpContentWidget> {
       });
 
       final home = await fileService.homePath();
+      if (mounted) setState(() => _homePath = home);
       await notifier.navigateTo(home);
     } catch (e) {
       if (mounted) {
@@ -94,6 +98,7 @@ class _SftpContentWidgetState extends ConsumerState<SftpContentWidget> {
   @override
   void dispose() {
     _searchController.dispose();
+    _swipeController.dispose();
     _notifier?.dispose();
     super.dispose();
   }
@@ -483,7 +488,7 @@ class _SftpContentWidgetState extends ConsumerState<SftpContentWidget> {
           Container(
             height: 36,
             alignment: Alignment.centerLeft,
-            child: FileBreadcrumb(path: state.currentPath, onNavigate: notifier.navigateTo),
+            child: FileBreadcrumb(path: state.currentPath, rootPath: _homePath, onNavigate: notifier.navigateTo),
           ),
         DashedDivider(color: p.border.withValues(alpha: 0.4), padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4)),
         // File list
@@ -502,14 +507,22 @@ class _SftpContentWidgetState extends ConsumerState<SftpContentWidget> {
                         ],
                       ),
                     )
-                  : FileListView(
-                      files: _filteredFiles,
-                      selectedPaths: state.selectedPaths,
-                      onTap: _onFileTap,
-                      onLongPress: _onLongPress,
-                      onToggleSelect: (file) => notifier.toggleSelection(file.path),
-                      hasMore: _searchQuery.isEmpty && state.hasMoreFiles,
-                      onLoadMore: notifier.loadMore,
+                  : NotificationListener<ScrollNotification>(
+                      onNotification: (_) {
+                        _swipeController.closeAny();
+                        return false;
+                      },
+                      child: FileListView(
+                        files: _filteredFiles,
+                        selectedPaths: state.selectedPaths,
+                        onTap: _onFileTap,
+                        onLongPress: _onLongPress,
+                        onToggleSelect: (file) => notifier.toggleSelection(file.path),
+                        onDelete: _confirmDelete,
+                        swipeController: _swipeController,
+                        hasMore: _searchQuery.isEmpty && state.hasMoreFiles,
+                        onLoadMore: notifier.loadMore,
+                      ),
                     ),
         ),
         const TransferQueueBar(),

@@ -85,6 +85,7 @@
   "hostForm_selectKey": "Select Key",
   "hostForm_selectKeyHint": "Select an SSH key",
   "hostForm_selectKeyRequired": "Please select an SSH key",
+  "hostForm_manageKeys": "Manage Keys",
   "hostForm_sectionJumpHost": "Jump Host",
   "hostForm_noJumpHostConfigured": "No jump host configured",
   "hostForm_addJumpHost": "Add Jump Host",

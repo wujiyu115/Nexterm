@@ -12,6 +12,7 @@ class SmbService implements RemoteFileService {
   SmbConnect? _client;
 
   String? _host;
+  String? _shareName;
   String? _username;
   String? _password;
   String? _domain;
@@ -35,6 +36,7 @@ class SmbService implements RemoteFileService {
     String? domain,
   }) async {
     _host = host;
+    _shareName = shareName;
     _username = username;
     _password = password;
     _domain = domain;
@@ -68,7 +70,11 @@ class SmbService implements RemoteFileService {
       return await operation();
     } catch (e) {
       final msg = e.toString();
-      if (msg.contains('network name') || msg.contains('NT_STATUS')) {
+      if (msg.contains('network name') ||
+          msg.contains('NT_STATUS') ||
+          msg.contains('StreamSink is closed') ||
+          msg.contains('Connection reset') ||
+          msg.contains('Broken pipe')) {
         await _reconnect();
         return await operation();
       }
@@ -79,7 +85,7 @@ class SmbService implements RemoteFileService {
   @override
   Future<String> homePath() async {
     _requireConnected();
-    return '/';
+    return '/$_shareName';
   }
 
   @override

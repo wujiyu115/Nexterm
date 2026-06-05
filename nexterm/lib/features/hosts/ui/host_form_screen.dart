@@ -407,9 +407,9 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
                   ),
                 ),
                 TextButton.icon(
-                  onPressed: () => context.push('/vaults/keys/generate'),
-                  icon: const Icon(Icons.add, size: 16),
-                  label: Text(l.keys_generate),
+                  onPressed: () => context.push('/vaults/keys'),
+                  icon: const Icon(Icons.vpn_key, size: 16),
+                  label: Text(l.hostForm_manageKeys),
                 ),
               ],
             ),
@@ -424,20 +424,31 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
             if (mounted) setState(() => _selectedKeyId = null);
           });
         }
-        return DropdownButtonFormField<String>(
-          value: effectiveKeyId,
-          decoration: InputDecoration(labelText: l.hostForm_selectKey),
-          hint: Text(l.hostForm_selectKeyHint),
-          items: keys.map((SSHKeyEntity key) {
-            return DropdownMenuItem<String>(
-              value: key.id,
-              child: Text('${key.name} (${key.type.displayName})'),
-            );
-          }).toList(),
-          onChanged: (value) => setState(() => _selectedKeyId = value),
-          validator: (v) => (_authMethod == AuthMethod.key && (v == null || v.isEmpty))
-              ? l.hostForm_selectKeyRequired
-              : null,
+        return Row(
+          children: [
+            Expanded(
+              child: DropdownButtonFormField<String>(
+                value: effectiveKeyId,
+                decoration: InputDecoration(labelText: l.hostForm_selectKey),
+                hint: Text(l.hostForm_selectKeyHint),
+                items: keys.map((SSHKeyEntity key) {
+                  return DropdownMenuItem<String>(
+                    value: key.id,
+                    child: Text('${key.name} (${key.type.displayName})'),
+                  );
+                }).toList(),
+                onChanged: (value) => setState(() => _selectedKeyId = value),
+                validator: (v) => (_authMethod == AuthMethod.key && (v == null || v.isEmpty))
+                    ? l.hostForm_selectKeyRequired
+                    : null,
+              ),
+            ),
+            IconButton(
+              onPressed: () => context.push('/vaults/keys'),
+              icon: const Icon(Icons.vpn_key, size: 20),
+              tooltip: l.hostForm_manageKeys,
+            ),
+          ],
         );
       },
     );
