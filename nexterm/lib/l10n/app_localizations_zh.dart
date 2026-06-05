@@ -1870,4 +1870,31 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get settings_sttNotConfigured => '未配置';
+
+  @override
+  String get composer_placeholder => '输入内容...';
+
+  @override
+  String get composer_send => '发送';
+
+  @override
+  String get composer_attachTitle => '添加附件';
+
+  @override
+  String get composer_attachCamera => '相机';
+
+  @override
+  String get composer_attachCameraHint => '拍摄新照片';
+
+  @override
+  String get composer_attachPhotos => '照片或视频';
+
+  @override
+  String get composer_attachPhotosHint => '选择照片和视频';
+
+  @override
+  String get composer_attachFiles => '文件';
+
+  @override
+  String get composer_attachFilesHint => '上传文件到主机';
 }

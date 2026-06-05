@@ -670,5 +670,15 @@
   "settings_sttCredentialsSaved": "凭证已保存",
   "settings_sttEditCredential": "编辑",
   "settings_sttConfigured": "已配置",
-  "settings_sttNotConfigured": "未配置"
+  "settings_sttNotConfigured": "未配置",
+
+  "composer_placeholder": "输入内容...",
+  "composer_send": "发送",
+  "composer_attachTitle": "添加附件",
+  "composer_attachCamera": "相机",
+  "composer_attachCameraHint": "拍摄新照片",
+  "composer_attachPhotos": "照片或视频",
+  "composer_attachPhotosHint": "选择照片和视频",
+  "composer_attachFiles": "文件",
+  "composer_attachFilesHint": "上传文件到主机"
   }

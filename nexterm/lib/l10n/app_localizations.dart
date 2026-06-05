@@ -3625,6 +3625,60 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'未配置'**
   String get settings_sttNotConfigured;
+
+  /// No description provided for @composer_placeholder.
+  ///
+  /// In zh, this message translates to:
+  /// **'输入内容...'**
+  String get composer_placeholder;
+
+  /// No description provided for @composer_send.
+  ///
+  /// In zh, this message translates to:
+  /// **'发送'**
+  String get composer_send;
+
+  /// No description provided for @composer_attachTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'添加附件'**
+  String get composer_attachTitle;
+
+  /// No description provided for @composer_attachCamera.
+  ///
+  /// In zh, this message translates to:
+  /// **'相机'**
+  String get composer_attachCamera;
+
+  /// No description provided for @composer_attachCameraHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'拍摄新照片'**
+  String get composer_attachCameraHint;
+
+  /// No description provided for @composer_attachPhotos.
+  ///
+  /// In zh, this message translates to:
+  /// **'照片或视频'**
+  String get composer_attachPhotos;
+
+  /// No description provided for @composer_attachPhotosHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'选择照片和视频'**
+  String get composer_attachPhotosHint;
+
+  /// No description provided for @composer_attachFiles.
+  ///
+  /// In zh, this message translates to:
+  /// **'文件'**
+  String get composer_attachFiles;
+
+  /// No description provided for @composer_attachFilesHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'上传文件到主机'**
+  String get composer_attachFilesHint;
 }
 
 class _AppLocalizationsDelegate

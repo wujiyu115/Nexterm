@@ -254,7 +254,7 @@ class _MenuPopup extends StatelessWidget {
     final l = AppLocalizations.of(context)!;
     final p = Theme.of(context).extension<ThemePalette>()!;
 
-    final hasFileItems = onOpenSftp != null || onUploadFile != null;
+    final hasFileItems = onOpenSftp != null;
     final hasToolItems = onOpenGit != null || onOpenWeb != null || onOpenMux != null || onDetectPorts != null;
 
     return Material(
@@ -277,10 +277,7 @@ class _MenuPopup extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   child: DashedDivider(color: p.border),
                 ),
-                _group(context, Icons.folder_outlined, l.terminal_menuFiles, 'files', [
-                  if (onOpenSftp != null) _item(context, Icons.folder_outlined, l.terminal_openSftp, () => onItemTap(onOpenSftp)),
-                  if (onUploadFile != null) _item(context, Icons.upload_file_outlined, l.terminal_uploadFile, () => onItemTap(onUploadFile)),
-                ]),
+                if (onOpenSftp != null) _item(context, Icons.folder_outlined, l.terminal_openSftp, () => onItemTap(onOpenSftp)),
               ],
               if (hasToolItems)
                 _group(context, Icons.build_outlined, l.terminal_menuTools, 'tools', [

@@ -1,6 +1,7 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -11,9 +12,12 @@ import 'package:nexterm/features/sftp/services/sftp_service.dart';
 import 'package:nexterm/domain/entities/host_entity.dart';
 import 'package:nexterm/features/hosts/providers/hosts_provider.dart';
 import 'package:nexterm/features/terminal/providers/terminal_provider.dart';
+import 'package:nexterm/features/terminal/ui/widgets/attachment_sheet.dart';
+import 'package:nexterm/features/terminal/ui/widgets/composer_panel.dart';
 import 'package:nexterm/features/terminal/ui/widgets/function_panel.dart';
 import 'package:nexterm/features/terminal/ui/widgets/dpad_panel.dart';
 import 'package:nexterm/features/terminal/ui/widgets/keyboard_toolbar.dart';
+import 'package:nexterm/features/terminal/ui/tab_manager.dart';
 import 'package:nexterm/features/terminal/ui/widgets/terminal_tab_bar.dart';
 import 'package:nexterm/features/terminal/ui/widgets/terminal_view.dart';
 import 'package:nexterm/features/sftp/ui/widgets/sftp_content.dart';
@@ -65,10 +69,13 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
 
   bool _isFunctionMode = false;
   bool _isDpadVisible = false;
+  bool _isComposerVisible = false;
+  final GlobalKey<ComposerPanelState> _composerKey = GlobalKey();
 
   void _toggleKeyboardMode() {
     setState(() {
       _isFunctionMode = !_isFunctionMode;
+      if (_isFunctionMode) _isComposerVisible = false;
     });
     if (_isFunctionMode) {
       FocusScope.of(context).unfocus();
@@ -254,6 +261,75 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
       backgroundColor: Colors.transparent,
       builder: (_) => const PortDetectionSheet(),
     );
+  }
+
+  void _showAttachmentSheet(TerminalTab activeTab) {
+    final p = Theme.of(context).extension<ThemePalette>()!;
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: p.bgElevated,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (_) => AttachmentSheet(
+        onCamera: () => _pickImage(ImageSource.camera, activeTab),
+        onPhotos: () => _pickImage(ImageSource.gallery, activeTab),
+        onFiles: () => _pickFile(activeTab),
+      ),
+    );
+  }
+
+  Future<void> _pickImage(ImageSource source, TerminalTab activeTab) async {
+    final picker = ImagePicker();
+    final image = await picker.pickImage(source: source);
+    if (image == null || !mounted) return;
+    _uploadToHost(image.path, image.name, activeTab);
+  }
+
+  Future<void> _pickFile(TerminalTab activeTab) async {
+    final result = await FilePicker.pickFiles();
+    if (result == null || result.files.isEmpty || !mounted) return;
+    final file = result.files.single;
+    if (file.path == null) return;
+    _uploadToHost(file.path!, file.name, activeTab);
+  }
+
+  Future<void> _uploadToHost(String localPath, String fileName, TerminalTab activeTab) async {
+    if (activeTab.sessionId == null) return;
+    final l = AppLocalizations.of(context)!;
+    final sshService = ref.read(sshServiceProvider);
+    final client = sshService.getClient(activeTab.sessionId!);
+    if (client == null) return;
+
+    final sftp = SftpService();
+    try {
+      await sftp.connect(client);
+      final homePath = await sftp.homePath();
+      final remotePath = '$homePath/$fileName';
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l.terminal_uploading(fileName)),
+          duration: const Duration(minutes: 5),
+        ),
+      );
+
+      await sftp.uploadFile(localPath, remotePath);
+      sftp.disconnect();
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
+      _composerKey.currentState?.insertFilePath(remotePath);
+    } catch (e) {
+      sftp.disconnect();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l.terminal_uploadFailed(e.toString()))),
+      );
+    }
   }
 
   Future<void> _showHostPickerDialog() async {
@@ -481,6 +557,18 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
                   }
                 },
               )
+            else if (_isComposerVisible)
+              ComposerPanel(
+                key: _composerKey,
+                onKeyInput: (data) {
+                  final sshService = ref.read(sshServiceProvider);
+                  if (activeTab.sessionId != null) {
+                    sshService.writeBytes(activeTab.sessionId!, data);
+                  }
+                },
+                onClose: () => setState(() => _isComposerVisible = false),
+                onAttach: () => _showAttachmentSheet(activeTab),
+              )
             else
               KeyboardToolbar(
                 onKeyInput: (data) {
@@ -492,6 +580,14 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
                 onHideKeyboard: _hideKeyboard,
                 onToggleDpad: () => setState(() => _isDpadVisible = !_isDpadVisible),
                 isDpadVisible: _isDpadVisible,
+                onToggleComposer: () {
+                  FocusScope.of(context).unfocus();
+                  setState(() {
+                    _isComposerVisible = true;
+                    _isDpadVisible = false;
+                  });
+                },
+                isComposerVisible: _isComposerVisible,
               ),
           ],
         ],

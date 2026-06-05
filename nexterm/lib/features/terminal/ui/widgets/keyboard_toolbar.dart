@@ -6,12 +6,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/features/terminal/models/toolbar_key_definition.dart';
-import 'package:nexterm/features/terminal/providers/stt_provider.dart';
 import 'package:nexterm/features/terminal/providers/toolbar_config_provider.dart';
 import 'package:nexterm/features/terminal/providers/toolbar_modifier_provider.dart';
 import 'package:nexterm/features/terminal/providers/toolbar_usage_provider.dart';
-import 'package:nexterm/features/terminal/providers/voice_locale_provider.dart';
-import 'package:nexterm/features/terminal/services/stt/stt_provider_interface.dart';
+
 
 /// A scrollable, grouped toolbar that sits above the soft keyboard.
 ///
@@ -31,12 +29,20 @@ class KeyboardToolbar extends ConsumerStatefulWidget {
   /// Whether the d-pad panel is currently visible.
   final bool isDpadVisible;
 
+  /// Called to toggle the composer panel visibility.
+  final VoidCallback? onToggleComposer;
+
+  /// Whether the composer panel is currently visible.
+  final bool isComposerVisible;
+
   const KeyboardToolbar({
     super.key,
     required this.onKeyInput,
     this.onHideKeyboard,
     this.onToggleDpad,
     this.isDpadVisible = false,
+    this.onToggleComposer,
+    this.isComposerVisible = false,
   });
 
   @override
@@ -44,74 +50,6 @@ class KeyboardToolbar extends ConsumerStatefulWidget {
 }
 
 class _KeyboardToolbarState extends ConsumerState<KeyboardToolbar> {
-  bool _isListening = false;
-  StreamSubscription<SttResult>? _sttSub;
-  SttProvider? _activeSttProvider;
-
-  @override
-  void dispose() {
-    _sttSub?.cancel();
-    _activeSttProvider?.stop();
-    super.dispose();
-  }
-
-  void _toggleSpeech() {
-    HapticFeedback.lightImpact();
-    if (_isListening) {
-      _stopListening();
-    } else {
-      _startListening();
-    }
-  }
-
-  void _startListening() {
-    _sttSub?.cancel();
-    _activeSttProvider = ref.read(sttProviderInstanceProvider);
-    final provider = _activeSttProvider!;
-    final localeId = ref.read(voiceLocaleIdProvider);
-    setState(() => _isListening = true);
-    final stream = provider.start(localeId: localeId.isEmpty ? null : localeId);
-    String lastText = '';
-    bool sentFinal = false;
-    _sttSub = stream.listen(
-      (result) {
-        if (result.text.isNotEmpty) {
-          lastText = result.text;
-        }
-        if (result.isFinal && result.text.isNotEmpty) {
-          sentFinal = true;
-          widget.onKeyInput(Uint8List.fromList(utf8.encode(result.text)));
-        }
-      },
-      onDone: () {
-        if (!sentFinal && lastText.isNotEmpty && mounted) {
-          widget.onKeyInput(Uint8List.fromList(utf8.encode(lastText)));
-        }
-        _sttSub = null;
-        if (mounted) setState(() => _isListening = false);
-      },
-      onError: (_) {
-        _sttSub = null;
-        if (mounted) setState(() => _isListening = false);
-      },
-    );
-  }
-
-  void _stopListening() {
-    _activeSttProvider?.stop();
-    _activeSttProvider = null;
-    setState(() => _isListening = false);
-  }
-
-  void _onLongPressStart() {
-    HapticFeedback.lightImpact();
-    _startListening();
-  }
-
-  void _onLongPressEnd() {
-    _stopListening();
-  }
-
   // -------------------------------------------------------------------------
   // Send helpers
   // -------------------------------------------------------------------------
@@ -270,15 +208,20 @@ class _KeyboardToolbarState extends ConsumerState<KeyboardToolbar> {
                 ),
               ),
             ),
-          _MicButton(
-            isListening: _isListening,
-            providerType: ref.watch(sttProviderTypeProvider),
-            accentColor: activeColor,
-            textColor: textColor,
-            onTap: _toggleSpeech,
-            onLongPressStart: _onLongPressStart,
-            onLongPressEnd: _onLongPressEnd,
-          ),
+          if (widget.onToggleComposer != null)
+            GestureDetector(
+              onTap: widget.onToggleComposer,
+              child: Container(
+                width: 36,
+                height: double.infinity,
+                alignment: Alignment.center,
+                child: Icon(
+                  widget.isComposerVisible ? Icons.chat_bubble : Icons.chat_bubble_outline,
+                  size: 20,
+                  color: widget.isComposerVisible ? activeColor : textColor,
+                ),
+              ),
+            ),
           if (widget.onHideKeyboard != null)
             GestureDetector(
               onTap: widget.onHideKeyboard,
@@ -426,53 +369,3 @@ class _VerticalDivider extends StatelessWidget {
   }
 }
 
-class _MicButton extends ConsumerWidget {
-  final bool isListening;
-  final SttProviderType providerType;
-  final Color accentColor;
-  final Color textColor;
-  final VoidCallback onTap;
-  final VoidCallback onLongPressStart;
-  final VoidCallback onLongPressEnd;
-
-  const _MicButton({
-    required this.isListening,
-    required this.providerType,
-    required this.accentColor,
-    required this.textColor,
-    required this.onTap,
-    required this.onLongPressStart,
-    required this.onLongPressEnd,
-  });
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final available = ref.watch(sttAvailableProvider);
-    final isAvailable = available.valueOrNull ?? false;
-    if (!isAvailable) return const SizedBox.shrink();
-
-    final child = Container(
-      width: 44,
-      height: double.infinity,
-      alignment: Alignment.center,
-      child: Icon(
-        isListening ? Icons.mic : Icons.mic_none,
-        size: 20,
-        color: isListening ? accentColor : textColor,
-      ),
-    );
-
-    if (providerType == SttProviderType.volcengine) {
-      return GestureDetector(
-        onLongPressStart: (_) => onLongPressStart(),
-        onLongPressEnd: (_) => onLongPressEnd(),
-        child: child,
-      );
-    }
-
-    return GestureDetector(
-      onTap: onTap,
-      child: child,
-    );
-  }
-}

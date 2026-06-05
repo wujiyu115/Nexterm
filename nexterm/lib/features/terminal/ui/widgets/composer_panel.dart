@@ -1,0 +1,258 @@
+import 'dart:async';
+import 'dart:convert';
+
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nexterm/core/theme/theme_palette.dart';
+import 'package:nexterm/features/terminal/providers/stt_provider.dart';
+import 'package:nexterm/features/terminal/providers/voice_locale_provider.dart';
+import 'package:nexterm/features/terminal/services/stt/stt_provider_interface.dart';
+import 'package:nexterm/l10n/app_localizations.dart';
+
+class ComposerPanel extends ConsumerStatefulWidget {
+  final void Function(Uint8List data) onKeyInput;
+  final VoidCallback onClose;
+  final VoidCallback onAttach;
+
+  const ComposerPanel({
+    super.key,
+    required this.onKeyInput,
+    required this.onClose,
+    required this.onAttach,
+  });
+
+  @override
+  ConsumerState<ComposerPanel> createState() => ComposerPanelState();
+}
+
+class ComposerPanelState extends ConsumerState<ComposerPanel> {
+  final _controller = TextEditingController();
+  final _focusNode = FocusNode();
+  bool _isListening = false;
+  StreamSubscription<SttResult>? _sttSub;
+  SttProvider? _activeSttProvider;
+
+  @override
+  void dispose() {
+    _sttSub?.cancel();
+    _activeSttProvider?.stop();
+    _controller.dispose();
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  void _send() {
+    final text = _controller.text.trim();
+    if (text.isEmpty) return;
+    HapticFeedback.lightImpact();
+    widget.onKeyInput(Uint8List.fromList(utf8.encode(text)));
+    _controller.clear();
+    _focusNode.requestFocus();
+  }
+
+  void _toggleSpeech() {
+    HapticFeedback.lightImpact();
+    if (_isListening) {
+      _stopListening();
+    } else {
+      _startListening();
+    }
+  }
+
+  void _startListening() {
+    _sttSub?.cancel();
+    _activeSttProvider = ref.read(sttProviderInstanceProvider);
+    final provider = _activeSttProvider!;
+    final localeId = ref.read(voiceLocaleIdProvider);
+    setState(() => _isListening = true);
+    final stream = provider.start(localeId: localeId.isEmpty ? null : localeId);
+    String lastText = '';
+    bool sentFinal = false;
+    _sttSub = stream.listen(
+      (result) {
+        if (result.text.isNotEmpty) {
+          lastText = result.text;
+        }
+        if (result.isFinal && result.text.isNotEmpty) {
+          sentFinal = true;
+          _insertText(result.text);
+        }
+      },
+      onDone: () {
+        if (!sentFinal && lastText.isNotEmpty && mounted) {
+          _insertText(lastText);
+        }
+        _sttSub = null;
+        if (mounted) setState(() => _isListening = false);
+      },
+      onError: (_) {
+        _sttSub = null;
+        if (mounted) setState(() => _isListening = false);
+      },
+    );
+  }
+
+  void _stopListening() {
+    _activeSttProvider?.stop();
+    _activeSttProvider = null;
+    setState(() => _isListening = false);
+  }
+
+  void _onLongPressStart() {
+    HapticFeedback.lightImpact();
+    _startListening();
+  }
+
+  void _onLongPressEnd() {
+    _stopListening();
+  }
+
+  void _insertText(String text) {
+    final selection = _controller.selection;
+    final currentText = _controller.text;
+    final newText = currentText.replaceRange(
+      selection.start.clamp(0, currentText.length),
+      selection.end.clamp(0, currentText.length),
+      text,
+    );
+    _controller.value = TextEditingValue(
+      text: newText,
+      selection: TextSelection.collapsed(
+        offset: selection.start.clamp(0, currentText.length) + text.length,
+      ),
+    );
+  }
+
+  void insertFilePath(String path) {
+    _insertText(path);
+    _focusNode.requestFocus();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    final p = Theme.of(context).extension<ThemePalette>()!;
+    final providerType = ref.watch(sttProviderTypeProvider);
+    final sttAvailable = ref.watch(sttAvailableProvider).valueOrNull ?? false;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: p.bgElevated,
+        border: Border(top: BorderSide(color: p.border, width: 0.5)),
+      ),
+      padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            controller: _controller,
+            focusNode: _focusNode,
+            style: TextStyle(color: p.fg, fontSize: 15),
+            decoration: InputDecoration(
+              hintText: l.composer_placeholder,
+              hintStyle: TextStyle(color: p.fgTertiary),
+              filled: true,
+              fillColor: p.surface,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide.none,
+              ),
+              isDense: true,
+            ),
+            minLines: 1,
+            maxLines: 4,
+            textInputAction: TextInputAction.newline,
+            onSubmitted: (_) => _send(),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              _CircleButton(
+                icon: Icons.add,
+                color: p.fgSecondary,
+                bgColor: p.surface,
+                onTap: widget.onAttach,
+              ),
+              const SizedBox(width: 8),
+              _CircleButton(
+                icon: Icons.close,
+                color: p.fgSecondary,
+                bgColor: p.surface,
+                onTap: widget.onClose,
+              ),
+              const SizedBox(width: 8),
+              _CircleButton(
+                icon: Icons.keyboard_hide,
+                color: p.fgSecondary,
+                bgColor: p.surface,
+                onTap: () => FocusScope.of(context).unfocus(),
+              ),
+              const Spacer(),
+              if (sttAvailable)
+                _buildMicButton(p, providerType),
+              const SizedBox(width: 8),
+              _CircleButton(
+                icon: Icons.arrow_upward,
+                color: Colors.white,
+                bgColor: p.accent,
+                onTap: _send,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMicButton(ThemePalette p, SttProviderType providerType) {
+    final button = _CircleButton(
+      icon: _isListening ? Icons.mic : Icons.mic_none,
+      color: _isListening ? Colors.white : p.fgSecondary,
+      bgColor: _isListening ? p.accent : p.surface,
+      onTap: providerType == SttProviderType.volcengine ? null : _toggleSpeech,
+    );
+
+    if (providerType == SttProviderType.volcengine) {
+      return GestureDetector(
+        onLongPressStart: (_) => _onLongPressStart(),
+        onLongPressEnd: (_) => _onLongPressEnd(),
+        child: button,
+      );
+    }
+
+    return button;
+  }
+}
+
+class _CircleButton extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  final Color bgColor;
+  final VoidCallback? onTap;
+
+  const _CircleButton({
+    required this.icon,
+    required this.color,
+    required this.bgColor,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 34,
+        height: 34,
+        decoration: BoxDecoration(
+          color: bgColor,
+          shape: BoxShape.circle,
+        ),
+        alignment: Alignment.center,
+        child: Icon(icon, size: 18, color: color),
+      ),
+    );
+  }
+}

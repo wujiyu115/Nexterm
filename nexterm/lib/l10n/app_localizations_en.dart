@@ -1910,4 +1910,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settings_sttNotConfigured => 'Not configured';
+
+  @override
+  String get composer_placeholder => 'Type something...';
+
+  @override
+  String get composer_send => 'Send';
+
+  @override
+  String get composer_attachTitle => 'Add Attachment';
+
+  @override
+  String get composer_attachCamera => 'Camera';
+
+  @override
+  String get composer_attachCameraHint => 'Take a new photo';
+
+  @override
+  String get composer_attachPhotos => 'Photos & Videos';
+
+  @override
+  String get composer_attachPhotosHint => 'Choose photos and videos';
+
+  @override
+  String get composer_attachFiles => 'Files';
+
+  @override
+  String get composer_attachFilesHint => 'Upload files to host';
 }

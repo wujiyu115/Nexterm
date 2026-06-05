@@ -641,5 +641,15 @@
   "settings_sttCredentialsSaved": "Credentials saved",
   "settings_sttEditCredential": "Edit",
   "settings_sttConfigured": "Configured",
-  "settings_sttNotConfigured": "Not configured"
+  "settings_sttNotConfigured": "Not configured",
+
+  "composer_placeholder": "Type something...",
+  "composer_send": "Send",
+  "composer_attachTitle": "Add Attachment",
+  "composer_attachCamera": "Camera",
+  "composer_attachCameraHint": "Take a new photo",
+  "composer_attachPhotos": "Photos & Videos",
+  "composer_attachPhotosHint": "Choose photos and videos",
+  "composer_attachFiles": "Files",
+  "composer_attachFilesHint": "Upload files to host"
   }
