@@ -42,6 +42,7 @@ class MonitorNotifier extends StateNotifier<MonitorState> {
   MonitorNotifier() : super(const MonitorState(isConnecting: true));
 
   Future<void> start(SSHClient client) async {
+    _subscription?.cancel();
     _service?.dispose();
     _service = SystemMonitorService(client);
 
@@ -49,6 +50,7 @@ class MonitorNotifier extends StateNotifier<MonitorState> {
 
     _subscription = _service!.snapshots.listen(
       (snapshot) {
+        if (!mounted) return;
         _buffer.addLast(snapshot);
         while (_buffer.length > maxHistory) {
           _buffer.removeFirst();
@@ -60,6 +62,7 @@ class MonitorNotifier extends StateNotifier<MonitorState> {
         );
       },
       onError: (e) {
+        if (!mounted) return;
         state = state.copyWith(error: () => e.toString(), isConnecting: false);
       },
     );
@@ -78,8 +81,6 @@ class MonitorNotifier extends StateNotifier<MonitorState> {
 final monitorProvider =
     StateNotifierProvider.autoDispose.family<MonitorNotifier, MonitorState, String>(
   (ref, sessionId) {
-    final notifier = MonitorNotifier();
-    ref.onDispose(() => notifier.dispose());
-    return notifier;
+    return MonitorNotifier();
   },
 );
