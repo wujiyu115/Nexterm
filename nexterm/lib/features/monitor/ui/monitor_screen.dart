@@ -21,10 +21,11 @@ class _MonitorScreenState extends ConsumerState<MonitorScreen> {
   @override
   void initState() {
     super.initState();
-    _startMonitoring();
+    Future.microtask(_startMonitoring);
   }
 
   void _startMonitoring() {
+    if (!mounted) return;
     final sshService = ref.read(sshServiceProvider);
     final client = sshService.getClient(widget.sessionId);
     if (client != null) {
