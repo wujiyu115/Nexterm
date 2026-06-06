@@ -1999,4 +1999,92 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get gesture_actionNone => '无';
+
+  @override
+  String get settings_sectionNotifications => '通知';
+
+  @override
+  String get settings_notifyBell => '终端响铃通知';
+
+  @override
+  String get settings_notifyClaude => 'Claude CLI 通知';
+
+  @override
+  String get settings_notifyClaudeStop => '任务完成';
+
+  @override
+  String get settings_notifyClaudePermission => '需要授权';
+
+  @override
+  String get settings_notifyClaudeFailure => '任务失败';
+
+  @override
+  String get settings_notifyBackgroundOnly => '仅后台通知';
+
+  @override
+  String get settings_notifyBackgroundOnlyHint => '仅在应用处于后台时发送通知';
+
+  @override
+  String get settings_notifySound => '通知声音';
+
+  @override
+  String get settings_remoteNotify => '远程推送通知';
+
+  @override
+  String get settings_remoteNotifyHint => '配置远程推送后优先使用推送，不再通过终端通知';
+
+  @override
+  String get settings_remoteNotifyDisabled => '未启用';
+
+  @override
+  String get settings_configureRemote => '配置远程服务器';
+
+  @override
+  String get settings_configureRemoteHint => '为活跃的SSH会话部署通知脚本';
+
+  @override
+  String get settings_configured => '配置成功';
+
+  @override
+  String get settings_alreadyConfigured => '已配置过';
+
+  @override
+  String get settings_configuring => '配置中...';
+
+  @override
+  String settings_configureFailed(String error) {
+    return '配置失败: $error';
+  }
+
+  @override
+  String get settings_noActiveSessions => '没有活跃的SSH会话';
+
+  @override
+  String get settings_selectRemoteProvider => '选择推送服务';
+
+  @override
+  String get settings_barkUrl => 'Bark URL';
+
+  @override
+  String get settings_barkUrlHint => 'https://api.day.app/YOUR_KEY';
+
+  @override
+  String get terminal_configureNotify => '配置远程通知';
+
+  @override
+  String get settings_cliNotInstalled => '未安装 Claude CLI';
+
+  @override
+  String get settings_tapToConfigure => '点击以部署通知脚本';
+
+  @override
+  String get settings_testPush => '测试推送';
+
+  @override
+  String get settings_testPushSuccess => '推送成功';
+
+  @override
+  String settings_testPushFailed(String error) {
+    return '推送失败: $error';
+  }
 }

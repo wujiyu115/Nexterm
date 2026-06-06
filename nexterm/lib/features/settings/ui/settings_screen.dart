@@ -17,6 +17,7 @@ import 'package:nexterm/features/terminal/ui/gesture_settings_screen.dart';
 import 'package:nexterm/features/settings/utils/ssh_config_parser.dart';
 import 'package:nexterm/features/sync/providers/auth_provider.dart';
 import 'package:nexterm/shared/widgets/section_label.dart';
+import 'package:nexterm/features/terminal/services/claude_config_service.dart';
 import 'package:file_picker/file_picker.dart';
 import 'dart:io';
 
@@ -95,6 +96,88 @@ class SettingsScreen extends ConsumerWidget {
             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const GestureSettingsScreen())),
           ),
 
+          SectionLabel(title: l.settings_sectionNotifications),
+          SwitchListTile(
+            secondary: const Icon(Icons.notifications_outlined),
+            title: Text(l.settings_notifyBell),
+            value: settingsNotifier.getBool(SettingsKeys.notifyBellEnabled, defaultValue: true),
+            onChanged: (v) => settingsNotifier.set(SettingsKeys.notifyBellEnabled, v.toString()),
+          ),
+          SwitchListTile(
+            secondary: const Icon(Icons.smart_toy_outlined),
+            title: Text(l.settings_notifyClaude),
+            value: settingsNotifier.getBool(SettingsKeys.notifyClaudeEnabled, defaultValue: true),
+            onChanged: (v) => settingsNotifier.set(SettingsKeys.notifyClaudeEnabled, v.toString()),
+          ),
+          if (settingsNotifier.getBool(SettingsKeys.notifyClaudeEnabled, defaultValue: true)) ...[
+            Padding(
+              padding: const EdgeInsets.only(left: 32),
+              child: SwitchListTile(
+                secondary: const Icon(Icons.check_circle_outline),
+                title: Text(l.settings_notifyClaudeStop),
+                value: settingsNotifier.getBool(SettingsKeys.notifyClaudeStop, defaultValue: true),
+                onChanged: (v) => settingsNotifier.set(SettingsKeys.notifyClaudeStop, v.toString()),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 32),
+              child: SwitchListTile(
+                secondary: const Icon(Icons.warning_amber_outlined),
+                title: Text(l.settings_notifyClaudePermission),
+                value: settingsNotifier.getBool(SettingsKeys.notifyClaudePermission, defaultValue: true),
+                onChanged: (v) => settingsNotifier.set(SettingsKeys.notifyClaudePermission, v.toString()),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 32),
+              child: SwitchListTile(
+                secondary: const Icon(Icons.error_outline),
+                title: Text(l.settings_notifyClaudeFailure),
+                value: settingsNotifier.getBool(SettingsKeys.notifyClaudeFailure, defaultValue: true),
+                onChanged: (v) => settingsNotifier.set(SettingsKeys.notifyClaudeFailure, v.toString()),
+              ),
+            ),
+          ],
+          SwitchListTile(
+            secondary: const Icon(Icons.visibility_off_outlined),
+            title: Text(l.settings_notifyBackgroundOnly),
+            subtitle: Text(l.settings_notifyBackgroundOnlyHint),
+            value: settingsNotifier.getBool(SettingsKeys.notifyBackgroundOnly, defaultValue: true),
+            onChanged: (v) => settingsNotifier.set(SettingsKeys.notifyBackgroundOnly, v.toString()),
+          ),
+          SwitchListTile(
+            secondary: const Icon(Icons.volume_up_outlined),
+            title: Text(l.settings_notifySound),
+            value: settingsNotifier.getBool(SettingsKeys.notifySoundEnabled, defaultValue: true),
+            onChanged: (v) => settingsNotifier.set(SettingsKeys.notifySoundEnabled, v.toString()),
+          ),
+          const Divider(indent: 16, endIndent: 16),
+          ListTile(
+            leading: const Icon(Icons.cloud_upload_outlined),
+            title: Text(l.settings_remoteNotify),
+            subtitle: Text(_remoteProviderLabel(settings, l)),
+            onTap: () => _showRemoteProviderPicker(context, ref),
+          ),
+          if (RemoteNotifyRegistry.byId(settings[SettingsKeys.remoteNotifyProvider] ?? '') case final activeProvider?) ...[
+            for (final field in activeProvider.configFields)
+              Padding(
+                padding: const EdgeInsets.only(left: 32),
+                child: ListTile(
+                  leading: const Icon(Icons.link_outlined),
+                  title: Text(field.label),
+                  subtitle: Text(
+                    settings['remote_notify_${activeProvider.id}_${field.key}']?.isNotEmpty == true
+                        ? (field.isSecret ? '••••••••' : settings['remote_notify_${activeProvider.id}_${field.key}']!)
+                        : field.hint,
+                  ),
+                  onTap: () => _showProviderFieldEditor(context, ref, activeProvider, field),
+                ),
+              ),
+            Padding(
+              padding: const EdgeInsets.only(left: 32),
+              child: _TestPushTile(provider: activeProvider, settingsMap: settings),
+            ),
+          ],
           const SttSettingsSection(),
           ListTile(
             leading: const Icon(Icons.mic_outlined),
@@ -223,6 +306,83 @@ class SettingsScreen extends ConsumerWidget {
     if (locale.languageCode == 'zh') return l.settings_languageChinese;
     if (locale.languageCode == 'en') return l.settings_languageEnglish;
     return l.settings_languageSystem;
+  }
+
+  // ---------- notification helpers ----------
+
+  static String _remoteProviderLabel(Map<String, String> settings, AppLocalizations l) {
+    final id = settings[SettingsKeys.remoteNotifyProvider] ?? '';
+    if (id.isEmpty) return l.settings_remoteNotifyDisabled;
+    final provider = RemoteNotifyRegistry.byId(id);
+    return provider?.displayName ?? id;
+  }
+
+  void _showRemoteProviderPicker(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
+    final notifier = ref.read(settingsNotifierProvider.notifier);
+    final current = ref.read(settingsNotifierProvider)[SettingsKeys.remoteNotifyProvider] ?? '';
+
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => SimpleDialog(
+        title: Text(l.settings_selectRemoteProvider),
+        children: [
+          RadioGroup<String>(
+            groupValue: current,
+            onChanged: (v) {
+              if (v != null) {
+                notifier.set(SettingsKeys.remoteNotifyProvider, v);
+                Navigator.of(ctx).pop();
+              }
+            },
+            child: Column(
+              children: [
+                RadioListTile<String>(
+                  title: Text(l.settings_remoteNotifyDisabled),
+                  value: '',
+                ),
+                for (final provider in RemoteNotifyRegistry.providers)
+                  RadioListTile<String>(
+                    title: Text(provider.displayName),
+                    value: provider.id,
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showProviderFieldEditor(BuildContext context, WidgetRef ref, RemoteNotifyProvider provider, NotifyConfigField field) {
+    final l = AppLocalizations.of(context)!;
+    final notifier = ref.read(settingsNotifierProvider.notifier);
+    final settingsKey = 'remote_notify_${provider.id}_${field.key}';
+    final current = ref.read(settingsNotifierProvider)[settingsKey] ?? '';
+    final controller = TextEditingController(text: current);
+
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(field.label),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          obscureText: field.isSecret,
+          decoration: InputDecoration(hintText: field.hint),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(ctx).pop(), child: Text(l.common_cancel)),
+          FilledButton(
+            onPressed: () {
+              notifier.set(settingsKey, controller.text.trim());
+              Navigator.of(ctx).pop();
+            },
+            child: Text(l.common_confirm),
+          ),
+        ],
+      ),
+    );
   }
 
   // ---------- pickers / dialogs ----------
@@ -1002,6 +1162,55 @@ class _LoginDialogState extends State<_LoginDialog> {
               : Text(_isRegister ? l.settings_registerButton : l.settings_loginButton),
         ),
       ],
+    );
+  }
+}
+
+// ---------- Test push tile ----------
+
+class _TestPushTile extends StatefulWidget {
+  final RemoteNotifyProvider provider;
+  final Map<String, String> settingsMap;
+  const _TestPushTile({required this.provider, required this.settingsMap});
+
+  @override
+  State<_TestPushTile> createState() => _TestPushTileState();
+}
+
+class _TestPushTileState extends State<_TestPushTile> {
+  bool _testing = false;
+  String? _result;
+
+  Future<void> _test() async {
+    setState(() { _testing = true; _result = null; });
+    final config = <String, String>{};
+    for (final field in widget.provider.configFields) {
+      config[field.key] = widget.settingsMap['remote_notify_${widget.provider.id}_${field.key}'] ?? '';
+    }
+    final error = await widget.provider.testPush(config);
+    if (!mounted) return;
+    final l = AppLocalizations.of(context)!;
+    setState(() {
+      _testing = false;
+      _result = error == null ? l.settings_testPushSuccess : l.settings_testPushFailed(error);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    return ListTile(
+      leading: _testing
+          ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2))
+          : const Icon(Icons.send_outlined),
+      title: Text(l.settings_testPush),
+      subtitle: _result != null ? Text(
+        _result!,
+        style: TextStyle(
+          color: _result == l.settings_testPushSuccess ? Colors.green : Theme.of(context).colorScheme.error,
+        ),
+      ) : null,
+      onTap: _testing ? null : _test,
     );
   }
 }

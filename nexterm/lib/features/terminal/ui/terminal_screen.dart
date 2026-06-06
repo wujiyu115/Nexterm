@@ -26,6 +26,8 @@ import 'package:nexterm/features/forwarding/ui/port_detection_sheet.dart';
 import 'package:nexterm/features/multiplexer/ui/mux_session_sheet.dart';
 import 'package:nexterm/features/forwarding/ui/widgets/web_preview_content.dart';
 import 'package:nexterm/domain/entities/enums.dart';
+import 'package:nexterm/features/settings/providers/settings_provider.dart';
+import 'package:nexterm/features/terminal/services/claude_config_service.dart';
 import 'package:nexterm/shared/widgets/dashed_divider.dart';
 
 class TerminalScreen extends ConsumerStatefulWidget {
@@ -457,6 +459,13 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
     );
   }
 
+  void _showConfigureNotifyDialog() {
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => _ConfigureRemoteNotifyDialog(parentRef: ref),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final tabManager = ref.watch(tabManagerProvider);
@@ -498,6 +507,7 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
             onOpenWeb: activeTab != null && activeTab.connectionType == ConnectionType.ssh ? _openWebPreview : null,
             onOpenMux: activeTab != null && activeTab.connectionType == ConnectionType.ssh ? _showMuxSheet : null,
             onOpenMonitor: activeTab != null && activeTab.connectionType == ConnectionType.ssh ? _openMonitor : null,
+            onConfigureNotify: activeTab != null && activeTab.connectionType == ConnectionType.ssh ? _showConfigureNotifyDialog : null,
             onGoToHosts: () {
               if (context.canPop()) context.pop();
             },
@@ -758,5 +768,133 @@ class _HostPickerList extends ConsumerWidget {
         );
       },
     );
+  }
+}
+
+// ---------- Configure remote notifications dialog ----------
+
+class _ConfigureRemoteNotifyDialog extends ConsumerStatefulWidget {
+  final WidgetRef parentRef;
+  const _ConfigureRemoteNotifyDialog({required this.parentRef});
+
+  @override
+  ConsumerState<_ConfigureRemoteNotifyDialog> createState() => _ConfigureRemoteNotifyDialogState();
+}
+
+class _ConfigureRemoteNotifyDialogState extends ConsumerState<_ConfigureRemoteNotifyDialog> {
+  final Map<String, String> _status = {};
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    final p = Theme.of(context).extension<ThemePalette>()!;
+    final tabManager = widget.parentRef.read(tabManagerProvider);
+    final sshService = widget.parentRef.read(sshServiceProvider);
+
+    final sshTabs = tabManager.tabs
+        .where((t) => t.connectionType == ConnectionType.ssh && t.sessionId != null)
+        .toList();
+
+    return AlertDialog(
+      title: Text(l.settings_configureRemote),
+      content: SizedBox(
+        width: double.maxFinite,
+        child: sshTabs.isEmpty
+            ? Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                child: Text(l.settings_noActiveSessions, style: TextStyle(color: p.fgSecondary)),
+              )
+            : Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Text(
+                      l.settings_configureRemoteHint,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: p.fgSecondary),
+                    ),
+                  ),
+                  Flexible(
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: sshTabs.length,
+                      itemBuilder: (ctx, i) {
+                        final tab = sshTabs[i];
+                        final status = _status[tab.id];
+                        return ListTile(
+                          leading: const Icon(Icons.dns_outlined),
+                          title: Text(tab.title),
+                          trailing: status == null
+                              ? const Icon(Icons.chevron_right)
+                              : status == 'configuring'
+                                  ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                                  : Icon(
+                                      status == 'configured' || status == 'alreadyConfigured'
+                                          ? Icons.check_circle
+                                          : Icons.error,
+                                      color: status == 'configured' || status == 'alreadyConfigured'
+                                          ? Colors.green
+                                          : Theme.of(context).colorScheme.error,
+                                    ),
+                          subtitle: status == 'configured'
+                              ? Text(l.settings_configured)
+                              : status == 'alreadyConfigured'
+                                  ? Text(l.settings_alreadyConfigured)
+                                  : status == 'cliNotInstalled'
+                                      ? Text(l.settings_cliNotInstalled)
+                                      : status == null
+                                          ? Text(l.settings_tapToConfigure, style: TextStyle(color: p.fgSecondary))
+                                          : null,
+                          onTap: status == 'configuring' ? null : () => _configure(tab, sshService, l),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(l.common_confirm),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _configure(TerminalTab tab, dynamic sshService, AppLocalizations l) async {
+    if (tab.sessionId == null) return;
+    final client = sshService.getClient(tab.sessionId!);
+    if (client == null) return;
+
+    setState(() => _status[tab.id] = 'configuring');
+
+    final settings = widget.parentRef.read(settingsNotifierProvider);
+    final providerId = settings[SettingsKeys.remoteNotifyProvider] ?? '';
+    final provider = RemoteNotifyRegistry.byId(providerId);
+    final providerConfig = <String, String>{};
+    if (provider != null) {
+      for (final field in provider.configFields) {
+        final key = 'remote_notify_${provider.id}_${field.key}';
+        providerConfig[field.key] = settings[key] ?? '';
+      }
+    }
+
+    final result = await ClaudeConfigService.configureRemote(
+      client,
+      provider: provider,
+      providerConfig: providerConfig,
+    );
+
+    if (!mounted) return;
+    setState(() {
+      _status[tab.id] = switch (result) {
+        ConfigResult.configured => 'configured',
+        ConfigResult.alreadyConfigured => 'alreadyConfigured',
+        ConfigResult.cliNotInstalled => 'cliNotInstalled',
+        ConfigResult.error => 'error',
+      };
+    });
   }
 }

@@ -21,6 +21,7 @@ import 'package:nexterm/features/terminal/providers/terminal_scrollback_provider
 import 'package:nexterm/features/terminal/providers/toolbar_modifier_provider.dart';
 import 'package:nexterm/features/multiplexer/services/tmux_automation_service.dart';
 import 'package:nexterm/features/terminal/services/reconnect_service.dart';
+import 'package:nexterm/features/settings/providers/settings_provider.dart';
 import 'package:nexterm/features/terminal/services/ssh_service.dart';
 import 'package:nexterm/features/terminal/ui/tab_manager.dart';
 import 'package:uuid/uuid.dart';
@@ -81,10 +82,53 @@ class TerminalActions {
   ReconnectService get _reconnectService => _ref.read(reconnectServiceProvider);
 
   void _onBell(String tabTitle) {
-    final lifecycle = _ref.read(appLifecycleProvider);
-    if (lifecycle != AppLifecycleState.resumed) {
-      NotificationService.instance.showBellNotification(tabTitle);
+    final settings = _ref.read(settingsNotifierProvider.notifier);
+    if (!settings.getBool(SettingsKeys.notifyBellEnabled, defaultValue: true)) return;
+    final backgroundOnly = settings.getBool(SettingsKeys.notifyBackgroundOnly, defaultValue: true);
+    if (backgroundOnly) {
+      final lifecycle = _ref.read(appLifecycleProvider);
+      if (lifecycle == AppLifecycleState.resumed) return;
     }
+    final playSound = settings.getBool(SettingsKeys.notifySoundEnabled, defaultValue: true);
+    NotificationService.instance.showBellNotification(tabTitle, playSound: playSound);
+  }
+
+  void _handleClaudeNotification(List<String> args, String tabTitle) {
+    final settings = _ref.read(settingsNotifierProvider.notifier);
+    if (!settings.getBool(SettingsKeys.notifyClaudeEnabled, defaultValue: true)) return;
+
+    final raw = args.join(';');
+    Map<String, dynamic> payload;
+    try {
+      payload = json.decode(raw) as Map<String, dynamic>;
+    } catch (_) {
+      return;
+    }
+
+    final event = payload['event'] as String? ?? '';
+    final cwd = payload['cwd'] as String?;
+
+    final eventEnabled = switch (event) {
+      'stop' => settings.getBool(SettingsKeys.notifyClaudeStop, defaultValue: true),
+      'permission_request' => settings.getBool(SettingsKeys.notifyClaudePermission, defaultValue: true),
+      'stop_failure' => settings.getBool(SettingsKeys.notifyClaudeFailure, defaultValue: true),
+      _ => true,
+    };
+    if (!eventEnabled) return;
+
+    final backgroundOnly = settings.getBool(SettingsKeys.notifyBackgroundOnly, defaultValue: true);
+    if (backgroundOnly) {
+      final lifecycle = _ref.read(appLifecycleProvider);
+      if (lifecycle == AppLifecycleState.resumed) return;
+    }
+
+    final playSound = settings.getBool(SettingsKeys.notifySoundEnabled, defaultValue: true);
+    NotificationService.instance.showClaudeNotification(
+      event: event,
+      tabTitle: tabTitle,
+      cwd: cwd,
+      playSound: playSound,
+    );
   }
 
   void _writeWithModifiers(String sessionId, String data) {
@@ -153,6 +197,8 @@ class TerminalActions {
           final decoded = utf8.decode(base64Decode(raw));
           Clipboard.setData(ClipboardData(text: decoded));
         } catch (_) {}
+      } else if (code == '7770' && args.isNotEmpty) {
+        _handleClaudeNotification(args, tab.title);
       }
     };
     _ref.read(terminalControllersProvider.notifier).update(

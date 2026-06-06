@@ -2041,4 +2041,95 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get gesture_actionNone => 'None';
+
+  @override
+  String get settings_sectionNotifications => 'Notifications';
+
+  @override
+  String get settings_notifyBell => 'Terminal Bell Notifications';
+
+  @override
+  String get settings_notifyClaude => 'Claude CLI Notifications';
+
+  @override
+  String get settings_notifyClaudeStop => 'Task Completed';
+
+  @override
+  String get settings_notifyClaudePermission => 'Permission Required';
+
+  @override
+  String get settings_notifyClaudeFailure => 'Task Failed';
+
+  @override
+  String get settings_notifyBackgroundOnly => 'Background Only';
+
+  @override
+  String get settings_notifyBackgroundOnlyHint =>
+      'Only send notifications when the app is in the background';
+
+  @override
+  String get settings_notifySound => 'Notification Sound';
+
+  @override
+  String get settings_remoteNotify => 'Remote Push Notification';
+
+  @override
+  String get settings_remoteNotifyHint =>
+      'When configured, remote push takes priority over terminal notification';
+
+  @override
+  String get settings_remoteNotifyDisabled => 'Disabled';
+
+  @override
+  String get settings_configureRemote => 'Configure Remote Server';
+
+  @override
+  String get settings_configureRemoteHint =>
+      'Deploy notification script to active SSH sessions';
+
+  @override
+  String get settings_configured => 'Configured';
+
+  @override
+  String get settings_alreadyConfigured => 'Already Configured';
+
+  @override
+  String get settings_configuring => 'Configuring...';
+
+  @override
+  String settings_configureFailed(String error) {
+    return 'Configuration failed: $error';
+  }
+
+  @override
+  String get settings_noActiveSessions => 'No active SSH sessions';
+
+  @override
+  String get settings_selectRemoteProvider => 'Select Push Provider';
+
+  @override
+  String get settings_barkUrl => 'Bark URL';
+
+  @override
+  String get settings_barkUrlHint => 'https://api.day.app/YOUR_KEY';
+
+  @override
+  String get terminal_configureNotify => 'Configure Notifications';
+
+  @override
+  String get settings_cliNotInstalled => 'Claude CLI not installed';
+
+  @override
+  String get settings_tapToConfigure => 'Tap to deploy notification script';
+
+  @override
+  String get settings_testPush => 'Test Push';
+
+  @override
+  String get settings_testPushSuccess => 'Push successful';
+
+  @override
+  String settings_testPushFailed(String error) {
+    return 'Push failed: $error';
+  }
 }

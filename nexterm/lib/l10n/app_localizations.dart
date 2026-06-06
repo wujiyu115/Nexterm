@@ -3883,6 +3883,174 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'无'**
   String get gesture_actionNone;
+
+  /// No description provided for @settings_sectionNotifications.
+  ///
+  /// In zh, this message translates to:
+  /// **'通知'**
+  String get settings_sectionNotifications;
+
+  /// No description provided for @settings_notifyBell.
+  ///
+  /// In zh, this message translates to:
+  /// **'终端响铃通知'**
+  String get settings_notifyBell;
+
+  /// No description provided for @settings_notifyClaude.
+  ///
+  /// In zh, this message translates to:
+  /// **'Claude CLI 通知'**
+  String get settings_notifyClaude;
+
+  /// No description provided for @settings_notifyClaudeStop.
+  ///
+  /// In zh, this message translates to:
+  /// **'任务完成'**
+  String get settings_notifyClaudeStop;
+
+  /// No description provided for @settings_notifyClaudePermission.
+  ///
+  /// In zh, this message translates to:
+  /// **'需要授权'**
+  String get settings_notifyClaudePermission;
+
+  /// No description provided for @settings_notifyClaudeFailure.
+  ///
+  /// In zh, this message translates to:
+  /// **'任务失败'**
+  String get settings_notifyClaudeFailure;
+
+  /// No description provided for @settings_notifyBackgroundOnly.
+  ///
+  /// In zh, this message translates to:
+  /// **'仅后台通知'**
+  String get settings_notifyBackgroundOnly;
+
+  /// No description provided for @settings_notifyBackgroundOnlyHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'仅在应用处于后台时发送通知'**
+  String get settings_notifyBackgroundOnlyHint;
+
+  /// No description provided for @settings_notifySound.
+  ///
+  /// In zh, this message translates to:
+  /// **'通知声音'**
+  String get settings_notifySound;
+
+  /// No description provided for @settings_remoteNotify.
+  ///
+  /// In zh, this message translates to:
+  /// **'远程推送通知'**
+  String get settings_remoteNotify;
+
+  /// No description provided for @settings_remoteNotifyHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'配置远程推送后优先使用推送，不再通过终端通知'**
+  String get settings_remoteNotifyHint;
+
+  /// No description provided for @settings_remoteNotifyDisabled.
+  ///
+  /// In zh, this message translates to:
+  /// **'未启用'**
+  String get settings_remoteNotifyDisabled;
+
+  /// No description provided for @settings_configureRemote.
+  ///
+  /// In zh, this message translates to:
+  /// **'配置远程服务器'**
+  String get settings_configureRemote;
+
+  /// No description provided for @settings_configureRemoteHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'为活跃的SSH会话部署通知脚本'**
+  String get settings_configureRemoteHint;
+
+  /// No description provided for @settings_configured.
+  ///
+  /// In zh, this message translates to:
+  /// **'配置成功'**
+  String get settings_configured;
+
+  /// No description provided for @settings_alreadyConfigured.
+  ///
+  /// In zh, this message translates to:
+  /// **'已配置过'**
+  String get settings_alreadyConfigured;
+
+  /// No description provided for @settings_configuring.
+  ///
+  /// In zh, this message translates to:
+  /// **'配置中...'**
+  String get settings_configuring;
+
+  /// No description provided for @settings_configureFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'配置失败: {error}'**
+  String settings_configureFailed(String error);
+
+  /// No description provided for @settings_noActiveSessions.
+  ///
+  /// In zh, this message translates to:
+  /// **'没有活跃的SSH会话'**
+  String get settings_noActiveSessions;
+
+  /// No description provided for @settings_selectRemoteProvider.
+  ///
+  /// In zh, this message translates to:
+  /// **'选择推送服务'**
+  String get settings_selectRemoteProvider;
+
+  /// No description provided for @settings_barkUrl.
+  ///
+  /// In zh, this message translates to:
+  /// **'Bark URL'**
+  String get settings_barkUrl;
+
+  /// No description provided for @settings_barkUrlHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'https://api.day.app/YOUR_KEY'**
+  String get settings_barkUrlHint;
+
+  /// No description provided for @terminal_configureNotify.
+  ///
+  /// In zh, this message translates to:
+  /// **'配置远程通知'**
+  String get terminal_configureNotify;
+
+  /// No description provided for @settings_cliNotInstalled.
+  ///
+  /// In zh, this message translates to:
+  /// **'未安装 Claude CLI'**
+  String get settings_cliNotInstalled;
+
+  /// No description provided for @settings_tapToConfigure.
+  ///
+  /// In zh, this message translates to:
+  /// **'点击以部署通知脚本'**
+  String get settings_tapToConfigure;
+
+  /// No description provided for @settings_testPush.
+  ///
+  /// In zh, this message translates to:
+  /// **'测试推送'**
+  String get settings_testPush;
+
+  /// No description provided for @settings_testPushSuccess.
+  ///
+  /// In zh, this message translates to:
+  /// **'推送成功'**
+  String get settings_testPushSuccess;
+
+  /// No description provided for @settings_testPushFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'推送失败: {error}'**
+  String settings_testPushFailed(String error);
 }
 
 class _AppLocalizationsDelegate

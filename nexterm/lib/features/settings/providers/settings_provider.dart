@@ -15,6 +15,15 @@ class SettingsKeys {
   static const terminalFontFamily = 'terminal_font_family';
   static const voiceInputLocale = 'voice_input_locale';
   static const sttProvider = 'stt_provider';
+  static const notifyBellEnabled = 'notify_bell_enabled';
+  static const notifyClaudeEnabled = 'notify_claude_enabled';
+  static const notifyClaudeStop = 'notify_claude_stop';
+  static const notifyClaudePermission = 'notify_claude_permission';
+  static const notifyClaudeFailure = 'notify_claude_failure';
+  static const notifyBackgroundOnly = 'notify_background_only';
+  static const notifySoundEnabled = 'notify_sound_enabled';
+  static const remoteNotifyProvider = 'remote_notify_provider';
+  static const remoteNotifyBarkUrl = 'remote_notify_bark_url';
 }
 
 final settingsStreamProvider = StreamProvider<Map<String, String>>((ref) {
