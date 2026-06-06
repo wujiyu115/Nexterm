@@ -19,6 +19,8 @@ class Hosts extends Table {
   DateTimeColumn get lastConnected => dateTime().nullable()();
   TextColumn get lastConnectionType => text().nullable()();
   IntColumn get sortOrder => integer().withDefault(const Constant(0))();
+  BoolColumn get useTmux => boolean().withDefault(const Constant(false))();
+  TextColumn get tmuxSessionName => text().nullable()();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
 

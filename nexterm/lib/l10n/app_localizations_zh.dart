@@ -276,6 +276,18 @@ class AppLocalizationsZh extends AppLocalizations {
   String get hostForm_sftpPathHint => '/home/user 或 /var/www';
 
   @override
+  String get hostForm_useTmux => '自动使用 Tmux';
+
+  @override
+  String get hostForm_useTmuxHint => '连接时自动创建或附加 tmux 会话';
+
+  @override
+  String get hostForm_tmuxSessionName => '会话名称';
+
+  @override
+  String get hostForm_tmuxSessionNameHint => '留空则自动生成 (nexterm-<主机名>)';
+
+  @override
   String get hostForm_startupModeCommand => '命令';
 
   @override

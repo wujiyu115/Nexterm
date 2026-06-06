@@ -19,6 +19,7 @@ import 'package:nexterm/features/snippets/utils/variable_parser.dart';
 import 'package:nexterm/features/terminal/providers/command_history_provider.dart';
 import 'package:nexterm/features/terminal/providers/terminal_scrollback_provider.dart';
 import 'package:nexterm/features/terminal/providers/toolbar_modifier_provider.dart';
+import 'package:nexterm/features/multiplexer/services/tmux_automation_service.dart';
 import 'package:nexterm/features/terminal/services/reconnect_service.dart';
 import 'package:nexterm/features/terminal/services/ssh_service.dart';
 import 'package:nexterm/features/terminal/ui/tab_manager.dart';
@@ -232,6 +233,22 @@ class TerminalActions {
                   onError: (_) => _tabManager.updateTabStatus(
                       tab.id, ConnectionStatus.error),
                 );
+                // Re-attach tmux on reconnect.
+                if (freshHost.useTmux) {
+                  final tmuxAuto = TmuxAutomationService();
+                  final sessionName = freshHost.tmuxSessionName ??
+                      TmuxAutomationService.defaultSessionName(freshHost.name);
+                  await Future.delayed(const Duration(milliseconds: 400));
+                  final client = _sshService.getClient(newSessionId);
+                  if (client != null) {
+                    final action = await tmuxAuto.determineAction(
+                        client: client, sessionName: sessionName);
+                    final cmd = tmuxAuto.commandFor(action);
+                    if (cmd.isNotEmpty) {
+                      _sshService.write(newSessionId, '$cmd\n');
+                    }
+                  }
+                }
                 return true;
               } catch (_) {
                 return false;
@@ -278,6 +295,30 @@ class TerminalActions {
         final lines = VariableParser.splitLines(startupCmd);
         for (final line in lines) {
           _sshService.write(sessionId, '$line\n');
+        }
+      }
+
+      // --- Tmux automation ---
+      if (host.useTmux) {
+        final tmuxAuto = TmuxAutomationService();
+        final sessionName = host.tmuxSessionName ??
+            TmuxAutomationService.defaultSessionName(host.name);
+        await Future.delayed(const Duration(milliseconds: 400));
+        final client = _sshService.getClient(sessionId);
+        if (client != null) {
+          final action =
+              await tmuxAuto.determineAction(client: client, sessionName: sessionName);
+          final cmd = tmuxAuto.commandFor(action);
+          if (cmd.isNotEmpty) {
+            _sshService.write(sessionId, '$cmd\n');
+          }
+          if (action is TmuxAttach && action.attachedCount > 0) {
+            terminal.write(
+                '\r\n\x1B[90m[tmux: session "${action.name}" has ${action.attachedCount} other client(s)]\x1B[0m\r\n');
+          } else if (action is TmuxNotInstalled) {
+            terminal.write(
+                '\r\n\x1B[33m[tmux not installed — using plain shell]\x1B[0m\r\n');
+          }
         }
       }
 

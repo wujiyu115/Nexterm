@@ -608,6 +608,18 @@ abstract class AppLocalizations {
   /// **'/home/user 或 /var/www'**
   String get hostForm_sftpPathHint;
 
+  /// No description provided for @hostForm_useTmux.
+  String get hostForm_useTmux;
+
+  /// No description provided for @hostForm_useTmuxHint.
+  String get hostForm_useTmuxHint;
+
+  /// No description provided for @hostForm_tmuxSessionName.
+  String get hostForm_tmuxSessionName;
+
+  /// No description provided for @hostForm_tmuxSessionNameHint.
+  String get hostForm_tmuxSessionNameHint;
+
   /// No description provided for @hostForm_startupModeCommand.
   ///
   /// In zh, this message translates to:

@@ -33,7 +33,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 11;
+  int get schemaVersion => 12;
 
   @override
   MigrationStrategy get migration {
@@ -52,6 +52,10 @@ class AppDatabase extends _$AppDatabase {
         if (from < 9) await m.createTable(smbConnections);
         if (from < 10) await m.addColumn(hosts, hosts.sftpPath);
         if (from < 11) await m.createTable(commandHistory);
+        if (from < 12) {
+          await m.addColumn(hosts, hosts.useTmux);
+          await m.addColumn(hosts, hosts.tmuxSessionName);
+        }
       },
     );
   }

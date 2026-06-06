@@ -215,6 +215,32 @@ class $HostsTable extends Hosts with TableInfo<$HostsTable, Host> {
     requiredDuringInsert: false,
     defaultValue: const Constant(0),
   );
+  static const VerificationMeta _useTmuxMeta = const VerificationMeta(
+    'useTmux',
+  );
+  @override
+  late final GeneratedColumn<bool> useTmux = GeneratedColumn<bool>(
+    'use_tmux',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("use_tmux" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _tmuxSessionNameMeta = const VerificationMeta(
+    'tmuxSessionName',
+  );
+  @override
+  late final GeneratedColumn<String> tmuxSessionName = GeneratedColumn<String>(
+    'tmux_session_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -259,6 +285,8 @@ class $HostsTable extends Hosts with TableInfo<$HostsTable, Host> {
     lastConnected,
     lastConnectionType,
     sortOrder,
+    useTmux,
+    tmuxSessionName,
     createdAt,
     updatedAt,
   ];
@@ -401,6 +429,21 @@ class $HostsTable extends Hosts with TableInfo<$HostsTable, Host> {
         sortOrder.isAcceptableOrUnknown(data['sort_order']!, _sortOrderMeta),
       );
     }
+    if (data.containsKey('use_tmux')) {
+      context.handle(
+        _useTmuxMeta,
+        useTmux.isAcceptableOrUnknown(data['use_tmux']!, _useTmuxMeta),
+      );
+    }
+    if (data.containsKey('tmux_session_name')) {
+      context.handle(
+        _tmuxSessionNameMeta,
+        tmuxSessionName.isAcceptableOrUnknown(
+          data['tmux_session_name']!,
+          _tmuxSessionNameMeta,
+        ),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -504,6 +547,15 @@ class $HostsTable extends Hosts with TableInfo<$HostsTable, Host> {
             DriftSqlType.int,
             data['${effectivePrefix}sort_order'],
           )!,
+      useTmux:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.bool,
+            data['${effectivePrefix}use_tmux'],
+          )!,
+      tmuxSessionName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}tmux_session_name'],
+      ),
       createdAt:
           attachedDatabase.typeMapping.read(
             DriftSqlType.dateTime,
@@ -542,6 +594,8 @@ class Host extends DataClass implements Insertable<Host> {
   final DateTime? lastConnected;
   final String? lastConnectionType;
   final int sortOrder;
+  final bool useTmux;
+  final String? tmuxSessionName;
   final DateTime createdAt;
   final DateTime updatedAt;
   const Host({
@@ -563,6 +617,8 @@ class Host extends DataClass implements Insertable<Host> {
     this.lastConnected,
     this.lastConnectionType,
     required this.sortOrder,
+    required this.useTmux,
+    this.tmuxSessionName,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -603,6 +659,10 @@ class Host extends DataClass implements Insertable<Host> {
       map['last_connection_type'] = Variable<String>(lastConnectionType);
     }
     map['sort_order'] = Variable<int>(sortOrder);
+    map['use_tmux'] = Variable<bool>(useTmux);
+    if (!nullToAbsent || tmuxSessionName != null) {
+      map['tmux_session_name'] = Variable<String>(tmuxSessionName);
+    }
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
@@ -648,6 +708,11 @@ class Host extends DataClass implements Insertable<Host> {
               ? const Value.absent()
               : Value(lastConnectionType),
       sortOrder: Value(sortOrder),
+      useTmux: Value(useTmux),
+      tmuxSessionName:
+          tmuxSessionName == null && nullToAbsent
+              ? const Value.absent()
+              : Value(tmuxSessionName),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
     );
@@ -679,6 +744,8 @@ class Host extends DataClass implements Insertable<Host> {
         json['lastConnectionType'],
       ),
       sortOrder: serializer.fromJson<int>(json['sortOrder']),
+      useTmux: serializer.fromJson<bool>(json['useTmux']),
+      tmuxSessionName: serializer.fromJson<String?>(json['tmuxSessionName']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
@@ -705,6 +772,8 @@ class Host extends DataClass implements Insertable<Host> {
       'lastConnected': serializer.toJson<DateTime?>(lastConnected),
       'lastConnectionType': serializer.toJson<String?>(lastConnectionType),
       'sortOrder': serializer.toJson<int>(sortOrder),
+      'useTmux': serializer.toJson<bool>(useTmux),
+      'tmuxSessionName': serializer.toJson<String?>(tmuxSessionName),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
@@ -729,6 +798,8 @@ class Host extends DataClass implements Insertable<Host> {
     Value<DateTime?> lastConnected = const Value.absent(),
     Value<String?> lastConnectionType = const Value.absent(),
     int? sortOrder,
+    bool? useTmux,
+    Value<String?> tmuxSessionName = const Value.absent(),
     DateTime? createdAt,
     DateTime? updatedAt,
   }) => Host(
@@ -758,6 +829,9 @@ class Host extends DataClass implements Insertable<Host> {
             ? lastConnectionType.value
             : this.lastConnectionType,
     sortOrder: sortOrder ?? this.sortOrder,
+    useTmux: useTmux ?? this.useTmux,
+    tmuxSessionName:
+        tmuxSessionName.present ? tmuxSessionName.value : this.tmuxSessionName,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
   );
@@ -795,6 +869,11 @@ class Host extends DataClass implements Insertable<Host> {
               ? data.lastConnectionType.value
               : this.lastConnectionType,
       sortOrder: data.sortOrder.present ? data.sortOrder.value : this.sortOrder,
+      useTmux: data.useTmux.present ? data.useTmux.value : this.useTmux,
+      tmuxSessionName:
+          data.tmuxSessionName.present
+              ? data.tmuxSessionName.value
+              : this.tmuxSessionName,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
@@ -821,6 +900,8 @@ class Host extends DataClass implements Insertable<Host> {
           ..write('lastConnected: $lastConnected, ')
           ..write('lastConnectionType: $lastConnectionType, ')
           ..write('sortOrder: $sortOrder, ')
+          ..write('useTmux: $useTmux, ')
+          ..write('tmuxSessionName: $tmuxSessionName, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -828,7 +909,7 @@ class Host extends DataClass implements Insertable<Host> {
   }
 
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     id,
     name,
     hostname,
@@ -847,9 +928,11 @@ class Host extends DataClass implements Insertable<Host> {
     lastConnected,
     lastConnectionType,
     sortOrder,
+    useTmux,
+    tmuxSessionName,
     createdAt,
     updatedAt,
-  );
+  ]);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -872,6 +955,8 @@ class Host extends DataClass implements Insertable<Host> {
           other.lastConnected == this.lastConnected &&
           other.lastConnectionType == this.lastConnectionType &&
           other.sortOrder == this.sortOrder &&
+          other.useTmux == this.useTmux &&
+          other.tmuxSessionName == this.tmuxSessionName &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
 }
@@ -895,6 +980,8 @@ class HostsCompanion extends UpdateCompanion<Host> {
   final Value<DateTime?> lastConnected;
   final Value<String?> lastConnectionType;
   final Value<int> sortOrder;
+  final Value<bool> useTmux;
+  final Value<String?> tmuxSessionName;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   final Value<int> rowid;
@@ -917,6 +1004,8 @@ class HostsCompanion extends UpdateCompanion<Host> {
     this.lastConnected = const Value.absent(),
     this.lastConnectionType = const Value.absent(),
     this.sortOrder = const Value.absent(),
+    this.useTmux = const Value.absent(),
+    this.tmuxSessionName = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -940,6 +1029,8 @@ class HostsCompanion extends UpdateCompanion<Host> {
     this.lastConnected = const Value.absent(),
     this.lastConnectionType = const Value.absent(),
     this.sortOrder = const Value.absent(),
+    this.useTmux = const Value.absent(),
+    this.tmuxSessionName = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -967,6 +1058,8 @@ class HostsCompanion extends UpdateCompanion<Host> {
     Expression<DateTime>? lastConnected,
     Expression<String>? lastConnectionType,
     Expression<int>? sortOrder,
+    Expression<bool>? useTmux,
+    Expression<String>? tmuxSessionName,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
@@ -991,6 +1084,8 @@ class HostsCompanion extends UpdateCompanion<Host> {
       if (lastConnectionType != null)
         'last_connection_type': lastConnectionType,
       if (sortOrder != null) 'sort_order': sortOrder,
+      if (useTmux != null) 'use_tmux': useTmux,
+      if (tmuxSessionName != null) 'tmux_session_name': tmuxSessionName,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
@@ -1016,6 +1111,8 @@ class HostsCompanion extends UpdateCompanion<Host> {
     Value<DateTime?>? lastConnected,
     Value<String?>? lastConnectionType,
     Value<int>? sortOrder,
+    Value<bool>? useTmux,
+    Value<String?>? tmuxSessionName,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
     Value<int>? rowid,
@@ -1039,6 +1136,8 @@ class HostsCompanion extends UpdateCompanion<Host> {
       lastConnected: lastConnected ?? this.lastConnected,
       lastConnectionType: lastConnectionType ?? this.lastConnectionType,
       sortOrder: sortOrder ?? this.sortOrder,
+      useTmux: useTmux ?? this.useTmux,
+      tmuxSessionName: tmuxSessionName ?? this.tmuxSessionName,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
@@ -1102,6 +1201,12 @@ class HostsCompanion extends UpdateCompanion<Host> {
     if (sortOrder.present) {
       map['sort_order'] = Variable<int>(sortOrder.value);
     }
+    if (useTmux.present) {
+      map['use_tmux'] = Variable<bool>(useTmux.value);
+    }
+    if (tmuxSessionName.present) {
+      map['tmux_session_name'] = Variable<String>(tmuxSessionName.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -1135,6 +1240,8 @@ class HostsCompanion extends UpdateCompanion<Host> {
           ..write('lastConnected: $lastConnected, ')
           ..write('lastConnectionType: $lastConnectionType, ')
           ..write('sortOrder: $sortOrder, ')
+          ..write('useTmux: $useTmux, ')
+          ..write('tmuxSessionName: $tmuxSessionName, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
@@ -5230,6 +5337,8 @@ typedef $$HostsTableCreateCompanionBuilder =
       Value<DateTime?> lastConnected,
       Value<String?> lastConnectionType,
       Value<int> sortOrder,
+      Value<bool> useTmux,
+      Value<String?> tmuxSessionName,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
       Value<int> rowid,
@@ -5254,6 +5363,8 @@ typedef $$HostsTableUpdateCompanionBuilder =
       Value<DateTime?> lastConnected,
       Value<String?> lastConnectionType,
       Value<int> sortOrder,
+      Value<bool> useTmux,
+      Value<String?> tmuxSessionName,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
       Value<int> rowid,
@@ -5378,6 +5489,16 @@ class $$HostsTableFilterComposer extends Composer<_$AppDatabase, $HostsTable> {
 
   ColumnFilters<int> get sortOrder => $composableBuilder(
     column: $table.sortOrder,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get useTmux => $composableBuilder(
+    column: $table.useTmux,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get tmuxSessionName => $composableBuilder(
+    column: $table.tmuxSessionName,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -5516,6 +5637,16 @@ class $$HostsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<bool> get useTmux => $composableBuilder(
+    column: $table.useTmux,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get tmuxSessionName => $composableBuilder(
+    column: $table.tmuxSessionName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -5602,6 +5733,14 @@ class $$HostsTableAnnotationComposer
   GeneratedColumn<int> get sortOrder =>
       $composableBuilder(column: $table.sortOrder, builder: (column) => column);
 
+  GeneratedColumn<bool> get useTmux =>
+      $composableBuilder(column: $table.useTmux, builder: (column) => column);
+
+  GeneratedColumn<String> get tmuxSessionName => $composableBuilder(
+    column: $table.tmuxSessionName,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
 
@@ -5680,6 +5819,8 @@ class $$HostsTableTableManager
                 Value<DateTime?> lastConnected = const Value.absent(),
                 Value<String?> lastConnectionType = const Value.absent(),
                 Value<int> sortOrder = const Value.absent(),
+                Value<bool> useTmux = const Value.absent(),
+                Value<String?> tmuxSessionName = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -5702,6 +5843,8 @@ class $$HostsTableTableManager
                 lastConnected: lastConnected,
                 lastConnectionType: lastConnectionType,
                 sortOrder: sortOrder,
+                useTmux: useTmux,
+                tmuxSessionName: tmuxSessionName,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -5726,6 +5869,8 @@ class $$HostsTableTableManager
                 Value<DateTime?> lastConnected = const Value.absent(),
                 Value<String?> lastConnectionType = const Value.absent(),
                 Value<int> sortOrder = const Value.absent(),
+                Value<bool> useTmux = const Value.absent(),
+                Value<String?> tmuxSessionName = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -5748,6 +5893,8 @@ class $$HostsTableTableManager
                 lastConnected: lastConnected,
                 lastConnectionType: lastConnectionType,
                 sortOrder: sortOrder,
+                useTmux: useTmux,
+                tmuxSessionName: tmuxSessionName,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,

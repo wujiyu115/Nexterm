@@ -42,6 +42,8 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
   final _startupCommandController = TextEditingController();
   final _sftpPathController = TextEditingController();
   String? _startupSnippetId;
+  bool _useTmux = false;
+  final _tmuxSessionNameController = TextEditingController();
 
   bool _isLoading = false;
   bool _isInitialized = false;
@@ -60,6 +62,7 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
     _tagsController.dispose();
     _startupCommandController.dispose();
     _sftpPathController.dispose();
+    _tmuxSessionNameController.dispose();
     super.dispose();
   }
 
@@ -93,6 +96,10 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
         if (host.sftpPath != null) {
           _sftpPathController.text = host.sftpPath!;
         }
+        _useTmux = host.useTmux;
+        if (host.tmuxSessionName != null) {
+          _tmuxSessionNameController.text = host.tmuxSessionName!;
+        }
       });
     }
   }
@@ -113,6 +120,8 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
         ? _startupCommandController.text.trim() : null;
     final sftpPath = _sftpPathController.text.trim().isNotEmpty
         ? _sftpPathController.text.trim() : null;
+    final tmuxSessionName = _tmuxSessionNameController.text.trim().isNotEmpty
+        ? _tmuxSessionNameController.text.trim() : null;
 
     if (_isEditMode && _existingHost != null) {
       final updated = _existingHost!.copyWith(
@@ -129,6 +138,8 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
         startupSnippetId: () => startupSnippetId,
         startupCommand: () => startupCommand,
         sftpPath: () => sftpPath,
+        useTmux: _useTmux,
+        tmuxSessionName: () => tmuxSessionName,
       );
       await notifier.updateHost(updated);
     } else {
@@ -147,6 +158,8 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
         startupSnippetId: startupSnippetId,
         startupCommand: startupCommand,
         sftpPath: sftpPath,
+        useTmux: _useTmux,
+        tmuxSessionName: tmuxSessionName,
       );
       await notifier.addHost(newHost);
     }
@@ -366,6 +379,8 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
                     prefixIcon: const Icon(Icons.folder_outlined, size: 20),
                   ),
                 ),
+                const SizedBox(height: 20),
+                _buildTmuxSection(l),
                 const SizedBox(height: 20),
                 SectionLabel(title: l.hostForm_sectionGroup, padding: EdgeInsets.zero),
                 const SizedBox(height: 8),
@@ -650,6 +665,34 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
             ],
           ]),
         ),
+      ],
+    );
+  }
+
+  Widget _buildTmuxSection(AppLocalizations l) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SectionLabel(title: 'Tmux', padding: EdgeInsets.zero),
+        const SizedBox(height: 8),
+        SwitchListTile(
+          contentPadding: EdgeInsets.zero,
+          title: Text(l.hostForm_useTmux),
+          subtitle: Text(l.hostForm_useTmuxHint),
+          value: _useTmux,
+          onChanged: (value) => setState(() => _useTmux = value),
+        ),
+        if (_useTmux) ...[
+          const SizedBox(height: 8),
+          TextFormField(
+            controller: _tmuxSessionNameController,
+            decoration: InputDecoration(
+              labelText: l.hostForm_tmuxSessionName,
+              hintText: l.hostForm_tmuxSessionNameHint,
+              prefixIcon: const Icon(Icons.view_week_outlined, size: 20),
+            ),
+          ),
+        ],
       ],
     );
   }

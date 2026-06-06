@@ -16,6 +16,8 @@ class HostEntity {
   final String? startupSnippetId;
   final String? startupCommand;
   final String? sftpPath;
+  final bool useTmux;
+  final String? tmuxSessionName;
   final DateTime? lastConnected;
   final ConnectionType? lastConnectionType;
   final int sortOrder;
@@ -36,6 +38,8 @@ class HostEntity {
     this.startupSnippetId,
     this.startupCommand,
     this.sftpPath,
+    this.useTmux = false,
+    this.tmuxSessionName,
     this.lastConnected,
     this.lastConnectionType,
     this.sortOrder = 0,
@@ -57,6 +61,8 @@ class HostEntity {
     String? Function()? startupSnippetId,
     String? Function()? startupCommand,
     String? Function()? sftpPath,
+    bool? useTmux,
+    String? Function()? tmuxSessionName,
     DateTime? Function()? lastConnected,
     ConnectionType? Function()? lastConnectionType,
     int? sortOrder,
@@ -77,6 +83,8 @@ class HostEntity {
       startupSnippetId: startupSnippetId != null ? startupSnippetId() : this.startupSnippetId,
       startupCommand: startupCommand != null ? startupCommand() : this.startupCommand,
       sftpPath: sftpPath != null ? sftpPath() : this.sftpPath,
+      useTmux: useTmux ?? this.useTmux,
+      tmuxSessionName: tmuxSessionName != null ? tmuxSessionName() : this.tmuxSessionName,
       lastConnected: lastConnected != null ? lastConnected() : this.lastConnected,
       lastConnectionType: lastConnectionType != null ? lastConnectionType() : this.lastConnectionType,
       sortOrder: sortOrder ?? this.sortOrder,

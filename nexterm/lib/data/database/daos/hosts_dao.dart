@@ -28,6 +28,8 @@ class HostsDao extends DatabaseAccessor<AppDatabase> with _$HostsDaoMixin {
       startupSnippetId: row.startupSnippetId,
       startupCommand: row.startupCommand,
       sftpPath: row.sftpPath,
+      useTmux: row.useTmux,
+      tmuxSessionName: row.tmuxSessionName,
       lastConnected: row.lastConnected,
       lastConnectionType: row.lastConnectionType != null
           ? ConnectionType.values.byName(row.lastConnectionType!)
@@ -53,6 +55,8 @@ class HostsDao extends DatabaseAccessor<AppDatabase> with _$HostsDaoMixin {
       startupSnippetId: Value(entity.startupSnippetId),
       startupCommand: Value(entity.startupCommand),
       sftpPath: Value(entity.sftpPath),
+      useTmux: Value(entity.useTmux),
+      tmuxSessionName: Value(entity.tmuxSessionName),
       lastConnected: Value(entity.lastConnected),
       lastConnectionType: Value(entity.lastConnectionType?.name),
       sortOrder: Value(entity.sortOrder),

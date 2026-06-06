@@ -285,6 +285,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostForm_sftpPathHint => '/home/user or /var/www';
 
   @override
+  String get hostForm_useTmux => 'Auto use Tmux';
+
+  @override
+  String get hostForm_useTmuxHint => 'Automatically create or attach tmux session on connect';
+
+  @override
+  String get hostForm_tmuxSessionName => 'Session name';
+
+  @override
+  String get hostForm_tmuxSessionNameHint => 'Leave empty for auto (nexterm-<hostname>)';
+
+  @override
   String get hostForm_startupModeCommand => 'Command';
 
   @override
