@@ -11,6 +11,7 @@ import 'package:nexterm/data/database/tables/settings_table.dart';
 import 'package:nexterm/data/database/tables/git_repos_table.dart';
 import 'package:nexterm/data/database/tables/webdav_connections_table.dart';
 import 'package:nexterm/data/database/tables/smb_connections_table.dart';
+import 'package:nexterm/data/database/tables/command_history_table.dart';
 import 'package:nexterm/data/database/daos/hosts_dao.dart';
 import 'package:nexterm/data/database/daos/ssh_keys_dao.dart';
 import 'package:nexterm/data/database/daos/snippets_dao.dart';
@@ -19,19 +20,20 @@ import 'package:nexterm/data/database/daos/settings_dao.dart';
 import 'package:nexterm/data/database/daos/git_repos_dao.dart';
 import 'package:nexterm/data/database/daos/webdav_connections_dao.dart';
 import 'package:nexterm/data/database/daos/smb_connections_dao.dart';
+import 'package:nexterm/data/database/daos/command_history_dao.dart';
 
 part 'app_database.g.dart';
 
 @DriftDatabase(
-  tables: [Hosts, SshKeys, Snippets, PortForwards, AppSettings, GitRepos, WebdavConnections, SmbConnections],
-  daos: [HostsDao, SshKeysDao, SnippetsDao, PortForwardsDao, SettingsDao, GitReposDao, WebdavConnectionsDao, SmbConnectionsDao],
+  tables: [Hosts, SshKeys, Snippets, PortForwards, AppSettings, GitRepos, WebdavConnections, SmbConnections, CommandHistory],
+  daos: [HostsDao, SshKeysDao, SnippetsDao, PortForwardsDao, SettingsDao, GitReposDao, WebdavConnectionsDao, SmbConnectionsDao, CommandHistoryDao],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 10;
+  int get schemaVersion => 11;
 
   @override
   MigrationStrategy get migration {
@@ -49,6 +51,7 @@ class AppDatabase extends _$AppDatabase {
         if (from < 8) await m.createTable(webdavConnections);
         if (from < 9) await m.createTable(smbConnections);
         if (from < 10) await m.addColumn(hosts, hosts.sftpPath);
+        if (from < 11) await m.createTable(commandHistory);
       },
     );
   }

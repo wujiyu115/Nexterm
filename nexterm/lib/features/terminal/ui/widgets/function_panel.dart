@@ -16,12 +16,14 @@ import 'package:nexterm/l10n/app_localizations.dart';
 
 class FunctionPanel extends ConsumerStatefulWidget {
   final String? sessionId;
+  final String? hostId;
   final void Function(String command) onCommandSelected;
   final void Function(Uint8List data) onKeyInput;
 
   const FunctionPanel({
     super.key,
     required this.sessionId,
+    this.hostId,
     required this.onCommandSelected,
     required this.onKeyInput,
   });
@@ -113,6 +115,7 @@ class _FunctionPanelState extends ConsumerState<FunctionPanel>
                 widget.sessionId != null
                     ? CommandHistoryPanel(
                         sessionId: widget.sessionId!,
+                        hostId: widget.hostId,
                         onCommandSelected: widget.onCommandSelected,
                       )
                     : _EmptyTab(message: l.function_noActiveSession),

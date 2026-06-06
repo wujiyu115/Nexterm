@@ -4756,6 +4756,413 @@ class SmbConnectionsCompanion extends UpdateCompanion<SmbConnection> {
   }
 }
 
+class $CommandHistoryTable extends CommandHistory
+    with TableInfo<$CommandHistoryTable, CommandHistoryData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CommandHistoryTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _hostIdMeta = const VerificationMeta('hostId');
+  @override
+  late final GeneratedColumn<String> hostId = GeneratedColumn<String>(
+    'host_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _commandMeta = const VerificationMeta(
+    'command',
+  );
+  @override
+  late final GeneratedColumn<String> command = GeneratedColumn<String>(
+    'command',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _frequencyMeta = const VerificationMeta(
+    'frequency',
+  );
+  @override
+  late final GeneratedColumn<int> frequency = GeneratedColumn<int>(
+    'frequency',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _lastUsedAtMeta = const VerificationMeta(
+    'lastUsedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastUsedAt = GeneratedColumn<DateTime>(
+    'last_used_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    hostId,
+    command,
+    frequency,
+    lastUsedAt,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'command_history';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CommandHistoryData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('host_id')) {
+      context.handle(
+        _hostIdMeta,
+        hostId.isAcceptableOrUnknown(data['host_id']!, _hostIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_hostIdMeta);
+    }
+    if (data.containsKey('command')) {
+      context.handle(
+        _commandMeta,
+        command.isAcceptableOrUnknown(data['command']!, _commandMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_commandMeta);
+    }
+    if (data.containsKey('frequency')) {
+      context.handle(
+        _frequencyMeta,
+        frequency.isAcceptableOrUnknown(data['frequency']!, _frequencyMeta),
+      );
+    }
+    if (data.containsKey('last_used_at')) {
+      context.handle(
+        _lastUsedAtMeta,
+        lastUsedAt.isAcceptableOrUnknown(
+          data['last_used_at']!,
+          _lastUsedAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {hostId, command},
+  ];
+  @override
+  CommandHistoryData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CommandHistoryData(
+      id:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}id'],
+          )!,
+      hostId:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}host_id'],
+          )!,
+      command:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}command'],
+          )!,
+      frequency:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}frequency'],
+          )!,
+      lastUsedAt:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.dateTime,
+            data['${effectivePrefix}last_used_at'],
+          )!,
+      createdAt:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.dateTime,
+            data['${effectivePrefix}created_at'],
+          )!,
+    );
+  }
+
+  @override
+  $CommandHistoryTable createAlias(String alias) {
+    return $CommandHistoryTable(attachedDatabase, alias);
+  }
+}
+
+class CommandHistoryData extends DataClass
+    implements Insertable<CommandHistoryData> {
+  final int id;
+  final String hostId;
+  final String command;
+  final int frequency;
+  final DateTime lastUsedAt;
+  final DateTime createdAt;
+  const CommandHistoryData({
+    required this.id,
+    required this.hostId,
+    required this.command,
+    required this.frequency,
+    required this.lastUsedAt,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['host_id'] = Variable<String>(hostId);
+    map['command'] = Variable<String>(command);
+    map['frequency'] = Variable<int>(frequency);
+    map['last_used_at'] = Variable<DateTime>(lastUsedAt);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  CommandHistoryCompanion toCompanion(bool nullToAbsent) {
+    return CommandHistoryCompanion(
+      id: Value(id),
+      hostId: Value(hostId),
+      command: Value(command),
+      frequency: Value(frequency),
+      lastUsedAt: Value(lastUsedAt),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory CommandHistoryData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CommandHistoryData(
+      id: serializer.fromJson<int>(json['id']),
+      hostId: serializer.fromJson<String>(json['hostId']),
+      command: serializer.fromJson<String>(json['command']),
+      frequency: serializer.fromJson<int>(json['frequency']),
+      lastUsedAt: serializer.fromJson<DateTime>(json['lastUsedAt']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'hostId': serializer.toJson<String>(hostId),
+      'command': serializer.toJson<String>(command),
+      'frequency': serializer.toJson<int>(frequency),
+      'lastUsedAt': serializer.toJson<DateTime>(lastUsedAt),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  CommandHistoryData copyWith({
+    int? id,
+    String? hostId,
+    String? command,
+    int? frequency,
+    DateTime? lastUsedAt,
+    DateTime? createdAt,
+  }) => CommandHistoryData(
+    id: id ?? this.id,
+    hostId: hostId ?? this.hostId,
+    command: command ?? this.command,
+    frequency: frequency ?? this.frequency,
+    lastUsedAt: lastUsedAt ?? this.lastUsedAt,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  CommandHistoryData copyWithCompanion(CommandHistoryCompanion data) {
+    return CommandHistoryData(
+      id: data.id.present ? data.id.value : this.id,
+      hostId: data.hostId.present ? data.hostId.value : this.hostId,
+      command: data.command.present ? data.command.value : this.command,
+      frequency: data.frequency.present ? data.frequency.value : this.frequency,
+      lastUsedAt:
+          data.lastUsedAt.present ? data.lastUsedAt.value : this.lastUsedAt,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CommandHistoryData(')
+          ..write('id: $id, ')
+          ..write('hostId: $hostId, ')
+          ..write('command: $command, ')
+          ..write('frequency: $frequency, ')
+          ..write('lastUsedAt: $lastUsedAt, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, hostId, command, frequency, lastUsedAt, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CommandHistoryData &&
+          other.id == this.id &&
+          other.hostId == this.hostId &&
+          other.command == this.command &&
+          other.frequency == this.frequency &&
+          other.lastUsedAt == this.lastUsedAt &&
+          other.createdAt == this.createdAt);
+}
+
+class CommandHistoryCompanion extends UpdateCompanion<CommandHistoryData> {
+  final Value<int> id;
+  final Value<String> hostId;
+  final Value<String> command;
+  final Value<int> frequency;
+  final Value<DateTime> lastUsedAt;
+  final Value<DateTime> createdAt;
+  const CommandHistoryCompanion({
+    this.id = const Value.absent(),
+    this.hostId = const Value.absent(),
+    this.command = const Value.absent(),
+    this.frequency = const Value.absent(),
+    this.lastUsedAt = const Value.absent(),
+    this.createdAt = const Value.absent(),
+  });
+  CommandHistoryCompanion.insert({
+    this.id = const Value.absent(),
+    required String hostId,
+    required String command,
+    this.frequency = const Value.absent(),
+    this.lastUsedAt = const Value.absent(),
+    this.createdAt = const Value.absent(),
+  }) : hostId = Value(hostId),
+       command = Value(command);
+  static Insertable<CommandHistoryData> custom({
+    Expression<int>? id,
+    Expression<String>? hostId,
+    Expression<String>? command,
+    Expression<int>? frequency,
+    Expression<DateTime>? lastUsedAt,
+    Expression<DateTime>? createdAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (hostId != null) 'host_id': hostId,
+      if (command != null) 'command': command,
+      if (frequency != null) 'frequency': frequency,
+      if (lastUsedAt != null) 'last_used_at': lastUsedAt,
+      if (createdAt != null) 'created_at': createdAt,
+    });
+  }
+
+  CommandHistoryCompanion copyWith({
+    Value<int>? id,
+    Value<String>? hostId,
+    Value<String>? command,
+    Value<int>? frequency,
+    Value<DateTime>? lastUsedAt,
+    Value<DateTime>? createdAt,
+  }) {
+    return CommandHistoryCompanion(
+      id: id ?? this.id,
+      hostId: hostId ?? this.hostId,
+      command: command ?? this.command,
+      frequency: frequency ?? this.frequency,
+      lastUsedAt: lastUsedAt ?? this.lastUsedAt,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (hostId.present) {
+      map['host_id'] = Variable<String>(hostId.value);
+    }
+    if (command.present) {
+      map['command'] = Variable<String>(command.value);
+    }
+    if (frequency.present) {
+      map['frequency'] = Variable<int>(frequency.value);
+    }
+    if (lastUsedAt.present) {
+      map['last_used_at'] = Variable<DateTime>(lastUsedAt.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CommandHistoryCompanion(')
+          ..write('id: $id, ')
+          ..write('hostId: $hostId, ')
+          ..write('command: $command, ')
+          ..write('frequency: $frequency, ')
+          ..write('lastUsedAt: $lastUsedAt, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -4768,6 +5175,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $WebdavConnectionsTable webdavConnections =
       $WebdavConnectionsTable(this);
   late final $SmbConnectionsTable smbConnections = $SmbConnectionsTable(this);
+  late final $CommandHistoryTable commandHistory = $CommandHistoryTable(this);
   late final HostsDao hostsDao = HostsDao(this as AppDatabase);
   late final SshKeysDao sshKeysDao = SshKeysDao(this as AppDatabase);
   late final SnippetsDao snippetsDao = SnippetsDao(this as AppDatabase);
@@ -4780,6 +5188,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     this as AppDatabase,
   );
   late final SmbConnectionsDao smbConnectionsDao = SmbConnectionsDao(
+    this as AppDatabase,
+  );
+  late final CommandHistoryDao commandHistoryDao = CommandHistoryDao(
     this as AppDatabase,
   );
   @override
@@ -4795,6 +5206,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     gitRepos,
     webdavConnections,
     smbConnections,
+    commandHistory,
   ];
 }
 
@@ -7386,6 +7798,238 @@ typedef $$SmbConnectionsTableProcessedTableManager =
       SmbConnection,
       PrefetchHooks Function()
     >;
+typedef $$CommandHistoryTableCreateCompanionBuilder =
+    CommandHistoryCompanion Function({
+      Value<int> id,
+      required String hostId,
+      required String command,
+      Value<int> frequency,
+      Value<DateTime> lastUsedAt,
+      Value<DateTime> createdAt,
+    });
+typedef $$CommandHistoryTableUpdateCompanionBuilder =
+    CommandHistoryCompanion Function({
+      Value<int> id,
+      Value<String> hostId,
+      Value<String> command,
+      Value<int> frequency,
+      Value<DateTime> lastUsedAt,
+      Value<DateTime> createdAt,
+    });
+
+class $$CommandHistoryTableFilterComposer
+    extends Composer<_$AppDatabase, $CommandHistoryTable> {
+  $$CommandHistoryTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get hostId => $composableBuilder(
+    column: $table.hostId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get command => $composableBuilder(
+    column: $table.command,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get frequency => $composableBuilder(
+    column: $table.frequency,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastUsedAt => $composableBuilder(
+    column: $table.lastUsedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$CommandHistoryTableOrderingComposer
+    extends Composer<_$AppDatabase, $CommandHistoryTable> {
+  $$CommandHistoryTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get hostId => $composableBuilder(
+    column: $table.hostId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get command => $composableBuilder(
+    column: $table.command,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get frequency => $composableBuilder(
+    column: $table.frequency,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastUsedAt => $composableBuilder(
+    column: $table.lastUsedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$CommandHistoryTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CommandHistoryTable> {
+  $$CommandHistoryTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get hostId =>
+      $composableBuilder(column: $table.hostId, builder: (column) => column);
+
+  GeneratedColumn<String> get command =>
+      $composableBuilder(column: $table.command, builder: (column) => column);
+
+  GeneratedColumn<int> get frequency =>
+      $composableBuilder(column: $table.frequency, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastUsedAt => $composableBuilder(
+    column: $table.lastUsedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$CommandHistoryTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $CommandHistoryTable,
+          CommandHistoryData,
+          $$CommandHistoryTableFilterComposer,
+          $$CommandHistoryTableOrderingComposer,
+          $$CommandHistoryTableAnnotationComposer,
+          $$CommandHistoryTableCreateCompanionBuilder,
+          $$CommandHistoryTableUpdateCompanionBuilder,
+          (
+            CommandHistoryData,
+            BaseReferences<
+              _$AppDatabase,
+              $CommandHistoryTable,
+              CommandHistoryData
+            >,
+          ),
+          CommandHistoryData,
+          PrefetchHooks Function()
+        > {
+  $$CommandHistoryTableTableManager(
+    _$AppDatabase db,
+    $CommandHistoryTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer:
+              () => $$CommandHistoryTableFilterComposer($db: db, $table: table),
+          createOrderingComposer:
+              () =>
+                  $$CommandHistoryTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer:
+              () => $$CommandHistoryTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> hostId = const Value.absent(),
+                Value<String> command = const Value.absent(),
+                Value<int> frequency = const Value.absent(),
+                Value<DateTime> lastUsedAt = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+              }) => CommandHistoryCompanion(
+                id: id,
+                hostId: hostId,
+                command: command,
+                frequency: frequency,
+                lastUsedAt: lastUsedAt,
+                createdAt: createdAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String hostId,
+                required String command,
+                Value<int> frequency = const Value.absent(),
+                Value<DateTime> lastUsedAt = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+              }) => CommandHistoryCompanion.insert(
+                id: id,
+                hostId: hostId,
+                command: command,
+                frequency: frequency,
+                lastUsedAt: lastUsedAt,
+                createdAt: createdAt,
+              ),
+          withReferenceMapper:
+              (p0) =>
+                  p0
+                      .map(
+                        (e) => (
+                          e.readTable(table),
+                          BaseReferences(db, table, e),
+                        ),
+                      )
+                      .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$CommandHistoryTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $CommandHistoryTable,
+      CommandHistoryData,
+      $$CommandHistoryTableFilterComposer,
+      $$CommandHistoryTableOrderingComposer,
+      $$CommandHistoryTableAnnotationComposer,
+      $$CommandHistoryTableCreateCompanionBuilder,
+      $$CommandHistoryTableUpdateCompanionBuilder,
+      (
+        CommandHistoryData,
+        BaseReferences<_$AppDatabase, $CommandHistoryTable, CommandHistoryData>,
+      ),
+      CommandHistoryData,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -7406,4 +8050,6 @@ class $AppDatabaseManager {
       $$WebdavConnectionsTableTableManager(_db, _db.webdavConnections);
   $$SmbConnectionsTableTableManager get smbConnections =>
       $$SmbConnectionsTableTableManager(_db, _db.smbConnections);
+  $$CommandHistoryTableTableManager get commandHistory =>
+      $$CommandHistoryTableTableManager(_db, _db.commandHistory);
 }

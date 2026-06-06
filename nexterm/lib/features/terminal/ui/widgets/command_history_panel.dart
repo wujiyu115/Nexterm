@@ -6,17 +6,15 @@ import 'package:nexterm/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nexterm/features/terminal/providers/command_history_provider.dart';
 
-/// Panel that displays command history for a terminal session.
-///
-/// Includes a search bar at the top and a scrollable list of commands.
-/// Tapping a command sends it to the terminal.
 class CommandHistoryPanel extends ConsumerStatefulWidget {
   final String sessionId;
+  final String? hostId;
   final void Function(String command) onCommandSelected;
 
   const CommandHistoryPanel({
     super.key,
     required this.sessionId,
+    this.hostId,
     required this.onCommandSelected,
   });
 
@@ -28,6 +26,7 @@ class CommandHistoryPanel extends ConsumerStatefulWidget {
 class _CommandHistoryPanelState extends ConsumerState<CommandHistoryPanel> {
   final _searchController = TextEditingController();
   String _query = '';
+  bool _showHostHistory = false;
 
   @override
   void dispose() {
@@ -37,99 +36,237 @@ class _CommandHistoryPanelState extends ConsumerState<CommandHistoryPanel> {
 
   @override
   Widget build(BuildContext context) {
-    final service = ref.watch(commandHistoryServiceProvider);
-    final commands = _query.isEmpty
-        ? service.getAll(widget.sessionId)
-        : service.search(widget.sessionId, _query);
-
-    // Show most recent first.
-    final reversed = commands.reversed.toList();
-
     final theme = Theme.of(context);
     final p = theme.extension<ThemePalette>()!;
+    final l = AppLocalizations.of(context)!;
 
     return Column(
       children: [
-        // Search bar.
         Padding(
           padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
-          child: TextField(
-            controller: _searchController,
-            style: theme.textTheme.bodyLarge,
-            decoration: InputDecoration(
-              hintText: AppLocalizations.of(context)!.commandHistory_searchHint,
-              hintStyle: TextStyle(
-                color: p.fgTertiary,
+          child: Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _searchController,
+                  style: theme.textTheme.bodyLarge,
+                  decoration: InputDecoration(
+                    hintText: l.commandHistory_searchHint,
+                    hintStyle: TextStyle(color: p.fgTertiary),
+                    prefixIcon: Icon(Icons.search, size: 20, color: p.fgTertiary),
+                    filled: true,
+                    fillColor: p.inputBg,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(OutdoorColors.radiusMd),
+                      borderSide: BorderSide.none,
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(vertical: 8),
+                    isDense: true,
+                  ),
+                  onChanged: (value) => setState(() => _query = value),
+                ),
               ),
-              prefixIcon: Icon(
-                Icons.search,
-                size: 20,
-                color: p.fgTertiary,
-              ),
-              filled: true,
-              fillColor: p.inputBg,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(OutdoorColors.radiusMd),
-                borderSide: BorderSide.none,
-              ),
-              contentPadding: const EdgeInsets.symmetric(vertical: 8),
-              isDense: true,
-            ),
-            onChanged: (value) => setState(() => _query = value),
+              if (widget.hostId != null) ...[
+                const SizedBox(width: 8),
+                _ModeToggle(
+                  isHostMode: _showHostHistory,
+                  onToggle: () =>
+                      setState(() => _showHostHistory = !_showHostHistory),
+                ),
+              ],
+            ],
           ),
         ),
-        // Command list.
         Expanded(
-          child: reversed.isEmpty
-              ? Center(
-                  child: Text(
-                    _query.isEmpty ? AppLocalizations.of(context)!.commandHistory_empty : AppLocalizations.of(context)!.commandHistory_noMatch,
-                    style: theme.textTheme.bodyLarge!.copyWith(
-                      color: p.fgSecondary,
-                    ),
-                  ),
+          child: _showHostHistory && widget.hostId != null
+              ? _HostHistoryList(
+                  hostId: widget.hostId!,
+                  query: _query,
+                  onCommandSelected: widget.onCommandSelected,
                 )
-              : ListView.separated(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                  itemCount: reversed.length,
-                  separatorBuilder: (_, __) => Divider(
-                    height: 1,
-                    color: p.border,
-                  ),
-                  itemBuilder: (context, index) {
-                    final cmd = reversed[index];
-                    return InkWell(
-                      onTap: () => widget.onCommandSelected(cmd),
-                      borderRadius: BorderRadius.circular(OutdoorColors.radiusSm),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 10),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.chevron_right,
-                              size: 16,
-                              color: p.fgTertiary,
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                cmd,
-                                style: theme.textTheme.bodyMedium!.copyWith(
-                                  fontFamily: AppFonts.mono,
-                                ),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
+              : _SessionHistoryList(
+                  sessionId: widget.sessionId,
+                  query: _query,
+                  onCommandSelected: widget.onCommandSelected,
                 ),
         ),
       ],
+    );
+  }
+}
+
+class _ModeToggle extends StatelessWidget {
+  final bool isHostMode;
+  final VoidCallback onToggle;
+
+  const _ModeToggle({required this.isHostMode, required this.onToggle});
+
+  @override
+  Widget build(BuildContext context) {
+    final p = Theme.of(context).extension<ThemePalette>()!;
+    return IconButton(
+      icon: Icon(
+        isHostMode ? Icons.storage : Icons.terminal,
+        size: 20,
+        color: isHostMode ? p.accent : p.fgSecondary,
+      ),
+      tooltip: isHostMode ? 'Host history' : 'Session history',
+      onPressed: onToggle,
+      visualDensity: VisualDensity.compact,
+    );
+  }
+}
+
+class _SessionHistoryList extends ConsumerWidget {
+  final String sessionId;
+  final String query;
+  final void Function(String command) onCommandSelected;
+
+  const _SessionHistoryList({
+    required this.sessionId,
+    required this.query,
+    required this.onCommandSelected,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final service = ref.watch(commandHistoryServiceProvider);
+    final commands = query.isEmpty
+        ? service.getAll(sessionId)
+        : service.search(sessionId, query);
+    final reversed = commands.reversed.toList();
+
+    return _CommandList(
+      commands: reversed.map((c) => _DisplayCommand(command: c)).toList(),
+      onCommandSelected: onCommandSelected,
+      emptyQuery: query,
+    );
+  }
+}
+
+class _HostHistoryList extends ConsumerWidget {
+  final String hostId;
+  final String query;
+  final void Function(String command) onCommandSelected;
+
+  const _HostHistoryList({
+    required this.hostId,
+    required this.query,
+    required this.onCommandSelected,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final historyAsync = ref.watch(hostCommandHistoryProvider(hostId));
+
+    return historyAsync.when(
+      data: (entries) {
+        final filtered = query.isEmpty
+            ? entries
+            : entries
+                .where((e) =>
+                    e.command.toLowerCase().contains(query.toLowerCase()))
+                .toList();
+        return _CommandList(
+          commands: filtered
+              .map((e) => _DisplayCommand(
+                    command: e.command,
+                    frequency: e.frequency,
+                  ))
+              .toList(),
+          onCommandSelected: onCommandSelected,
+          emptyQuery: query,
+        );
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, _) => Center(child: Text(e.toString())),
+    );
+  }
+}
+
+class _DisplayCommand {
+  final String command;
+  final int? frequency;
+
+  const _DisplayCommand({required this.command, this.frequency});
+}
+
+class _CommandList extends StatelessWidget {
+  final List<_DisplayCommand> commands;
+  final void Function(String command) onCommandSelected;
+  final String emptyQuery;
+
+  const _CommandList({
+    required this.commands,
+    required this.onCommandSelected,
+    required this.emptyQuery,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final p = theme.extension<ThemePalette>()!;
+    final l = AppLocalizations.of(context)!;
+
+    if (commands.isEmpty) {
+      return Center(
+        child: Text(
+          emptyQuery.isEmpty
+              ? l.commandHistory_empty
+              : l.commandHistory_noMatch,
+          style: theme.textTheme.bodyLarge!.copyWith(color: p.fgSecondary),
+        ),
+      );
+    }
+
+    return ListView.separated(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      itemCount: commands.length,
+      separatorBuilder: (_, __) => Divider(height: 1, color: p.border),
+      itemBuilder: (context, index) {
+        final item = commands[index];
+        return InkWell(
+          onTap: () => onCommandSelected(item.command),
+          borderRadius: BorderRadius.circular(OutdoorColors.radiusSm),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+            child: Row(
+              children: [
+                Icon(Icons.chevron_right, size: 16, color: p.fgTertiary),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    item.command,
+                    style: theme.textTheme.bodyMedium!.copyWith(
+                      fontFamily: AppFonts.mono,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                if (item.frequency != null && item.frequency! > 1) ...[
+                  const SizedBox(width: 8),
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: p.accent.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      '${item.frequency}',
+                      style: theme.textTheme.labelSmall!.copyWith(
+                        color: p.accent,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

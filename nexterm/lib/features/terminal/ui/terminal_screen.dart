@@ -544,6 +544,7 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
             if (_isFunctionMode)
               FunctionPanel(
                 sessionId: activeTab.sessionId,
+                hostId: activeTab.hostId,
                 onCommandSelected: (command) {
                   final sshService = ref.read(sshServiceProvider);
                   if (activeTab.sessionId != null) {

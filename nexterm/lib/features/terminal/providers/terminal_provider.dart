@@ -175,6 +175,7 @@ class TerminalActions {
       // Wire terminal output and resize BEFORE listening to stdout, so that
       // any autoResize triggered by TerminalView is forwarded to the remote
       // PTY immediately.
+      _ref.read(commandHistoryServiceProvider).registerSession(sessionId, hostId);
       terminal.onOutput = (data) {
         _writeWithModifiers(sessionId, data);
         _ref.read(commandHistoryServiceProvider).onUserInput(sessionId, data);
