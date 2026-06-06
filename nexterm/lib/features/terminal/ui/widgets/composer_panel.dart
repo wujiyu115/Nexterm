@@ -26,7 +26,8 @@ class ComposerPanel extends ConsumerStatefulWidget {
   ConsumerState<ComposerPanel> createState() => ComposerPanelState();
 }
 
-class ComposerPanelState extends ConsumerState<ComposerPanel> {
+class ComposerPanelState extends ConsumerState<ComposerPanel>
+    with SingleTickerProviderStateMixin {
   final _controller = TextEditingController();
   final _focusNode = FocusNode();
   bool _isListening = false;
@@ -34,8 +35,28 @@ class ComposerPanelState extends ConsumerState<ComposerPanel> {
   StreamSubscription<SttResult>? _sttSub;
   SttProvider? _activeSttProvider;
 
+  late final AnimationController _pulseController;
+  late final Animation<double> _pulseScale;
+  late final Animation<double> _pulseOpacity;
+
+  @override
+  void initState() {
+    super.initState();
+    _pulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    );
+    _pulseScale = Tween<double>(begin: 1.0, end: 1.8).animate(
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeOut),
+    );
+    _pulseOpacity = Tween<double>(begin: 0.4, end: 0.0).animate(
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeOut),
+    );
+  }
+
   @override
   void dispose() {
+    _pulseController.dispose();
     _sttSub?.cancel();
     _activeSttProvider?.stop();
     _controller.dispose();
@@ -67,7 +88,10 @@ class ComposerPanelState extends ConsumerState<ComposerPanel> {
     _activeSttProvider = ref.read(sttProviderInstanceProvider);
     final provider = _activeSttProvider!;
     final localeId = ref.read(voiceLocaleIdProvider);
-    setState(() => _isListening = true);
+    setState(() {
+      _isListening = true;
+      _pulseController.repeat();
+    });
     final stream = provider.start(localeId: localeId.isEmpty ? null : localeId);
     String lastText = '';
     bool sentFinal = false;
@@ -86,11 +110,23 @@ class ComposerPanelState extends ConsumerState<ComposerPanel> {
           _insertText(lastText);
         }
         _sttSub = null;
-        if (mounted) setState(() => _isListening = false);
+        if (mounted) {
+          setState(() {
+            _isListening = false;
+            _pulseController.stop();
+            _pulseController.reset();
+          });
+        }
       },
       onError: (_) {
         _sttSub = null;
-        if (mounted) setState(() => _isListening = false);
+        if (mounted) {
+          setState(() {
+            _isListening = false;
+            _pulseController.stop();
+            _pulseController.reset();
+          });
+        }
       },
     );
   }
@@ -98,7 +134,11 @@ class ComposerPanelState extends ConsumerState<ComposerPanel> {
   void _stopListening() {
     _activeSttProvider?.stop();
     _activeSttProvider = null;
-    setState(() => _isListening = false);
+    setState(() {
+      _isListening = false;
+      _pulseController.stop();
+      _pulseController.reset();
+    });
   }
 
   void _onLongPressStart() {
@@ -136,6 +176,7 @@ class ComposerPanelState extends ConsumerState<ComposerPanel> {
     final l = AppLocalizations.of(context)!;
     final p = Theme.of(context).extension<ThemePalette>()!;
     final providerType = ref.watch(sttProviderTypeProvider);
+    final inputMode = ref.watch(voiceInputModeProvider);
     final sttAvailable = ref.watch(sttAvailableProvider).valueOrNull ?? false;
 
     return Container(
@@ -143,7 +184,10 @@ class ComposerPanelState extends ConsumerState<ComposerPanel> {
         color: p.bgElevated,
         border: Border(top: BorderSide(color: p.border, width: 0.5)),
       ),
-      padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
+      padding: EdgeInsets.fromLTRB(
+        12, 10, 12,
+        10 + MediaQuery.of(context).viewPadding.bottom,
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -205,7 +249,7 @@ class ComposerPanelState extends ConsumerState<ComposerPanel> {
               ),
               const Spacer(),
               if (sttAvailable)
-                _buildMicButton(p, providerType),
+                _buildMicButton(p, providerType, inputMode),
               const SizedBox(width: 8),
               _CircleButton(
                 icon: Icons.arrow_upward,
@@ -226,17 +270,42 @@ class ComposerPanelState extends ConsumerState<ComposerPanel> {
     SttProviderType.alibaba => 'ALI',
   };
 
-  Widget _buildMicButton(ThemePalette p, SttProviderType providerType) {
+  Widget _buildMicButton(ThemePalette p, SttProviderType providerType, VoiceInputMode inputMode) {
     final label = _providerLabel(providerType);
+    final isLongPress = inputMode == VoiceInputMode.longPress;
+
+    final button = _CircleButton(
+      icon: _isListening ? Icons.mic : Icons.mic_none,
+      color: _isListening ? Colors.white : p.fgSecondary,
+      bgColor: _isListening ? p.accent : p.surface,
+      glowColor: _isListening ? p.accentGlow : null,
+      onTap: isLongPress ? null : _toggleSpeech,
+    );
+
     final micWidget = Stack(
       clipBehavior: Clip.none,
       children: [
-        _CircleButton(
-          icon: _isListening ? Icons.mic : Icons.mic_none,
-          color: _isListening ? Colors.white : p.fgSecondary,
-          bgColor: _isListening ? p.accent : p.surface,
-          onTap: providerType == SttProviderType.volcengine ? null : _toggleSpeech,
-        ),
+        if (_isListening)
+          Positioned.fill(
+            child: AnimatedBuilder(
+              animation: _pulseController,
+              builder: (context, child) {
+                return Transform.scale(
+                  scale: _pulseScale.value,
+                  child: Opacity(
+                    opacity: _pulseOpacity.value,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(color: p.accent, width: 1.5),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        button,
         Positioned(
           top: -4,
           right: -6,
@@ -255,7 +324,7 @@ class ComposerPanelState extends ConsumerState<ComposerPanel> {
       ],
     );
 
-    if (providerType == SttProviderType.volcengine) {
+    if (isLongPress) {
       return GestureDetector(
         onLongPressStart: (_) => _onLongPressStart(),
         onLongPressEnd: (_) => _onLongPressEnd(),
@@ -271,12 +340,14 @@ class _CircleButton extends StatelessWidget {
   final IconData icon;
   final Color color;
   final Color bgColor;
+  final Color? glowColor;
   final VoidCallback? onTap;
 
   const _CircleButton({
     required this.icon,
     required this.color,
     required this.bgColor,
+    this.glowColor,
     this.onTap,
   });
 
@@ -290,6 +361,9 @@ class _CircleButton extends StatelessWidget {
         decoration: BoxDecoration(
           color: bgColor,
           shape: BoxShape.circle,
+          boxShadow: glowColor != null
+              ? [BoxShadow(color: glowColor!, blurRadius: 10, spreadRadius: 1)]
+              : null,
         ),
         alignment: Alignment.center,
         child: Icon(icon, size: 18, color: color),

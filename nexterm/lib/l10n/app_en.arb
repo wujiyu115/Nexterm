@@ -666,6 +666,10 @@
   "settings_sttEditCredential": "Edit",
   "settings_sttConfigured": "Configured",
   "settings_sttNotConfigured": "Not configured",
+  "settings_sttInputMode": "Input Mode",
+  "settings_sttInputModeToggle": "Tap to Toggle",
+  "settings_sttInputModeLongPress": "Hold to Talk",
+  "settings_sttSelectInputMode": "Select Input Mode",
 
   "composer_placeholder": "Type something...",
   "composer_send": "Send",

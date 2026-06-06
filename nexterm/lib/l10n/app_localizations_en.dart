@@ -1980,6 +1980,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings_sttNotConfigured => 'Not configured';
 
   @override
+  String get settings_sttInputMode => 'Input Mode';
+
+  @override
+  String get settings_sttInputModeToggle => 'Tap to Toggle';
+
+  @override
+  String get settings_sttInputModeLongPress => 'Hold to Talk';
+
+  @override
+  String get settings_sttSelectInputMode => 'Select Input Mode';
+
+  @override
   String get composer_placeholder => 'Type something...';
 
   @override

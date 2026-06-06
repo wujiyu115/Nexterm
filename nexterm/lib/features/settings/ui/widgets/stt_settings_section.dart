@@ -25,6 +25,40 @@ class _SttSettingsSectionState extends ConsumerState<SttSettingsSection> {
     };
   }
 
+  String _modeLabel(VoiceInputMode mode, AppLocalizations l) {
+    return switch (mode) {
+      VoiceInputMode.toggle => l.settings_sttInputModeToggle,
+      VoiceInputMode.longPress => l.settings_sttInputModeLongPress,
+    };
+  }
+
+  void _showModePicker() {
+    final l = AppLocalizations.of(context)!;
+    final current = ref.read(voiceInputModeProvider);
+    showDialog(
+      context: context,
+      builder: (ctx) => SimpleDialog(
+        title: Text(l.settings_sttSelectInputMode),
+        children: VoiceInputMode.values.map((mode) {
+          return RadioListTile<VoiceInputMode>(
+            title: Text(_modeLabel(mode, l)),
+            value: mode,
+            groupValue: current,
+            onChanged: (v) {
+              if (v != null) {
+                ref.read(settingsNotifierProvider.notifier).set(
+                  SettingsKeys.voiceInputMode,
+                  v == VoiceInputMode.longPress ? 'longPress' : 'toggle',
+                );
+              }
+              Navigator.of(ctx).pop();
+            },
+          );
+        }).toList(),
+      ),
+    );
+  }
+
   void _showProviderPicker() {
     final l = AppLocalizations.of(context)!;
     final current = ref.read(sttProviderTypeProvider);
@@ -112,6 +146,7 @@ class _SttSettingsSectionState extends ConsumerState<SttSettingsSection> {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final type = ref.watch(sttProviderTypeProvider);
+    final inputMode = ref.watch(voiceInputModeProvider);
     final credentials = ref.watch(sttCredentialServiceProvider);
 
     return Column(
@@ -123,6 +158,12 @@ class _SttSettingsSectionState extends ConsumerState<SttSettingsSection> {
           title: Text(l.settings_sttProvider),
           subtitle: Text(_providerLabel(type, l)),
           onTap: _showProviderPicker,
+        ),
+        ListTile(
+          leading: const Icon(Icons.touch_app_outlined),
+          title: Text(l.settings_sttInputMode),
+          subtitle: Text(_modeLabel(inputMode, l)),
+          onTap: _showModePicker,
         ),
         if (type == SttProviderType.volcengine) ...[
           _CredentialTile(

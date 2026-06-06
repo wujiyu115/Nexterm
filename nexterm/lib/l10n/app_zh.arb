@@ -695,6 +695,10 @@
   "settings_sttEditCredential": "编辑",
   "settings_sttConfigured": "已配置",
   "settings_sttNotConfigured": "未配置",
+  "settings_sttInputMode": "输入模式",
+  "settings_sttInputModeToggle": "单按切换",
+  "settings_sttInputModeLongPress": "长按说话",
+  "settings_sttSelectInputMode": "选择输入模式",
 
   "composer_placeholder": "输入内容...",
   "composer_send": "发送",

@@ -29,6 +29,14 @@ final sttProviderInstanceProvider = Provider<SttProvider>((ref) {
   };
 });
 
+enum VoiceInputMode { toggle, longPress }
+
+final voiceInputModeProvider = Provider<VoiceInputMode>((ref) {
+  final settings = ref.watch(settingsNotifierProvider);
+  final value = settings[SettingsKeys.voiceInputMode] ?? 'toggle';
+  return value == 'longPress' ? VoiceInputMode.longPress : VoiceInputMode.toggle;
+});
+
 final sttAvailableProvider = FutureProvider.autoDispose<bool>((ref) {
   final provider = ref.watch(sttProviderInstanceProvider);
   return provider.isAvailable();

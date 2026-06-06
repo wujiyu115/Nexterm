@@ -1938,6 +1938,18 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_sttNotConfigured => '未配置';
 
   @override
+  String get settings_sttInputMode => '输入模式';
+
+  @override
+  String get settings_sttInputModeToggle => '单按切换';
+
+  @override
+  String get settings_sttInputModeLongPress => '长按说话';
+
+  @override
+  String get settings_sttSelectInputMode => '选择输入模式';
+
+  @override
   String get composer_placeholder => '输入内容...';
 
   @override

@@ -15,6 +15,7 @@ class SettingsKeys {
   static const terminalFontFamily = 'terminal_font_family';
   static const voiceInputLocale = 'voice_input_locale';
   static const sttProvider = 'stt_provider';
+  static const voiceInputMode = 'voice_input_mode';
   static const notifyBellEnabled = 'notify_bell_enabled';
   static const notifyClaudeEnabled = 'notify_claude_enabled';
   static const notifyClaudeStop = 'notify_claude_stop';

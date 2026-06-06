@@ -3758,6 +3758,30 @@ abstract class AppLocalizations {
   /// **'未配置'**
   String get settings_sttNotConfigured;
 
+  /// No description provided for @settings_sttInputMode.
+  ///
+  /// In zh, this message translates to:
+  /// **'输入模式'**
+  String get settings_sttInputMode;
+
+  /// No description provided for @settings_sttInputModeToggle.
+  ///
+  /// In zh, this message translates to:
+  /// **'单按切换'**
+  String get settings_sttInputModeToggle;
+
+  /// No description provided for @settings_sttInputModeLongPress.
+  ///
+  /// In zh, this message translates to:
+  /// **'长按说话'**
+  String get settings_sttInputModeLongPress;
+
+  /// No description provided for @settings_sttSelectInputMode.
+  ///
+  /// In zh, this message translates to:
+  /// **'选择输入模式'**
+  String get settings_sttSelectInputMode;
+
   /// No description provided for @composer_placeholder.
   ///
   /// In zh, this message translates to:
