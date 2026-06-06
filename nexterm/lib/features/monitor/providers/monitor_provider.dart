@@ -38,10 +38,13 @@ class MonitorNotifier extends StateNotifier<MonitorState> {
   SystemMonitorService? _service;
   StreamSubscription<SystemSnapshot>? _subscription;
   final Queue<SystemSnapshot> _buffer = Queue();
+  bool _disposed = false;
 
   MonitorNotifier() : super(const MonitorState(isConnecting: true));
 
   Future<void> start(SSHClient client) async {
+    if (_disposed) return;
+
     _subscription?.cancel();
     _service?.dispose();
     _service = SystemMonitorService(client);
@@ -50,7 +53,7 @@ class MonitorNotifier extends StateNotifier<MonitorState> {
 
     _subscription = _service!.snapshots.listen(
       (snapshot) {
-        if (!mounted) return;
+        if (_disposed) return;
         _buffer.addLast(snapshot);
         while (_buffer.length > maxHistory) {
           _buffer.removeFirst();
@@ -62,7 +65,7 @@ class MonitorNotifier extends StateNotifier<MonitorState> {
         );
       },
       onError: (e) {
-        if (!mounted) return;
+        if (_disposed) return;
         state = state.copyWith(error: () => e.toString(), isConnecting: false);
       },
     );
@@ -72,6 +75,8 @@ class MonitorNotifier extends StateNotifier<MonitorState> {
 
   @override
   void dispose() {
+    if (_disposed) return;
+    _disposed = true;
     _subscription?.cancel();
     _service?.dispose();
     super.dispose();
