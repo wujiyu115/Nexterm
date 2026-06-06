@@ -17,6 +17,7 @@ import 'package:nexterm/features/terminal/ui/widgets/composer_panel.dart';
 import 'package:nexterm/features/terminal/ui/widgets/function_panel.dart';
 import 'package:nexterm/features/terminal/ui/widgets/dpad_panel.dart';
 import 'package:nexterm/features/terminal/ui/widgets/keyboard_toolbar.dart';
+import 'package:nexterm/features/monitor/ui/monitor_screen.dart';
 import 'package:nexterm/features/terminal/ui/tab_manager.dart';
 import 'package:nexterm/features/terminal/ui/widgets/terminal_tab_bar.dart';
 import 'package:nexterm/features/terminal/ui/widgets/terminal_view.dart';
@@ -445,6 +446,17 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
     );
   }
 
+  void _openMonitor() {
+    final tabManager = ref.read(tabManagerProvider);
+    final activeTab = tabManager.activeTab;
+    if (activeTab == null || activeTab.sessionId == null) return;
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => MonitorScreen(sessionId: activeTab.sessionId!),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final tabManager = ref.watch(tabManagerProvider);
@@ -485,6 +497,7 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
             onOpenGit: activeTab != null && activeTab.connectionType == ConnectionType.ssh ? _openGitTab : null,
             onOpenWeb: activeTab != null && activeTab.connectionType == ConnectionType.ssh ? _openWebPreview : null,
             onOpenMux: activeTab != null && activeTab.connectionType == ConnectionType.ssh ? _showMuxSheet : null,
+            onOpenMonitor: activeTab != null && activeTab.connectionType == ConnectionType.ssh ? _openMonitor : null,
             onGoToHosts: () {
               if (context.canPop()) context.pop();
             },

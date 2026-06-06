@@ -608,18 +608,6 @@ abstract class AppLocalizations {
   /// **'/home/user 或 /var/www'**
   String get hostForm_sftpPathHint;
 
-  /// No description provided for @hostForm_useTmux.
-  String get hostForm_useTmux;
-
-  /// No description provided for @hostForm_useTmuxHint.
-  String get hostForm_useTmuxHint;
-
-  /// No description provided for @hostForm_tmuxSessionName.
-  String get hostForm_tmuxSessionName;
-
-  /// No description provided for @hostForm_tmuxSessionNameHint.
-  String get hostForm_tmuxSessionNameHint;
-
   /// No description provided for @hostForm_startupModeCommand.
   ///
   /// In zh, this message translates to:
@@ -661,6 +649,138 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'暂无片段'**
   String get hostForm_noSnippets;
+
+  /// No description provided for @hostForm_useTmux.
+  ///
+  /// In zh, this message translates to:
+  /// **'自动 Tmux'**
+  String get hostForm_useTmux;
+
+  /// No description provided for @hostForm_useTmuxHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'连接时自动 attach 或创建 tmux 会话'**
+  String get hostForm_useTmuxHint;
+
+  /// No description provided for @hostForm_tmuxSessionName.
+  ///
+  /// In zh, this message translates to:
+  /// **'Tmux 会话名称'**
+  String get hostForm_tmuxSessionName;
+
+  /// No description provided for @hostForm_tmuxSessionNameHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'留空则使用默认值 (nexterm-主机名)'**
+  String get hostForm_tmuxSessionNameHint;
+
+  /// No description provided for @monitor_title.
+  ///
+  /// In zh, this message translates to:
+  /// **'系统监控'**
+  String get monitor_title;
+
+  /// No description provided for @monitor_cpu.
+  ///
+  /// In zh, this message translates to:
+  /// **'CPU'**
+  String get monitor_cpu;
+
+  /// No description provided for @monitor_memory.
+  ///
+  /// In zh, this message translates to:
+  /// **'内存'**
+  String get monitor_memory;
+
+  /// No description provided for @monitor_disk.
+  ///
+  /// In zh, this message translates to:
+  /// **'磁盘'**
+  String get monitor_disk;
+
+  /// No description provided for @monitor_network.
+  ///
+  /// In zh, this message translates to:
+  /// **'网络'**
+  String get monitor_network;
+
+  /// No description provided for @monitor_cpuUsage.
+  ///
+  /// In zh, this message translates to:
+  /// **'CPU 使用率'**
+  String get monitor_cpuUsage;
+
+  /// No description provided for @monitor_memoryUsage.
+  ///
+  /// In zh, this message translates to:
+  /// **'内存使用率'**
+  String get monitor_memoryUsage;
+
+  /// No description provided for @monitor_used.
+  ///
+  /// In zh, this message translates to:
+  /// **'已使用'**
+  String get monitor_used;
+
+  /// No description provided for @monitor_free.
+  ///
+  /// In zh, this message translates to:
+  /// **'可用'**
+  String get monitor_free;
+
+  /// No description provided for @monitor_total.
+  ///
+  /// In zh, this message translates to:
+  /// **'总计'**
+  String get monitor_total;
+
+  /// No description provided for @monitor_rxSpeed.
+  ///
+  /// In zh, this message translates to:
+  /// **'接收'**
+  String get monitor_rxSpeed;
+
+  /// No description provided for @monitor_txSpeed.
+  ///
+  /// In zh, this message translates to:
+  /// **'发送'**
+  String get monitor_txSpeed;
+
+  /// No description provided for @monitor_uptime.
+  ///
+  /// In zh, this message translates to:
+  /// **'运行时间'**
+  String get monitor_uptime;
+
+  /// No description provided for @monitor_loadAvg.
+  ///
+  /// In zh, this message translates to:
+  /// **'负载均值'**
+  String get monitor_loadAvg;
+
+  /// No description provided for @monitor_noData.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂无数据'**
+  String get monitor_noData;
+
+  /// No description provided for @monitor_connecting.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在采集指标...'**
+  String get monitor_connecting;
+
+  /// No description provided for @monitor_unsupported.
+  ///
+  /// In zh, this message translates to:
+  /// **'不支持的操作系统'**
+  String get monitor_unsupported;
+
+  /// No description provided for @monitor_connectionLost.
+  ///
+  /// In zh, this message translates to:
+  /// **'连接断开'**
+  String get monitor_connectionLost;
 
   /// No description provided for @sessions_title.
   ///

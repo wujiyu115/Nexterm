@@ -285,18 +285,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostForm_sftpPathHint => '/home/user or /var/www';
 
   @override
-  String get hostForm_useTmux => 'Auto use Tmux';
-
-  @override
-  String get hostForm_useTmuxHint => 'Automatically create or attach tmux session on connect';
-
-  @override
-  String get hostForm_tmuxSessionName => 'Session name';
-
-  @override
-  String get hostForm_tmuxSessionNameHint => 'Leave empty for auto (nexterm-<hostname>)';
-
-  @override
   String get hostForm_startupModeCommand => 'Command';
 
   @override
@@ -316,6 +304,74 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostForm_noSnippets => 'No snippets available';
+
+  @override
+  String get hostForm_useTmux => 'Auto Tmux';
+
+  @override
+  String get hostForm_useTmuxHint =>
+      'Automatically attach or create tmux session on connect';
+
+  @override
+  String get hostForm_tmuxSessionName => 'Tmux Session Name';
+
+  @override
+  String get hostForm_tmuxSessionNameHint =>
+      'Leave empty for default (nexterm-hostname)';
+
+  @override
+  String get monitor_title => 'System Monitor';
+
+  @override
+  String get monitor_cpu => 'CPU';
+
+  @override
+  String get monitor_memory => 'Memory';
+
+  @override
+  String get monitor_disk => 'Disk';
+
+  @override
+  String get monitor_network => 'Network';
+
+  @override
+  String get monitor_cpuUsage => 'CPU Usage';
+
+  @override
+  String get monitor_memoryUsage => 'Memory Usage';
+
+  @override
+  String get monitor_used => 'Used';
+
+  @override
+  String get monitor_free => 'Free';
+
+  @override
+  String get monitor_total => 'Total';
+
+  @override
+  String get monitor_rxSpeed => 'RX';
+
+  @override
+  String get monitor_txSpeed => 'TX';
+
+  @override
+  String get monitor_uptime => 'Uptime';
+
+  @override
+  String get monitor_loadAvg => 'Load Average';
+
+  @override
+  String get monitor_noData => 'No data yet';
+
+  @override
+  String get monitor_connecting => 'Collecting metrics...';
+
+  @override
+  String get monitor_unsupported => 'Unsupported OS';
+
+  @override
+  String get monitor_connectionLost => 'Connection lost';
 
   @override
   String get sessions_title => 'Sessions';

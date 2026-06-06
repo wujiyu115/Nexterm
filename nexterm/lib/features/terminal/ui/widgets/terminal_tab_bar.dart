@@ -29,6 +29,7 @@ class TerminalTabBar extends ConsumerWidget {
   final VoidCallback? onOpenGit;
   final VoidCallback? onOpenWeb;
   final VoidCallback? onOpenMux;
+  final VoidCallback? onOpenMonitor;
 
   const TerminalTabBar({
     super.key,
@@ -45,6 +46,7 @@ class TerminalTabBar extends ConsumerWidget {
     this.onOpenGit,
     this.onOpenWeb,
     this.onOpenMux,
+    this.onOpenMonitor,
   });
 
   @override
@@ -91,6 +93,7 @@ class TerminalTabBar extends ConsumerWidget {
             onOpenGit: onOpenGit,
             onOpenWeb: onOpenWeb,
             onOpenMux: onOpenMux,
+            onOpenMonitor: onOpenMonitor,
             onDetectPorts: onDetectPorts,
             onToggleMode: onToggleMode,
             onCustomizeTap: onCustomizeTap,
@@ -113,6 +116,7 @@ class _MenuButton extends StatefulWidget {
   final VoidCallback? onOpenGit;
   final VoidCallback? onOpenWeb;
   final VoidCallback? onOpenMux;
+  final VoidCallback? onOpenMonitor;
   final VoidCallback? onDetectPorts;
   final VoidCallback? onToggleMode;
   final VoidCallback? onCustomizeTap;
@@ -128,6 +132,7 @@ class _MenuButton extends StatefulWidget {
     this.onOpenGit,
     this.onOpenWeb,
     this.onOpenMux,
+    this.onOpenMonitor,
     this.onDetectPorts,
     this.onToggleMode,
     this.onCustomizeTap,
@@ -180,6 +185,7 @@ class _MenuButtonState extends State<_MenuButton> {
               onOpenGit: widget.onOpenGit,
               onOpenWeb: widget.onOpenWeb,
               onOpenMux: widget.onOpenMux,
+              onOpenMonitor: widget.onOpenMonitor,
               onDetectPorts: widget.onDetectPorts,
               onToggleMode: widget.onToggleMode,
               onCustomizeTap: widget.onCustomizeTap,
@@ -226,6 +232,7 @@ class _MenuPopup extends StatelessWidget {
   final VoidCallback? onOpenGit;
   final VoidCallback? onOpenWeb;
   final VoidCallback? onOpenMux;
+  final VoidCallback? onOpenMonitor;
   final VoidCallback? onDetectPorts;
   final VoidCallback? onToggleMode;
   final VoidCallback? onCustomizeTap;
@@ -243,6 +250,7 @@ class _MenuPopup extends StatelessWidget {
     this.onOpenGit,
     this.onOpenWeb,
     this.onOpenMux,
+    this.onOpenMonitor,
     this.onDetectPorts,
     this.onToggleMode,
     this.onCustomizeTap,
@@ -255,7 +263,7 @@ class _MenuPopup extends StatelessWidget {
     final p = Theme.of(context).extension<ThemePalette>()!;
 
     final hasFileItems = onOpenSftp != null;
-    final hasToolItems = onOpenGit != null || onOpenWeb != null || onOpenMux != null || onDetectPorts != null;
+    final hasToolItems = onOpenGit != null || onOpenWeb != null || onOpenMux != null || onDetectPorts != null || onOpenMonitor != null;
 
     return Material(
       elevation: 8,
@@ -284,6 +292,7 @@ class _MenuPopup extends StatelessWidget {
                   if (onOpenGit != null) _item(context, Icons.account_tree_outlined, l.terminal_openGit, () => onItemTap(onOpenGit)),
                   if (onOpenWeb != null) _item(context, Icons.language, l.terminal_openWeb, () => onItemTap(onOpenWeb)),
                   if (onOpenMux != null) _item(context, Icons.view_week_outlined, l.terminal_openMux, () => onItemTap(onOpenMux)),
+                  if (onOpenMonitor != null) _item(context, Icons.monitor_heart_outlined, l.monitor_title, () => onItemTap(onOpenMonitor)),
                   if (onDetectPorts != null) _item(context, Icons.radar, l.portDetect_tooltip, () => onItemTap(onDetectPorts)),
                 ]),
               if (onCustomizeTap != null)

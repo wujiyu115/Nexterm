@@ -276,18 +276,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get hostForm_sftpPathHint => '/home/user 或 /var/www';
 
   @override
-  String get hostForm_useTmux => '自动使用 Tmux';
-
-  @override
-  String get hostForm_useTmuxHint => '连接时自动创建或附加 tmux 会话';
-
-  @override
-  String get hostForm_tmuxSessionName => '会话名称';
-
-  @override
-  String get hostForm_tmuxSessionNameHint => '留空则自动生成 (nexterm-<主机名>)';
-
-  @override
   String get hostForm_startupModeCommand => '命令';
 
   @override
@@ -307,6 +295,72 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get hostForm_noSnippets => '暂无片段';
+
+  @override
+  String get hostForm_useTmux => '自动 Tmux';
+
+  @override
+  String get hostForm_useTmuxHint => '连接时自动 attach 或创建 tmux 会话';
+
+  @override
+  String get hostForm_tmuxSessionName => 'Tmux 会话名称';
+
+  @override
+  String get hostForm_tmuxSessionNameHint => '留空则使用默认值 (nexterm-主机名)';
+
+  @override
+  String get monitor_title => '系统监控';
+
+  @override
+  String get monitor_cpu => 'CPU';
+
+  @override
+  String get monitor_memory => '内存';
+
+  @override
+  String get monitor_disk => '磁盘';
+
+  @override
+  String get monitor_network => '网络';
+
+  @override
+  String get monitor_cpuUsage => 'CPU 使用率';
+
+  @override
+  String get monitor_memoryUsage => '内存使用率';
+
+  @override
+  String get monitor_used => '已使用';
+
+  @override
+  String get monitor_free => '可用';
+
+  @override
+  String get monitor_total => '总计';
+
+  @override
+  String get monitor_rxSpeed => '接收';
+
+  @override
+  String get monitor_txSpeed => '发送';
+
+  @override
+  String get monitor_uptime => '运行时间';
+
+  @override
+  String get monitor_loadAvg => '负载均值';
+
+  @override
+  String get monitor_noData => '暂无数据';
+
+  @override
+  String get monitor_connecting => '正在采集指标...';
+
+  @override
+  String get monitor_unsupported => '不支持的操作系统';
+
+  @override
+  String get monitor_connectionLost => '连接断开';
 
   @override
   String get sessions_title => '会话';
