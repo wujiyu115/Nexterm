@@ -151,7 +151,6 @@ class SettingsScreen extends ConsumerWidget {
             value: settingsNotifier.getBool(SettingsKeys.notifySoundEnabled, defaultValue: true),
             onChanged: (v) => settingsNotifier.set(SettingsKeys.notifySoundEnabled, v.toString()),
           ),
-          const Divider(indent: 16, endIndent: 16),
           ListTile(
             leading: const Icon(Icons.cloud_upload_outlined),
             title: Text(l.settings_remoteNotify),
