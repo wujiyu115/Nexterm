@@ -171,7 +171,11 @@ class GitNotifier extends ChangeNotifier {
   Future<List<GitFileDiff>> getFileDiff(
     String filePath, {
     bool staged = false,
+    bool untracked = false,
   }) async {
+    if (untracked) {
+      return DiffParser.parse(await _service.diffNewFile(filePath));
+    }
     return DiffParser.parse(await _service.diffFile(filePath, staged: staged));
   }
 

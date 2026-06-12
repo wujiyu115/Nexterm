@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nexterm/core/theme/app_theme.dart';
 import 'package:nexterm/core/theme/theme_palette.dart';
 import 'package:nexterm/shared/widgets/dashed_divider.dart';
+import 'package:nexterm/features/git/models/git_status.dart';
 import 'package:nexterm/features/git/models/git_tag.dart';
 import 'package:nexterm/features/git/providers/git_provider.dart';
 import 'package:nexterm/features/git/services/git_command_service.dart';
@@ -113,8 +114,9 @@ class _GitScreenState extends ConsumerState<GitScreen> with SingleTickerProvider
   @override
   void dispose() { _tabController.dispose(); _gitNotifier?.dispose(); super.dispose(); }
 
-  void _showFileDiff(entry, bool staged) async {
-    final diffs = await _gitNotifier!.getFileDiff(entry.path, staged: staged);
+  void _showFileDiff(GitStatusEntry entry, bool staged) async {
+    final isUntracked = entry.indexStatus == FileStatusCode.untracked;
+    final diffs = await _gitNotifier!.getFileDiff(entry.path, staged: staged, untracked: isUntracked);
     if (!mounted) return;
     Navigator.of(context).push(MaterialPageRoute(
       builder: (_) => Scaffold(appBar: AppBar(title: Text(entry.path.split('/').last)), body: DiffView(diffs: diffs))));

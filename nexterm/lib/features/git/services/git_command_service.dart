@@ -274,6 +274,12 @@ class GitCommandService {
     return await _run('diff $flag -- ${_shellEscape(filePath)}');
   }
 
+  Future<String> diffNewFile(String filePath) async {
+    final result = await _exec('diff --no-index -- /dev/null ${_shellEscape(filePath)}');
+    // git diff --no-index exits 1 when differences found — that's expected
+    return result.stdout;
+  }
+
   // Commit file list
   Future<List<CommitFileChange>> commitFiles(String sha) async {
     final output = await _run('diff-tree --no-commit-id -r --name-status $sha');
