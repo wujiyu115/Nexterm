@@ -91,7 +91,7 @@ class TerminalThemes {
     cursor: Color(0xFF586E75),
     selection: Color(0x66268BD2),
     foreground: Color(0xFF657B83),
-    background: Color(0xFFFDF6E3),
+    background: Color(0xFFEEE8D5),
     black: Color(0xFFEEE8D5),
     red: Color(0xFFDC322F),
     green: Color(0xFF859900),
@@ -100,7 +100,7 @@ class TerminalThemes {
     magenta: Color(0xFFD33682),
     cyan: Color(0xFF2AA198),
     white: Color(0xFF073642),
-    brightBlack: Color(0xFFFDF6E3),
+    brightBlack: Color(0xFFEEE8D5),
     brightRed: Color(0xFFCB4B16),
     brightGreen: Color(0xFF93A1A1),
     brightYellow: Color(0xFF839496),
@@ -110,7 +110,7 @@ class TerminalThemes {
     brightWhite: Color(0xFF002B36),
     searchHitBackground: Color(0xFFB58900),
     searchHitBackgroundCurrent: Color(0xFF859900),
-    searchHitForeground: Color(0xFFFDF6E3),
+    searchHitForeground: Color(0xFFEEE8D5),
   );
 
   /// Nord theme (https://www.nordtheme.com/).
@@ -172,7 +172,7 @@ class TerminalThemes {
     cursor: Color(0xFFDC8A78),
     selection: Color(0x66ACB0BE),
     foreground: Color(0xFF4C4F69),
-    background: Color(0xFFEFF1F5),
+    background: Color(0xFFDCE0E8),
     black: Color(0xFF5C5F77),
     red: Color(0xFFD20F39),
     green: Color(0xFF40A02B),
@@ -191,7 +191,7 @@ class TerminalThemes {
     brightWhite: Color(0xFFBCC0CC),
     searchHitBackground: Color(0xFFDF8E1D),
     searchHitBackgroundCurrent: Color(0xFF40A02B),
-    searchHitForeground: Color(0xFFEFF1F5),
+    searchHitForeground: Color(0xFFDCE0E8),
   );
 
   /// GitHub Light theme (palette derived from GitHub Primer Light).
@@ -199,7 +199,7 @@ class TerminalThemes {
     cursor: Color(0xFF24292F),
     selection: Color(0x660969DA),
     foreground: Color(0xFF1F2328),
-    background: Color(0xFFFFFFFF),
+    background: Color(0xFFEAEEF2),
     black: Color(0xFF24292F),
     red: Color(0xFFCF222E),
     green: Color(0xFF116329),
@@ -218,7 +218,7 @@ class TerminalThemes {
     brightWhite: Color(0xFF8C959F),
     searchHitBackground: Color(0xFFFFF8C5),
     searchHitBackgroundCurrent: Color(0xFFDAFBE1),
-    searchHitForeground: Color(0xFF24292F),
+    searchHitForeground: Color(0xFF1F2328),
   );
 
   /// Rosé Pine Dawn (light) — https://rosepinetheme.com.
@@ -226,7 +226,7 @@ class TerminalThemes {
     cursor: Color(0xFF575279),
     selection: Color(0x66DFDAD9),
     foreground: Color(0xFF575279),
-    background: Color(0xFFFAF4ED),
+    background: Color(0xFFF2E9E1),
     black: Color(0xFFF2E9E1),
     red: Color(0xFFB4637A),
     green: Color(0xFF286983),
@@ -245,7 +245,7 @@ class TerminalThemes {
     brightWhite: Color(0xFF575279),
     searchHitBackground: Color(0xFFEA9D34),
     searchHitBackgroundCurrent: Color(0xFF286983),
-    searchHitForeground: Color(0xFFFAF4ED),
+    searchHitForeground: Color(0xFFF2E9E1),
   );
 
   /// One Dark (Atom).
@@ -415,7 +415,7 @@ class TerminalThemes {
     cursor: Color(0xFF383A42),
     selection: Color(0x66BFCEFF),
     foreground: Color(0xFF383A42),
-    background: Color(0xFFFAFAFA),
+    background: Color(0xFFE5E5E6),
     black: Color(0xFF383A42),
     red: Color(0xFFE45649),
     green: Color(0xFF50A14F),
@@ -442,7 +442,7 @@ class TerminalThemes {
     cursor: Color(0xFF3760BF),
     selection: Color(0x66B6D2F2),
     foreground: Color(0xFF3760BF),
-    background: Color(0xFFD5D6DB),
+    background: Color(0xFFC4C5CB),
     black: Color(0xFF0F0F14),
     red: Color(0xFFF52A65),
     green: Color(0xFF587539),
@@ -461,7 +461,7 @@ class TerminalThemes {
     brightWhite: Color(0xFF3760BF),
     searchHitBackground: Color(0xFF8C6C3E),
     searchHitBackgroundCurrent: Color(0xFF587539),
-    searchHitForeground: Color(0xFFD5D6DB),
+    searchHitForeground: Color(0xFFC4C5CB),
   );
 
   /// Everforest Light.
@@ -469,7 +469,7 @@ class TerminalThemes {
     cursor: Color(0xFF5C6A72),
     selection: Color(0x66E0DCC7),
     foreground: Color(0xFF5C6A72),
-    background: Color(0xFFFDF6E3),
+    background: Color(0xFFEDE6D3),
     black: Color(0xFF5C6A72),
     red: Color(0xFFF85552),
     green: Color(0xFF8DA101),
@@ -488,7 +488,7 @@ class TerminalThemes {
     brightWhite: Color(0xFF5C6A72),
     searchHitBackground: Color(0xFFDFA000),
     searchHitBackgroundCurrent: Color(0xFF8DA101),
-    searchHitForeground: Color(0xFFFDF6E3),
+    searchHitForeground: Color(0xFFEDE6D3),
   );
 
   /// Ayu Light.
@@ -496,7 +496,7 @@ class TerminalThemes {
     cursor: Color(0xFFFF9940),
     selection: Color(0x66D1E4F4),
     foreground: Color(0xFF575F66),
-    background: Color(0xFFFAFAFA),
+    background: Color(0xFFE8E8EA),
     black: Color(0xFF575F66),
     red: Color(0xFFF07171),
     green: Color(0xFF86B300),
@@ -515,7 +515,7 @@ class TerminalThemes {
     brightWhite: Color(0xFF575F66),
     searchHitBackground: Color(0xFFF2AE49),
     searchHitBackgroundCurrent: Color(0xFF86B300),
-    searchHitForeground: Color(0xFFFAFAFA),
+    searchHitForeground: Color(0xFFE8E8EA),
   );
 
   /// Nord Light (Snow Storm).
@@ -523,7 +523,7 @@ class TerminalThemes {
     cursor: Color(0xFF2E3440),
     selection: Color(0x66D8DEE9),
     foreground: Color(0xFF2E3440),
-    background: Color(0xFFECEFF4),
+    background: Color(0xFFD8DEE9),
     black: Color(0xFF2E3440),
     red: Color(0xFFBF616A),
     green: Color(0xFFA3BE8C),
@@ -550,7 +550,7 @@ class TerminalThemes {
     cursor: Color(0xFF3C3836),
     selection: Color(0x66EBDBB2),
     foreground: Color(0xFF3C3836),
-    background: Color(0xFFFBF1C7),
+    background: Color(0xFFEBDBB2),
     black: Color(0xFF3C3836),
     red: Color(0xFFCC241D),
     green: Color(0xFF98971A),
@@ -569,7 +569,7 @@ class TerminalThemes {
     brightWhite: Color(0xFF3C3836),
     searchHitBackground: Color(0xFFD79921),
     searchHitBackgroundCurrent: Color(0xFF98971A),
-    searchHitForeground: Color(0xFFFBF1C7),
+    searchHitForeground: Color(0xFFEBDBB2),
   );
 
   /// Dracula Light (soft community variant).
@@ -577,7 +577,7 @@ class TerminalThemes {
     cursor: Color(0xFF282A36),
     selection: Color(0x66BD93F9),
     foreground: Color(0xFF282A36),
-    background: Color(0xFFF8F8F2),
+    background: Color(0xFFE8E8E2),
     black: Color(0xFF282A36),
     red: Color(0xFFFF5555),
     green: Color(0xFF50FA7B),
@@ -596,7 +596,7 @@ class TerminalThemes {
     brightWhite: Color(0xFF282A36),
     searchHitBackground: Color(0xFFF1FA8C),
     searchHitBackgroundCurrent: Color(0xFF50FA7B),
-    searchHitForeground: Color(0xFF282A36),
+    searchHitForeground: Color(0xFFE8E8E2),
   );
 
   /// Map of all available terminal themes by name.

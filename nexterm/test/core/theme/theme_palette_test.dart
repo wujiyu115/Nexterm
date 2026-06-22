@@ -39,7 +39,6 @@ ThemePalette _samplePalette() => const ThemePalette(
       statusConnecting: Color(0xFFD29922),
       statusOffline: Color(0xFF484F58),
       statusError: Color(0xFFF85149),
-      terminalBg: Color(0xFF000000),
       termPrompt: Color(0xFF5CB85C),
       termPath: Color(0xFF89B4FA),
       termCommand: Color(0xFFCDD6F4),

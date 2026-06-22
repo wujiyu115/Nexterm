@@ -36,7 +36,6 @@ class ThemePalette extends ThemeExtension<ThemePalette> {
   final Color statusError;
 
   // Terminal helpers (UI text styled like a terminal prompt)
-  final Color terminalBg;
   final Color termPrompt;
   final Color termPath;
   final Color termCommand;
@@ -67,7 +66,6 @@ class ThemePalette extends ThemeExtension<ThemePalette> {
     required this.statusConnecting,
     required this.statusOffline,
     required this.statusError,
-    required this.terminalBg,
     required this.termPrompt,
     required this.termPath,
     required this.termCommand,
@@ -98,7 +96,6 @@ class ThemePalette extends ThemeExtension<ThemePalette> {
     Color? statusConnecting,
     Color? statusOffline,
     Color? statusError,
-    Color? terminalBg,
     Color? termPrompt,
     Color? termPath,
     Color? termCommand,
@@ -127,7 +124,6 @@ class ThemePalette extends ThemeExtension<ThemePalette> {
       statusConnecting: statusConnecting ?? this.statusConnecting,
       statusOffline: statusOffline ?? this.statusOffline,
       statusError: statusError ?? this.statusError,
-      terminalBg: terminalBg ?? this.terminalBg,
       termPrompt: termPrompt ?? this.termPrompt,
       termPath: termPath ?? this.termPath,
       termCommand: termCommand ?? this.termCommand,
