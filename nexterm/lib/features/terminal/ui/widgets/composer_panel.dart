@@ -68,7 +68,7 @@ class ComposerPanelState extends ConsumerState<ComposerPanel>
     final text = _controller.text.trim();
     if (text.isEmpty) return;
     HapticFeedback.lightImpact();
-    final payload = _chatMode ? '$text\n' : text;
+    final payload = _chatMode ? '$text\r' : text;
     widget.onKeyInput(Uint8List.fromList(utf8.encode(payload)));
     _controller.clear();
     _focusNode.requestFocus();
