@@ -455,6 +455,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mux_attached => 'attached';
 
   @override
+  String get mux_renameSession => 'Rename Session';
+
+  @override
   String get terminal_openWebHint => 'Enter remote port to preview';
 
   @override

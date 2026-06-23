@@ -443,6 +443,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get mux_attached => '已连接';
 
   @override
+  String get mux_renameSession => '重命名会话';
+
+  @override
   String get terminal_openWebHint => '输入远程端口号进行预览';
 
   @override

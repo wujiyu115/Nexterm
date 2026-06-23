@@ -153,6 +153,7 @@
   "mux_windows": "{count} windows",
   "@mux_windows": { "placeholders": { "count": { "type": "int" } } },
   "mux_attached": "attached",
+  "mux_renameSession": "Rename Session",
   "terminal_openWebHint": "Enter remote port to preview",
   "terminal_toggleKeyboard": "Toggle Keyboard",
   "terminal_backToHosts": "Back to Hosts",

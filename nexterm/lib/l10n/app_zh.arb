@@ -158,6 +158,7 @@
   "mux_windows": "{count} 个窗口",
   "@mux_windows": { "placeholders": { "count": { "type": "int" } } },
   "mux_attached": "已连接",
+  "mux_renameSession": "重命名会话",
   "terminal_openWebHint": "输入远程端口号进行预览",
   "terminal_toggleKeyboard": "切换键盘",
   "terminal_backToHosts": "返回主机",

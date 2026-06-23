@@ -30,6 +30,7 @@ abstract class MultiplexerService {
   Future<bool> isInstalled(SSHClient client);
   Future<List<MuxSession>> listSessions(SSHClient client);
   Future<void> killSession(SSHClient client, String sessionName);
+  Future<void> renameSession(SSHClient client, String oldName, String newName);
   String attachCommand(String sessionName);
   String newSessionCommand(String sessionName);
 }

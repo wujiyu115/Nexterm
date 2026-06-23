@@ -938,6 +938,12 @@ abstract class AppLocalizations {
   /// **'已连接'**
   String get mux_attached;
 
+  /// No description provided for @mux_renameSession.
+  ///
+  /// In zh, this message translates to:
+  /// **'重命名会话'**
+  String get mux_renameSession;
+
   /// No description provided for @terminal_openWebHint.
   ///
   /// In zh, this message translates to:

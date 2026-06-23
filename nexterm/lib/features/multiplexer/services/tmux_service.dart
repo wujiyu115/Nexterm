@@ -65,6 +65,11 @@ class TmuxMultiplexerService implements MultiplexerService {
     await client.run('tmux kill-session -t ${_shellEscape(sessionName)} 2>/dev/null').timeout(_timeout);
   }
 
+  @override
+  Future<void> renameSession(SSHClient client, String oldName, String newName) async {
+    await client.run('tmux rename-session -t ${_shellEscape(oldName)} ${_shellEscape(newName)} 2>/dev/null').timeout(_timeout);
+  }
+
   String _shellEscape(String s) => "'${s.replaceAll("'", r"'\''")}'";
 
   @override

@@ -81,6 +81,50 @@ class _MuxSessionSheetState extends ConsumerState<MuxSessionSheet> {
     _loadSessions();
   }
 
+  void _renameSession(String oldName) {
+    final l = AppLocalizations.of(context)!;
+    final controller = TextEditingController(text: oldName);
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l.mux_renameSession),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          decoration: InputDecoration(hintText: l.mux_sessionName),
+          onSubmitted: (v) {
+            final name = v.trim();
+            if (name.isNotEmpty && name != oldName) {
+              Navigator.of(ctx).pop();
+              _doRename(oldName, name);
+            }
+          },
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(ctx).pop(), child: Text(l.common_cancel)),
+          FilledButton(
+            onPressed: () {
+              final name = controller.text.trim();
+              if (name.isNotEmpty && name != oldName) {
+                Navigator.of(ctx).pop();
+                _doRename(oldName, name);
+              }
+            },
+            child: Text(l.common_confirm),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _doRename(String oldName, String newName) async {
+    final client = _client;
+    final mux = _activeMux;
+    if (client == null || mux == null) return;
+    await mux.renameSession(client, oldName, newName);
+    _loadSessions();
+  }
+
   void _newSession() {
     final l = AppLocalizations.of(context)!;
     final controller = TextEditingController();
@@ -290,6 +334,11 @@ class _MuxSessionSheetState extends ConsumerState<MuxSessionSheet> {
                 Text(subtitleParts.join(' · '), style: theme.textTheme.bodySmall?.copyWith(color: p.fgTertiary)),
               ],
             ),
+          ),
+          IconButton(
+            icon: Icon(Icons.edit_outlined, size: 18, color: p.fgSecondary),
+            visualDensity: VisualDensity.compact,
+            onPressed: () => _renameSession(session.name),
           ),
           IconButton(
             icon: Icon(Icons.delete_outline, size: 18, color: p.statusError),
