@@ -23,7 +23,7 @@ jobs:
             let artifacts = [];
             let page = 1;
             while (true) {
-              const res = await github.rest.actions.listArtifacts({
+              const res = await github.rest.actions.listArtifactsForRepo({
                 owner, repo, per_page: 100, page
               });
               artifacts = artifacts.concat(res.data.artifacts);
