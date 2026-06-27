@@ -1,0 +1,76 @@
+name: Cleanup Old Artifacts & Caches
+
+on:
+  schedule:
+    - cron: '0 3 * * *'  # 每天 UTC 3:00（北京时间 11:00）自动运行
+  workflow_dispatch: {}   # 支持手动触发
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write   # 删除 artifact 和 cache 需要写权限
+      contents: read
+
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const KEEP = 3;
+            const { owner, repo } = context.repo;
+
+            // ── 清理 Artifacts ──
+            let artifacts = [];
+            let page = 1;
+            while (true) {
+              const res = await github.rest.actions.listArtifacts({
+                owner, repo, per_page: 100, page
+              });
+              artifacts = artifacts.concat(res.data.artifacts);
+              if (res.data.artifacts.length < 100) break;
+              page++;
+            }
+
+            artifacts.sort((a, b) =>
+              new Date(b.created_at) - new Date(a.created_at)
+            );
+            const delArts = artifacts.slice(KEEP);
+
+            console.log(`📦 Artifacts: ${artifacts.length} total, keep ${KEEP}, delete ${delArts.length}`);
+            for (const a of delArts) {
+              await github.rest.actions.deleteArtifact({
+                owner, repo, artifact_id: a.id
+              });
+              console.log(`  ❌ ${a.name}  (${a.id}, ${new Date(a.created_at).toISOString().slice(0,10)})`);
+            }
+
+            // ── 清理 Caches ──
+            let caches = [];
+            page = 1;
+            while (true) {
+              const res = await github.rest.actions.getActionsCacheList({
+                owner, repo, per_page: 100, page
+              });
+              caches = caches.concat(res.data.actions_caches);
+              if (res.data.actions_caches.length < 100) break;
+              page++;
+            }
+
+            caches.sort((a, b) =>
+              new Date(b.last_accessed_at) - new Date(a.last_accessed_at)
+            );
+            const delCaches = caches.slice(KEEP);
+
+            console.log(`💾 Caches: ${caches.length} total, keep ${KEEP}, delete ${delCaches.length}`);
+            for (const c of delCaches) {
+              await github.rest.actions.deleteActionsCacheById({
+                owner, repo, cache_id: c.id
+              });
+              console.log(`  ❌ ${c.key}  (${c.id})`);
+            }
+
+            const freedMB = (
+              delArts.reduce((s, a) => s + a.size_in_bytes, 0) +
+              delCaches.reduce((s, c) => s + c.size_in_bytes, 0)
+            ) / 1024 / 1024;
+            console.log(`\n✅ Cleanup done! Freed ${freedMB.toFixed(1)} MB`);
