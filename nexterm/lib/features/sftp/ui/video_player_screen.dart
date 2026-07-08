@@ -61,8 +61,6 @@ class _VideoPlayerScreenState extends ConsumerState<VideoPlayerScreen> {
 
   Future<void> _init() async {
     try {
-      await VideoStreamServer.cleanupOldTempFiles();
-
       final RemoteFileService fileService;
       if (widget.service != null) {
         fileService = widget.service!;
