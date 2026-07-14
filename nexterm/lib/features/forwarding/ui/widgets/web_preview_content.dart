@@ -1,6 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:nexterm/core/theme/theme_palette.dart';
-import 'package:webview_flutter/webview_flutter.dart';
+
+const _desktopUserAgent =
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+    'AppleWebKit/605.1.15 (KHTML, like Gecko) '
+    'Version/18.4 Safari/605.1.15';
+
+const _mobileUserAgent =
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 18_4 like Mac OS X) '
+    'AppleWebKit/605.1.15 (KHTML, like Gecko) '
+    'CriOS/136.0.7103.56 Mobile/15E148 Safari/604.1';
+
+const _desktopViewportWidth = 1280;
 
 class WebPreviewContent extends StatefulWidget {
   final int localPort;
@@ -16,13 +28,8 @@ class WebPreviewContent extends StatefulWidget {
   State<WebPreviewContent> createState() => _WebPreviewContentState();
 }
 
-const _desktopUserAgent =
-    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
-    'AppleWebKit/537.36 (KHTML, like Gecko) '
-    'Chrome/120.0.0.0 Safari/537.36';
-
 class _WebPreviewContentState extends State<WebPreviewContent> {
-  late final WebViewController _controller;
+  InAppWebViewController? _controller;
   bool _isLoading = true;
   bool _desktopMode = false;
   String _currentUrl = '';
@@ -31,37 +38,44 @@ class _WebPreviewContentState extends State<WebPreviewContent> {
   void initState() {
     super.initState();
     _currentUrl = 'http://localhost:${widget.localPort}';
-    _controller = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setNavigationDelegate(NavigationDelegate(
-        onPageStarted: (_) {
-          if (mounted) setState(() => _isLoading = true);
-        },
-        onPageFinished: (url) {
-          _injectViewport();
-          if (mounted) {
-            setState(() {
-              _isLoading = false;
-              _currentUrl = url;
-            });
-          }
-        },
-        onWebResourceError: (error) {
-          if (mounted) setState(() => _isLoading = false);
-        },
-      ))
-      ..loadRequest(Uri.parse(_currentUrl));
   }
 
-  // Force a zoomable viewport. Desktop mode uses a wide fixed width so pages
-  // render their desktop layout; both modes allow pinch-zoom.
-  void _injectViewport() {
+  InAppWebViewSettings _settings() => InAppWebViewSettings(
+        userAgent: _desktopMode ? _desktopUserAgent : _mobileUserAgent,
+        preferredContentMode: _desktopMode
+            ? UserPreferredContentMode.DESKTOP
+            : UserPreferredContentMode.MOBILE,
+        useWideViewPort: true,
+        loadWithOverviewMode: true,
+        supportZoom: true,
+        builtInZoomControls: true,
+        displayZoomControls: false,
+        javaScriptEnabled: true,
+        javaScriptCanOpenWindowsAutomatically: true,
+        domStorageEnabled: true,
+        databaseEnabled: true,
+        allowsBackForwardNavigationGestures: true,
+      );
+
+  Future<void> _toggleDesktop() async {
+    setState(() => _desktopMode = !_desktopMode);
+    final controller = _controller;
+    if (controller == null) return;
+    await controller.setSettings(settings: _settings());
+    await controller.reload();
+  }
+
+  // Force a zoomable viewport; desktop mode uses a wide fixed width so pages
+  // render their desktop layout, scaled down to fit the screen.
+  Future<void> _injectViewport() async {
+    final controller = _controller;
+    if (controller == null) return;
     final content = _desktopMode
-        ? 'width=1280, initial-scale=0.3, minimum-scale=0.1, '
-            'maximum-scale=10.0, user-scalable=yes'
-        : 'width=device-width, initial-scale=1.0, minimum-scale=0.1, '
-            'maximum-scale=10.0, user-scalable=yes';
-    _controller.runJavaScript('''
+        ? 'width=$_desktopViewportWidth, initial-scale=0.25, '
+            'minimum-scale=0.1, maximum-scale=10.0, user-scalable=yes'
+        : 'width=device-width, initial-scale=1.0, '
+            'minimum-scale=0.1, maximum-scale=10.0, user-scalable=yes';
+    await controller.evaluateJavascript(source: '''
       (function() {
         var m = document.querySelector('meta[name="viewport"]');
         if (!m) {
@@ -72,12 +86,6 @@ class _WebPreviewContentState extends State<WebPreviewContent> {
         m.setAttribute('content', '$content');
       })();
     ''');
-  }
-
-  Future<void> _toggleDesktop() async {
-    setState(() => _desktopMode = !_desktopMode);
-    await _controller.setUserAgent(_desktopMode ? _desktopUserAgent : null);
-    await _controller.reload();
   }
 
   @override
@@ -94,19 +102,19 @@ class _WebPreviewContentState extends State<WebPreviewContent> {
             children: [
               IconButton(
                 icon: Icon(Icons.arrow_back_ios, size: 16, color: p.fgSecondary),
-                onPressed: () => _controller.goBack(),
+                onPressed: () => _controller?.goBack(),
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(minWidth: 36),
               ),
               IconButton(
                 icon: Icon(Icons.arrow_forward_ios, size: 16, color: p.fgSecondary),
-                onPressed: () => _controller.goForward(),
+                onPressed: () => _controller?.goForward(),
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(minWidth: 36),
               ),
               IconButton(
                 icon: Icon(Icons.refresh, size: 18, color: p.fgSecondary),
-                onPressed: () => _controller.reload(),
+                onPressed: () => _controller?.reload(),
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(minWidth: 36),
               ),
@@ -149,7 +157,32 @@ class _WebPreviewContentState extends State<WebPreviewContent> {
         Expanded(
           child: Stack(
             children: [
-              WebViewWidget(controller: _controller),
+              InAppWebView(
+                initialUrlRequest:
+                    URLRequest(url: WebUri(_currentUrl)),
+                initialSettings: _settings(),
+                onWebViewCreated: (controller) => _controller = controller,
+                onLoadStart: (controller, url) {
+                  if (mounted) {
+                    setState(() {
+                      _isLoading = true;
+                      if (url != null) _currentUrl = url.toString();
+                    });
+                  }
+                },
+                onLoadStop: (controller, url) async {
+                  await _injectViewport();
+                  if (mounted) {
+                    setState(() {
+                      _isLoading = false;
+                      if (url != null) _currentUrl = url.toString();
+                    });
+                  }
+                },
+                onReceivedError: (controller, request, error) {
+                  if (mounted) setState(() => _isLoading = false);
+                },
+              ),
               if (_isLoading)
                 const Center(child: CircularProgressIndicator()),
             ],
