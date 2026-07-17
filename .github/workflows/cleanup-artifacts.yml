@@ -2,7 +2,7 @@ name: Cleanup Old Artifacts & Caches
 
 on:
   schedule:
-    - cron: '0 3 * * *'  # 每天 UTC 3:00（北京时间 11:00）自动运行
+    - cron: '0 3 */3 * *'  # 每天 UTC 3:00（北京时间 11:00）自动运行
   workflow_dispatch: {}   # 支持手动触发
 
 jobs:
